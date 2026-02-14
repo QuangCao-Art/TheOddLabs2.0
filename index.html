@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Odd Labs 2.0</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="game-container">
+        <!-- Main Menu Screen -->
+        <div id="screen-main-menu" class="screen">
+            <h1 class="game-title">THE ODD <span class="neon-text">LABS 2.0</span></h1>
+            <div class="menu-options">
+                <button id="btn-start-battle" class="btn-neon">START BATTLE</button>
+                <button class="btn-neon disabled">CELL CONTAINER</button>
+                <button class="btn-neon disabled">RULEBOOK</button>
+                <button class="btn-neon disabled">SETTINGS</button>
+            </div>
+            <div class="version">Experimental v2.0</div>
+        </div>
+
+        <!-- Battle Arena Screen -->
+        <div id="screen-battle" class="screen hidden">
+            <button id="btn-battle-back" class="btn-neon-mini">BACK</button>
+
+            <div id="battle-layout">
+                <!-- MAIN BATTLE ARENA (LEFT/CENTER) -->
+                <main id="battle-scene">
+                    <!-- ENEMY SIDE (TOP) -->
+                    <section class="combatant-display enemy-display">
+                        <div class="character-vitals">
+                            <div class="name">Nitrophil</div>
+                            <div class="vitals-stats">
+                                <div class="vitals-row">
+                                    <div class="bar-label">HP</div>
+                                    <div class="bar-bg">
+                                        <div class="bar-fill hp-fill" style="width: 100%;"></div>
+                                    </div>
+                                    <span class="bar-value" id="enemy-hp-val">100 / 100</span>
+                                </div>
+                                <div class="vitals-row">
+                                    <div class="bar-label">PP</div>
+                                    <div class="bar-bg">
+                                        <div class="bar-fill pp-fill" style="width: 30%;"></div>
+                                    </div>
+                                    <span class="bar-value" id="enemy-pp-val">3 / 10</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="monster-portrait-container">
+                            <img src="assets/images/Nitrophil.png" alt="Enemy" class="monster-portrait enemy-img">
+                        </div>
+                    </section>
+
+
+                    <!-- PLAYER SIDE (BOTTOM) -->
+                    <section class="combatant-display player-display">
+                        <div class="monster-portrait-container">
+                            <img src="assets/images/Nitrophil.png" alt="Player" class="monster-portrait player-img">
+                        </div>
+                        <div class="character-vitals">
+                            <div class="name">Nitrophil</div>
+                            <div class="vitals-stats">
+                                <div class="vitals-row">
+                                    <div class="bar-label">HP</div>
+                                    <div class="bar-bg">
+                                        <div class="bar-fill hp-fill" style="width: 100%;"></div>
+                                    </div>
+                                    <span class="bar-value" id="player-hp-val">100 / 100</span>
+                                </div>
+                                <div class="vitals-row">
+                                    <div class="bar-label">PP</div>
+                                    <div class="bar-bg">
+                                        <div class="bar-fill pp-fill" style="width: 30%;"></div>
+                                    </div>
+                                    <span class="bar-value" id="player-pp-val">3 / 10</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+
+                <!-- COMMAND ZONE (RIGHT PANEL) -->
+                <aside id="command-zone" class="glass-panel">
+                    <!-- TURN/STATUS INDICATOR (MOVED TO TOP) -->
+                    <div id="battle-status">
+                        <div class="turn-indicator">YOUR TURN</div>
+                        <div class="phase-label">NODE SELECTION</div>
+                    </div>
+                    <div class="pentagon-interface">
+                        <div class="pentagon-container" id="interactive-pentagon">
+                            <div class="pentagon-shape"></div>
+                            <div class="node" data-index="0" style="--angle: 0deg;"></div>
+                            <div class="node" data-index="1" style="--angle: 72deg;"></div>
+                            <div class="node" data-index="2" style="--angle: 144deg;"></div>
+                            <div class="node" data-index="3" style="--angle: 216deg;"></div>
+                            <div class="node" data-index="4" style="--angle: 288deg;"></div>
+
+                            <!-- Draggable Central Core -->
+                            <div id="selection-core" class="draggable-core"></div>
+                        </div>
+                    </div>
+
+                    <div class="command-controls">
+                        <div class="moveset">
+                            <button class="move-btn active" data-move="membrane_pierce">
+                                <span class="move-name">Membrane Pierce</span>
+                                <div class="move-stats-row"><span class="move-power">POW 40</span><span
+                                        class="move-cost">0 PP</span></div>
+                            </button>
+                            <button class="move-btn" data-move="oxidative_purge">
+                                <span class="move-name">Oxidative Purge</span>
+                                <div class="move-stats-row"><span class="move-power">POW 55</span><span
+                                        class="move-cost">3 PP</span></div>
+                            </button>
+                            <button class="move-btn" data-move="nitric_burst">
+                                <span class="move-name">Nitric Burst</span>
+                                <div class="move-stats-row"><span class="move-power">POW 60</span><span
+                                        class="move-cost">6 PP</span></div>
+                            </button>
+                        </div>
+
+                        <div id="move-info-panel" class="hidden">
+                            <div id="info-move-name" class="neon-text">MOVE NAME</div>
+                            <div id="info-move-desc">Tactical data loading...</div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+
+        <!-- Game Over Overlay -->
+        <div id="game-over-overlay" class="overlay hidden">
+            <div class="modal glass-panel">
+                <h2 id="game-over-title">SYSTEM <span class="neon-text">FAILURE</span></h2>
+                <p id="game-over-message">NITROPHIL has been neutralized.</p>
+                <div class="modal-buttons">
+                    <button id="btn-restart" class="btn-neon">REINITIALIZE</button>
+                    <button id="btn-return-menu" class="btn-neon">MAIN MENU</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+
+</html>
