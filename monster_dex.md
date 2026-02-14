@@ -13,6 +13,7 @@ This document tracks the cellular entities discovered within The Odd Labs.
 | **Lore** | A mutated neutrophil immune cell with explosive properties. It seeks out pathogens and triggers a self-destruct sequence to sanitize the cellular matrix. |
 | **Tactics** | High damage output but fragile. Use **"Nitric Burst"** (Easy Target) to guarantee high-damage hits even with imperfect movement predictions.
 | **Skills** | **• Membrane Pierce**: Basic enzymatic strike (Power 40).<br>**• Oxidative Purge**: Mid-range pressure (Power 55, 3 PP).<br>**• Nitric Burst**: Tactical explosion (Power 60, 6 PP). [EASY TARGET]: Wide blast area; adjacent nodes still count as a perfect MATCH (1.25x DMG). |
+| **Defense** | **• Quick Dodge**: Standard evasion (0 PP).<br>**• Thermo Shell**: Heat buffer; forces [NEAR] hit and reflects 20% damage (2 PP).<br>**• Magma Chitin**: Volcanic hardening; forces [FAR] hit and reflects 20% damage (4 PP). |
 
 ---
 

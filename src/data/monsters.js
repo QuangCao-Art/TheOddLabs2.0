@@ -19,8 +19,8 @@ export const MONSTERS = {
         ],
         defenseMoves: [
             { id: 'quick_dodge', name: 'Quick Dodge', type: 'basic', cost: 0, desc: 'A standard defensive maneuver. Rely on tactical positioning to minimize damage.' },
-            { id: 'flame_guard', name: 'Flame Guard', type: 'pellicle', cost: 2, matchFixed: 1, reflect: 0.2, desc: 'Surrounds the cell in heat. Forces a [NEAR] result on enemy attacks and reflects 20% damage.' },
-            { id: 'lava_armor', name: 'Lava Armor', type: 'pellicle', cost: 4, matchFixed: 2, reflect: 0.2, desc: 'Hardens the membrane into basalt. Forces a [FAR] result on enemy attacks and reflects 20% damage.' }
+            { id: 'thermo_shell', name: 'Thermo Shell', type: 'pellicle', cost: 2, matchFixed: 1, reflect: 0.2, desc: 'Surrounds the cell in a heat-active buffer. Forces a [NEAR] result on enemy attacks and reflects 20% damage.' },
+            { id: 'magma_chitin', name: 'Magma Chitin', type: 'pellicle', cost: 4, matchFixed: 2, reflect: 0.2, desc: 'Hardens the membrane into a volcanic mineral plate. Forces a [FAR] result on enemy attacks and reflects 20% damage.' }
         ]
     },
     cambihil: {

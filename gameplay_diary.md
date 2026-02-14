@@ -237,7 +237,12 @@ To improve phase clarity, the tactic pentagon now uses dedicated high-fidelity a
 ### 2.43 Reactive Defense System (Tactical Counters)
 - **Phase-Specific Movesets**: Implemented dynamic moveset swapping. When the turn switches to the enemy, the player's command zone automatically updates with **Defense Skills**.
 - **Defense-Side MAP Overrides**:
-    - **Flame Guard**: Forces a **NEAR** (Reliable) result on enemy attacks, mitigating damage regardless of proximity.
-    - **Lava Armor**: Forces a **FAR** (Puny) result on enemy attacks, minimizing damage.
-- **Damage Reflection Engine**: Integrated reactive counters. Skills like Flame Guard and Lava Armor now return **20%** of the received damage back to the attacker's HP.
+    - **Thermo Shell**: Forces a **NEAR** (Reliable) result on enemy attacks, mitigating damage regardless of proximity.
+    - **Magma Chitin**: Forces a **FAR** (Puny) result on enemy attacks, minimizing damage.
+- **Reactive Defense System**:
+    - Nitrophil can now swap to defensive skills: `Quick Dodge`, `Thermo Shell`, and `Magma Chitin`.
+    - `Thermo Shell`: Forces [NEAR] result, 20% reflection.
+    - `Magma Chitin`: Forces [FAR] result, 20% reflection.
+    - Added phase-coded UI (Neon Green) and reflection damage VFX.
+- **Damage Reflection Engine**: Integrated reactive counters. Skills like Thermo Shell and Magma Chitin now return **20%** of the received damage back to the attacker's HP.
 - **Visual Counter-Feedback**: Added **neon yellow** damage numbers and independent hit animations to represent reflection damage during the combat resolution phase.

@@ -62,12 +62,12 @@ export function resolveTurn(state) {
     // 2. Identify Moves
     const attackerMove = currentTurn === 'PLAYER'
         ? player.moves.find(m => m.id === player.selectedMove)
-        : enemy.moves[0];
+        : (enemy.moves.find(m => m.id === enemy.selectedMove) || enemy.moves[0]);
 
-    // Defender Move Identification (Player selects manually, Enemy uses default for now)
+    // Defender Move Identification
     const defenderMove = currentTurn === 'PLAYER'
-        ? enemy.defenseMoves[0] // Enemy (Defender) uses default defense
-        : player.defenseMoves.find(m => m.id === player.selectedMove); // Note: selectedMove is reused for defense list in defense turn
+        ? (enemy.defenseMoves.find(m => m.id === enemy.selectedMove) || enemy.defenseMoves[0])
+        : player.defenseMoves.find(m => m.id === player.selectedMove);
 
     // 3. Apply Tactical MAP Modifiers
     let effectiveDist = actualDist;
@@ -122,7 +122,9 @@ export function resolveTurn(state) {
         ppGain,
         reflectDamage,
         attacker: currentTurn,
+        moveId: attackerMove.id,
         moveType: attackerMove.type,
+        defenderMoveId: defenderMove ? defenderMove.id : 'quick_dodge',
         defenderMoveType: defenderMove ? defenderMove.type : 'basic'
     };
 }

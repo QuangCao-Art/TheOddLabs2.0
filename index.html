@@ -19,10 +19,73 @@
             <div class="menu-options">
                 <button id="btn-start-battle" class="btn-neon">START BATTLE</button>
                 <button class="btn-neon disabled">CELL CONTAINER</button>
-                <button class="btn-neon disabled">RULEBOOK</button>
+                <button id="btn-open-rulebook" class="btn-neon">RULEBOOK</button>
                 <button class="btn-neon disabled">SETTINGS</button>
             </div>
             <div class="version">Experimental v2.0</div>
+        </div>
+
+        <!-- Rulebook Screen -->
+        <div id="screen-rulebook" class="screen hidden">
+            <div id="rulebook-panel" class="glass-panel">
+                <div class="rulebook-header">
+                    <h2 class="neon-text">TACTICAL <span class="white-text">MANUAL v2.4</span></h2>
+                    <div class="header-line"></div>
+                </div>
+
+                <div class="rulebook-grid">
+                    <!-- CARD: HOW TO PLAY -->
+                    <div class="rule-card">
+                        <div class="card-accent"></div>
+                        <h3><span class="icon">🎯</span> HOW TO PLAY</h3>
+                        <p>Combat is a simultaneous hidden-reveal duel. Predict the enemy's node to maximize impact.</p>
+                        <div class="map-table">
+                            <div class="map-row match">
+                                <span class="label">MATCH</span>
+                                <span class="value">1.25x DMG | +3 PP</span>
+                            </div>
+                            <div class="map-row near">
+                                <span class="label">NEAR</span>
+                                <span class="value">1.00x DMG | +2 PP</span>
+                            </div>
+                            <div class="map-row far">
+                                <span class="label">FAR</span>
+                                <span class="value">0.75x DMG | +1 PP</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CARD: CORE MECHANICS -->
+                    <div class="rule-card">
+                        <div class="card-accent red"></div>
+                        <h3><span class="icon">⚖️</span> CORE LAWS</h3>
+                        <div class="rule-item">
+                            <div class="item-title">PELLICLE OVERLOAD</div>
+                            <p>Entering a turn with 10 PP triggers **Emergency Discharge**, dealing 10 HP damage to
+                                self.</p>
+                        </div>
+                        <div class="rule-item">
+                            <div class="item-title">REACTIVE DEFENSE</div>
+                            <p>During Defense Phase, active skills reflect damage or manipulate MAP results.</p>
+                        </div>
+                    </div>
+
+                    <!-- CARD: GLOSSARY -->
+                    <div class="rule-card">
+                        <div class="card-accent blue"></div>
+                        <h3><span class="icon">🧪</span> KEY TERMS</h3>
+                        <ul class="glossary-list">
+                            <li><strong>PP</strong>: Tactical energy for powerful skills.</li>
+                            <li><strong>PELLICLE</strong>: A shield that must be broken to damage HP.</li>
+                            <li><strong>NODES</strong>: The 5 tactical positions of the Pentagon.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="rulebook-footer">
+                    <button id="btn-rulebook-back" class="btn-neon">RETURN TO BASE [ESC]</button>
+                </div>
+            </div>
         </div>
 
         <!-- Battle Arena Screen -->
@@ -32,6 +95,7 @@
             <div id="battle-layout">
                 <!-- MAIN BATTLE ARENA (LEFT/CENTER) -->
                 <main id="battle-scene">
+                    <div id="battle-log"></div>
                     <!-- ENEMY SIDE (TOP) -->
                     <section class="combatant-display enemy-display">
                         <div class="character-vitals">

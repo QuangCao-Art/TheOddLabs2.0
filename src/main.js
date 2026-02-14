@@ -1,5 +1,6 @@
 ﻿import { gameState } from './engine/state.js';
 import { resolveTurn, getDistance, checkOverload } from './engine/combat.js';
+import { AI } from './engine/ai.js';
 
 // DOM References
 const interactivePentagon = document.getElementById('interactive-pentagon');
@@ -18,6 +19,9 @@ const pentagonRect = interactivePentagon?.getBoundingClientRect();
 
 // Constants for positioning
 const RADIUS = 175; // Must match scaled --pentagon-radius (proportional to 415px container)
+
+// Battle Log State
+let battleLogHistory = [];
 
 // Initialization
 function init() {
@@ -57,6 +61,8 @@ function setupEventListeners() {
 
     // Move Selection (Keep existing hover/click for skills)
     moveButtons.forEach(btn => {
+        btn.addEventListener('mouseenter', () => showMoveInfo(btn.dataset.move));
+        btn.addEventListener('mouseleave', () => document.getElementById('move-info-panel')?.classList.add('hidden'));
         btn.addEventListener('click', () => {
             if (gameState.phase !== 'MOVE_SELECTION' && gameState.phase !== 'NODE_SELECTION') return;
             if (btn.classList.contains('disabled')) return;
@@ -65,33 +71,6 @@ function setupEventListeners() {
                 gameState.player.selectedMove = moveId;
                 updateUI();
             }
-        });
-
-        // Hover for info panel (Supports both attack and defense movesets)
-        btn.addEventListener('mouseenter', () => {
-            const moveId = btn.dataset.move;
-            const move = gameState.player.moves.find(m => m.id === moveId) ||
-                gameState.player.defenseMoves.find(m => m.id === moveId);
-            if (move) {
-                const infoPanel = document.getElementById('move-info-panel');
-                const infoName = document.getElementById('info-move-name');
-                const infoDesc = document.getElementById('info-move-desc');
-                if (infoPanel && infoName && infoDesc) {
-                    infoName.innerText = move.name.toUpperCase();
-                    infoDesc.innerText = move.desc || "No tactical data available.";
-                    infoPanel.classList.remove('hidden');
-
-                    // Position panel above the button
-                    const btnRect = btn.getBoundingClientRect();
-                    const zoneRect = document.getElementById('command-zone').getBoundingClientRect();
-                    const offsetBottom = zoneRect.bottom - btnRect.top + 10;
-                    infoPanel.style.bottom = `${offsetBottom}px`;
-                }
-            }
-        });
-
-        btn.addEventListener('mouseleave', () => {
-            document.getElementById('move-info-panel')?.classList.add('hidden');
         });
     });
 
@@ -111,10 +90,71 @@ function setupEventListeners() {
         showScreen('screen-main-menu');
     });
 
-    document.getElementById('btn-battle-back')?.addEventListener('click', () => {
-        showScreen('screen-main-menu');
+    document.getElementById('btn-battle-back')?.addEventListener('click', () => showScreen('screen-main-menu'));
+    document.getElementById('btn-open-rulebook')?.addEventListener('click', () => showScreen('screen-rulebook'));
+    document.getElementById('btn-rulebook-back')?.addEventListener('click', () => showScreen('screen-main-menu'));
+
+    // Global ESC Key Listener for Rulebook
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const rulebookScreen = document.getElementById('screen-rulebook');
+            if (rulebookScreen && !rulebookScreen.classList.contains('hidden')) {
+                showScreen('screen-main-menu');
+            }
+        }
+    });
+
+    // Start Screen
+    addLog("Experimental Lab Environment Online.");
+    addLog("Pathogen Detected: NITROPHIL.");
+}
+
+function showMoveInfo(moveId) {
+    const move = gameState.player.moves.find(m => m.id === moveId) ||
+        gameState.player.defenseMoves.find(m => m.id === moveId);
+    if (move) {
+        const infoPanel = document.getElementById('move-info-panel');
+        const infoName = document.getElementById('info-move-name');
+        const infoDesc = document.getElementById('info-move-desc');
+        if (infoPanel && infoName && infoDesc) {
+            infoName.innerText = move.name.toUpperCase();
+            infoDesc.innerText = move.desc || "No tactical data available.";
+            infoPanel.classList.remove('hidden');
+
+            const activeBtn = Array.from(moveButtons).find(b => b.dataset.move === moveId);
+            if (activeBtn) {
+                const btnRect = activeBtn.getBoundingClientRect();
+                const zoneRect = document.getElementById('command-zone').getBoundingClientRect();
+                const offsetBottom = zoneRect.bottom - btnRect.top + 10;
+                infoPanel.style.bottom = `${offsetBottom}px`;
+            }
+        }
+    }
+}
+
+function addLog(msg) {
+    const logContainer = document.getElementById('battle-log');
+    if (!logContainer) return;
+    battleLogHistory.push(msg);
+    if (battleLogHistory.length > 3) battleLogHistory.shift();
+    renderLog();
+}
+
+function renderLog() {
+    const logContainer = document.getElementById('battle-log');
+    if (!logContainer) return;
+
+    logContainer.innerHTML = '';
+    battleLogHistory.forEach(msg => {
+        const line = document.createElement('div');
+        line.className = 'log-line';
+        let formattedMsg = msg.replace(/\[(.*?)\]/g, '<span class="tactical">[$1]</span>');
+        line.innerHTML = `<span>-</span> ${formattedMsg}`;
+        logContainer.appendChild(line);
     });
 }
+
+// DRAG HANDLERS
 
 // DRAG HANDLERS
 function startDrag(e) {
@@ -327,7 +367,12 @@ async function resolvePhase() {
     updateUI();
 
     // 1. AI Choice
-    gameState.enemy.currentNode = Math.floor(Math.random() * 5);
+    const isEnemyAttacking = gameState.currentTurn === 'ENEMY';
+    const selectedMove = AI.selectMove(gameState.enemy, isEnemyAttacking);
+    gameState.enemy.selectedMove = selectedMove.id;
+    gameState.enemy.currentNode = AI.selectNode(gameState.enemy, gameState.player);
+
+    console.log(`[AI] Decided: ${selectedMove.name} at Node ${gameState.enemy.currentNode}`);
 
     // 2. Prepare Enemy Ghost (Still shown on interactive pentagon for tactical feedback)
     const ghost = document.createElement('div');
@@ -340,6 +385,33 @@ async function resolvePhase() {
 
     // 4. Combat Resolution
     const results = resolveTurn(gameState);
+
+    // Logging
+    const attackerName = results.attacker === 'PLAYER' ? 'You' : 'Enemy';
+    const defenderName = results.attacker === 'PLAYER' ? 'Enemy' : 'You';
+
+    const move = results.attacker === 'PLAYER'
+        ? gameState.player.moves.concat(gameState.player.defenseMoves).find(m => m.id === results.moveId)
+        : gameState.enemy.moves.concat(gameState.enemy.defenseMoves).find(m => m.id === results.moveId);
+
+    const dMove = results.attacker === 'PLAYER'
+        ? gameState.enemy.moves.concat(gameState.enemy.defenseMoves).find(m => m.id === results.defenderMoveId)
+        : gameState.player.moves.concat(gameState.player.defenseMoves).find(m => m.id === results.defenderMoveId);
+
+    let logMsg = `${attackerName} used ${move.name}, dealing ${results.hitResult.damage} DMG`;
+    if (results.hitResult.isCrit) logMsg += " [CRITICAL]";
+    addLog(logMsg);
+
+    if (dMove && dMove.id !== 'quick_dodge') {
+        addLog(`${defenderName} used ${dMove.name}`);
+    }
+
+    if (move.id === 'nitric_burst') {
+        addLog("activate [EASY TARGET]");
+    }
+    if (dMove && (dMove.id === 'thermo_shell' || dMove.id === 'magma_chitin')) {
+        addLog("activate [REACTIVE ARMOR]");
+    }
 
     // Animation Selection
     const isPellicle = results.moveType === 'pellicle';
@@ -635,10 +707,32 @@ function showScreen(screenId) {
 function resetGame() {
     gameState.player.hp = gameState.player.maxHp;
     gameState.player.pp = 1;
+    gameState.player.currentNode = null;
     gameState.enemy.hp = gameState.enemy.maxHp;
     gameState.enemy.pp = 1;
+    gameState.enemy.currentNode = null;
     gameState.currentTurn = 'PLAYER';
     gameState.phase = 'NODE_SELECTION';
+
+    // Clear death visuals
+    document.querySelectorAll('.dead-cell-container').forEach(c => c.remove());
+    document.querySelectorAll('.monster-portrait').forEach(p => p.classList.remove('death-fade'));
+
+    // Reset selection core to center
+    if (selectionCore) {
+        selectionCore.style.transition = 'none';
+        selectionCore.style.transform = 'translate(-50%, -50%)';
+    }
+
+    // Clear all node highlights/selections
+    interactiveNodes.forEach(n => n.classList.remove('selected', 'highlight'));
+
+    // Reset battle log
+    battleLogHistory = [];
+    const logContainer = document.getElementById('battle-log');
+    if (logContainer) logContainer.innerHTML = '';
+    addLog("MISSION START: Purge initialized.");
+
     updateUI();
 }
 
