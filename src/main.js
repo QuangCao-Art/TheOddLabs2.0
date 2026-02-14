@@ -1,6 +1,7 @@
 ﻿import { gameState } from './engine/state.js';
 import { resolveTurn, getDistance, checkOverload } from './engine/combat.js';
 import { AI } from './engine/ai.js';
+import { MONSTERS } from './data/monsters.js';
 
 // DOM References
 const interactivePentagon = document.getElementById('interactive-pentagon');
@@ -94,6 +95,16 @@ function setupEventListeners() {
     document.getElementById('btn-open-rulebook')?.addEventListener('click', () => showScreen('screen-rulebook'));
     document.getElementById('btn-rulebook-back')?.addEventListener('click', () => showScreen('screen-main-menu'));
 
+    // Cell Container Controls
+    document.getElementById('btn-open-cell-container')?.addEventListener('click', () => {
+        renderCellContainer();
+        showScreen('screen-cell-container');
+    });
+    document.getElementById('btn-container-back')?.addEventListener('click', () => showScreen('screen-main-menu'));
+    document.getElementById('btn-close-card')?.addEventListener('click', () => {
+        document.getElementById('monster-card-modal').classList.add('hidden');
+    });
+
     // Global ESC Key Listener for Rulebook
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
@@ -107,6 +118,54 @@ function setupEventListeners() {
     // Start Screen
     addLog("Experimental Lab Environment Online.");
     addLog("Pathogen Detected: NITROPHIL.");
+
+    // Battle Monster Card Click Logic
+    document.querySelector('.player-display .monster-portrait-container')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const container = e.currentTarget;
+        container.classList.remove('anim-pulse');
+        void container.offsetWidth;
+        container.classList.add('anim-pulse');
+        updateBattleCard(gameState.player.name);
+    });
+
+    document.querySelector('.enemy-display .monster-portrait-container')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const container = e.currentTarget;
+        container.classList.remove('anim-pulse');
+        void container.offsetWidth;
+        container.classList.add('anim-pulse');
+        updateBattleCard(gameState.enemy.name);
+    });
+}
+
+function updateBattleCard(monsterName) {
+    const card = document.getElementById('battle-click-card');
+    const img = document.getElementById('battle-card-img');
+    const bioText = document.getElementById('bio-text');
+    if (!card || !img || !bioText) return;
+
+    const monsterKey = monsterName.toLowerCase();
+    const monsterData = MONSTERS[monsterKey];
+    const newSrc = `assets/images/Card_${monsterName}.png`;
+    const isSame = img.src.includes(`Card_${monsterName}.png`);
+
+    if (isSame) return; // Already showing this card
+
+    // Trigger Flip Animation
+    img.classList.remove('card-flip');
+    void img.offsetWidth; // Force reflow
+    img.classList.add('card-flip');
+
+    // Update Content midway through flip (0.3s)
+    setTimeout(() => {
+        img.src = newSrc;
+        if (monsterData && monsterData.lore) {
+            bioText.innerText = monsterData.lore;
+        } else {
+            bioText.innerText = "No tactical biography available for this entity.";
+        }
+    }, 300);
 }
 
 function showMoveInfo(moveId) {
@@ -132,6 +191,98 @@ function showMoveInfo(moveId) {
     }
 }
 
+// CELL CONTAINER LOGIC
+function renderCellContainer() {
+    const grid = document.querySelector('.grid-container');
+    const slots = document.querySelectorAll('.slot');
+    if (!grid || !slots) return;
+
+    // 1. Render CellDex Grid
+    grid.innerHTML = '';
+    gameState.cellDex.forEach(monsterId => {
+        const monster = MONSTERS[monsterId];
+        const icon = document.createElement('div');
+        icon.className = 'monster-icon';
+        icon.draggable = true;
+        icon.dataset.id = monsterId;
+        icon.innerHTML = `<img src="assets/images/${monster.name}.png" alt="${monster.name}">`;
+
+        // Click to Open Card
+        icon.addEventListener('click', (e) => {
+            if (e.detail === 1) { // Single click for card
+                openMonsterCard(monsterId);
+            }
+        });
+
+        // Drag Start
+        icon.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('monsterId', monsterId);
+            icon.style.opacity = '0.5';
+        });
+
+        icon.addEventListener('dragend', () => {
+            icon.style.opacity = '1';
+        });
+
+        grid.appendChild(icon);
+    });
+
+    // 2. Render Team Slots
+    updateTeamSlots();
+
+    // 3. Setup Slot Drop Handlers
+    slots.forEach(slot => {
+        slot.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            slot.classList.add('drag-over');
+        });
+
+        slot.addEventListener('dragleave', () => {
+            slot.classList.remove('drag-over');
+        });
+
+        slot.addEventListener('drop', (e) => {
+            e.preventDefault();
+            slot.classList.remove('drag-over');
+            const monsterId = e.dataTransfer.getData('monsterId');
+            const slotIndex = parseInt(slot.dataset.slot);
+
+            if (monsterId && !isNaN(slotIndex)) {
+                // Update Team State
+                gameState.playerTeam[slotIndex] = monsterId;
+                updateTeamSlots();
+            }
+        });
+    });
+}
+
+function updateTeamSlots() {
+    const slots = document.querySelectorAll('.slot');
+    slots.forEach((slot, index) => {
+        const monsterId = gameState.playerTeam[index];
+        slot.innerHTML = '';
+        if (monsterId) {
+            const monster = MONSTERS[monsterId];
+            const img = document.createElement('img');
+            img.src = `assets/images/${monster.name}.png`;
+            img.style.width = '70%';
+            img.style.height = '70%';
+            img.style.objectFit = 'contain';
+            slot.appendChild(img);
+        }
+    });
+}
+
+function openMonsterCard(monsterId) {
+    const monster = MONSTERS[monsterId];
+    const modal = document.getElementById('monster-card-modal');
+    const img = document.getElementById('card-img');
+    if (modal && img) {
+        img.src = `assets/images/Card_${monster.name}.png`;
+        modal.classList.remove('hidden');
+    }
+}
+
 function addLog(msg) {
     const logContainer = document.getElementById('battle-log');
     if (!logContainer) return;
@@ -148,7 +299,14 @@ function renderLog() {
     battleLogHistory.forEach(msg => {
         const line = document.createElement('div');
         line.className = 'log-line';
-        let formattedMsg = msg.replace(/\[(.*?)\]/g, '<span class="tactical">[$1]</span>');
+
+        let formattedMsg = msg.replace(/\[(.*?)\]/g, (match, tag) => {
+            let tagClass = 'tactical'; // Default (Yellow)
+            if (tag === 'CRITICAL') tagClass = 'crit';
+            if (tag === 'REACTIVE ARMOR' || tag === 'EASY TARGET') tagClass = 'system';
+            return `<span class="${tagClass}">[${tag}]</span>`;
+        });
+
         line.innerHTML = `<span>-</span> ${formattedMsg}`;
         logContainer.appendChild(line);
     });
@@ -251,6 +409,10 @@ function updateUI() {
     document.querySelector('.player-display .pp-fill')?.classList.toggle('overload', gameState.player.pp >= 10);
     setSafe('#player-hp-val', 'innerText', `${gameState.player.hp} / ${gameState.player.maxHp}`);
     setSafe('#player-pp-val', 'innerText', `${gameState.player.pp} / ${gameState.player.maxPp}`);
+
+    setSafe('.player-display .name', 'innerText', gameState.player.name);
+    const pImg = document.querySelector('.player-img');
+    if (pImg) pImg.src = `assets/images/${gameState.player.name}.png`;
 
     setStyle('.enemy-display .hp-fill', 'width', `${(gameState.enemy.hp / gameState.enemy.maxHp) * 100}%`);
     setStyle('.enemy-display .pp-fill', 'width', `${(gameState.enemy.pp / gameState.enemy.maxPp) * 100}%`);
@@ -469,7 +631,7 @@ async function resolvePhase() {
             // Spawn reflection damage number (Yellow for counter-damage)
             const reflectEl = document.createElement('div');
             reflectEl.className = 'damage-number';
-            reflectEl.style.color = 'var(--neon-yellow)';
+            reflectEl.style.color = 'var(--color-near)';
             reflectEl.innerText = `-${results.reflectDamage}`;
             attackerPortrait.appendChild(reflectEl);
             setTimeout(() => reflectEl.remove(), 1000);
@@ -539,16 +701,19 @@ function applyMatchVFX(actualDist, effectiveDist, ghost) {
     if (effectiveDist === 0) {
         vfxClass = 'flash-red';
         resultText = isDefense ? 'HIT' : 'MATCH';
-        resultColor = 'var(--neon-red)';
+        resultColor = 'var(--color-match)';
         shakeClass = 'shake-heavy';
         if (ghost) ghost.classList.add('match');
     } else if (effectiveDist === 1) {
         vfxClass = 'flash-yellow';
         resultText = isDefense ? 'CLOSE' : 'NEAR';
-        resultColor = 'var(--neon-yellow)';
+        resultColor = 'var(--color-near)';
         shakeClass = 'shake-medium';
         if (ghost) ghost.classList.add('near');
     } else {
+        vfxClass = 'flash-far';
+        resultText = isDefense ? 'NICE' : 'FAR';
+        resultColor = 'var(--color-far)';
         if (ghost) ghost.classList.add('far');
     }
 
@@ -571,7 +736,7 @@ function applyMatchVFX(actualDist, effectiveDist, ghost) {
 
 function clearVFX() {
     interactiveNodes.forEach(node => {
-        node.classList.remove('flash-red', 'flash-yellow', 'flash-white', 'highlight');
+        node.classList.remove('flash-red', 'flash-yellow', 'flash-far', 'flash-white', 'highlight');
     });
 
     const pent = document.getElementById('interactive-pentagon');
@@ -705,9 +870,16 @@ function showScreen(screenId) {
 }
 
 function resetGame() {
+    // 1. Load Team Leader
+    const leaderId = gameState.playerTeam[0] || 'nitrophil';
+    gameState.player = {
+        ...JSON.parse(JSON.stringify(MONSTERS[leaderId])),
+        currentNode: null,
+        selectedMove: MONSTERS[leaderId].moves[0].id
+    };
+
     gameState.player.hp = gameState.player.maxHp;
     gameState.player.pp = 1;
-    gameState.player.currentNode = null;
     gameState.enemy.hp = gameState.enemy.maxHp;
     gameState.enemy.pp = 1;
     gameState.enemy.currentNode = null;
@@ -732,6 +904,12 @@ function resetGame() {
     const logContainer = document.getElementById('battle-log');
     if (logContainer) logContainer.innerHTML = '';
     addLog("MISSION START: Purge initialized.");
+
+    // Reset monster card sidebar
+    const battleCardImg = document.getElementById('battle-card-img');
+    const bioText = document.getElementById('bio-text');
+    if (battleCardImg) battleCardImg.src = 'assets/images/Card_Back.png';
+    if (bioText) bioText.innerText = 'Select a cellular entity to initialize tactical readout.';
 
     updateUI();
 }

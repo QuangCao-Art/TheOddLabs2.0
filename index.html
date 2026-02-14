@@ -18,11 +18,39 @@
             <h1 class="game-title">THE ODD <span class="neon-text">LABS 2.0</span></h1>
             <div class="menu-options">
                 <button id="btn-start-battle" class="btn-neon">START BATTLE</button>
-                <button class="btn-neon disabled">CELL CONTAINER</button>
+                <button id="btn-open-cell-container" class="btn-neon">CELL CONTAINER</button>
                 <button id="btn-open-rulebook" class="btn-neon">RULEBOOK</button>
                 <button class="btn-neon disabled">SETTINGS</button>
             </div>
             <div class="version">Experimental v2.0</div>
+        </div>
+
+        <!-- Cell Container (Team Management) -->
+        <div id="screen-cell-container" class="screen hidden">
+            <button id="btn-container-back" class="btn-neon-mini">BACK</button>
+            <div id="container-layout">
+                <section id="team-loadout" class="glass-panel">
+                    <h3 class="panel-title">ACTIVE <span class="neon-text">TEAM</span></h3>
+                    <div class="team-slots">
+                        <div class="slot" data-slot="0"></div>
+                        <div class="slot" data-slot="1"></div>
+                        <div class="slot" data-slot="2"></div>
+                    </div>
+                </section>
+
+                <section id="celldex-grid" class="glass-panel">
+                    <h3 class="panel-title">CELL <span class="neon-text">DEX</span></h3>
+                    <div class="grid-container"></div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Monster Card Modal -->
+        <div id="monster-card-modal" class="overlay hidden">
+            <div class="card-display">
+                <img id="card-img" src="" alt="Monster Card">
+                <button id="btn-close-card" class="btn-neon-mini">CLOSE</button>
+            </div>
         </div>
 
         <!-- Rulebook Screen -->
@@ -93,6 +121,17 @@
             <button id="btn-battle-back" class="btn-neon-mini">BACK</button>
 
             <div id="battle-layout">
+                <!-- BATTLE TACTICAL SIDEBAR (LEFT) -->
+                <aside id="battle-click-card" class="glass-panel">
+                    <div class="card-wrapper">
+                        <img id="battle-card-img" src="assets/images/Card_Back.png" alt="Monster Card">
+                    </div>
+                    <div id="battle-card-bio" class="card-bio">
+                        <h3>MONSTER DATA</h3>
+                        <p id="bio-text">Select a cellular entity to initialize tactical readout.</p>
+                    </div>
+                </aside>
+
                 <!-- MAIN BATTLE ARENA (LEFT/CENTER) -->
                 <main id="battle-scene">
                     <div id="battle-log"></div>

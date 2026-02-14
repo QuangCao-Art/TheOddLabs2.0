@@ -38,6 +38,20 @@ The core mechanic is the **simultaneous selection** of a position on the pentago
     - **PP Gain**: +1 PP
     - **Attack Label**: FAR | **Defense Label**: NICE
 
+### 2.2 Global Color Coding Rules
+The laboratory uses a semantic color system to ensure absolute tactical clarity:
+
+| Category | Color | Usage |
+| :--- | :--- | :--- |
+| **Tactical: MATCH** | 🔴 Red | Exact node match, Critical hit text, Overload alerts |
+| **Tactical: NEAR** | 🟡 Yellow | Adjacent node hit, Reflection damage numbers |
+| **Tactical: FAR** | 🟢 Green | Distant node hit, Health bar fills |
+| **Phase: Attack** | 🟠 Orange | Attack nodes, Selection core (Sword), Move buttons |
+| **Phase: Defense** | 🔵 Blue | Defense nodes, Selection core (Shield), Defense buttons |
+| **Affiliation: Player** | 🔷 Cyan | Player vitals, Portrait glow, Cell Container UI |
+| **Affiliation: Enemy** | 🔮 Magenta | Enemy vitals, Enemy portrait glow |
+| **Special: Critical** | 🟣 Purple | [CRITICAL] tags in log, Critical hit popups |
+
 ---
 
 ## 3. Turn Loop: The Prediction Phase
@@ -109,5 +123,21 @@ The final damage resolved against HP follows this hierarchy:
 - **`/index.html`**: The main viewport containing the dual-pentagon arena.
 - **`/style.css`**: CSS Grid/Flexbox for the static pentagon and neon bio-UI.
 - **`/src/engine/combat.js`**: Simultaneous resolution and damage math.
-- **`/src/engine/state.js`**: Battle state management.
-- **`/src/data/monsters.js`**: Monster data definitions.
+- **`/src/engine/state.js`**: Battle state management and Team Loadout storage.
+- **`/src/data/monsters.js`**: Monster data definitions and core stats.
+
+---
+
+## 8. Cell Container & Team Management (System C1)
+
+The **Cell Container** is the primary interface for managing your tactical roster.
+
+### 8.1 Team Loadout
+- **Capacity**: 3 Active Monsters.
+- **Deployment**: The monster in the **First Slot (Leader)** is automatically deployed into battle.
+- **Interactions**: Drag-and-drop to swap slots or replace members from the CellDex.
+
+### 8.2 CellDex Grid
+- **Function**: Displays all acquired cellular entities.
+- **Inspection**: Click any icon to open the **High-Res Monster Card**, showing full tactical specs and bio-data.
+- **Aesthetic**: Integrated with the Player Cyan (`--color-player`) semantic theme.

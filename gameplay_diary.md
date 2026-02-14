@@ -246,3 +246,19 @@ To improve phase clarity, the tactic pentagon now uses dedicated high-fidelity a
     - Added phase-coded UI (Neon Green) and reflection damage VFX.
 - **Damage Reflection Engine**: Integrated reactive counters. Skills like Thermo Shell and Magma Chitin now return **20%** of the received damage back to the attacker's HP.
 - **Visual Counter-Feedback**: Added **neon yellow** damage numbers and independent hit animations to represent reflection damage during the combat resolution phase.
+
+### 2.44 Global Color Scheme Recalibration
+- **Problem**: Tactical feedback was using disjointed colors (e.g., Match was Red, but Far was White) and generic variable names like `--neon-blue`.
+- **Pure Semantic CSS**: Refactored the entire color system to use semantic variables: `--color-match`, `--color-player`, `--color-attack`, etc.
+- **Outcome Standardization**: Unified the tactical results as **Red (Match)**, **Yellow (Near)**, and **Green (Far)**. This mapping is now mirrored in the rulebook, node flashes, and combat label bursts.
+- **Affiliation Coding**: Enforced a strict **Cyan (Player)** vs **Magenta (Enemy)** affiliation glow for all vitals, portraits, and UI panels.
+
+### 2.45 Cell Container: Team Loadout & CellDex
+- **Multi-Screen Navigation**: Implemented the "Cell Container" screen as a dedicated team management hub.
+- **Drag-and-Drop Interaction**: Built a native JS drag-and-drop system for the team slots. Releasing a CellDex icon over a slot instantly persists the choice in `gameState.playerTeam`.
+- **Inspection Modal**: Added a high-fidelity modal that renders `Card_{Name}.png` assets upon clicking icons. Designed with a custom `modal-appear` spring animation for tactile feel.
+
+### 2.46 Team Leader Deployment
+- **Dynamic Initialization**: Updated the `resetGame()` sequence to automatically identify the monster in `playerTeam[0]` as the active combatant.
+- **Stats Synchronization**: The system now deep-clones the leader's stats (HP, PP, Moveset) into the active player state, ensuring the correct tactical profile is loaded into the arena.
+- **UI Refresh**: Portraits and names in the battle arena are now dynamically pulled from the deployed monster's assets during the `updateUI` pass.
