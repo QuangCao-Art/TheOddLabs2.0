@@ -5,73 +5,94 @@
 
 export const AI = {
     /**
-     * Selects the best move for the enemy based on current HP/PP status.
-     * @param {Object} enemy - The enemy monster state.
-     * @param {boolean} isAttacking - Whether it's the enemy's attack turn.
-     * @returns {Object} - The selected move object.
+     * Selects the best move for the enemy based on fuzzy logic and "Neural Noise".
      */
     selectMove(enemy, isAttacking) {
         const moveset = isAttacking ? enemy.moves : enemy.defenseMoves;
         const availablePP = enemy.pp;
         const hpPercent = (enemy.hp / enemy.maxHp) * 100;
 
-        // 1. DEFENSE LOGIC
+        // NEURAL NOISE: 15% chance to ignore optimal strategy and pick a random affordable move
+        if (Math.random() < 0.15) {
+            const affordable = moveset.filter(m => (m.cost || 0) <= availablePP);
+            return affordable[Math.floor(Math.random() * affordable.length)] || moveset[0];
+        }
+
+        // 1. DEFENSE LOGIC (Defense Phase)
         if (!isAttacking) {
-            // Priority 1: Survival
-            if (hpPercent < 40) {
+            // Priority: Survival (Fuzzy check)
+            if (hpPercent < 45 && availablePP >= 4 && Math.random() < 0.8) {
                 const magmaChitin = moveset.find(m => m.id === 'magma_chitin');
-                if (magmaChitin && availablePP >= magmaChitin.cost) return magmaChitin;
+                if (magmaChitin) return magmaChitin;
             }
 
-            // Priority 2: Tactical Mitigation
-            if (availablePP >= 2) {
+            // Tactical Mitigation (Fuzzy check)
+            if (availablePP >= 2 && Math.random() < 0.6) {
                 const thermoShell = moveset.find(m => m.id === 'thermo_shell');
-                if (thermoShell && availablePP >= thermoShell.cost) return thermoShell;
+                if (thermoShell) return thermoShell;
             }
 
-            // Fallback: Quick Dodge
+            // Counter-Intuitive Aggression: 20% chance to skip defense and "save" PP
+            if (hpPercent > 60 && Math.random() < 0.2) {
+                return moveset.find(m => m.id === 'quick_dodge') || moveset[0];
+            }
+
             return moveset.find(m => m.id === 'quick_dodge') || moveset[0];
         }
 
-        // 2. ATTACK LOGIC
-        // Priority 1: Prevent Overload Recall (Spend PP if near 10)
-        if (availablePP >= 8) {
-            const expensiveMoves = moveset.filter(m => m.type === 'pellicle' && m.cost > 0)
+        // 2. ATTACK LOGIC (Attack Phase)
+        // Critical Spend: High chance to use expensive skills if at risk of Overload (PP >= 8)
+        if (availablePP >= 8 && Math.random() < 0.9) {
+            const highCost = moveset.filter(m => m.type === 'pellicle' && m.cost > 0)
                 .sort((a, b) => b.cost - a.cost);
-            if (expensiveMoves.length > 0 && availablePP >= expensiveMoves[0].cost) {
-                return expensiveMoves[0];
-            }
+            if (highCost.length > 0 && availablePP >= highCost[0].cost) return highCost[0];
         }
 
-        // Priority 2: Weighted Random for affordable Pellicle skills
+        // Calculated Aggression: Weighted chance for affordable Pellicle skills
         const affordablePellicle = moveset.filter(m => m.type === 'pellicle' && availablePP >= m.cost);
-        if (affordablePellicle.length > 0 && Math.random() < 0.6) {
+        const pChance = hpPercent > 70 ? 0.7 : 0.4; // More aggressive at high health
+        if (affordablePellicle.length > 0 && Math.random() < pChance) {
             return affordablePellicle[Math.floor(Math.random() * affordablePellicle.length)];
         }
 
-        // Fallback: Basic Strike
         return moveset.find(m => m.type === 'basic') || moveset[0];
     },
 
     /**
-     * Predicts the player's next move or chooses a tactical node.
-     * Currently uses a weighted random biased toward player's recent choices.
-     * @param {Object} enemy - Enemy state.
-     * @param {Object} player - Player state.
-     * @returns {number} - The selected node (0-4).
+     * Chooses a tactical node using prediction algorithms and Bluff logic.
      */
     selectNode(enemy, player) {
-        // Simple but "smarter" than pure random:
-        // Try to stay near or match the player's current node (predicting they won't move far)
-        if (Math.random() < 0.4) {
-            const offset = (Math.random() < 0.5) ? -1 : 1;
-            return (player.currentNode + offset + 5) % 5;
+        const roll = Math.random();
+        let targetNode = -1;
+
+        // 1. BLUFF PATTERN: 25% chance to pick a node completely opposite to the player
+        if (roll < 0.25) {
+            const farNodes = [2, 3].map(offset => (player.currentNode + offset) % 5);
+            targetNode = farNodes[Math.floor(Math.random() * farNodes.length)];
+        }
+        // 2. PREDICTION: 40% chance to guess player's displacement
+        else if (roll < 0.65) {
+            const drift = (Math.random() < 0.5) ? -1 : 1;
+            targetNode = (player.currentNode + drift + 5) % 5;
+        }
+        // 3. AGGRESSIVE MATCH: 20% chance to chase the player's exact position
+        else if (roll < 0.85) {
+            targetNode = player.currentNode;
+        }
+        // 4. THE JOKER: Pure random result
+        else {
+            targetNode = Math.floor(Math.random() * 5);
         }
 
-        // Sometimes match exactly
-        if (Math.random() < 0.2) return player.currentNode;
+        // ChoiceBlock & HurtBlock Enforcement: Avoid all blocked nodes
+        if (enemy.blockedNodes.includes(targetNode)) {
+            // Pick a random node that ISN'T in the blocked list
+            const available = [0, 1, 2, 3, 4].filter(n => !enemy.blockedNodes.includes(n));
+            if (available.length > 0) {
+                targetNode = available[Math.floor(Math.random() * available.length)];
+            }
+        }
 
-        // Otherwise pure random
-        return Math.floor(Math.random() * 5);
+        return targetNode;
     }
 };

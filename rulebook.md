@@ -34,31 +34,45 @@ When the turn resolves, the game checks the "Distance" between your selected nod
 
 ---
 
+### 4. MAP Effects (Tactical Suite)
+Beyond basic movement, specialized skills trigger advanced **MAP EFFECTS** that manipulate the battlefield:
+
+A fundamental expansion of the **Matching Attack Placement (MAP)** system.
+
+| In Game Name | Mechanic | Effect | Use Case |
+| :--- | :--- | :--- | :--- |
+| **EASY TARGET** | Match Expand | **3 Match, 2 Near** | Reliable heavy damage. |
+| **DRUNK MAN** | Far Expand | **1 Near, 4 Far** | Tactical debuff or penalty. |
+| **PERFECT STRIKE**| Super Match | **5 Match** | Unavoidable crit/max DMG. |
+| **RELIABLE HIT** | Super Near | **5 Near** | Consistent chip damage. |
+| **PUNY SLAP** | Super Far | **5 Far** | Intentional weak hit. |
+| **ALL OR NOTHING**| Risky Match | **1 Match, 4 Far** | High-risk skill shots. |
+| **CHOICEBLOCK** | Node Block | **Lock Node** | Prevents selection for 1 next turn. |
+| **HURTBLOCK** | Node Block | **Lock Node** | Disables the nodes used by both players this turn, preventing them from being re-selected in the next turn. |
+
+---
+
 ## ⚖️ Core Rules
 
 ### 🛡️ Turns & Defense
 - Only the **Attacker** deals damage.
-- When it's your **Defense Turn**, your skills swap to **Defense Moves** (like Quick Dodge or Thermo Shell).
-- Use these to reflect damage or force the enemy into a "Far" result!
+- Nodes for the next turn are determined by the current turn's results (**Block System**).
+- When it's your **Defense Turn**, your skills swap to **Defense Moves**.
 
 ### ⚡ PP Overload & Recall
-- **The Limit**: You can store a maximum of **10 PP**.
-- **The Penalty**: If you start a turn with 10 PP, you trigger **Overload Recall**, dealing **10 HP damage** to yourself. 
-- *Strategy*: Use your big skills before you hit the limit!
+- **The Limit**: Maximum of **10 PP**.
+- **The Penalty**: Starting a turn with 10 PP triggers **Overload Recall**, dealing **10 HP damage** and discharging all PP. 
 
 ### 🧪 Elemental Advantage
-- Every Cell has a **Type** (Thermogenic, Osmotic, Botanic, etc.).
-- **Advantage**: Deals **1.5x Damage**.
-- **Disadvantage**: Deals **0.75x Damage**.
-- *Check the Elemental Table in the Main Menu for full details.*
+- Advantage (e.g., Thermogenic vs Botanic): **1.5x Damage**.
+- Disadvantage: **0.75x Damage**.
 
 ### 💜 Critical Hits
-- Attacks have a chance to **Critical Hit**, dealing **1.5x Damage**.
-- Look for the purple damage numbers and the screen shake!
+- Random chance for **1.5x Damage**. Significant purple flash and screen shake.
 
 ---
 
 ## 🚀 Pro Tips
-1. **Watch the PP Bar**: Reaching 10 PP is dangerous. Always have a Pellicle skill ready to spend your energy.
-2. **Predict the Logic**: Most players favor the "Top" node. Bait them by selecting the adjacent nodes for a "Near" hit!
-3. **Use Defense**: Thermo Shell reflects 20% damage. Sometimes, taking a hit on purpose is the best way to win.
+1. **Node Rotation**: With **CHOICEBLOCK**, you can't stay on one node. Always plan a 2-node rotation.
+2. **Defensive Lockdown**: Use defense moves to force a "Far" result, potentially locking more nodes for the enemy attacker.
+3. **Pellicle Mitigation**: Each PP point reduces incoming damage by 3. High PP makes you a tank.

@@ -6,14 +6,34 @@ export const gameState = {
     cellDex: ['nitrophil', 'cambihil', 'lydrosome'],
 
     player: {
-        ...JSON.parse(JSON.stringify(MONSTERS.nitrophil)), // Initial default, will be overridden by team leader
+        id: 'nitrophil',
+        name: 'Nitrophil',
+        hp: 100,
+        maxHp: 100,
+        pp: 1,
+        maxPp: 10,
+        moves: [],
+        defenseMoves: [],
         currentNode: null,
-        selectedMove: 'membrane_pierce'
+        blockedNodes: [],
+        burnedNodes: [],
+        jammedNodes: [],
+        selectedMove: null
     },
     enemy: {
-        ...JSON.parse(JSON.stringify(MONSTERS.nitrophil)),
+        id: 'nitrophil',
+        name: 'Nitrophil',
+        hp: 100,
+        maxHp: 100,
+        pp: 1,
+        maxPp: 10,
+        moves: [],
+        defenseMoves: [],
         currentNode: null,
-        selectedMove: 'membrane_pierce'
+        blockedNodes: [],
+        burnedNodes: [],
+        jammedNodes: [],
+        selectedMove: null
     },
     currentTurn: 'PLAYER',
     phase: 'MOVE_SELECTION',

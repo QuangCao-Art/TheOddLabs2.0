@@ -262,3 +262,30 @@ To improve phase clarity, the tactic pentagon now uses dedicated high-fidelity a
 - **Dynamic Initialization**: Updated the `resetGame()` sequence to automatically identify the monster in `playerTeam[0]` as the active combatant.
 - **Stats Synchronization**: The system now deep-clones the leader's stats (HP, PP, Moveset) into the active player state, ensuring the correct tactical profile is loaded into the arena.
 - **UI Refresh**: Portraits and names in the battle arena are now dynamically pulled from the deployed monster's assets during the `updateUI` pass.
+### 2.47 System Integrity Check (Audit & Hardening)
+- **PP limit Unification**: Resolved a discrepancy between monster data and the rulebook. All monsters are now capped at **10 PP**, synchronized with the "Overload Recall" penalty threshold.
+- **Architectural Cleanup**: Purged legacy JavaScript listeners and redundant CSS associated with the old modal-style monster card.
+- **Persistence Verification**: Confirmed that the new sidebar remains stable and persistent across all user interaction paths.
+
+### 2.48 Energetic Float Synchronization
+- **Turn-Based Initiative**: Refined combat animations so only the active attacker floats. This provides a clear, visceral indicator of whose turn it is to strike.
+- **High-Intensity Motion**: Increased the float amplitude to **25px** (from 10px) and frequency to **1.5s** (from 4s).
+- **Charged Visuals**: Added a rhythmic scale and brightness pulse to the float keyframes, making the active monster feel "energized" and ready for resolution.
+
+### 2.49 Animation Layering & Aesthetic Refinement
+- **DOM Layering**: Introduced `.monster-float-layer` to decouple floating motion from interaction pulses. This fixes the bug where clicking a monster would stop its floating animation.
+- **Subtle & Quick Motion**: Recalibrated the energetic float to a **1.0s** cycle with a **12px** amplitude. This provides a snappier, more professional "ready-state" without excessive screen movement.
+- **Property Decoupling**: Floating now uses `transform` on the layer, while pulses/lunges use `transform` on the portrait image and container respectively, ensuring property conflicts are architecturally impossible.
+
+### 2.50 Nitrophil Narrative Enrichment (Final User Version)
+- **User Tone Alignment**: Updated the lore to the exact sentence requested: "A mutated neutrophil immune cell with explosive properties. It maybe has too much fun throwing its burst pods everywhere."
+- **Story Consolidation**: Finalized the hyper-playful "Burst Pod" persona as the official laboratory record.
+- **Data Synchronization**: Verified that both the user-facing `monster_dex.md` and the internal `monsters.js` are in perfect sync.
+### 2.51 3D Card Flip System Implementation
+- **True 3D Architecture**: Refactored the monster card sidebar with a `.card-inner` container and dual faces (`.card-front`, `.card-back`), leveraging `preserve-3d`.
+- **180-Degree Reveal**: Implemented a physical 180-degree flip animation to reveal the monster from the laboratory's "Card Back" state.
+- **Monster Expansion Pack (v1.2)**: Fully integrated `Cambihil` (Cell01) and `Lydrosome` (Cell02) with specialized mechanics.
+- **Tactical Logic Enrichment**: Implemented `Overgrowth` (Match Expand), `Hydro Shot` (High Risk), and `Cellulose Wall/Ion Veil` (Official MAP Suite) to expand strategic variety.
+- **Cell Container Optimization**: Resolved a critical interaction bug where slot images blocked drag-and-drop events. Implemented `pointer-events: auto` and moved the draggable target to the entire `.slot` container for 100% reliable grabbing.
+- **Bi-Directional Drag-and-Drop**: Completed the DND cycle by allowing monsters to be dragged **out of the team slots** and back to the collection grid, effectively removing them from the active roster.
+- **Leader Visual Designation**: Added a dedicated "LEADER" label and orange accent to the first team slot to clarify battle initialization.

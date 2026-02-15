@@ -19,7 +19,7 @@ let startX, startY;
 const pentagonRect = interactivePentagon?.getBoundingClientRect();
 
 // Constants for positioning
-const RADIUS = 175; // Must match scaled --pentagon-radius (proportional to 415px container)
+const RADIUS = 130; // Calibrated for pixel-perfect alignment with background asset
 
 // Battle Log State
 let battleLogHistory = [];
@@ -122,50 +122,104 @@ function setupEventListeners() {
     // Battle Monster Card Click Logic
     document.querySelector('.player-display .monster-portrait-container')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        const container = e.currentTarget;
-        container.classList.remove('anim-pulse');
-        void container.offsetWidth;
-        container.classList.add('anim-pulse');
+        const portrait = e.currentTarget.querySelector('.monster-portrait');
+        if (portrait) {
+            portrait.classList.remove('anim-pulse', 'anim-monster-glow-white');
+            void portrait.offsetWidth;
+            portrait.classList.add('anim-pulse', 'anim-monster-glow-white');
+        }
         updateBattleCard(gameState.player.name);
     });
 
     document.querySelector('.enemy-display .monster-portrait-container')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        const container = e.currentTarget;
-        container.classList.remove('anim-pulse');
-        void container.offsetWidth;
-        container.classList.add('anim-pulse');
+        const portrait = e.currentTarget.querySelector('.monster-portrait');
+        if (portrait) {
+            portrait.classList.remove('anim-pulse', 'anim-monster-glow-white');
+            void portrait.offsetWidth;
+            portrait.classList.add('anim-pulse', 'anim-monster-glow-white');
+        }
         updateBattleCard(gameState.enemy.name);
+    });
+
+    // Cell Container Slot Listeners (Attached Once)
+    document.querySelectorAll('.slot').forEach(slot => {
+        slot.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            slot.classList.add('drag-over');
+        });
+
+        slot.addEventListener('dragleave', () => {
+            slot.classList.remove('drag-over');
+        });
+
+        slot.addEventListener('drop', (e) => {
+            e.preventDefault();
+            slot.classList.remove('drag-over');
+            const monsterId = e.dataTransfer.getData('monsterId');
+            const sourceSlot = e.dataTransfer.getData('sourceSlot');
+            const targetSlotIndex = parseInt(slot.dataset.slot);
+
+            if (monsterId && !isNaN(targetSlotIndex)) {
+                if (sourceSlot !== "") {
+                    const sourceIndex = parseInt(sourceSlot);
+                    // Swap logic
+                    const temp = gameState.playerTeam[targetSlotIndex];
+                    gameState.playerTeam[targetSlotIndex] = monsterId;
+                    gameState.playerTeam[sourceIndex] = temp;
+                } else {
+                    // Transfer from Grid
+                    gameState.playerTeam[targetSlotIndex] = monsterId;
+                }
+                updateTeamSlots();
+            }
+        });
+    });
+
+    // Collection Grid Drop Listener (Remove from team)
+    const grid = document.querySelector('.grid-container');
+    grid?.addEventListener('dragover', (e) => e.preventDefault());
+    grid?.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const sourceSlot = e.dataTransfer.getData('sourceSlot');
+        if (sourceSlot !== "") {
+            const index = parseInt(sourceSlot);
+            gameState.playerTeam[index] = null;
+            updateTeamSlots();
+        }
     });
 }
 
 function updateBattleCard(monsterName) {
-    const card = document.getElementById('battle-click-card');
-    const img = document.getElementById('battle-card-img');
+    const cardInner = document.querySelector('.card-inner');
+    const frontImg = document.getElementById('battle-card-front-img');
+    const backImg = document.getElementById('battle-card-back-img');
     const bioText = document.getElementById('bio-text');
-    if (!card || !img || !bioText) return;
+    if (!cardInner || !frontImg || !backImg || !bioText) return;
 
     const monsterKey = monsterName.toLowerCase();
     const monsterData = MONSTERS[monsterKey];
     const newSrc = `assets/images/Card_${monsterName}.png`;
-    const isSame = img.src.includes(`Card_${monsterName}.png`);
 
-    if (isSame) return; // Already showing this card
+    // Check current orientation (0 = Back showing, 180 = Front showing)
+    const isFlipped = cardInner.classList.contains('is-flipped');
 
-    // Trigger Flip Animation
-    img.classList.remove('card-flip');
-    void img.offsetWidth; // Force reflow
-    img.classList.add('card-flip');
+    if (!isFlipped) {
+        // Currently showing BACK (0deg) -> Prepare FRONT and flip to 180
+        frontImg.src = newSrc;
+        cardInner.classList.add('is-flipped');
+    } else {
+        // Currently showing FRONT (180deg) -> Prepare BACK and flip to 0
+        backImg.src = newSrc;
+        cardInner.classList.remove('is-flipped');
+    }
 
-    // Update Content midway through flip (0.3s)
+    // Sync bio text update midway through the rotation (0.4s)
     setTimeout(() => {
-        img.src = newSrc;
-        if (monsterData && monsterData.lore) {
-            bioText.innerText = monsterData.lore;
-        } else {
-            bioText.innerText = "No tactical biography available for this entity.";
-        }
-    }, 300);
+        bioText.innerText = monsterData?.lore || "Tactical data gathering...";
+    }, 400);
+
+    // Monster data update triggered (Glow shifted to Arena Portraits)
 }
 
 function showMoveInfo(moveId) {
@@ -217,6 +271,7 @@ function renderCellContainer() {
         // Drag Start
         icon.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData('monsterId', monsterId);
+            e.dataTransfer.setData('sourceSlot', ""); // Mark as coming from grid
             icon.style.opacity = '0.5';
         });
 
@@ -229,31 +284,6 @@ function renderCellContainer() {
 
     // 2. Render Team Slots
     updateTeamSlots();
-
-    // 3. Setup Slot Drop Handlers
-    slots.forEach(slot => {
-        slot.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            slot.classList.add('drag-over');
-        });
-
-        slot.addEventListener('dragleave', () => {
-            slot.classList.remove('drag-over');
-        });
-
-        slot.addEventListener('drop', (e) => {
-            e.preventDefault();
-            slot.classList.remove('drag-over');
-            const monsterId = e.dataTransfer.getData('monsterId');
-            const slotIndex = parseInt(slot.dataset.slot);
-
-            if (monsterId && !isNaN(slotIndex)) {
-                // Update Team State
-                gameState.playerTeam[slotIndex] = monsterId;
-                updateTeamSlots();
-            }
-        });
-    });
 }
 
 function updateTeamSlots() {
@@ -265,22 +295,91 @@ function updateTeamSlots() {
             const monster = MONSTERS[monsterId];
             const img = document.createElement('img');
             img.src = `assets/images/${monster.name}.png`;
-            img.style.width = '70%';
-            img.style.height = '70%';
-            img.style.objectFit = 'contain';
+            // img.style with removed pointer-events:none will inherited styles from CSS
             slot.appendChild(img);
+
+            // Robust Dragging: Set draggable on the SLOT itself
+            slot.draggable = true;
+            slot.style.cursor = 'grab';
+
+            // Remove previous listener if any (clean re-render)
+            slot.ondragstart = (e) => {
+                e.dataTransfer.setData('monsterId', monsterId);
+                e.dataTransfer.setData('sourceSlot', index);
+                slot.style.opacity = '0.5';
+            };
+
+            slot.ondragend = () => {
+                slot.style.opacity = '1';
+            };
+        } else {
+            slot.draggable = false;
+            slot.style.cursor = 'default';
+            slot.ondragstart = null;
+            slot.ondragend = null;
         }
     });
 }
 
 function openMonsterCard(monsterId) {
     const monster = MONSTERS[monsterId];
+    if (!monster) return;
+
     const modal = document.getElementById('monster-card-modal');
-    const img = document.getElementById('card-img');
-    if (modal && img) {
-        img.src = `assets/images/Card_${monster.name}.png`;
-        modal.classList.remove('hidden');
+    if (!modal) return;
+
+    // Populate Basic Info
+    const nameEl = document.getElementById('detail-name');
+    const typeEl = document.getElementById('detail-type-tag');
+    const loreEl = document.getElementById('detail-lore');
+    const imgEl = document.getElementById('detail-card-img');
+
+    if (nameEl) nameEl.innerText = monster.name.toUpperCase();
+    if (typeEl) typeEl.innerText = monster.type.toUpperCase();
+    if (loreEl) loreEl.innerText = monster.lore;
+    if (imgEl) imgEl.src = `assets/images/Card_${monster.name}.png`;
+
+    // Populate Stats
+    const stats = {
+        'detail-hp': monster.hp,
+        'detail-pp': monster.maxPp,
+        'detail-atk': monster.atk,
+        'detail-def': monster.def
+    };
+
+    for (const [id, val] of Object.entries(stats)) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = val;
     }
+
+    // Populate Skills
+    const renderSkills = (skills, containerId) => {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+
+        skills.forEach(skill => {
+            const skillEl = document.createElement('div');
+            skillEl.className = 'skill-item';
+
+            // Format descriptions with bold/uppercase for MAP effects
+            let desc = skill.desc || "No tactical data available.";
+
+            skillEl.innerHTML = `
+                <div class="skill-name-row">
+                    <span class="skill-name">${skill.name}</span>
+                    <span class="skill-cost">${skill.cost > 0 ? skill.cost + ' PP' : 'FREE'}</span>
+                </div>
+                <div class="skill-desc">${desc}</div>
+            `;
+            container.appendChild(skillEl);
+        });
+    };
+
+    renderSkills(monster.moves, 'detail-attack-skills');
+    renderSkills(monster.defenseMoves, 'detail-defense-skills');
+
+    modal.classList.remove('hidden');
 }
 
 function addLog(msg) {
@@ -345,13 +444,14 @@ function onDrag(e) {
     let nearestNode = null;
     let minDist = 40; // Detection radius
 
-    interactiveNodes.forEach(node => {
+    interactiveNodes.forEach((node, idx) => {
+        const isBlocked = gameState.player.blockedNodes.includes(idx);
         const rect = node.getBoundingClientRect();
         const nx = rect.left + rect.width / 2;
         const ny = rect.top + rect.height / 2;
         const d = Math.hypot(clientX - nx, clientY - ny);
 
-        if (d < minDist) {
+        if (d < minDist && !isBlocked) {
             nearestNode = node;
             minDist = d;
         }
@@ -369,13 +469,14 @@ function endDrag(e) {
     const clientY = e.type === 'touchend' ? e.changedTouches[0].clientY : e.clientY;
 
     let targetIndex = -1;
-    interactiveNodes.forEach(node => {
+    interactiveNodes.forEach((node, idx) => {
+        const isBlocked = gameState.player.blockedNodes.includes(idx);
         const rect = node.getBoundingClientRect();
         const nx = rect.left + rect.width / 2;
         const ny = rect.top + rect.height / 2;
         const d = Math.hypot(clientX - nx, clientY - ny);
 
-        if (d < 40) {
+        if (d < 40 && !isBlocked) {
             targetIndex = parseInt(node.dataset.index);
         }
         node.classList.remove('highlight');
@@ -410,9 +511,11 @@ function updateUI() {
     setSafe('#player-hp-val', 'innerText', `${gameState.player.hp} / ${gameState.player.maxHp}`);
     setSafe('#player-pp-val', 'innerText', `${gameState.player.pp} / ${gameState.player.maxPp}`);
 
-    setSafe('.player-display .name', 'innerText', gameState.player.name);
-    const pImg = document.querySelector('.player-img');
+    setSafe('.player-display .name', 'innerHTML', gameState.player.name);
+    const pLayer = document.querySelector('.player-display .monster-float-layer');
+    const pImg = document.querySelector('.player-display .monster-portrait');
     if (pImg) pImg.src = `assets/images/${gameState.player.name}.png`;
+    if (pLayer) pLayer.classList.toggle('anim-attacker-float', gameState.currentTurn === 'PLAYER');
 
     setStyle('.enemy-display .hp-fill', 'width', `${(gameState.enemy.hp / gameState.enemy.maxHp) * 100}%`);
     setStyle('.enemy-display .pp-fill', 'width', `${(gameState.enemy.pp / gameState.enemy.maxPp) * 100}%`);
@@ -420,13 +523,26 @@ function updateUI() {
     setSafe('#enemy-hp-val', 'innerText', `${gameState.enemy.hp} / ${gameState.enemy.maxHp}`);
     setSafe('#enemy-pp-val', 'innerText', `${gameState.enemy.pp} / ${gameState.enemy.maxPp}`);
 
+    setSafe('.enemy-display .name', 'innerHTML', gameState.enemy.name);
+    const eLayer = document.querySelector('.enemy-display .monster-float-layer');
+    const eImg = document.querySelector('.enemy-display .monster-portrait');
+    if (eImg) eImg.src = `assets/images/${gameState.enemy.name}.png`;
+    if (eLayer) eLayer.classList.toggle('anim-attacker-float', gameState.currentTurn === 'ENEMY');
+
     // Update Interactive Pentagon Visuals
     const showSelection = gameState.phase === 'MOVE_SELECTION' || gameState.phase === 'NODE_SELECTION';
     const isDefense = gameState.currentTurn === 'ENEMY';
 
     interactiveNodes.forEach((node, idx) => {
         const isTarget = showSelection && gameState.player.currentNode === idx;
+        const isBurned = gameState.player.burnedNodes.some(b => b.index === idx);
+        const isJammed = gameState.player.jammedNodes.some(b => b.index === idx);
+
         node.classList.toggle('selected', isTarget);
+        node.classList.toggle('burned', isBurned);
+        node.classList.toggle('jammed', isJammed);
+        node.classList.toggle('blocked', isBurned || isJammed); // Keep 'blocked' for general styling if needed
+
         if (isTarget) {
             node.classList.toggle('yellow', isDefense);
         } else {
@@ -569,10 +685,22 @@ async function resolvePhase() {
     }
 
     if (move.id === 'nitric_burst') {
-        addLog("activate [EASY TARGET]");
+        addLog(`${attackerName} activate [EASY TARGET]`);
     }
-    if (dMove && (dMove.id === 'thermo_shell' || dMove.id === 'magma_chitin')) {
-        addLog("activate [REACTIVE ARMOR]");
+    if (move.id === 'overgrowth') {
+        addLog(`${attackerName} activate [MATCH EXPAND]`);
+    }
+    if (move.id === 'hydro_shot') {
+        addLog(`${attackerName} activate [HIGH RISK]`);
+    }
+
+    if (dMove && dMove.matchFixed !== undefined && dMove.id !== 'quick_dodge') {
+        const tag = dMove.matchFixed === 1 ? 'RELIABLE HIT' : 'PUNY SLAP';
+        addLog(`${defenderName} activate [${tag}]`);
+    }
+
+    if (dMove?.hasHurtBlock) {
+        addLog(`${defenderName} activate [HURT BLOCK]`);
     }
 
     // Animation Selection
@@ -585,10 +713,14 @@ async function resolvePhase() {
         : (results.attacker === 'PLAYER' ? 'anim-lunge-player' : 'anim-lunge-enemy');
 
     if (results.attacker === 'PLAYER') {
+        playerContainer.classList.remove('anim-lunge-player', 'anim-heavy-lunge-player');
+        void playerContainer.offsetWidth; // Force reflow
         playerContainer.classList.add(lungeClass);
         if (isPellicle) playerContainer.classList.add('pellicle-aura');
         if (results.hitResult.damage > 0) {
             setTimeout(() => {
+                enemyContainer.classList.remove('anim-hit-shake');
+                void enemyContainer.offsetWidth; // Force reflow
                 enemyContainer.classList.add('anim-hit-shake');
                 spawnDamageNumber(enemyContainer, results.hitResult.damage, results.hitResult.isCrit);
                 if (results.hitResult.isCrit) {
@@ -598,10 +730,14 @@ async function resolvePhase() {
             }, 150);
         }
     } else {
+        enemyContainer.classList.remove('anim-lunge-enemy', 'anim-heavy-lunge-enemy');
+        void enemyContainer.offsetWidth; // Force reflow
         enemyContainer.classList.add(lungeClass);
         if (isPellicle) enemyContainer.classList.add('pellicle-aura');
         if (results.hitResult.damage > 0) {
             setTimeout(() => {
+                playerContainer.classList.remove('anim-hit-shake');
+                void playerContainer.offsetWidth; // Force reflow
                 playerContainer.classList.add('anim-hit-shake');
                 spawnDamageNumber(playerContainer, results.hitResult.damage, results.hitResult.isCrit);
                 if (results.hitResult.isCrit) {
@@ -660,6 +796,17 @@ async function resolvePhase() {
         const nextMoveset = (gameState.currentTurn === 'PLAYER') ? gameState.player.moves : gameState.player.defenseMoves;
         gameState.player.selectedMove = nextMoveset[0].id; // Default to basic on phase swap
 
+        if (results.attackerHeal > 0) {
+            addLog(`${attackerName} restored ${results.attackerHeal} HP`);
+            const container = results.attacker === 'PLAYER' ? playerContainer : enemyContainer;
+            spawnHealNumber(container, results.attackerHeal);
+        }
+        if (results.defenderHeal > 0) {
+            addLog(`${defenderName} restored ${results.defenderHeal} HP`);
+            const container = results.attacker === 'PLAYER' ? enemyContainer : playerContainer;
+            spawnHealNumber(container, results.defenderHeal);
+        }
+
         // Overload Recall Damage (At start of next turn)
         const nextAttacker = gameState.currentTurn === 'PLAYER' ? gameState.player : gameState.enemy;
         const recoil = checkOverload(nextAttacker);
@@ -673,6 +820,72 @@ async function resolvePhase() {
             setTimeout(() => container.classList.remove('anim-hit-shake'), 400);
             nextAttacker.pp = 0; // Discharge after overload
         }
+
+        // 7. Block Aging & New Triggers (v2.92)
+        // Age existing blocks
+        gameState.player.burnedNodes = gameState.player.burnedNodes.map(b => ({ ...b, duration: b.duration - 1 })).filter(b => b.duration > 0);
+        gameState.player.jammedNodes = gameState.player.jammedNodes.map(b => ({ ...b, duration: b.duration - 1 })).filter(b => b.duration > 0);
+
+        gameState.enemy.burnedNodes = gameState.enemy.burnedNodes.map(b => ({ ...b, duration: b.duration - 1 })).filter(b => b.duration > 0);
+        gameState.enemy.jammedNodes = gameState.enemy.jammedNodes.map(b => ({ ...b, duration: b.duration - 1 })).filter(b => b.duration > 0);
+
+        const newPlayerBurned = [];
+        const newEnemyBurned = [];
+        const newPlayerJammed = [];
+        const newEnemyJammed = [];
+
+        // ChoiceBlock Trigger (New duration: 2 phases)
+        if (gameState.currentTurn === 'PLAYER') {
+            const move = gameState.player.selectedMove ? gameState.player.moves.find(m => m.id === gameState.player.selectedMove) : null;
+            if (move?.hasChoiceBlock) newPlayerBurned.push({ index: gameState.player.currentNode, duration: 1 });
+
+            const eMove = gameState.enemy.defenseMoves.find(m => m.id === results.defenderMoveId);
+            if (eMove?.hasChoiceBlock) newEnemyBurned.push({ index: gameState.enemy.currentNode, duration: 1 });
+        } else {
+            const move = gameState.enemy.selectedMove ? gameState.enemy.moves.find(m => m.id === gameState.enemy.selectedMove) : null;
+            if (move?.hasChoiceBlock) newEnemyBurned.push({ index: gameState.enemy.currentNode, duration: 1 });
+
+            const pMove = gameState.player.defenseMoves.find(m => m.id === results.defenderMoveId);
+            if (pMove?.hasChoiceBlock) newPlayerBurned.push({ index: gameState.player.currentNode, duration: 1 });
+        }
+
+        // HurtBlock Trigger (Specific Snare logic - New duration: 2 phases)
+        const isPlayerAttacker = results.attacker === 'PLAYER';
+        const defenderMoveset = isPlayerAttacker ? gameState.enemy.defenseMoves : gameState.player.defenseMoves;
+        const dSkill = defenderMoveset.find(m => m.id === results.defenderMoveId);
+
+        if (dSkill?.hasHurtBlock) {
+            // Snare triggered -> BOTH nodes are disabled for BOTH players
+            newPlayerJammed.push({ index: gameState.player.currentNode, duration: 1 });
+            newPlayerJammed.push({ index: gameState.enemy.currentNode, duration: 1 });
+            newEnemyJammed.push({ index: gameState.player.currentNode, duration: 1 });
+            newEnemyJammed.push({ index: gameState.enemy.currentNode, duration: 1 });
+        }
+
+        // Merge new into existing (avoiding duplicates on same node)
+        newPlayerBurned.forEach(nb => {
+            if (!gameState.player.burnedNodes.some(eb => eb.index === nb.index)) gameState.player.burnedNodes.push(nb);
+        });
+        newPlayerJammed.forEach(nb => {
+            if (!gameState.player.jammedNodes.some(eb => eb.index === nb.index)) gameState.player.jammedNodes.push(nb);
+        });
+        newEnemyBurned.forEach(nb => {
+            if (!gameState.enemy.burnedNodes.some(eb => eb.index === nb.index)) gameState.enemy.burnedNodes.push(nb);
+        });
+        newEnemyJammed.forEach(nb => {
+            if (!gameState.enemy.jammedNodes.some(eb => eb.index === nb.index)) gameState.enemy.jammedNodes.push(nb);
+        });
+
+        // Update flattened blockedNodes for AI / UI Interaction
+        gameState.player.blockedNodes = [...new Set([
+            ...gameState.player.burnedNodes.map(b => b.index),
+            ...gameState.player.jammedNodes.map(b => b.index)
+        ])];
+
+        gameState.enemy.blockedNodes = [...new Set([
+            ...gameState.enemy.burnedNodes.map(b => b.index),
+            ...gameState.enemy.jammedNodes.map(b => b.index)
+        ])];
 
         gameState.player.currentNode = null;
         gameState.enemy.currentNode = null;
@@ -776,6 +989,14 @@ function spawnDamageNumber(targetEl, amount, isCrit = false) {
     setTimeout(() => dmgEl.remove(), 1200);
 }
 
+function spawnHealNumber(targetEl, amount) {
+    const healEl = document.createElement('div');
+    healEl.className = 'heal-number';
+    healEl.innerText = `+${amount}HP`;
+    targetEl.appendChild(healEl);
+    setTimeout(() => healEl.remove(), 1200);
+}
+
 function spawnPellicleVFX(attackerId, amount) {
     const isPlayer = attackerId === 'PLAYER';
     const playerContainer = document.querySelector('.player-display .monster-portrait-container');
@@ -870,19 +1091,34 @@ function showScreen(screenId) {
 }
 
 function resetGame() {
-    // 1. Load Team Leader
+    // 1. Load Team Leader fully
     const leaderId = gameState.playerTeam[0] || 'nitrophil';
+    const leaderData = JSON.parse(JSON.stringify(MONSTERS[leaderId]));
+
     gameState.player = {
-        ...JSON.parse(JSON.stringify(MONSTERS[leaderId])),
+        ...leaderData,
         currentNode: null,
-        selectedMove: MONSTERS[leaderId].moves[0].id
+        blockedNodes: [],
+        burnedNodes: [],
+        jammedNodes: [],
+        selectedMove: leaderData.moves[0].id
     };
 
     gameState.player.hp = gameState.player.maxHp;
     gameState.player.pp = 1;
+
+    // 2. Load Enemy fully (Nitrophil is default for now)
+    const enemyData = JSON.parse(JSON.stringify(MONSTERS.nitrophil));
+    gameState.enemy = {
+        ...enemyData,
+        currentNode: null,
+        blockedNodes: [],
+        burnedNodes: [],
+        jammedNodes: [],
+        selectedMove: enemyData.moves[0].id
+    };
     gameState.enemy.hp = gameState.enemy.maxHp;
     gameState.enemy.pp = 1;
-    gameState.enemy.currentNode = null;
     gameState.currentTurn = 'PLAYER';
     gameState.phase = 'NODE_SELECTION';
 
@@ -906,9 +1142,14 @@ function resetGame() {
     addLog("MISSION START: Purge initialized.");
 
     // Reset monster card sidebar
-    const battleCardImg = document.getElementById('battle-card-img');
+    const cardInner = document.querySelector('.card-inner');
+    const frontImg = document.getElementById('battle-card-front-img');
+    const backImg = document.getElementById('battle-card-back-img');
     const bioText = document.getElementById('bio-text');
-    if (battleCardImg) battleCardImg.src = 'assets/images/Card_Back.png';
+
+    if (cardInner) cardInner.classList.remove('is-flipped');
+    if (frontImg) frontImg.src = 'assets/images/Card_Back.png'; // Start both as back visual
+    if (backImg) backImg.src = 'assets/images/Card_Back.png';
     if (bioText) bioText.innerText = 'Select a cellular entity to initialize tactical readout.';
 
     updateUI();

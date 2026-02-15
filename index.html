@@ -27,7 +27,6 @@
 
         <!-- Cell Container (Team Management) -->
         <div id="screen-cell-container" class="screen hidden">
-            <button id="btn-container-back" class="btn-neon-mini">BACK</button>
             <div id="container-layout">
                 <section id="team-loadout" class="glass-panel">
                     <h3 class="panel-title">ACTIVE <span class="neon-text">TEAM</span></h3>
@@ -43,13 +42,64 @@
                     <div class="grid-container"></div>
                 </section>
             </div>
+
+            <div class="container-footer">
+                <button id="btn-container-back" class="btn-neon">RETURN TO BASE [ESC]</button>
+            </div>
         </div>
 
         <!-- Monster Card Modal -->
         <div id="monster-card-modal" class="overlay hidden">
-            <div class="card-display">
-                <img id="card-img" src="" alt="Monster Card">
-                <button id="btn-close-card" class="btn-neon-mini">CLOSE</button>
+            <div class="card-detail-view glass-panel">
+                <button id="btn-close-card" class="card-close-btn">&times;</button>
+
+                <div class="detail-layout">
+                    <!-- Left Column: Visual -->
+                    <div class="detail-visual">
+                        <img id="detail-card-img" src="" alt="Monster Card">
+                        <div class="detail-stats-grid">
+                            <div class="stat-box">
+                                <span class="stat-label">HP</span>
+                                <span id="detail-hp" class="stat-value">---</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-label">PP</span>
+                                <span id="detail-pp" class="stat-value">---</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-label">ATK</span>
+                                <span id="detail-atk" class="stat-value">---</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-label">DEF</span>
+                                <span id="detail-def" class="stat-value">---</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Information -->
+                    <div class="detail-info">
+                        <div class="info-header">
+                            <h2 id="detail-name" class="neon-text">NAME</h2>
+                            <div id="detail-type-tag" class="type-tag">TYPE</div>
+                        </div>
+
+                        <div class="info-section">
+                            <h4 class="section-title">TACTICAL LORE</h4>
+                            <p id="detail-lore">Loading encrypted data...</p>
+                        </div>
+
+                        <div class="info-section">
+                            <h4 class="section-title">ATTACK SKILLS</h4>
+                            <div id="detail-attack-skills" class="skill-list"></div>
+                        </div>
+
+                        <div class="info-section">
+                            <h4 class="section-title">DEFENSE SKILLS</h4>
+                            <div id="detail-defense-skills" class="skill-list"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -57,7 +107,7 @@
         <div id="screen-rulebook" class="screen hidden">
             <div id="rulebook-panel" class="glass-panel">
                 <div class="rulebook-header">
-                    <h2 class="neon-text">TACTICAL <span class="white-text">MANUAL v2.4</span></h2>
+                    <h2 class="neon-text">TACTICAL <span class="white-text">MANUAL v2.5</span></h2>
                     <div class="header-line"></div>
                 </div>
 
@@ -66,46 +116,69 @@
                     <div class="rule-card">
                         <div class="card-accent"></div>
                         <h3><span class="icon">🎯</span> HOW TO PLAY</h3>
-                        <p>Combat is a simultaneous hidden-reveal duel. Predict the enemy's node to maximize impact.</p>
+                        <p>Combat is a simultaneous hidden-reveal duel. Both players choose a node on their Pentagon to
+                            execute their strategy.</p>
                         <div class="map-table">
                             <div class="map-row match">
-                                <span class="label">MATCH</span>
+                                <span class="label">🎯 MATCH (Dist 0)</span>
                                 <span class="value">1.25x DMG | +3 PP</span>
                             </div>
                             <div class="map-row near">
-                                <span class="label">NEAR</span>
+                                <span class="label">📍 NEAR (Dist 1)</span>
                                 <span class="value">1.00x DMG | +2 PP</span>
                             </div>
                             <div class="map-row far">
-                                <span class="label">FAR</span>
+                                <span class="label">🚫 FAR (Dist 2+)</span>
                                 <span class="value">0.75x DMG | +1 PP</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- CARD: CORE MECHANICS -->
+                    <!-- CARD: TACTICAL MAP SUITE -->
+                    <div class="rule-card">
+                        <div class="card-accent orange"></div>
+                        <h3><span class="icon">⚡</span> MAP EFFECTS</h3>
+                        <p>Specialized skills manipulate the battlefield with advanced effects:</p>
+                        <ul class="glossary-list">
+                            <li><strong>EASY TARGET</strong>: NEAR hits count as a perfect MATCH.</li>
+                            <li><strong>DRUNK MAN</strong>: Distorts nodes; only 1 NEAR node remains.</li>
+                            <li><strong>PERFECT STRIKE</strong>: Unavoidable; all nodes count as MATCH.</li>
+                            <li><strong>RELIABLE HIT</strong>: Forces a NEAR result regardless of distance.</li>
+                            <li><strong>PUNY SLAP</strong>: Intentional weak hit; all nodes count as FAR.</li>
+                            <li><strong>ALL OR NOTHING</strong>: High-risk; massive falloff if not MATCH.</li>
+                            <li><strong>CHOICEBLOCK</strong>: Prevents re-selecting your last used node.</li>
+                            <li><strong>HURTBLOCK</strong>: Disables nodes used by BOTH players.</li>
+                        </ul>
+                    </div>
+
+                    <!-- CARD: BATTLE LAWS -->
                     <div class="rule-card">
                         <div class="card-accent red"></div>
                         <h3><span class="icon">⚖️</span> CORE LAWS</h3>
                         <div class="rule-item">
                             <div class="item-title">PELLICLE OVERLOAD</div>
-                            <p>Entering a turn with 10 PP triggers **Emergency Discharge**, dealing 10 HP damage to
-                                self.</p>
+                            <p>Starting a turn with 10 PP triggers **Emergency Discharge**, dealing 10 HP recoil.</p>
                         </div>
                         <div class="rule-item">
-                            <div class="item-title">REACTIVE DEFENSE</div>
-                            <p>During Defense Phase, active skills reflect damage or manipulate MAP results.</p>
+                            <div class="item-title">NODE BLOCK SYSTEM [🔒]</div>
+                            <p><strong>CHOICEBLOCK</strong>: Disables the node you just used for 1 turn.</p>
+                            <p><strong>HURTBLOCK</strong>: Snare skills disable used nodes for BOTH players for 1 turn.
+                            </p>
                         </div>
                     </div>
 
-                    <!-- CARD: GLOSSARY -->
+                    <!-- CARD: GLOSSARY & TYPES -->
                     <div class="rule-card">
                         <div class="card-accent blue"></div>
                         <h3><span class="icon">🧪</span> KEY TERMS</h3>
                         <ul class="glossary-list">
-                            <li><strong>PP</strong>: Tactical energy for powerful skills.</li>
-                            <li><strong>PELLICLE</strong>: A shield that must be broken to damage HP.</li>
-                            <li><strong>NODES</strong>: The 5 tactical positions of the Pentagon.</li>
+                            <li><strong>Cell</strong>: Your monster/unit (e.g., Nitrophil).</li>
+                            <li><strong>HP (Health Points)</strong>: Your life. If it hits 0, the mission fails.</li>
+                            <li><strong>PP (Pellicle Points)</strong>: Your tactical energy. Generated by movement.</li>
+                            <li><strong>Pellicle</strong>: A protective layer. Having PP reduces incoming damage.</li>
+                            <li><strong>MAP (Matching Attack Placement)</strong>: The 5-node system for hit quality.
+                            </li>
+                            <li><strong>Node</strong>: One of the 5 positions on your tactical pentagon.</li>
                         </ul>
                     </div>
                 </div>
@@ -124,7 +197,15 @@
                 <!-- BATTLE TACTICAL SIDEBAR (LEFT) -->
                 <aside id="battle-click-card" class="glass-panel">
                     <div class="card-wrapper">
-                        <img id="battle-card-img" src="assets/images/Card_Back.png" alt="Monster Card">
+                        <div class="card-inner">
+                            <div class="card-back">
+                                <img id="battle-card-back-img" src="assets/images/Card_Back.png" alt="Card Back">
+                            </div>
+                            <div class="card-front">
+                                <img id="battle-card-front-img" src="assets/images/Card_Nitrophil.png"
+                                    alt="Monster Card">
+                            </div>
+                        </div>
                     </div>
                     <div id="battle-card-bio" class="card-bio">
                         <h3>MONSTER DATA</h3>
@@ -157,7 +238,9 @@
                             </div>
                         </div>
                         <div class="monster-portrait-container">
-                            <img src="assets/images/Nitrophil.png" alt="Enemy" class="monster-portrait enemy-img">
+                            <div class="monster-float-layer">
+                                <img src="assets/images/Nitrophil.png" alt="Enemy" class="monster-portrait enemy-img">
+                            </div>
                         </div>
                     </section>
 
@@ -165,7 +248,9 @@
                     <!-- PLAYER SIDE (BOTTOM) -->
                     <section class="combatant-display player-display">
                         <div class="monster-portrait-container">
-                            <img src="assets/images/Nitrophil.png" alt="Player" class="monster-portrait player-img">
+                            <div class="monster-float-layer">
+                                <img src="assets/images/Nitrophil.png" alt="Player" class="monster-portrait player-img">
+                            </div>
                         </div>
                         <div class="character-vitals">
                             <div class="name">Nitrophil</div>

@@ -97,6 +97,21 @@ export function resolveTurn(state) {
     // 5. Apply Changes
     defender.hp = Math.max(0, defender.hp - hitResult.damage);
 
+    // Healing Logic (New System)
+    let attackerHeal = 0;
+    if (attackerMove.heal) {
+        attackerHeal = Math.round(attacker.maxHp * attackerMove.heal);
+        attacker.hp = Math.min(attacker.maxHp, attacker.hp + attackerHeal);
+        console.log(`[HEAL] ${attacker.name} restored ${attackerHeal} HP.`);
+    }
+
+    let defenderHeal = 0;
+    if (defenderMove && defenderMove.heal) {
+        defenderHeal = Math.round(defender.maxHp * defenderMove.heal);
+        defender.hp = Math.min(defender.maxHp, defender.hp + defenderHeal);
+        console.log(`[HEAL] ${defender.name} restored ${defenderHeal} HP.`);
+    }
+
     // Reflection Logic (New System)
     let reflectDamage = 0;
     if (defenderMove && defenderMove.reflect) {
@@ -121,6 +136,8 @@ export function resolveTurn(state) {
         hitResult,
         ppGain,
         reflectDamage,
+        attackerHeal,
+        defenderHeal,
         attacker: currentTurn,
         moveId: attackerMove.id,
         moveType: attackerMove.type,

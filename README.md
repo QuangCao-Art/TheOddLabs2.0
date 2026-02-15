@@ -38,6 +38,20 @@ The core mechanic is the **simultaneous selection** of a position on the pentago
     - **PP Gain**: +1 PP
     - **Attack Label**: FAR | **Defense Label**: NICE
 
+### 2.26 Tactical MAP Suite (Official)
+A fundamental expansion of the **Matching Attack Placement (MAP)** system.
+
+| In Game Name | Mechanic | Effect | Use Case |
+| :--- | :--- | :--- | :--- |
+| **EASY TARGET** | Match Expand | **3 Match, 2 Near** | Reliable heavy damage. |
+| **DRUNK MAN** | Far Expand | **1 Near, 4 Far** | Tactical debuff or penalty. |
+| **PERFECT STRIKE**| Super Match | **5 Match** | Unavoidable crit/max DMG. |
+| **RELIABLE HIT** | Super Near | **5 Near** | Consistent chip damage. |
+| **PUNY SLAP** | Super Far | **5 Far** | Intentional weak hit. |
+| **ALL OR NOTHING**| Risky Match | **1 Match, 4 Far** | High-risk skill shots. |
+| **CHOICEBLOCK** | Node Block | **Lock Node** | Prevents selection for 1 next turn. |
+| **HURTBLOCK** | Node Block | **Lock Node** | Disables the nodes used by both players this turn, preventing them from being re-selected in the next turn. |
+
 ### 2.2 Global Color Coding Rules
 The laboratory uses a semantic color system to ensure absolute tactical clarity:
 
@@ -141,3 +155,53 @@ The **Cell Container** is the primary interface for managing your tactical roste
 - **Function**: Displays all acquired cellular entities.
 - **Inspection**: Click any icon to open the **High-Res Monster Card**, showing full tactical specs and bio-data.
 - **Aesthetic**: Integrated with the Player Cyan (`--color-player`) semantic theme.
+
+---
+
+## Appendix: Monster Mechanic Template
+
+Use this blueprint when introducing new cellular entities to the lab.
+
+### A.1 Data Schema (src/data/monsters.js)
+```javascript
+id: 'unique_id', // CamelCase or snake_case identifier
+name: 'Display Name',
+type: 'ELEMENT_TYPE', // See Section 6 for valid types
+archetype: 'CLASS_LEVEL', // e.g., LYTIC, SOMATIC, TACTICIAN
+lore: 'Tactical and flavor description.',
+hp: 100, maxHp: 100,
+pp: 1, maxPp: 10,
+atk: 10, def: 10, crit: 5, // Stats balanced around 10-20 range
+moves: [
+    { 
+        id: 'move_id', name: 'Move Name', type: 'basic|pellicle', 
+        power: 40, cost: 0, 
+        desc: '...',
+        // Optional Tactical Modifiers:
+        matchOffset: -1, // [**EASY TARGET**]: Distance 1 counts as Distance 0 (MATCH)
+        matchExpand: 1,  // [**MATCH EXPAND**]: Inclusive matching
+        matchRisky: true // [**HIGH RISK**]: Massive falloff if not Distance 0
+    }
+],
+defenseMoves: [
+    { 
+        id: 'def_id', name: 'Defense Name', type: 'basic|pellicle', cost: 0, 
+        desc: '...',
+        // Optional Tactical Modifiers:
+        matchFixed: 1, // [**RELIABLE HIT**]: Forces a NEAR result regardless of selection
+        reflect: 0.2   // Reflects percentage of absorbed damage
+    }
+]
+```
+
+### A.2 UI & Asset Requirements
+Every monster requires two dedicated visual assets located in `assets/images/`:
+1.  **Icon**: `[Name].png` (e.g., `Nitrophil.png`)
+    - **Usage**: CellDex Grid, Team Slots, Arena Portrait.
+    - **Specs**: 512x512 transparent PNG, centered cellular subject.
+2.  **Card**: `Card_[Name].png` (e.g., `Card_Nitrophil.png`)
+    - **Usage**: High-Res Inspection Modal, Sidebars.
+    - **Specs**: Standard 2.5" x 3.5" portrait aspect ratio.
+
+### A.3 Tactical Law Compliance
+Ensure new monsters leverage the **Official Tactical MAP Suite** whenever possible. Avoid generic damage buffs; prioritize positional manipulation (forced NEAR/FAR) and impact-based utility.
