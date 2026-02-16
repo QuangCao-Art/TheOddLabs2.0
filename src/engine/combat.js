@@ -4,8 +4,9 @@ export const ELEMENTAL_TABLE = {
     BOTANIC: { OSMOTIC: 1.5, THERMOGENIC: 0.75, KERATINIZED: 0.75, VIRAL: 0.75 },
     ELECTROLYTIC: { OSMOTIC: 1.5, KERATINIZED: 1.5, BOTANIC: 0.75 },
     VIRAL: { BOTANIC: 1.5, KERATINIZED: 0.75 },
-    APOPTOTIC: { APOPTOTIC: 1.5, SOMATIC: 0.75 },
-    SOMATIC: { APOPTOTIC: 0.75, KERATINIZED: 0.75 }
+    APOPTOTIC: { APOPTOTIC: 1.5 },
+    KERATINIZED: { THERMOGENIC: 0.75, ELECTROLYTIC: 0.75 },
+    SOMATIC: {}
 };
 
 export function getMAPGPM(dist) {
@@ -29,7 +30,8 @@ export function getDistance(nodeA, nodeB) {
 
 export function calculateDamage(attacker, defender, move, dist) {
     const rawPower = move.power;
-    const typeEffect = (ELEMENTAL_TABLE[attacker.type] && ELEMENTAL_TABLE[attacker.type][defender.type]) || 1.0;
+    const moveElement = move.element || attacker.type;
+    const typeEffect = (ELEMENTAL_TABLE[moveElement] && ELEMENTAL_TABLE[moveElement][defender.type]) || 1.0;
     const critMult = Math.random() < (attacker.crit / 100) ? 1.5 : 1.0;
     const gpm = getMAPGPM(dist);
     const randomRoll = 0.85 + (Math.random() * 0.15);
@@ -46,6 +48,7 @@ export function calculateDamage(attacker, defender, move, dist) {
     return {
         damage: Math.round(finalDamage),
         isCrit: critMult > 1.0,
+        typeMultiplier: typeEffect,
         gpm,
         randomRoll
     };
@@ -141,6 +144,7 @@ export function resolveTurn(state) {
         attacker: currentTurn,
         moveId: attackerMove.id,
         moveType: attackerMove.type,
+        typeMultiplier: hitResult.typeMultiplier,
         defenderMoveId: defenderMove ? defenderMove.id : 'quick_dodge',
         defenderMoveType: defenderMove ? defenderMove.type : 'basic'
     };

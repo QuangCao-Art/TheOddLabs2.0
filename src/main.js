@@ -23,6 +23,7 @@ const RADIUS = 130; // Calibrated for pixel-perfect alignment with background as
 
 // Battle Log State
 let battleLogHistory = [];
+let previousScreen = 'screen-main-menu';
 
 // Initialization
 function init() {
@@ -92,8 +93,9 @@ function setupEventListeners() {
     });
 
     document.getElementById('btn-battle-back')?.addEventListener('click', () => showScreen('screen-main-menu'));
+    document.getElementById('btn-battle-rulebook')?.addEventListener('click', () => showScreen('screen-rulebook'));
     document.getElementById('btn-open-rulebook')?.addEventListener('click', () => showScreen('screen-rulebook'));
-    document.getElementById('btn-rulebook-back')?.addEventListener('click', () => showScreen('screen-main-menu'));
+    document.getElementById('btn-rulebook-back')?.addEventListener('click', () => showScreen(previousScreen));
 
     // Cell Container Controls
     document.getElementById('btn-open-cell-container')?.addEventListener('click', () => {
@@ -110,7 +112,7 @@ function setupEventListeners() {
         if (e.key === 'Escape') {
             const rulebookScreen = document.getElementById('screen-rulebook');
             if (rulebookScreen && !rulebookScreen.classList.contains('hidden')) {
-                showScreen('screen-main-menu');
+                showScreen(previousScreen);
             }
         }
     });
@@ -231,7 +233,7 @@ function showMoveInfo(moveId) {
         const infoDesc = document.getElementById('info-move-desc');
         if (infoPanel && infoName && infoDesc) {
             infoName.innerText = move.name.toUpperCase();
-            infoDesc.innerText = move.desc || "No tactical data available.";
+            infoDesc.innerHTML = formatTags(move.desc || "No tactical data available.");
             infoPanel.classList.remove('hidden');
 
             const activeBtn = Array.from(moveButtons).find(b => b.dataset.move === moveId);
@@ -335,7 +337,11 @@ function openMonsterCard(monsterId) {
     const imgEl = document.getElementById('detail-card-img');
 
     if (nameEl) nameEl.innerText = monster.name.toUpperCase();
-    if (typeEl) typeEl.innerText = monster.type.toUpperCase();
+    if (typeEl) {
+        typeEl.innerText = monster.type.toUpperCase();
+        const typeColor = getComputedStyle(document.documentElement).getPropertyValue(`--type-${monster.type.toLowerCase()}`).trim();
+        typeEl.style.setProperty('--type-color', typeColor);
+    }
     if (loreEl) loreEl.innerText = monster.lore;
     if (imgEl) imgEl.src = `assets/images/Card_${monster.name}.png`;
 
@@ -363,11 +369,18 @@ function openMonsterCard(monsterId) {
             skillEl.className = 'skill-item';
 
             // Format descriptions with bold/uppercase for MAP effects
-            let desc = skill.desc || "No tactical data available.";
+            let desc = formatTags(skill.desc || "No tactical data available.");
+
+            const element = skill.element || 'SOMATIC';
+            const typeColorValue = getComputedStyle(document.documentElement).getPropertyValue(`--type-${element.toLowerCase()}`).trim();
 
             skillEl.innerHTML = `
                 <div class="skill-name-row">
-                    <span class="skill-name">${skill.name}</span>
+                    <div class="skill-name-container">
+                        <span class="skill-name">${skill.name}</span>
+                        ${skill.power ? `<span class="skill-pow">POW ${skill.power}</span>` : ''}
+                        <span class="skill-type-tag" style="background: ${typeColorValue}">${element}</span>
+                    </div>
                     <span class="skill-cost">${skill.cost > 0 ? skill.cost + ' PP' : 'FREE'}</span>
                 </div>
                 <div class="skill-desc">${desc}</div>
@@ -399,12 +412,7 @@ function renderLog() {
         const line = document.createElement('div');
         line.className = 'log-line';
 
-        let formattedMsg = msg.replace(/\[(.*?)\]/g, (match, tag) => {
-            let tagClass = 'tactical'; // Default (Yellow)
-            if (tag === 'CRITICAL') tagClass = 'crit';
-            if (tag === 'REACTIVE ARMOR' || tag === 'EASY TARGET') tagClass = 'system';
-            return `<span class="${tagClass}">[${tag}]</span>`;
-        });
+        let formattedMsg = formatTags(msg);
 
         line.innerHTML = `<span>-</span> ${formattedMsg}`;
         logContainer.appendChild(line);
@@ -584,13 +592,20 @@ function updateUI() {
         btn.classList.toggle('active', gameState.player.selectedMove === move.id);
         btn.classList.toggle('defense', !isPlayerPhase);
 
-        // Update stats row text (Formatted: POW {x} - {Type} Skill - {cost} PP)
+        // Update stats row (Formatted: POW {x} - {element tag} - {cost} PP)
         const statsRow = btn.querySelector('.move-stats-row');
         if (statsRow) {
-            const typeLabel = move.type.charAt(0).toUpperCase() + move.type.slice(1);
-            const powPart = move.power !== undefined ? `POW ${move.power} - ` : '';
+            const element = move.element || 'SOMATIC';
+            const typeColorValue = getComputedStyle(document.documentElement).getPropertyValue(`--type-${element.toLowerCase()}`).trim();
+
+            const powPart = move.power !== undefined ? `POW ${move.power}` : (move.type === 'basic' ? 'Basic Skill' : 'Pellicle Skill');
             const costText = move.cost > 0 ? ` - ${move.cost} PP` : '';
-            statsRow.innerText = `${powPart}${typeLabel} Skill${costText}`;
+
+            statsRow.innerHTML = `
+                <span>${powPart}</span>
+                <span class="skill-type-tag" style="background: ${typeColorValue}; margin: 0 5px; padding: 1px 6px; font-size: 0.6rem;">${element}</span>
+                <span>${costText}</span>
+            `;
         }
     });
 
@@ -629,6 +644,19 @@ const setSafe = (selector, prop, val) => {
     const el = document.querySelector(selector);
     if (el) el[prop] = val;
 };
+
+/**
+ * Formats tactical tags in text [TAG] with yellow color classes.
+ */
+const formatTags = (text) => {
+    if (!text) return "";
+    return text.replace(/\[(.*?)\]/g, (match, tag) => {
+        let tagClass = 'tag-tactical';
+        if (tag === 'CRITICAL') tagClass = 'crit';
+        return `<span class="${tagClass}">[${tag}]</span>`;
+    });
+};
+
 const setStyle = (selector, prop, val) => {
     const el = document.querySelector(selector);
     if (el) el.style[prop] = val;
@@ -680,18 +708,21 @@ async function resolvePhase() {
     if (results.hitResult.isCrit) logMsg += " [CRITICAL]";
     addLog(logMsg);
 
+    if (results.typeMultiplier > 1.0) {
+        addLog("It's a BREACH!!!", 'super-effective');
+    } else if (results.typeMultiplier < 1.0) {
+        addLog("It's RESISTED...", 'resisted');
+    }
+
     if (dMove && dMove.id !== 'quick_dodge') {
         addLog(`${defenderName} used ${dMove.name}`);
     }
 
-    if (move.id === 'nitric_burst') {
+    if (move.id === 'nitric_burst' || move.id === 'overgrowth') {
         addLog(`${attackerName} activate [EASY TARGET]`);
     }
-    if (move.id === 'overgrowth') {
-        addLog(`${attackerName} activate [MATCH EXPAND]`);
-    }
     if (move.id === 'hydro_shot') {
-        addLog(`${attackerName} activate [HIGH RISK]`);
+        addLog(`${attackerName} activate [ALL OR NOTHING]`);
     }
 
     if (dMove && dMove.matchFixed !== undefined && dMove.id !== 'quick_dodge') {
@@ -722,7 +753,7 @@ async function resolvePhase() {
                 enemyContainer.classList.remove('anim-hit-shake');
                 void enemyContainer.offsetWidth; // Force reflow
                 enemyContainer.classList.add('anim-hit-shake');
-                spawnDamageNumber(enemyContainer, results.hitResult.damage, results.hitResult.isCrit);
+                spawnDamageNumber(enemyContainer, results.hitResult.damage, results.hitResult.isCrit, results.typeMultiplier);
                 if (results.hitResult.isCrit) {
                     document.getElementById('game-container').classList.add('anim-screen-shake');
                     setTimeout(() => document.getElementById('game-container').classList.remove('anim-screen-shake'), 400);
@@ -739,7 +770,7 @@ async function resolvePhase() {
                 playerContainer.classList.remove('anim-hit-shake');
                 void playerContainer.offsetWidth; // Force reflow
                 playerContainer.classList.add('anim-hit-shake');
-                spawnDamageNumber(playerContainer, results.hitResult.damage, results.hitResult.isCrit);
+                spawnDamageNumber(playerContainer, results.hitResult.damage, results.hitResult.isCrit, results.typeMultiplier);
                 if (results.hitResult.isCrit) {
                     document.getElementById('game-container').classList.add('anim-screen-shake');
                     setTimeout(() => document.getElementById('game-container').classList.remove('anim-screen-shake'), 400);
@@ -981,9 +1012,13 @@ function resetPositions() {
     // Removed translate reset as jump is disabled
 }
 
-function spawnDamageNumber(targetEl, amount, isCrit = false) {
+function spawnDamageNumber(targetEl, amount, isCrit = false, typeMultiplier = 1.0) {
     const dmgEl = document.createElement('div');
-    dmgEl.className = `damage-number ${isCrit ? 'critical' : ''}`;
+    let extraClass = '';
+    if (typeMultiplier > 1.0) extraClass = 'super-effective';
+    else if (typeMultiplier < 1.0) extraClass = 'resisted';
+
+    dmgEl.className = `damage-number ${isCrit ? 'critical' : ''} ${extraClass}`;
     dmgEl.innerText = `-${amount}`;
     targetEl.appendChild(dmgEl);
     setTimeout(() => dmgEl.remove(), 1200);
@@ -1086,6 +1121,11 @@ function checkGameOver() {
 }
 
 function showScreen(screenId) {
+    const currentVisible = Array.from(document.querySelectorAll('.screen')).find(s => !s.classList.contains('hidden'));
+    if (currentVisible && screenId === 'screen-rulebook') {
+        previousScreen = currentVisible.id;
+    }
+
     document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
     document.getElementById(screenId).classList.remove('hidden');
 }

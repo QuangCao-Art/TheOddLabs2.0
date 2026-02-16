@@ -85,7 +85,7 @@
                         </div>
 
                         <div class="info-section">
-                            <h4 class="section-title">TACTICAL LORE</h4>
+                            <h4 class="section-title">MONSTER DATA</h4>
                             <p id="detail-lore">Loading encrypted data...</p>
                         </div>
 
@@ -107,29 +107,44 @@
         <div id="screen-rulebook" class="screen hidden">
             <div id="rulebook-panel" class="glass-panel">
                 <div class="rulebook-header">
-                    <h2 class="neon-text">TACTICAL <span class="white-text">MANUAL v2.5</span></h2>
+                    <h2 class="neon-text">RULE BOOK</h2>
                     <div class="header-line"></div>
                 </div>
 
                 <div class="rulebook-grid">
                     <!-- CARD: HOW TO PLAY -->
                     <div class="rule-card">
-                        <div class="card-accent"></div>
+                        <div class="card-accent orange"></div>
                         <h3><span class="icon">🎯</span> HOW TO PLAY</h3>
-                        <p>Combat is a simultaneous hidden-reveal duel. Both players choose a node on their Pentagon to
-                            execute their strategy.</p>
-                        <div class="map-table">
-                            <div class="map-row match">
-                                <span class="label">🎯 MATCH (Dist 0)</span>
-                                <span class="value">1.25x DMG | +3 PP</span>
-                            </div>
-                            <div class="map-row near">
-                                <span class="label">📍 NEAR (Dist 1)</span>
-                                <span class="value">1.00x DMG | +2 PP</span>
-                            </div>
-                            <div class="map-row far">
-                                <span class="label">🚫 FAR (Dist 2+)</span>
-                                <span class="value">0.75x DMG | +1 PP</span>
+
+                        <div class="rule-item">
+                            <div class="item-title">1. SIMULTANEOUS PREDICTION</div>
+                            <p>Every turn is a duel of minds. You and your opponent choose a **Node** on your respective
+                                Pentagons at the same time.</p>
+                        </div>
+
+                        <div class="rule-item">
+                            <div class="item-title">2. CHOOSING YOUR MOVE</div>
+                            <p>• <strong>Basic Skills</strong>: Cost 0 PP. Reliable energy builders.</p>
+                            <p>• <strong>Pellicle Skills</strong>: Cost stored PP. Heavy damage or tactical utility.</p>
+                        </div>
+
+                        <div class="rule-item">
+                            <div class="item-title">3. THE MAP RESULT</div>
+                            <p>Turn resolution depends on the "Distance" between selections:</p>
+                            <div class="map-table">
+                                <div class="map-row match">
+                                    <span class="label">🎯 MATCH (Exact Same)</span>
+                                    <span class="value">1.25x DMG | +3 PP</span>
+                                </div>
+                                <div class="map-row near">
+                                    <span class="label">📍 NEAR (Neighbors)</span>
+                                    <span class="value">1.00x DMG | +2 PP</span>
+                                </div>
+                                <div class="map-row far">
+                                    <span class="label">🚫 FAR (Distance 2+)</span>
+                                    <span class="value">0.75x DMG | +1 PP</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -159,11 +174,67 @@
                             <div class="item-title">PELLICLE OVERLOAD</div>
                             <p>Starting a turn with 10 PP triggers **Emergency Discharge**, dealing 10 HP recoil.</p>
                         </div>
-                        <div class="rule-item">
-                            <div class="item-title">NODE BLOCK SYSTEM [🔒]</div>
-                            <p><strong>CHOICEBLOCK</strong>: Disables the node you just used for 1 turn.</p>
-                            <p><strong>HURTBLOCK</strong>: Snare skills disable used nodes for BOTH players for 1 turn.
-                            </p>
+                    </div>
+
+                    <!-- CARD: ELEMENTAL TABLE -->
+                    <div class="rule-card">
+                        <div class="card-accent orange"></div>
+                        <h3><span class="icon">🧬</span> ELEMENTAL TABLE</h3>
+                        <p>Tactical biological advantages allow for a 1.5x damage BREACH.</p>
+                        <div class="ele-table">
+                            <div class="ele-header">
+                                <span>ATTACKER</span>
+                                <span>ADVANTAGE (1.5x)</span>
+                                <span>RESISTED (0.75x)</span>
+                            </div>
+                            <!-- Row: SOMATIC -->
+                            <div class="ele-row" style="border-color: var(--type-somatic);">
+                                <span class="type-name">SOMATIC</span>
+                                <span class="type-adv">-</span>
+                                <span class="type-weak">-</span>
+                            </div>
+                            <!-- Row: THERMOGENIC -->
+                            <div class="ele-row" style="border-color: var(--type-thermogenic);">
+                                <span class="type-name">THERMOGENIC</span>
+                                <span class="type-adv">Botanic, Keratinized</span>
+                                <span class="type-weak">Osmotic</span>
+                            </div>
+                            <!-- Row: OSMOTIC -->
+                            <div class="ele-row" style="border-color: var(--type-osmotic);">
+                                <span class="type-name">OSMOTIC</span>
+                                <span class="type-adv">Thermogenic</span>
+                                <span class="type-weak">Botanic, Electrolytic</span>
+                            </div>
+                            <!-- Row: BOTANIC -->
+                            <div class="ele-row" style="border-color: var(--type-botanic);">
+                                <span class="type-name">BOTANIC</span>
+                                <span class="type-adv">Osmotic</span>
+                                <span class="type-weak">Thermo, Keratin, Viral</span>
+                            </div>
+                            <!-- Row: ELECTROLYTIC -->
+                            <div class="ele-row" style="border-color: var(--type-electrolytic);">
+                                <span class="type-name">ELECTROLYTIC</span>
+                                <span class="type-adv">Osmotic, Keratinized</span>
+                                <span class="type-weak">Botanic</span>
+                            </div>
+                            <!-- Row: KERATINIZED -->
+                            <div class="ele-row" style="border-color: var(--type-keratinized);">
+                                <span class="type-name">KERATINIZED</span>
+                                <span class="type-adv">-</span>
+                                <span class="type-weak">Thermo, Electrolytic</span>
+                            </div>
+                            <!-- Row: VIRAL -->
+                            <div class="ele-row" style="border-color: var(--type-viral);">
+                                <span class="type-name">VIRAL</span>
+                                <span class="type-adv">Botanic</span>
+                                <span class="type-weak">Keratinized</span>
+                            </div>
+                            <!-- Row: APOPTOTIC -->
+                            <div class="ele-row" style="border-color: var(--type-apoptotic);">
+                                <span class="type-name">APOPTOTIC</span>
+                                <span class="type-adv">Apoptotic</span>
+                                <span class="type-weak">-</span>
+                            </div>
                         </div>
                     </div>
 
@@ -192,6 +263,7 @@
         <!-- Battle Arena Screen -->
         <div id="screen-battle" class="screen hidden">
             <button id="btn-battle-back" class="btn-neon-mini">BACK</button>
+            <button id="btn-battle-rulebook" class="btn-neon-mini">RULE BOOK</button>
 
             <div id="battle-layout">
                 <!-- BATTLE TACTICAL SIDEBAR (LEFT) -->

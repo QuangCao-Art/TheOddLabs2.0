@@ -52,11 +52,24 @@ A fundamental expansion of the **Matching Attack Placement (MAP)** system.
 
 ---
 
+## 5. Elemental Table
+| Attacker Type | Advantage (x1.5) | Disadvantage (x0.75) | Color |
+| :--- | :--- | :--- | :--- |
+| **SOMATIC** | - | - | ⚪ White |
+| **THERMOGENIC** | Botanic, Keratinized | Osmotic | 🔴 Red |
+| **OSMOTIC** | Thermogenic | Botanic, Electrolytic | 🔵 Blue |
+| **BOTANIC** | Osmotic | Thermogenic, Keratinized, Viral | 🟢 Green |
+| **ELECTROLYTIC**| Osmotic, Keratinized | Botanic | 🟡 Orange Yellow |
+| **KERATINIZED** | - | Thermogenic, Electrolytic | 🔘 Bright Gray |
+| **VIRAL** | Botanic | Keratinized | 🟣 Purple |
+| **APOPTOTIC** | Apoptotic | - | ⚫ Black |
+
+---
+
 ## ⚖️ Core Rules
 
 ### 🛡️ Turns & Defense
 - Only the **Attacker** deals damage.
-- Nodes for the next turn are determined by the current turn's results (**Block System**).
 - When it's your **Defense Turn**, your skills swap to **Defense Moves**.
 
 ### ⚡ PP Overload & Recall
@@ -73,6 +86,5 @@ A fundamental expansion of the **Matching Attack Placement (MAP)** system.
 ---
 
 ## 🚀 Pro Tips
-1. **Node Rotation**: With **CHOICEBLOCK**, you can't stay on one node. Always plan a 2-node rotation.
-2. **Defensive Lockdown**: Use defense moves to force a "Far" result, potentially locking more nodes for the enemy attacker.
-3. **Pellicle Mitigation**: Each PP point reduces incoming damage by 3. High PP makes you a tank.
+1. **Defensive Lockdown**: Use defense moves to force a "Far" result, potentially locking nodes for the enemy attacker.
+2. **Pellicle Mitigation**: Each PP point reduces incoming damage by 3. High PP makes you a tank.

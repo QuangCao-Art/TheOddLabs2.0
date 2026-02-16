@@ -38,7 +38,7 @@ The core mechanic is the **simultaneous selection** of a position on the pentago
     - **PP Gain**: +1 PP
     - **Attack Label**: FAR | **Defense Label**: NICE
 
-### 2.26 Tactical MAP Suite (Official)
+### 2.26 MAP Effects (Tactical Suite)
 A fundamental expansion of the **Matching Attack Placement (MAP)** system.
 
 | In Game Name | Mechanic | Effect | Use Case |
@@ -65,6 +65,18 @@ The laboratory uses a semantic color system to ensure absolute tactical clarity:
 | **Affiliation: Player** | 🔷 Cyan | Player vitals, Portrait glow, Cell Container UI |
 | **Affiliation: Enemy** | 🔮 Magenta | Enemy vitals, Enemy portrait glow |
 | **Special: Critical** | 🟣 Purple | [CRITICAL] tags in log, Critical hit popups |
+
+#### 2.2.1 Biological Type Colors
+| Type | Color |
+| :--- | :--- |
+| **THERMOGENIC** | 🔴 Red |
+| **OSMOTIC** | 🔵 Blue |
+| **BOTANIC** | 🟢 Green |
+| **ELECTROLYTIC**| 🟡 Orange Yellow |
+| **VIRAL** | 🟣 Purple |
+| **APOPTOTIC** | ⚫ Black |
+| **SOMATIC** | ⚪ White |
+| **KERATINIZED** | 🔘 Bright Gray |
 
 ---
 
@@ -98,9 +110,19 @@ The final damage resolved against HP follows this hierarchy:
 > Every hit is guaranteed a floor of **1 HP Damage**, regardless of defense stats or PP levels.
 
 ### 4.1 Multipliers
-1. **Type Effectiveness**: **1.5x** (Advantage) or **0.75x** (Disadvantage).
+1. **Type Effectiveness**: **1.5x** (Advantage) or **0.75x** (Disadvantage). Calculated based on the **Attacker's Move Type** vs the **Defender's Monster Type**.
 2. **Critical Hit**: **1.5x** (Increased for high-stakes tactical shifts).
 3. **MAP GPM**: **1.25x / 1.0x / 0.75x** based on tactical proximity.
+
+### 4.2 Tactical Feedback (VFX & Logs)
+The UI provides immediate feedback for tactical outcomes:
+
+| Outcome | Log Message | Visual Feedback |
+| :--- | :--- | :--- |
+| **Super Effective** | `It's a BREACH!!!` | Larger, glowing damage numbers. |
+| **Not Very Effective**| `It's RESISTED...` | Smaller, dimmed damage numbers. |
+| **Critical Hit** | `[CRITICAL]` | Purple text & screen shake. |
+| **MAP Match** | `MATCH` | Red center flash & heavy shake. |
 
 ---
 
@@ -123,13 +145,14 @@ The final damage resolved against HP follows this hierarchy:
 ## 6. Elemental Table
 | Attacker Type | Advantage (x1.5) | Disadvantage (x0.75) |
 | :--- | :--- | :--- |
+| **SOMATIC** | - | - |
 | **THERMOGENIC** | Botanic, Keratinized | Osmotic |
 | **OSMOTIC** | Thermogenic | Botanic, Electrolytic |
 | **BOTANIC** | Osmotic | Thermogenic, Keratinized, Viral |
 | **ELECTROLYTIC**| Osmotic, Keratinized | Botanic |
+| **KERATINIZED** | - | Thermogenic, Electrolytic |
 | **VIRAL** | Botanic | Keratinized |
-| **APOPTOTIC** | Apoptotic | Somatic (0.75x) |
-| **SOMATIC** | - | Apoptotic, Keratinized |
+| **APOPTOTIC** | Apoptotic | - |
 
 ---
 
