@@ -5,36 +5,13 @@ export const gameState = {
     playerTeam: ['nitrophil', 'cambihil', 'lydrosome'],
     cellDex: ['nitrophil', 'cambihil', 'lydrosome'],
 
-    player: {
-        id: 'nitrophil',
-        name: 'Nitrophil',
-        hp: 100,
-        maxHp: 100,
-        pp: 1,
-        maxPp: 10,
-        moves: [],
-        defenseMoves: [],
-        currentNode: null,
-        blockedNodes: [],
-        burnedNodes: [],
-        jammedNodes: [],
-        selectedMove: null
-    },
-    enemy: {
-        id: 'nitrophil',
-        name: 'Nitrophil',
-        hp: 100,
-        maxHp: 100,
-        pp: 1,
-        maxPp: 10,
-        moves: [],
-        defenseMoves: [],
-        currentNode: null,
-        blockedNodes: [],
-        burnedNodes: [],
-        jammedNodes: [],
-        selectedMove: null
-    },
+    // Full Party Objects (Initialized during resetGame)
+    playerParty: [],
+    enemyParty: [],
+
+    player: null, // Points to the active player monster
+    enemy: null,  // Points to the active enemy monster
+
     currentTurn: 'PLAYER',
     phase: 'MOVE_SELECTION',
     turnNumber: 1,

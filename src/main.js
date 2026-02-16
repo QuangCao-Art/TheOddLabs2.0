@@ -126,9 +126,9 @@ function setupEventListeners() {
         e.stopPropagation();
         const portrait = e.currentTarget.querySelector('.monster-portrait');
         if (portrait) {
-            portrait.classList.remove('anim-pulse', 'anim-monster-glow-white');
+            portrait.classList.remove('anim-pulse');
             void portrait.offsetWidth;
-            portrait.classList.add('anim-pulse', 'anim-monster-glow-white');
+            portrait.classList.add('anim-pulse');
         }
         updateBattleCard(gameState.player.name);
     });
@@ -137,9 +137,9 @@ function setupEventListeners() {
         e.stopPropagation();
         const portrait = e.currentTarget.querySelector('.monster-portrait');
         if (portrait) {
-            portrait.classList.remove('anim-pulse', 'anim-monster-glow-white');
+            portrait.classList.remove('anim-pulse');
             void portrait.offsetWidth;
-            portrait.classList.add('anim-pulse', 'anim-monster-glow-white');
+            portrait.classList.add('anim-pulse');
         }
         updateBattleCard(gameState.enemy.name);
     });
@@ -176,6 +176,31 @@ function setupEventListeners() {
                 updateTeamSlots();
             }
         });
+    });
+
+    // active-monster-dropzone Drop Listener for Switching
+    const activeDropzone = document.querySelector('.active-monster-dropzone');
+    activeDropzone?.addEventListener('dragover', (e) => {
+        const canSwitch = (gameState.phase === 'NODE_SELECTION' || gameState.phase === 'MOVE_SELECTION') && gameState.currentTurn === 'PLAYER';
+        if (!canSwitch) return;
+        e.preventDefault();
+        activeDropzone.classList.add('drag-over');
+    });
+
+    activeDropzone?.addEventListener('dragleave', () => {
+        activeDropzone.classList.remove('drag-over');
+    });
+
+    activeDropzone?.addEventListener('drop', (e) => {
+        e.preventDefault();
+        activeDropzone.classList.remove('drag-over');
+        const canSwitch = (gameState.phase === 'NODE_SELECTION' || gameState.phase === 'MOVE_SELECTION') && gameState.currentTurn === 'PLAYER';
+        if (!canSwitch) return;
+
+        const benchIndex = parseInt(e.dataTransfer.getData('benchIndex'));
+        if (!isNaN(benchIndex)) {
+            handleMonsterSwitch(benchIndex);
+        }
     });
 
     // Collection Grid Drop Listener (Remove from team)
@@ -522,7 +547,7 @@ function updateUI() {
     setSafe('.player-display .name', 'innerHTML', gameState.player.name);
     const pLayer = document.querySelector('.player-display .monster-float-layer');
     const pImg = document.querySelector('.player-display .monster-portrait');
-    if (pImg) pImg.src = `assets/images/${gameState.player.name}.png`;
+    if (pImg) pImg.src = `assets/images/${gameState.player.name}_Back.png`;
     if (pLayer) pLayer.classList.toggle('anim-attacker-float', gameState.currentTurn === 'PLAYER');
 
     setStyle('.enemy-display .hp-fill', 'width', `${(gameState.enemy.hp / gameState.enemy.maxHp) * 100}%`);
@@ -536,6 +561,73 @@ function updateUI() {
     const eImg = document.querySelector('.enemy-display .monster-portrait');
     if (eImg) eImg.src = `assets/images/${gameState.enemy.name}.png`;
     if (eLayer) eLayer.classList.toggle('anim-attacker-float', gameState.currentTurn === 'ENEMY');
+
+    // Update Player Bench (Side Monsters)
+    const playerBenchSlots = document.querySelectorAll('.player-bench .bench-slot');
+    let pBenchIdx = 0;
+    gameState.playerParty.forEach((monster, idx) => {
+        if (monster === gameState.player) return; // Skip active monster
+
+        const slot = playerBenchSlots[pBenchIdx];
+        if (slot) {
+            const isDead = monster.hp <= 0;
+            const isPlayerChoosing = (gameState.phase === 'NODE_SELECTION' || gameState.phase === 'MOVE_SELECTION') && gameState.currentTurn === 'PLAYER';
+            slot.innerHTML = `<img src="assets/images/${monster.name}.png" alt="${monster.name}">`;
+            slot.classList.toggle('dead', isDead);
+            slot.draggable = !isDead && isPlayerChoosing;
+
+            // Re-bind drag events (keeping it simple with inline for now as it's a re-render)
+            slot.ondragstart = (e) => {
+                if (isDead) {
+                    e.preventDefault();
+                    return;
+                }
+                e.dataTransfer.setData('benchIndex', idx);
+                slot.classList.add('dragging');
+            };
+            slot.ondragend = () => {
+                slot.classList.remove('dragging');
+            };
+            slot.onclick = () => {
+                if (isDead) return;
+                triggerBenchFeedback(slot);
+                updateBattleCard(monster.name);
+            };
+            pBenchIdx++;
+        }
+    });
+    // Clear unused player slots
+    for (let i = pBenchIdx; i < playerBenchSlots.length; i++) {
+        playerBenchSlots[i].innerHTML = '';
+        playerBenchSlots[i].draggable = false;
+        playerBenchSlots[i].onclick = null;
+    }
+
+    // Update Enemy Bench (Side Monsters)
+    const enemyBenchSlots = document.querySelectorAll('.enemy-bench .bench-slot');
+    let eBenchIdx = 0;
+    gameState.enemyParty.forEach((monster, idx) => {
+        if (monster === gameState.enemy) return; // Skip active monster
+
+        const slot = enemyBenchSlots[eBenchIdx];
+        if (slot) {
+            const isDead = monster.hp <= 0;
+            slot.innerHTML = `<img src="assets/images/${monster.name}.png" alt="${monster.name}">`;
+            slot.classList.toggle('dead', isDead);
+            slot.draggable = false;
+            slot.onclick = () => {
+                if (isDead) return;
+                triggerBenchFeedback(slot);
+                updateBattleCard(monster.name);
+            };
+            eBenchIdx++;
+        }
+    });
+    // Clear unused enemy slots
+    for (let i = eBenchIdx; i < enemyBenchSlots.length; i++) {
+        enemyBenchSlots[i].innerHTML = '';
+        enemyBenchSlots[i].onclick = null;
+    }
 
     // Update Interactive Pentagon Visuals
     const showSelection = gameState.phase === 'MOVE_SELECTION' || gameState.phase === 'NODE_SELECTION';
@@ -1081,43 +1173,167 @@ function spawnPellicleVFX(attackerId, amount) {
     }
 }
 
-function checkGameOver() {
-    if (gameState.player.hp <= 0 || gameState.enemy.hp <= 0) {
-        const isPlayerDefeat = gameState.player.hp <= 0;
-        const loserDisplay = document.querySelector(isPlayerDefeat ? '.player-display' : '.enemy-display');
-        const loserPortrait = loserDisplay.querySelector('.monster-portrait');
+function handleMonsterSwitch(benchIndex) {
+    const targetMonster = gameState.playerParty[benchIndex];
+    if (!targetMonster || targetMonster.hp <= 0 || gameState.isProcessing) return;
 
-        // 1. Cinematic Transition: Fade out the loser
-        loserPortrait.classList.add('death-fade');
+    // Use Custom In-Game Modal instead of window.confirm
+    const modal = document.getElementById('switch-confirm-modal');
+    const msg = document.getElementById('switch-message');
+    const btnConfirm = document.getElementById('btn-confirm-switch');
+    const btnCancel = document.getElementById('btn-cancel-switch');
 
-        // 2. Heavy Drop Animation
+    if (!modal || !msg || !btnConfirm || !btnCancel) {
+        console.error("Switch modal elements not found!");
+        return;
+    }
+
+    msg.innerHTML = `Switch to <span class="neon-text">${targetMonster.name}</span>?<br>This redeployment will conclude your current turn.`;
+    modal.classList.remove('hidden');
+
+    btnConfirm.onclick = () => {
+        modal.classList.add('hidden');
+        executeMonsterSwitch(benchIndex);
+    };
+
+    btnCancel.onclick = () => {
+        modal.classList.add('hidden');
+    };
+}
+
+function executeMonsterSwitch(benchIndex) {
+    const targetMonster = gameState.playerParty[benchIndex];
+    if (!targetMonster || gameState.isProcessing) return;
+
+    gameState.isProcessing = true;
+    const oldName = gameState.player.name;
+    addLog(`Recalling ${oldName}...`);
+
+    const display = document.querySelector('.player-display');
+    const portrait = display.querySelector('.monster-portrait');
+
+    // 1. Recall Animation
+    if (portrait) {
+        portrait.classList.add('anim-recall-exit');
+    }
+
+    setTimeout(() => {
+        // 2. CelContainer Visual Flash & Fly to Bench
+        if (portrait) {
+            portrait.classList.remove('anim-recall-exit');
+            portrait.src = "assets/images/CellContainer.png";
+            portrait.style.transform = "scale(0.8) translateY(20px)";
+            portrait.style.filter = "none";
+
+            // Trigger Fly Back Animation
+            void portrait.offsetWidth; // Force reflow
+            portrait.classList.add('anim-recall-return-player');
+        }
+
         setTimeout(() => {
-            const container = document.createElement('div');
-            container.className = 'dead-cell-container animate-heavy-drop';
-            container.innerHTML = `<img src="assets/images/CellContainer.png">`;
-            loserDisplay.appendChild(container);
-        }, 300);
+            addLog(`Deploying ${targetMonster.name}!`);
 
-        // 3. Show Mission Overlay after animation peak
-        setTimeout(() => {
-            const overlay = document.getElementById('game-over-overlay');
-            const title = document.getElementById('game-over-title');
-            const msg = document.getElementById('game-over-message');
+            // Finalize state change
+            gameState.player = targetMonster;
 
-            if (isPlayerDefeat) {
-                title.innerHTML = `SYSTEM <span class="neon-text">FAILURE</span>`;
-                msg.innerText = `${gameState.player.name} has been neutralized.`;
-            } else {
-                title.innerHTML = `MISSION <span class="neon-text">SUCCESS</span>`;
-                msg.innerText = `Target entity has been purged.`;
+            // Turn Swap
+            gameState.currentTurn = 'ENEMY';
+            gameState.phase = 'NODE_SELECTION';
+
+            // Reset node selections
+            gameState.player.currentNode = null;
+            gameState.enemy.currentNode = null;
+
+            // Reset selection core
+            if (selectionCore) {
+                selectionCore.style.transition = 'all 0.4s ease-in-out';
+                selectionCore.style.transform = `translate(-50%, -50%)`;
             }
 
-            overlay.classList.remove('hidden');
-        }, 1800);
+            gameState.isProcessing = false;
 
-        return true;
+            // Update UI will reset the portrait src and visibility
+            updateUI();
+
+            // Ensure portrait is visible and reset for deployment
+            if (portrait) {
+                portrait.classList.remove('anim-recall-return-player');
+                portrait.style.opacity = "1";
+                portrait.style.transform = "scale(1)";
+                portrait.style.filter = ""; // Reset to CSS default (restores glow)
+            }
+
+            // 3. Heavy Deploy Animation
+            triggerHeavyDeploy('.player-display');
+        }, 500); // Wait for recall-return animation
+    }, 400); // After recall-exit finishes
+}
+
+function checkGameOver() {
+    const isPlayerDefeated = gameState.player.hp <= 0;
+    const isEnemyDefeated = gameState.enemy.hp <= 0;
+
+    if (!isPlayerDefeated && !isEnemyDefeated) return false;
+
+    // Handle Defeat (Visuals)
+    const loserDisplay = document.querySelector(isPlayerDefeated ? '.player-display' : '.enemy-display');
+    const loserPortrait = loserDisplay.querySelector('.monster-portrait');
+    loserPortrait.classList.add('death-fade');
+
+    setTimeout(() => {
+        const container = document.createElement('div');
+        container.className = 'dead-cell-container animate-heavy-drop';
+        container.innerHTML = `<img src="assets/images/CellContainer.png">`;
+        loserDisplay.appendChild(container);
+    }, 300);
+
+    // Check Party Status
+    if (isPlayerDefeated) {
+        const nextMonster = gameState.playerParty.find(m => m.hp > 0);
+        if (nextMonster) {
+            addLog(`${gameState.player.name} neutralized. Deploying next entity...`);
+            setTimeout(() => {
+                gameState.player = nextMonster;
+                document.querySelectorAll('.dead-cell-container').forEach(c => c.remove());
+                loserPortrait.classList.remove('death-fade');
+                updateUI();
+                triggerHeavyDeploy('.player-display');
+            }, 2000);
+            return false;
+        }
+    } else if (isEnemyDefeated) {
+        const nextMonster = gameState.enemyParty.find(m => m.hp > 0);
+        if (nextMonster) {
+            addLog(`Target neutralized. Next target incoming...`);
+            setTimeout(() => {
+                gameState.enemy = nextMonster;
+                document.querySelectorAll('.dead-cell-container').forEach(c => c.remove());
+                loserPortrait.classList.remove('death-fade');
+                updateUI();
+                triggerHeavyDeploy('.enemy-display');
+            }, 2000);
+            return false;
+        }
     }
-    return false;
+
+    // Party-wide Defeat
+    setTimeout(() => {
+        const overlay = document.getElementById('game-over-overlay');
+        const title = document.getElementById('game-over-title');
+        const msg = document.getElementById('game-over-message');
+
+        if (isPlayerDefeated) {
+            title.innerHTML = `SYSTEM <span class="neon-text">FAILURE</span>`;
+            msg.innerText = `All cellular entities have been neutralized.`;
+        } else {
+            title.innerHTML = `MISSION <span class="neon-text">SUCCESS</span>`;
+            msg.innerText = `All target entities have been purged.`;
+        }
+
+        overlay.classList.remove('hidden');
+    }, 1800);
+
+    return true;
 }
 
 function showScreen(screenId) {
@@ -1131,34 +1347,36 @@ function showScreen(screenId) {
 }
 
 function resetGame() {
-    // 1. Load Team Leader fully
-    const leaderId = gameState.playerTeam[0] || 'nitrophil';
-    const leaderData = JSON.parse(JSON.stringify(MONSTERS[leaderId]));
-
-    gameState.player = {
-        ...leaderData,
-        currentNode: null,
-        blockedNodes: [],
-        burnedNodes: [],
-        jammedNodes: [],
-        selectedMove: leaderData.moves[0].id
+    // 1. Initialize Parties
+    const initializeMonster = (id) => {
+        const data = JSON.parse(JSON.stringify(MONSTERS[id]));
+        return {
+            ...data,
+            currentNode: null,
+            blockedNodes: [],
+            burnedNodes: [],
+            jammedNodes: [],
+            hp: data.hp,
+            pp: 1,
+            selectedMove: data.moves[0].id
+        };
     };
 
-    gameState.player.hp = gameState.player.maxHp;
-    gameState.player.pp = 1;
+    gameState.playerParty = gameState.playerTeam
+        .filter(id => id !== null)
+        .map(id => initializeMonster(id));
 
-    // 2. Load Enemy fully (Nitrophil is default for now)
-    const enemyData = JSON.parse(JSON.stringify(MONSTERS.nitrophil));
-    gameState.enemy = {
-        ...enemyData,
-        currentNode: null,
-        blockedNodes: [],
-        burnedNodes: [],
-        jammedNodes: [],
-        selectedMove: enemyData.moves[0].id
-    };
-    gameState.enemy.hp = gameState.enemy.maxHp;
-    gameState.enemy.pp = 1;
+    // Enemy Party (Giving enemy 3 monsters as well for balanced 3v3)
+    gameState.enemyParty = [
+        initializeMonster('nitrophil'),
+        initializeMonster('cambihil'),
+        initializeMonster('lydrosome')
+    ];
+
+    // Set Active Combatants
+    gameState.player = gameState.playerParty[0];
+    gameState.enemy = gameState.enemyParty[0];
+
     gameState.currentTurn = 'PLAYER';
     gameState.phase = 'NODE_SELECTION';
 
@@ -1193,6 +1411,24 @@ function resetGame() {
     if (bioText) bioText.innerText = 'Select a cellular entity to initialize tactical readout.';
 
     updateUI();
+}
+
+function triggerBenchFeedback(slot) {
+    const img = slot.querySelector('img');
+    if (img) {
+        img.classList.remove('anim-pulse');
+        void img.offsetWidth;
+        img.classList.add('anim-pulse');
+    }
+}
+
+function triggerHeavyDeploy(displaySelector) {
+    const portrait = document.querySelector(`${displaySelector} .monster-portrait`);
+    if (portrait) {
+        portrait.classList.remove('anim-heavy-deploy');
+        void portrait.offsetWidth; // Force reflow
+        portrait.classList.add('anim-heavy-deploy');
+    }
 }
 
 init();

@@ -429,6 +429,102 @@ body {
     transition: transform 0.3s ease-out;
 }
 
+/* PLAYER BENCH (Side Monsters) */
+.player-bench {
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 60;
+}
+
+/* ENEMY BENCH (Side Monsters) */
+.enemy-bench {
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 60;
+}
+
+.enemy-bench .bench-slot:hover {
+    border-color: var(--color-enemy);
+    box-shadow: 0 0 15px var(--color-enemy);
+}
+
+.bench-slot.dead {
+    filter: grayscale(100%) brightness(0.4);
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.bench-slot {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.bench-slot:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-player);
+    box-shadow: 0 0 15px var(--color-player);
+    transform: scale(1.1);
+}
+
+.bench-slot img {
+    width: 85%;
+    height: 85%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.3));
+}
+
+.bench-slot.dragging {
+    opacity: 0.5;
+    transform: scale(0.9);
+}
+
+.active-monster-dropzone.drag-over .monster-portrait {
+    filter: drop-shadow(0 0 25px var(--color-player)) brightness(1.2);
+    transform: scale(1.05);
+}
+
+.active-monster-dropzone {
+    transition: all 0.3s ease;
+}
+
+@keyframes modal-appear {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal {
+    animation: modal-appear 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
 .anim-attacker-float {
     animation: float-energetic 1.0s ease-in-out infinite;
 }
@@ -448,10 +544,7 @@ body {
 }
 
 
-.player-img {
-    scale: -1 1;
-}
-
+/* Back sprite used instead of CSS flip for player */
 /* ATTACK ANIMATIONS */
 .anim-lunge-player {
     animation: lunge-player 0.5s ease-out;
@@ -1312,6 +1405,101 @@ body {
     100% {
         opacity: 0.9;
         transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* LIVE MONSTER HEAVY DROP (Deployment) */
+.anim-heavy-deploy {
+    animation: living-container-appear 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* MONSTER RECALL (Shrink into container) */
+.anim-recall-exit {
+    animation: recall-exit 0.4s ease-in forwards;
+}
+
+@keyframes recall-exit {
+    0% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        filter: brightness(1);
+    }
+
+    100% {
+        transform: scale(0.1) translateY(20px);
+        opacity: 0;
+        filter: brightness(2);
+    }
+}
+
+.anim-recall-return-player {
+    animation: recall-return-player 0.6s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+}
+
+.anim-recall-return-enemy {
+    animation: recall-return-enemy 0.6s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+}
+
+@keyframes recall-return-player {
+    0% {
+        transform: scale(0.6) translateY(20px) translateX(0);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+        transform: scale(0.8) translateY(20px) translateX(0);
+    }
+
+    100% {
+        transform: scale(0.3) translateY(20px) translateX(-600px);
+        opacity: 0;
+    }
+}
+
+@keyframes recall-return-enemy {
+    0% {
+        transform: scale(0.6) translateY(20px) translateX(0);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+        transform: scale(0.8) translateY(20px) translateX(0);
+    }
+
+    100% {
+        transform: scale(0.3) translateY(20px) translateX(600px);
+        opacity: 0;
+    }
+}
+
+@keyframes living-container-appear {
+    0% {
+        opacity: 0;
+        transform: translateY(-400px) scale(1.5);
+    }
+
+    40% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    55% {
+        transform: translateY(-30px) scale(1.05);
+    }
+
+    70% {
+        transform: translateY(0) scale(1);
+    }
+
+    85% {
+        transform: translateY(-10px) scale(1.02);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }
 
@@ -2363,17 +2551,13 @@ body {
     color: #fff;
 }
 
-.anim-pulse {
-    animation: click-pulse 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 @keyframes click-pulse {
     0% {
         transform: scale(1);
     }
 
     50% {
-        transform: scale(1.15) brightness(1.2);
+        transform: scale(1.2);
     }
 
     100% {
@@ -2381,24 +2565,12 @@ body {
     }
 }
 
-/* WHITE MONSTER GLOW FEEDBACK */
-.anim-monster-glow-white {
-    animation: monster-glow-white 0.3s ease-out;
+/* QUICK ZOOM FEEDBACK */
+.anim-pulse {
+    animation: click-pulse 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@keyframes monster-glow-white {
-    0% {
-        filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0));
-    }
 
-    50% {
-        filter: drop-shadow(0 0 20px #fff) brightness(1.2);
-    }
-
-    100% {
-        filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0));
-    }
-}
 
 .card-close-btn {
     position: absolute;

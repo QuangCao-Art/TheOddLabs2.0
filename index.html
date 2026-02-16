@@ -314,12 +314,20 @@
                                 <img src="assets/images/Nitrophil.png" alt="Enemy" class="monster-portrait enemy-img">
                             </div>
                         </div>
+                        <div class="enemy-bench">
+                            <div class="enemy-bench-slot bench-slot" data-index="0"></div>
+                            <div class="enemy-bench-slot bench-slot" data-index="1"></div>
+                        </div>
                     </section>
 
 
                     <!-- PLAYER SIDE (BOTTOM) -->
                     <section class="combatant-display player-display">
-                        <div class="monster-portrait-container">
+                        <div class="player-bench">
+                            <div class="bench-slot" data-index="0"></div>
+                            <div class="bench-slot" data-index="1"></div>
+                        </div>
+                        <div class="monster-portrait-container active-monster-dropzone">
                             <div class="monster-float-layer">
                                 <img src="assets/images/Nitrophil.png" alt="Player" class="monster-portrait player-img">
                             </div>
@@ -392,6 +400,18 @@
                         </div>
                     </div>
                 </aside>
+            </div>
+        </div>
+
+        <!-- Switching Confirmation Modal -->
+        <div id="switch-confirm-modal" class="overlay hidden">
+            <div class="modal glass-panel">
+                <h2 id="switch-title">INITIATE <span class="neon-text">REDEPLOYMENT</span></h2>
+                <p id="switch-message">Switch to [MONSTER]? This will conclude your current turn.</p>
+                <div class="modal-buttons">
+                    <button id="btn-confirm-switch" class="btn-neon">CONFIRM</button>
+                    <button id="btn-cancel-switch" class="btn-neon">ABORT</button>
+                </div>
             </div>
         </div>
 
