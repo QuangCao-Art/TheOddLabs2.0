@@ -2962,26 +2962,49 @@ body {
     margin-left: -12.8px;
     /* (89.6 - 64) / 2 Center */
     z-index: 6;
+    background-size: 358.4px 358.4px !important;
+    background-repeat: no-repeat !important;
 }
 
-.npc.reception {
-    background-image: url('assets/images/Sprite_NPC_Female_01.png?v=4');
+/* Directional Facing for NPCs (Offset based on 89.6px frames) */
+.npc.face-down {
+    background-position: 0px 0px;
+}
+
+.npc.face-up {
+    background-position: 0px -89.6px;
+}
+
+.npc.face-right {
+    background-position: 0px -179.2px;
+}
+
+.npc.face-left {
+    background-position: 0px -268.8px;
+}
+
+.npc.jenzi {
+    background-image: url('assets/images/T_Char_Sprite_Jenzi_01.png?v=4');
 }
 
 .npc.lana {
-    background-image: url('assets/images/Sprite_Lana_01.png?v=4');
+    background-image: url('assets/images/T_Char_Sprite_Lana_01.png?v=4');
 }
 
 .npc.dyzes {
-    background-image: url('assets/images/Sprite_Dyzes_01.png?v=4');
+    background-image: url('assets/images/T_Char_Sprite_Dyzes_01.png?v=4');
 }
 
 .npc.capsain {
-    background-image: url('assets/images/Sprite_Director_01.png?v=4');
+    background-image: url('assets/images/T_Char_Sprite_Director_01.png?v=4');
 }
 
 .npc.mentor {
-    background-image: url('assets/images/Sprite_NPC_Male_01.png?v=4');
+    background-image: url('assets/images/T_Char_Sprite_NPC_Male_01.png?v=4');
+}
+
+.npc.female {
+    background-image: url('assets/images/T_Char_Sprite_NPC_Female_01.png?v=4');
 }
 
 #overworld-map .tile {

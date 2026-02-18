@@ -21,6 +21,8 @@ export const Overworld = {
     mapData: null,
     controlsInitialized: false,
     isDialogueActive: false,
+    isTyping: false,
+    currentFullText: "",
     currentDialoguePartner: null,
     dialogueQueue: [],
     typingInterval: null,
@@ -61,7 +63,7 @@ export const Overworld = {
                 { id: 'tableLeaderA-L_reception', x: 8, y: 5, type: 'prop', name: 'Leader Desk', hiddenLogId: '002' },
                 { id: 'tableLeaderA-R_reception', x: 9, y: 5, type: 'prop', name: 'Leader Desk' },
                 { id: 'tableA_lobby_side', x: 7, y: 5, type: 'prop', name: 'Side Table' },
-                { id: 'reception', x: 4, y: 4, type: 'npc', name: 'Lead Mentor' },
+                { id: 'jenzi', x: 4, y: 4, type: 'npc', name: 'Jenzi' },
                 { id: 'chairA-F_lobby_client', x: 8, y: 4, type: 'prop', name: 'Lab Chair' },
                 { id: 'chairC_reception', x: 8, y: 5, type: 'prop', name: 'Executive Chair' },
                 { id: 'chairA-R_lobby_wait1', x: 1, y: 5, type: 'prop', name: 'Lab Chair' },
@@ -241,7 +243,7 @@ export const Overworld = {
                 { id: 'labTankA-T_bot2', x: 2, y: 3, type: 'prop', name: 'Nutrient Tank' },
                 { id: 'labTankA-B_bot2', x: 2, y: 4, type: 'prop', name: 'Nutrient Tank' },
                 { id: 'log_089', x: 7, y: 7, type: 'log', name: 'DataLog #089' },
-                { id: 'lana', x: 7, y: 3, type: 'npc', name: 'Lana (Mentor)' }
+                { id: 'lana', x: 7, y: 3, type: 'npc', name: 'Lana' }
             ],
             doors: [
                 { x: 14, y: 8, targetZone: 'atrium', targetX: 1, targetY: 4 }
@@ -274,7 +276,7 @@ export const Overworld = {
                 { id: 'labTankA-T_hum2', x: 11, y: 5, type: 'prop', name: 'Osmotic Tank' },
                 { id: 'labTankA-B_hum2', x: 11, y: 6, type: 'prop', name: 'Osmotic Tank' },
                 { id: 'log_212', x: 7, y: 6, type: 'log', name: 'DataLog #212' },
-                { id: 'dyzes', x: 7, y: 3, type: 'npc', name: 'Dyzes (Mentor)' }
+                { id: 'dyzes', x: 7, y: 3, type: 'npc', name: 'Dyzes' }
             ],
             doors: [
                 { x: 0, y: 8, targetZone: 'atrium', targetX: 17, targetY: 4 }
@@ -529,8 +531,15 @@ export const Overworld = {
                 const el = document.createElement('div');
 
                 // Class hierarchy: .world-object .[type] .[specific-id]
-                const specificClass = obj.id.split('_')[0]; // e.g., 'lana', 'dyzes', 'reception'
+                el.id = `npc-${obj.id}`;
+                const specificClass = obj.id.split('_')[0]; // e.g., 'lana', 'dyzes', 'jenzi'
                 el.className = `world-object ${obj.type} ${specificClass}`;
+
+                // Add direction class if it's an NPC
+                if (obj.type === 'npc') {
+                    const dir = obj.direction || 'down';
+                    el.classList.add(`face-${dir}`);
+                }
 
                 el.style.width = `${(obj.width || 1) * this.tileSize}px`;
                 el.style.height = `${(obj.height || 1) * this.tileSize}px`;
@@ -799,7 +808,12 @@ export const Overworld = {
 
     interact() {
         if (this.isDialogueActive) {
-            this.nextDialogue();
+            if (this.isTyping) {
+                // Instant Complete
+                this.finishTyping();
+            } else {
+                this.nextDialogue();
+            }
             return;
         }
 
@@ -864,6 +878,16 @@ export const Overworld = {
         console.log(`Talking to: ${npc.name}`);
         this.currentDialoguePartner = npc.id;
 
+        // Make NPC face the player
+        const oppDirections = { 'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left' };
+        npc.direction = oppDirections[this.player.direction] || 'down';
+
+        const npcEl = document.getElementById(`npc-${npc.id}`);
+        if (npcEl) {
+            npcEl.classList.remove('face-up', 'face-down', 'face-left', 'face-right');
+            npcEl.classList.add(`face-${npc.direction}`);
+        }
+
         // Dialogue sequences from story_lore.md
         const dialogueDb = {
             'jenzi': [
@@ -927,6 +951,8 @@ export const Overworld = {
         const textEl = document.getElementById('dialogue-text');
         if (!textEl) return;
 
+        this.isTyping = true;
+        this.currentFullText = text;
         textEl.textContent = '';
         let i = 0;
 
@@ -935,8 +961,18 @@ export const Overworld = {
         this.typingInterval = setInterval(() => {
             textEl.textContent += text[i];
             i++;
-            if (i >= text.length) clearInterval(this.typingInterval);
+            if (i >= text.length) {
+                clearInterval(this.typingInterval);
+                this.isTyping = false;
+            }
         }, 25);
+    },
+
+    finishTyping() {
+        if (this.typingInterval) clearInterval(this.typingInterval);
+        const textEl = document.getElementById('dialogue-text');
+        if (textEl) textEl.textContent = this.currentFullText;
+        this.isTyping = false;
     },
 
     closeDialogue() {
