@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+  <!-- Wall (0,0) - Circuit Pattern -->
+  <rect width="64" height="64" fill="#1a1a2e"/>
+  <rect x="0" y="0" width="64" height="64" fill="none" stroke="#3a3a5e" stroke-width="4"/>
+  <path d="M10 20 h44 M10 44 h44 M32 10 v44" stroke="#4a4a7e" stroke-width="2"/>
+  <circle cx="10" cy="20" r="3" fill="#00f3ff"/>
+  <circle cx="54" cy="44" r="3" fill="#00f3ff"/>
+  
+  <!-- Floor (64,0) - Tech Grid -->
+  <rect x="64" width="64" height="64" fill="#0a0a1a"/>
+  <path d="M64 16 h64 M64 32 h64 M64 48 h64 M80 0 v64 M96 0 v64 M112 0 v64" stroke="white" stroke-opacity="0.05" stroke-width="1"/>
+  <circle cx="80" cy="32" r="1.5" fill="white" fill-opacity="0.1"/>
+  
+  <!-- Floor Alt (0,64) - Cracked Panel -->
+  <rect y="64" width="64" height="64" fill="#101025"/>
+  <path d="M10 74 L25 85 L40 78 M15 100 L30 110" fill="none" stroke="white" stroke-opacity="0.2" stroke-width="2"/>
+  
+  <!-- Door (64,64) - Glow Panel -->
+  <rect x="64" y="64" width="64" height="64" fill="#ff9d00"/>
+  <rect x="74" y="74" width="44" height="44" fill="none" stroke="white" stroke-width="2"/>
+  <circle cx="96" cy="96" r="10" fill="white" fill-opacity="0.3"/>
+</svg>

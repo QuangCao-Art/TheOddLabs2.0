@@ -17,12 +17,35 @@
         <div id="screen-main-menu" class="screen">
             <h1 class="game-title">THE ODD <span class="neon-text">LABS 2.0</span></h1>
             <div class="menu-options">
-                <button id="btn-start-battle" class="btn-neon">START BATTLE</button>
+                <button id="btn-start-overworld" class="btn-neon">START GAME</button>
+                <button id="btn-start-battle" class="btn-neon">DEBUG BATTLE</button>
                 <button id="btn-open-cell-container" class="btn-neon">CELL CONTAINER</button>
                 <button id="btn-open-rulebook" class="btn-neon">RULEBOOK</button>
                 <button class="btn-neon disabled">SETTINGS</button>
             </div>
             <div class="version">Experimental v2.0</div>
+        </div>
+
+        <!-- Overworld Screen -->
+        <div id="screen-overworld" class="screen hidden">
+            <div id="overworld-viewport">
+                <div id="overworld-map">
+                    <div id="player-sprite"></div>
+                </div>
+            </div>
+            <div id="overworld-ui">
+                <div id="log-count-display">DATA LOGS: <span id="log-count">0</span> / 15</div>
+                <div id="location-display">LOCATION: <span id="location-name">LAB LOBBY</span></div>
+            </div>
+
+            <!-- Dialogue System -->
+            <div id="dialogue-box" class="hidden">
+                <div id="dialogue-content">
+                    <span id="dialogue-name">NAME</span>
+                    <p id="dialogue-text">Text content goes here...</p>
+                </div>
+                <div id="dialogue-indicator">▼</div>
+            </div>
         </div>
 
         <!-- Cell Container (Team Management) -->
@@ -260,6 +283,47 @@
             </div>
         </div>
 
+        <!-- Inventory Screen -->
+        <div id="screen-inventory" class="screen hidden">
+            <div id="inventory-panel" class="glass-panel">
+                <div class="header-with-tabs">
+                    <h2 class="neon-text">RESEARCH LOGS</h2>
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="logs">DATA LOGS</button>
+                        <button class="tab-btn" data-tab="items">KEY ITEMS</button>
+                    </div>
+                </div>
+
+                <div id="inventory-layout">
+                    <!-- Logs Section -->
+                    <div id="tab-logs" class="inventory-tab">
+                        <div class="log-list" id="inventory-log-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Items Section -->
+                    <div id="tab-items" class="inventory-tab hidden">
+                        <div class="key-items-grid" id="inventory-item-grid">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Status Sidebar -->
+                    <aside id="inventory-status" class="glass-panel">
+                        <h3 class="panel-title">CELL STATUS</h3>
+                        <div id="status-party-list">
+                            <!-- Active Cell stats show here -->
+                        </div>
+                    </aside>
+                </div>
+
+                <div class="rulebook-footer">
+                    <button id="btn-inventory-back" class="btn-neon">RETURN TO BASE [ESC]</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Battle Arena Screen -->
         <div id="screen-battle" class="screen hidden">
             <button id="btn-battle-back" class="btn-neon-mini">BACK</button>
@@ -271,10 +335,10 @@
                     <div class="card-wrapper">
                         <div class="card-inner">
                             <div class="card-back">
-                                <img id="battle-card-back-img" src="assets/images/Card_Back.png" alt="Card Back">
+                                <img id="battle-card-back-img" src="assets/images/Card_Back.png?v=4" alt="Card Back">
                             </div>
                             <div class="card-front">
-                                <img id="battle-card-front-img" src="assets/images/Card_Nitrophil.png"
+                                <img id="battle-card-front-img" src="assets/images/Card_Nitrophil.png?v=4"
                                     alt="Monster Card">
                             </div>
                         </div>
@@ -311,7 +375,8 @@
                         </div>
                         <div class="monster-portrait-container">
                             <div class="monster-float-layer">
-                                <img src="assets/images/Nitrophil.png" alt="Enemy" class="monster-portrait enemy-img">
+                                <img src="assets/images/Nitrophil.png?v=4" alt="Enemy"
+                                    class="monster-portrait enemy-img">
                             </div>
                         </div>
                         <div class="enemy-bench">
@@ -329,7 +394,8 @@
                         </div>
                         <div class="monster-portrait-container active-monster-dropzone">
                             <div class="monster-float-layer">
-                                <img src="assets/images/Nitrophil.png" alt="Player" class="monster-portrait player-img">
+                                <img src="assets/images/Nitrophil.png?v=4" alt="Player"
+                                    class="monster-portrait player-img">
                             </div>
                         </div>
                         <div class="character-vitals">

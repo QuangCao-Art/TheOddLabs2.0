@@ -181,6 +181,57 @@ The **Cell Container** is the primary interface for managing your tactical roste
 
 ---
 
+## 9. Overworld Exploration & Discovery
+
+The overworld is a grid-based laboratory environment where players explore, talk to NPCs, and uncover the truth behind the "Cell Project."
+
+### 9.1 Interaction Mechanic (The 'E' Key)
+Players can interact with their environment by pressing **'E'** when facing an object or NPC.
+
+- **NPCs**: Triggers dialogue sequences. Some NPCs provide hints, while others trigger story battles.
+- **Lore Inspection**: Most lab furniture (tanks, desks, racks) can be inspected to reveal flavor text and lore.
+- **Hidden Discovery (DataLogs)**: 
+    - DataLogs are the primary collectible and story driver. 
+    - **CRITICAL RULE**: DataLogs are only "hidden" within furniture that has **Active Collision** (e.g., solid desks, large tanks, or planters). 
+    - Non-collidable decor (posters, floor markings) can never hide a datapad.
+    - If a datapad is found, it triggers a popup and is added to the **Inventory**.
+
+---
+
+## 10. Progression & Leveling (Bio-Growth)
+
+The game features a 10-level progression system for the player's cellular team.
+
+### 10.1 Leveling Mechanics
+- **Level Cap**: 10.
+- **XP Curve**: `Current Level * 100` (Linear scaling).
+- **Stat Growth**: 
+    - **HP**: +10 per level.
+    - **Atk/Def**: +2 per level.
+- **Skill Unlocks**:
+    - **Level 5**: Signature Skill unlock.
+    - **Level 9**: Ultimate Skill unlock.
+
+### 10.2 Story Balancing
+ Progression is balanced across four major milestones:
+1. **Lobby (Lvl 1)**: Introduction & Jenzi Battle.
+2. **Botanic Sector (Lvl 4)**: Lana Boss Battle.
+3. **Human Research Ward (Lvl 7)**: Dyzes Boss Battle.
+4. **Director's Suite (Lvl 10)**: Final Boss Challenge.
+
+---
+
+## 11. Inventory & Progression Tracking
+
+The inventory system acts as a central hub for your research progress.
+
+- **DataLog Archive**: A chronological list of all collected logs (01-20).
+- **Key Items**: Tracks essential story items (e.g., Old Lab Room Key, Inferno Sauce).
+- **Cell Status**: View detailed stats and XP progress for your active team.
+- **Progression Logic**: The world's "Gatekeeper" (Jenzi) checks your log count to unlock new wings of the lab.
+
+---
+
 ## Appendix: Monster Mechanic Template
 
 Use this blueprint when introducing new cellular entities to the lab.

@@ -12,8 +12,7 @@ export const gameState = {
     player: null, // Points to the active player monster
     enemy: null,  // Points to the active enemy monster
 
-    currentTurn: 'PLAYER',
-    phase: 'MOVE_SELECTION',
-    turnNumber: 1,
-    isProcessing: false
+    isProcessing: false,
+    items: [], // Array of key item IDs
+    logs: []   // Redundant copy check if needed, but we'll use Overworld.logsCollected
 };

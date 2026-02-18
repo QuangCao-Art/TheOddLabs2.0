@@ -2,6 +2,7 @@
 import { resolveTurn, getDistance, checkOverload } from './engine/combat.js';
 import { AI } from './engine/ai.js';
 import { MONSTERS } from './data/monsters.js';
+import { Overworld } from './engine/overworld.js';
 
 // DOM References
 const interactivePentagon = document.getElementById('interactive-pentagon');
@@ -77,6 +78,11 @@ function setupEventListeners() {
     });
 
     // Menu Controls
+    document.getElementById('btn-start-overworld')?.addEventListener('click', () => {
+        showScreen('screen-overworld');
+        Overworld.init();
+    });
+
     document.getElementById('btn-start-battle')?.addEventListener('click', () => {
         showScreen('screen-battle');
         resetGame();
@@ -107,12 +113,48 @@ function setupEventListeners() {
         document.getElementById('monster-card-modal').classList.add('hidden');
     });
 
+    // Inventory Controls
+    document.getElementById('btn-inventory-back')?.addEventListener('click', () => {
+        showScreen(previousScreen);
+    });
+
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.dataset.tab;
+            document.querySelectorAll('.inventory-tab').forEach(t => t.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+
+    // Listen for Found DataLogs
+    window.addEventListener('datalog-found', (e) => {
+        const logId = e.detail.id;
+        console.log(`Main UI: Registering found log ${logId}`);
+        // This will update the log count in the overworld UI
+        const countEl = document.getElementById('log-count');
+        if (countEl) countEl.innerText = Overworld.logsCollected.length;
+    });
+
     // Global ESC Key Listener for Rulebook
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             const rulebookScreen = document.getElementById('screen-rulebook');
+            const inventoryScreen = document.getElementById('screen-inventory');
             if (rulebookScreen && !rulebookScreen.classList.contains('hidden')) {
                 showScreen(previousScreen);
+            }
+            if (inventoryScreen && !inventoryScreen.classList.contains('hidden')) {
+                showScreen(previousScreen);
+            }
+        }
+        if (e.key.toLowerCase() === 'i') {
+            const isOverworld = !document.getElementById('screen-overworld').classList.contains('hidden');
+            if (isOverworld) {
+                renderInventory();
+                showScreen('screen-inventory');
             }
         }
     });
@@ -753,6 +795,70 @@ const setStyle = (selector, prop, val) => {
     const el = document.querySelector(selector);
     if (el) el.style[prop] = val;
 };
+
+function renderInventory() {
+    const logList = document.getElementById('inventory-log-list');
+    const itemGrid = document.getElementById('inventory-item-grid');
+    const statusList = document.getElementById('status-party-list');
+    if (!logList || !itemGrid || !statusList) return;
+
+    // 1. Populate Logs (Total 20)
+    logList.innerHTML = '';
+    for (let i = 1; i <= 20; i++) {
+        const id = i.toString().padStart(3, '0');
+        const isFound = Overworld.logsCollected.includes(id);
+        const item = document.createElement('div');
+        item.className = `log-item ${isFound ? '' : 'locked'}`;
+        item.innerHTML = `
+            <span class="log-id">#${id}</span>
+            <span class="log-status">${isFound ? 'DECRYPTED' : 'ENCRYPTED DATA'}</span>
+        `;
+        if (isFound) {
+            item.onclick = () => {
+                // Placeholder for viewing log text
+                Overworld.showDialogue(`DataLog #${id}`, ["Log content loading... [NOT IMPLEMENTED]"]);
+            };
+        }
+        logList.appendChild(item);
+    }
+
+    // 2. Populate Key Items
+    itemGrid.innerHTML = '';
+    const keyItems = [
+        { id: 'old_lab_key', name: 'Old Lab Key', icon: 'key' },
+        { id: 'inferno_sauce', name: 'Inferno Sauce', icon: 'bottle' }
+    ];
+
+    keyItems.forEach(item => {
+        const slot = document.createElement('div');
+        slot.className = 'key-item-slot';
+        // Check if player has the item (will need a gameState.items array)
+        const hasItem = gameState.items && gameState.items.includes(item.id);
+        if (hasItem) {
+            slot.innerHTML = `
+                <img src="assets/images/item_${item.id}.png" alt="${item.name}">
+                <div class="key-item-name">${item.name}</div>
+            `;
+        }
+        itemGrid.appendChild(slot);
+    });
+
+    // 3. Populate Cell Status
+    statusList.innerHTML = '';
+    gameState.playerParty.forEach(cell => {
+        const item = document.createElement('div');
+        item.className = 'status-item glass-panel';
+        item.innerHTML = `
+            <div class="status-header">
+                <span class="status-name">${cell.name}</span>
+                <span class="status-lvl">LVL ${cell.level || 1}</span>
+            </div>
+            <div class="status-row">HP: ${cell.hp}/${cell.maxHp}</div>
+            <div class="status-xp-bar"><div class="xp-fill" style="width: 20%"></div></div>
+        `;
+        statusList.appendChild(item);
+    });
+}
 
 async function resolvePhase() {
     if (gameState.isProcessing) return;

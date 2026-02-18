@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --bg-color: #050a14;
     --color-bio: #00ff66;
     /* Vibrant Bio Green */
@@ -73,7 +73,7 @@ body {
 #game-container {
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('assets/images/BG_Battle.png');
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('assets/images/BG_Battle.png?v=4');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -116,7 +116,7 @@ body {
     width: 95%;
     height: 95%;
     top: -5px;
-    background-image: url('assets/images/PentagonPosition_Attack.png');
+    background-image: url('assets/images/PentagonPosition_Attack.png?v=4');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -126,13 +126,13 @@ body {
 
 .pentagon-shape.attack {
     opacity: 0.5;
-    background-image: url('assets/images/PentagonPosition_Attack.png');
+    background-image: url('assets/images/PentagonPosition_Attack.png?v=4');
     filter: drop-shadow(0 0 5px var(--color-attack));
 }
 
 .pentagon-shape.defense {
     opacity: 0.5;
-    background-image: url('assets/images/PentagonPosition_Defense.png');
+    background-image: url('assets/images/PentagonPosition_Defense.png?v=4');
     filter: drop-shadow(0 0 5px var(--color-defense));
 }
 
@@ -1086,7 +1086,7 @@ body {
 }
 
 .draggable-core.attack::after {
-    background-image: url('assets/images/sword.png');
+    background-image: url('assets/images/sword.png?v=4');
 }
 
 .draggable-core.defense {
@@ -1095,7 +1095,7 @@ body {
 }
 
 .draggable-core.defense::after {
-    background-image: url('assets/images/shield.png');
+    background-image: url('assets/images/shield.png?v=4');
 }
 
 .draggable-core:active {
@@ -1590,10 +1590,134 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('assets/images/BG_Main.png');
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('assets/images/BG_Main.png?v=4');
     background-size: cover;
     background-position: center;
     z-index: 100;
+}
+
+/* --- DIALOGUE SYSTEM --- */
+#dialogue-box {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 120px;
+    background: rgba(0, 15, 20, 0.9);
+    border: 2px solid var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    padding: 15px 25px;
+    z-index: 1000;
+    font-family: 'Rajdhani', sans-serif;
+    color: #fff;
+}
+
+#dialogue-name {
+    display: block;
+    font-family: 'Orbitron', sans-serif;
+    color: var(--neon-cyan);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+#dialogue-text {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+#dialogue-indicator {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    color: var(--neon-cyan);
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(5px);
+    }
+}
+
+/* --- INVENTORY SCREEN --- */
+#inventory-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    height: calc(100% - 100px);
+    padding: 20px;
+}
+
+.log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.log-item {
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid var(--neon-cyan);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.log-item:hover {
+    background: rgba(0, 255, 255, 0.1);
+}
+
+.log-item.locked {
+    opacity: 0.4;
+    filter: grayscale(1);
+    cursor: not-allowed;
+}
+
+.key-items-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.key-item-slot {
+    aspect-ratio: 1/1;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(0, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.key-item-slot img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+}
+
+.key-item-name {
+    position: absolute;
+    bottom: 5px;
+    font-size: 0.7rem;
+    color: var(--neon-cyan);
+    text-align: center;
+    width: 100%;
+}
+
+#dialogue-box.hidden {
+    display: none;
 }
 
 .game-title {
@@ -1848,7 +1972,7 @@ body {
     z-index: 1000;
     background: radial-gradient(circle at center, rgba(0, 243, 255, 0.05), transparent),
         linear-gradient(rgba(5, 10, 20, 0.9), rgba(5, 10, 20, 0.95)),
-        url('assets/images/BG_Main.png');
+        url('assets/images/BG_Main.png?v=4');
     background-size: cover;
     background-position: center;
     backdrop-filter: blur(10px);
@@ -2178,7 +2302,7 @@ body {
 .node.burned::after,
 .node.jammed::after,
 .node.blocked::after {
-    content: '🔒';
+    content: '??';
     position: absolute;
     top: 50%;
     left: 50%;
@@ -2597,4 +2721,604 @@ body {
     color: var(--bg-color);
     box-shadow: 0 0 20px var(--color-player);
     transform: rotate(90deg);
+}
+
+/* OVERWORLD SYSTEM */
+#screen-overworld {
+    background: #050a14;
+    /* Match root bg */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    z-index: 5;
+    /* Ensure it stays above container background visuals if any */
+}
+
+#overworld-viewport {
+    flex: 1;
+    position: relative;
+    background: #0a0a0f;
+    overflow: hidden;
+    border: 2px solid var(--glass);
+    box-shadow: inset 0 0 50px rgba(0, 243, 255, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#overworld-map {
+    position: absolute;
+    display: grid;
+    left: 0;
+    top: 0;
+    transition: transform 0.22s linear;
+    will-change: transform;
+}
+
+.no-transition {
+    transition: none !important;
+}
+
+.tile {
+    width: 64px;
+    height: 64px;
+    box-sizing: border-box;
+    /* TILESYSTEM: Official Lab_TileSet_01 asset */
+    background-image: url('assets/images/Lab_TileSet_01.png?v=4');
+    background-size: 512px 512px;
+    /* Set a large size to accommodate the coords, we can adjust if needed */
+    background-repeat: no-repeat;
+    border: none;
+}
+
+/* OFFICIAL TILES (Lab_TileSet_01 v2.0) */
+.t-0 {
+    background-position: -0px -0px;
+}
+
+/* Corners-Top-Left */
+.t-1 {
+    background-position: -128px -0px;
+}
+
+/* Corners-Top-Right */
+.t-2 {
+    background-position: -0px -128px;
+}
+
+/* Corners-Bottom-Left */
+.t-3 {
+    background-position: -128px -128px;
+}
+
+/* Corners-Bottom-Right */
+.t-4 {
+    background-position: -192px -0px;
+}
+
+/* Corners-Inner-Top-Left */
+.t-5 {
+    background-position: -256px -0px;
+}
+
+/* Corners-Inner-Top-Right */
+.t-6 {
+    background-position: -192px -64px;
+}
+
+/* Corners-Inner-Bottom-Left */
+.t-7 {
+    background-position: -256px -64px;
+}
+
+/* Corners-Inner-Bottom-Right */
+.t-8 {
+    background-position: -64px -0px;
+}
+
+/* WallEdge-Top */
+.t-9 {
+    background-position: -64px -128px;
+}
+
+/* WallEdge-Bottom */
+.t-10 {
+    background-position: -0px -64px;
+}
+
+/* WallEdge-Left */
+.t-11 {
+    background-position: -128px -64px;
+}
+
+/* WallEdge-Right */
+.t-12 {
+    background-position: -64px -64px;
+}
+
+/* EmptyFill */
+.t-13 {
+    background-position: -64px -320px;
+}
+
+/* Floor-Basic */
+.t-14 {
+    background-position: -64px -192px;
+}
+
+/* Wall-Middle-Top */
+.t-15 {
+    background-position: -64px -256px;
+}
+
+/* Wall-Middle-Bottom */
+.t-16 {
+    background-position: -0px -192px;
+}
+
+/* Wall-Left-Top */
+.t-17 {
+    background-position: -0px -256px;
+}
+
+/* Wall-Left-Bottom */
+.t-18 {
+    background-position: -128px -192px;
+}
+
+/* Wall-Right-Top */
+.t-19 {
+    background-position: -128px -256px;
+}
+
+/* Wall-Right-Bottom */
+.t-20 {
+    background-position: -192px -128px;
+}
+
+/* Door-Edge-Bottom-Close */
+.t-21 {
+    background-position: -256px -128px;
+}
+
+/* Door-Edge-Bottom-Open */
+.t-22 {
+    background-position: -192px -192px;
+}
+
+/* Door-Basic-Close */
+.t-23 {
+    background-position: -256px -192px;
+}
+
+/* Door-Basic-Open */
+.t-24 {
+    background-position: -320px -64px;
+}
+
+/* Door-Edge-Left-Close */
+.t-25 {
+    background-position: -384px -64px;
+}
+
+/* Door-Edge-Right-Close */
+.t-26 {
+    background-position: -320px -128px;
+}
+
+/* Door-Edge-Right-Open */
+.t-27 {
+    background-position: -384px -128px;
+}
+
+/* Door-Basic-Locked */
+.t-28 {
+    background-position: -192px -256px;
+}
+
+/* Door-Edge-Bottom-Locked */
+.t-29 {
+    background-position: -256px -256px;
+}
+
+/* Door-Edge-Left-Locked */
+.t-30 {
+    background-position: -320px -256px;
+}
+
+/* Door-Edge-Right-Locked */
+.t-31 {
+    background-position: -384px -256px;
+}
+
+.tile.interactable {
+    cursor: pointer;
+}
+
+/* WORLD OBJECTS */
+.world-object {
+    position: absolute;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.incubator {
+    background: url('assets/images/T_AlphaContaner.png?v=4') no-repeat center;
+    background-size: contain;
+}
+
+/* NPCs & CHARACTERS */
+.npc {
+    width: 89.6px !important;
+    height: 89.6px !important;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    margin-top: -25.6px;
+    /* (89.6 - 64) Shift up */
+    margin-left: -12.8px;
+    /* (89.6 - 64) / 2 Center */
+    z-index: 6;
+}
+
+.npc.reception {
+    background-image: url('assets/images/Sprite_NPC_Female_01.png?v=4');
+}
+
+.npc.lana {
+    background-image: url('assets/images/Sprite_Lana_01.png?v=4');
+}
+
+.npc.dyzes {
+    background-image: url('assets/images/Sprite_Dyzes_01.png?v=4');
+}
+
+.npc.capsain {
+    background-image: url('assets/images/Sprite_Director_01.png?v=4');
+}
+
+.npc.mentor {
+    background-image: url('assets/images/Sprite_NPC_Male_01.png?v=4');
+}
+
+#overworld-map .tile {
+    width: 64.128px;
+    height: 64.128px;
+    background-image: url('assets/images/Lab_TileSet_01.png?v=4');
+    background-size: 512px 512px;
+    image-rendering: pixelated;
+    float: left;
+}
+
+#overworld-map .world-object.prop {
+    background-image: url('assets/images/Lab_TileSet_02.png?v=4');
+    background-size: 512px 512px;
+    image-rendering: pixelated;
+    z-index: 5;
+}
+
+#overworld-map .world-object.render-top {
+    z-index: 110 !important;
+}
+
+/* Furniture Tileset 02 Mapping */
+.world-object.prop.chairA-L {
+    background-position: 0 0;
+}
+
+.world-object.prop.chairA-R {
+    background-position: -64px 0;
+}
+
+.world-object.prop.chairA-F {
+    background-position: -128px 0;
+}
+
+.world-object.prop.tableA {
+    background-position: -192px 0;
+}
+
+.world-object.prop.tableB-L {
+    background-position: -256px 0;
+}
+
+.world-object.prop.tableB-R {
+    background-position: -320px 0;
+}
+
+.world-object.prop.wallHangingA {
+    background-position: -384px 0;
+}
+
+.world-object.prop.tableComputerA {
+    background-position: 0 -64px;
+}
+
+.world-object.prop.tableLabCylindersA {
+    background-position: -64px -64px;
+}
+
+.world-object.prop.tableDeviceA {
+    background-position: -128px -64px;
+}
+
+.world-object.prop.tableC-T {
+    background-position: -192px -64px;
+}
+
+.world-object.prop.tableC-B {
+    background-position: -192px -128px;
+}
+
+.world-object.prop.labTankA-T {
+    background-position: 0 -128px;
+}
+
+.world-object.prop.labTankA-B {
+    background-position: 0 -192px;
+}
+
+.world-object.prop.labTankB-T {
+    background-position: -64px -128px;
+}
+
+.world-object.prop.labTankB-B {
+    background-position: -64px -192px;
+}
+
+.world-object.prop.wallHangingB {
+    background-position: -448px 0;
+}
+
+.world-object.prop.potPlantA-T {
+    background-position: -384px -64px;
+}
+
+.world-object.prop.potPlantA-B {
+    background-position: -384px -128px;
+}
+
+.world-object.prop.potPlantB-T {
+    background-position: -448px -64px;
+}
+
+.world-object.prop.potPlantB-B {
+    background-position: -448px -128px;
+}
+
+.world-object.prop.labTankC-T {
+    background-position: -128px -128px;
+}
+
+.world-object.prop.labTankC-B {
+    background-position: -128px -192px;
+}
+
+.world-object.prop.potPlantC-T {
+    background-position: -448px -192px;
+}
+
+.world-object.prop.potPlantC-B {
+    background-position: -448px -256px;
+}
+
+.world-object.prop.tableD-L {
+    background-position: -256px -64px;
+}
+
+.world-object.prop.tableD-R {
+    background-position: -320px -64px;
+}
+
+.world-object.prop.tableLeaderA-L {
+    background-position: -256px -128px;
+}
+
+.world-object.prop.tableLeaderA-R {
+    background-position: -320px -128px;
+}
+
+.world-object.prop.tableDirectorA-L {
+    background-position: -256px -192px;
+}
+
+.world-object.prop.tableDirectorA-R {
+    background-position: -320px -192px;
+}
+
+.world-object.prop.bedA-L {
+    background-position: -256px -256px;
+}
+
+.world-object.prop.bedA-R {
+    background-position: -320px -256px;
+}
+
+.world-object.prop.skeletonA-T {
+    background-position: -384px -192px;
+}
+
+.world-object.prop.skeletonA-B {
+    background-position: -384px -256px;
+}
+
+.world-object.prop.tableNoodleA {
+    background-position: -256px -320px;
+}
+
+.world-object.prop.emptyNoodleBowlA {
+    background-position: -320px -320px;
+}
+
+.world-object.prop.incubatorA-TL {
+    background-position: 0 -256px;
+}
+
+.world-object.prop.incubatorA-TR {
+    background-position: -64px -256px;
+}
+
+.world-object.prop.incubatorA-BL {
+    background-position: 0 -320px;
+}
+
+.world-object.prop.incubatorA-BR {
+    background-position: -64px -320px;
+}
+
+.world-object.prop.megaIncubatorA-TL {
+    background-position: -128px -256px;
+}
+
+.world-object.prop.megaIncubatorA-TR {
+    background-position: -192px -256px;
+}
+
+.world-object.prop.megaIncubatorA-midL {
+    background-position: -128px -320px;
+}
+
+.world-object.prop.megaIncubatorA-midR {
+    background-position: -192px -320px;
+}
+
+.world-object.prop.megaIncubatorA-BL {
+    background-position: -128px -384px;
+}
+
+.world-object.prop.megaIncubatorA-BR {
+    background-position: -192px -384px;
+}
+
+.world-object.prop.boxHandA {
+    background-position: -192px -192px;
+}
+
+.world-object.prop.keyItem-DataPad {
+    background-position: -320px -448px;
+}
+
+.world-object.prop.keyItem-RoomKey {
+    background-position: -384px -448px;
+}
+
+.world-object.prop.keyItem-SauceBottle {
+    background-position: -448px -448px;
+}
+
+.world-object.prop.bigCabinet-TL {
+    background-position: -384px -320px;
+}
+
+.world-object.prop.bigCabinet-TR {
+    background-position: -448px -320px;
+}
+
+.world-object.prop.bigCabinet-BL {
+    background-position: -384px -384px;
+}
+
+.world-object.prop.bigCabinet-BR {
+    background-position: -448px -384px;
+}
+
+.world-object.prop.chairC {
+    background-position: -128px -448px;
+}
+
+#player-sprite {
+    width: 89.6px;
+    /* Scaled to 1.4x tile size to match NPCs */
+    height: 89.6px;
+    background-image: url('assets/images/T_Char_Sprite_Player_01.png?v=6') !important;
+    background-repeat: no-repeat !important;
+    background-size: 358.4px 358.4px !important;
+    /* Exact 4x4 grid (89.6 * 4) */
+    background-position: 0px 0px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin-top: -25.6px;
+    /* (89.6 - 64) Shift up */
+    margin-left: -12.8px;
+    /* (89.6 - 64) / 2 Center */
+    transition: transform 0.35s linear;
+    will-change: transform;
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* Directional Facing - Based on 4x4 Sprite Sheet Rows (Exact Pixel Offsets) */
+#player-sprite.face-down {
+    background-position-y: 0px;
+}
+
+/* Row 1 */
+#player-sprite.face-up {
+    background-position-y: -89.6px;
+}
+
+/* Row 2 */
+#player-sprite.face-right {
+    background-position-y: -179.2px;
+}
+
+/* Row 3 */
+#player-sprite.face-left {
+    background-position-y: -268.8px;
+}
+
+/* Row 4 */
+
+/* Frame-Locked Visuals (0=IdleA, 1=StepA, 2=IdleB, 3=StepB) */
+#player-sprite.p-frame-0 {
+    background-position-x: 0px;
+}
+
+#player-sprite.p-frame-1 {
+    background-position-x: -89.6px;
+}
+
+#player-sprite.p-frame-2 {
+    background-position-x: -179.2px;
+}
+
+#player-sprite.p-frame-3 {
+    background-position-x: -268.8px;
+}
+
+#overworld-ui {
+    height: 60px;
+    background: rgba(0, 0, 0, 0.8);
+    border-top: 2px solid var(--color-player);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    font-family: 'Orbitron', sans-serif;
+    z-index: 20;
+}
+
+#log-count-display,
+#location-display {
+    color: var(--color-player);
+    font-weight: bold;
+    text-shadow: 0 0 10px var(--color-player);
+}
+
+#interaction-prompt {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 10px 20px;
+    border: 1px solid var(--color-near);
+    color: var(--color-near);
+    font-family: 'Orbitron', sans-serif;
+    box-shadow: 0 0 20px rgba(255, 234, 0, 0.3);
+    z-index: 100;
 }
