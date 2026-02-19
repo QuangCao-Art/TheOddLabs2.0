@@ -99,8 +99,8 @@ export const Overworld = {
                 [2, 9, 9, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 29, 29, 9, 9, 9, 3] // Row 10 (Bottom Gate + WC Pair on right)
             ],
             objects: [
-                { id: 'chairA-F_at1', x: 6, y: 9, type: 'prop', name: 'Atrium Chair' },
-                { id: 'chairA-F_at2', x: 12, y: 9, type: 'prop', name: 'Atrium Chair' },
+                { id: 'PotPlant-Small_at3', x: 6, y: 9, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'PotPlant-Small_at4', x: 12, y: 9, type: 'prop', name: 'Atrium Decoration' },
                 // North Stations
                 { id: 'tableB-L_n1', x: 2, y: 3, type: 'prop', name: 'Lab Station' },
                 { id: 'tableB-R_n1', x: 3, y: 3, type: 'prop', name: 'Lab Station' },
@@ -165,8 +165,11 @@ export const Overworld = {
                 { id: 'tableC-B_at3', x: 8, y: 6, type: 'prop', name: 'Atrium Core Table' },
                 { id: 'tableC-T_at4', x: 10, y: 5, type: 'prop', name: 'Atrium Core Table' },
                 { id: 'tableC-B_at4', x: 10, y: 6, type: 'prop', name: 'Atrium Core Table' },
-                { id: 'chairA-F_at3', x: 8, y: 7, type: 'prop', name: 'Lab Chair' },
-                { id: 'chairA-F_at4', x: 10, y: 7, type: 'prop', name: 'Lab Chair' },
+                { id: 'PotPlant-Small_at1', x: 8, y: 7, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'PotPlant-Small_at2', x: 10, y: 7, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'PotPlant-Small_at5', x: 5, y: 7, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'PotPlant-Small_at6', x: 1, y: 9, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'PotPlant-Small_at7', x: 17, y: 9, type: 'prop', name: 'Atrium Decoration' },
                 { id: 'npc_female_at1', x: 9, y: 5, type: 'npc', name: 'Assistant Sarah' },
                 { id: 'npc_male_at1', x: 14, y: 7, type: 'npc', name: 'Researcher Mark' }
             ],
