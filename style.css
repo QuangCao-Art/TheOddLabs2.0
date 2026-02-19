@@ -1608,25 +1608,65 @@ body {
     border: 5px solid #8ccade;
     border-radius: 50px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    padding: 20px 45px;
+    padding: 15px 45px;
     z-index: 1000;
     font-family: 'Courier New', Courier, monospace;
-    /* Pixel-like fallback */
     color: #444;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 #dialogue-box::before,
 #dialogue-box::after {
     content: '';
     position: absolute;
-    top: 15px;
-    bottom: 15px;
-    width: 10px;
-    background: rgba(140, 202, 222, 0.3);
-    border-radius: 5px;
+    width: 100%;
+    height: 100%;
+    border-radius: 50px;
+    z-index: -1;
+}
+
+/* NPC Portraits and Dimming Effect */
+#npc-portrait-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 500;
+    /* Between map and dialogue box (1000) */
+    backdrop-filter: blur(2px);
+    transition: opacity 0.3s ease;
+}
+
+#npc-portrait-overlay.hidden {
+    display: none;
+    opacity: 0;
+}
+
+#npc-portrait-img {
+    max-height: 85%;
+    max-width: 80%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.5));
+    animation: portrait-slide-up 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes portrait-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 #dialogue-box::before {
@@ -1677,21 +1717,272 @@ body {
     }
 }
 
-/* --- INVENTORY SCREEN --- */
+/* --- INVENTORY MODAL --- */
+.hidden {
+    display: none !important;
+}
+
+.header-with-tabs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.tabs {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+    padding-bottom: 15px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.5);
+    padding: 10px 25px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 5px;
+}
+
+.tab-btn:hover {
+    background: rgba(0, 243, 255, 0.05);
+    border-color: rgba(0, 243, 255, 0.5);
+    color: white;
+}
+
+.tab-btn.active {
+    background: rgba(0, 243, 255, 0.15);
+    border-color: var(--color-player);
+    color: var(--color-player);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+    text-shadow: 0 0 10px var(--color-player);
+}
+
+/* Inventory Footer & Controls Guide */
+#inventory-panel .rulebook-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.inv-controls-guide {
+    position: absolute;
+    left: 0;
+    display: flex;
+    gap: 15px;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.5px;
+}
+
+.inv-controls-guide b {
+    color: var(--color-player);
+    margin-right: 3px;
+}
+
+#inventory-panel {
+    width: 95%;
+    max-width: 1375px;
+    height: 95vh;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: modal-appear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
 #inventory-layout {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    height: calc(100% - 100px);
-    padding: 20px;
+    grid-template-columns: 1fr 469px;
+    gap: 30px;
+    flex: 1;
+    overflow: hidden;
+    /* Restored to contain lists */
+    min-height: 0;
+    /* Enforce height containment for flex/grid */
+    padding: 15px;
+    /* Preserve space for glows/scales */
 }
+
+#inventory-list-side {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: visible;
+    min-height: 0;
+    /* Enforce height containment */
+    padding: 20px 25px 10px 10px;
+}
+
+/* Scrollbar for list side */
+#inventory-list-side::-webkit-scrollbar {
+    width: 6px;
+}
+
+#inventory-list-side::-webkit-scrollbar-thumb {
+    background: rgba(0, 243, 255, 0.2);
+    border-radius: 10px;
+}
+
+#inventory-detail-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 243, 255, 0.1);
+    border-radius: 20px;
+    overflow-y: auto;
+}
+
+.detail-card-container {
+    width: 100%;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+#inventory-detail-card {
+    width: 55%;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 243, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+#inventory-detail-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(0, 243, 255, 0.4), 0 0 20px rgba(0, 243, 255, 0.1);
+    border-color: rgba(0, 243, 255, 0.5);
+}
+
+.detail-text-content {
+    width: 100%;
+    text-align: left;
+}
+
+#inventory-detail-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    color: var(--color-player);
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+#inventory-detail-desc {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.status-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-right: 10px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    padding: 15px 25px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 100px 20px 20px 100px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    /* overflow: hidden; removed to allow glows and scale */
+}
+
+.status-item:hover {
+    background: rgba(0, 243, 255, 0.08);
+    border-color: rgba(0, 243, 255, 0.3);
+    transform: translateX(10px);
+}
+
+.status-item.active {
+    background: rgba(0, 243, 255, 0.15);
+    border-color: var(--color-player);
+    box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.1);
+}
+
+.status-cell-icon {
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle at center, rgba(0, 243, 255, 0.2), transparent);
+    background-size: 140%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.status-item:hover .status-cell-icon {
+    border-color: var(--color-player);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+    transform: scale(1.1);
+}
+
+.status-cell-icon img {
+    width: 75%;
+    height: 75%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.3));
+}
+
+.status-info {
+    flex: 1;
+}
+
+.status-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    color: white;
+    margin-bottom: 5px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.status-hp-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    margin-top: 5px;
+}
+
+.hp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-player), #00ff66);
+    border-radius: 3px;
+    box-shadow: 0 0 10px var(--color-player);
+}
+
+
 
 .log-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    overflow-y: auto;
-    padding-right: 10px;
+    gap: 12px;
+    padding: 20px 20px 15px 15px;
 }
 
 .log-item {
@@ -1712,26 +2003,99 @@ body {
     cursor: not-allowed;
 }
 
+/* Secret DataLog (Red styling for #999) */
+.log-item.secret {
+    border-left-color: #ff2244;
+    background: rgba(255, 34, 68, 0.08);
+    opacity: 1;
+}
+
+.log-item.secret .log-id,
+.log-item.secret .log-status {
+    color: #ff4466;
+    text-shadow: 0 0 8px rgba(255, 34, 68, 0.5);
+}
+
+.log-item.secret:hover {
+    background: rgba(255, 34, 68, 0.15);
+    border-left-color: #ff4466;
+}
+
+.log-item.secret.nav-selected {
+    border-color: #ff2244 !important;
+    box-shadow: 0 0 15px rgba(255, 34, 68, 0.5), inset 0 0 10px rgba(255, 34, 68, 0.2);
+    background: rgba(255, 34, 68, 0.1) !important;
+}
+
 .key-items-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px;
 }
 
 .key-item-slot {
-    aspect-ratio: 1/1;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px dashed rgba(0, 255, 255, 0.2);
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle at center, rgba(0, 243, 255, 0.15), transparent);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.key-item-slot:hover {
+    transform: scale(1.1) translateY(-5px);
+    border-color: var(--color-player);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+    background: radial-gradient(circle at center, rgba(0, 243, 255, 0.3), transparent);
+}
+
+.key-item-slot.active {
+    border-color: var(--color-player);
+    background: rgba(0, 243, 255, 0.1);
+    box-shadow: 0 0 25px rgba(0, 243, 255, 0.5), inset 0 0 15px rgba(0, 243, 255, 0.2);
 }
 
 .key-item-slot img {
-    width: 70%;
-    height: 70%;
+    width: 60%;
+    height: 60%;
     object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.3));
+    transition: all 0.3s;
+}
+
+.key-item-sprite {
+    width: 64px;
+    height: 64px;
+    background-image: url('assets/images/Lab_TileSet_02.png?v=4');
+    background-size: 512px 512px;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.5));
+    transform: scale(1.1);
+    transition: all 0.3s;
+}
+
+.key-item-sprite.data-pad {
+    background-position: -320px -448px;
+}
+
+.key-item-sprite.room-key {
+    background-position: -384px -448px;
+}
+
+.key-item-sprite.sauce-bottle {
+    background-position: -448px -448px;
+}
+
+.key-item-slot:hover .key-item-sprite {
+    transform: scale(1.25);
+    filter: drop-shadow(0 0 12px var(--color-player));
 }
 
 .key-item-name {
@@ -1741,6 +2105,19 @@ body {
     color: var(--neon-cyan);
     text-align: center;
     width: 100%;
+}
+
+/* Keyboard Navigation Highlight */
+.nav-selected {
+    border-color: var(--color-player) !important;
+    box-shadow: 0 0 15px var(--color-player), inset 0 0 10px rgba(0, 243, 255, 0.2);
+    transform: scale(1.02) translateX(5px);
+    background: rgba(0, 243, 255, 0.1) !important;
+}
+
+.key-item-slot.nav-selected {
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 0 0 25px var(--color-player);
 }
 
 #dialogue-box.hidden {
@@ -2984,8 +3361,8 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center bottom;
-    margin-top: -25.6px;
-    /* (89.6 - 64) Shift up */
+    margin-top: -36.27px;
+    /* (89.6 - 64) + 10.67 shift */
     margin-left: -12.8px;
     /* (89.6 - 64) / 2 Center */
     z-index: 6;
@@ -3026,11 +3403,11 @@ body {
     background-image: url('assets/images/T_Char_Sprite_Director_01.png?v=4');
 }
 
-.npc.mentor {
+.npc.npc_male {
     background-image: url('assets/images/T_Char_Sprite_NPC_Male_01.png?v=4');
 }
 
-.npc.female {
+.npc.npc_female {
     background-image: url('assets/images/T_Char_Sprite_NPC_Female_01.png?v=4');
 }
 
@@ -3043,11 +3420,13 @@ body {
     float: left;
 }
 
-#overworld-map .world-object.prop {
+#overworld-map .world-object.prop,
+#overworld-map .world-object.trigger,
+#overworld-map .world-object.sign {
     background-image: url('assets/images/Lab_TileSet_02.png?v=4');
     background-size: 512px 512px;
     image-rendering: pixelated;
-    z-index: 5;
+    transform: translateY(-10.67px);
 }
 
 #overworld-map .world-object.render-top {
@@ -3259,24 +3638,56 @@ body {
     background-position: -448px -448px;
 }
 
-.world-object.prop.bigCabinet-TL {
+.world-object.prop.Cabinet-Big-TopLeft {
     background-position: -384px -320px;
 }
 
-.world-object.prop.bigCabinet-TR {
+.world-object.prop.Cabinet-Big-TopRight {
     background-position: -448px -320px;
 }
 
-.world-object.prop.bigCabinet-BL {
+.world-object.prop.Cabinet-Big-BottomLeft {
     background-position: -384px -384px;
 }
 
-.world-object.prop.bigCabinet-BR {
+.world-object.prop.Cabinet-Big-BottomRight {
     background-position: -448px -384px;
+}
+
+.world-object.prop.TableLeaderB-Top {
+    background-position: -256px -384px;
+}
+
+.world-object.prop.TableLeaderB-Bottom {
+    background-position: -256px -448px;
+}
+
+.world-object.prop.Cabinet-Small {
+    background-position: -320px -384px;
 }
 
 .world-object.prop.chairC {
     background-position: -128px -448px;
+}
+
+.world-object.prop.PotPlant-Small {
+    background-position: -192px -448px;
+}
+
+.world-object.prop.Cartonbox-Small {
+    background-position: -128px -448px;
+}
+
+.world-object.prop.Cartonbox-Pile-Top {
+    background-position: -64px -384px;
+}
+
+.world-object.prop.Cartonbox-Pile-Bottom {
+    background-position: -64px -448px;
+}
+
+.world-object.prop.KeyItem-SecretCard {
+    background-position: 0px -448px;
 }
 
 #player-sprite {
@@ -3289,15 +3700,13 @@ body {
     /* Exact 4x4 grid (89.6 * 4) */
     background-position: 0px 0px;
     position: absolute;
-    left: 0;
     top: 0;
-    margin-top: -25.6px;
-    /* (89.6 - 64) Shift up */
+    margin-top: -36.27px;
+    /* (89.6 - 64) + 10.67 shift */
     margin-left: -12.8px;
     /* (89.6 - 64) / 2 Center */
     transition: transform 0.35s linear;
     will-change: transform;
-    z-index: 100;
     pointer-events: none;
 }
 
@@ -3343,7 +3752,7 @@ body {
 #overworld-ui {
     height: 60px;
     background: rgba(0, 0, 0, 0.8);
-    border-top: 2px solid var(--color-player);
+    border-bottom: 2px solid var(--color-player);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -3371,4 +3780,64 @@ body {
     font-family: 'Orbitron', sans-serif;
     box-shadow: 0 0 20px rgba(255, 234, 0, 0.3);
     z-index: 100;
+}
+
+/* Full-screen Card Preview Overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    transition: opacity 0.4s ease, visibility 0.4s;
+}
+
+.overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.preview-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    animation: preview-appear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#preview-image {
+    max-width: 85vh;
+    max-height: 85vh;
+    border-radius: 20px;
+    box-shadow: 0 0 50px rgba(0, 243, 255, 0.4), 0 0 100px rgba(0, 0, 0, 1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    /* Transition for zoom effect if needed later */
+    transition: transform 0.3s ease;
+}
+
+.preview-hint {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 4px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes preview-appear {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }

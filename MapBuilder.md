@@ -65,17 +65,17 @@ Used for atmospheric decoration via the `objects` system. Props follow the class
 | **F9** | TableDeviceA | 1x1 | 128px | 64px | Yes | A protein sequencer that occasionally plays elevator music when it's bored. |
 | **F10** | TableC-Top | 1x1 | 192px | 64px | No | A table usually surrounded by people arguing about whose lunch is missing from the fridge. |
 | **F12** | TableC-Bottom | 1x1 | 192px | 128px | Yes | A table usually surrounded by people arguing about whose lunch is missing from the fridge. |
-| **F13** | LabTankA-Top | 1x1 | 0px | 128px | No | This specimen waves back if you tap the glass. Rules say: DON'T WAVE BACK. |
-| **F14** | LabTankA-Bottom | 1x1 | 0px | 192px | Yes | This specimen waves back if you tap the glass. Rules say: DON'T WAVE BACK. |
-| **F15** | LabTankB-Top | 1x1 | 64px | 128px | No | Frozen solid. The label says 'DO NOT THAW UNTIL 2099'. It's vibrating slightly. |
-| **F16** | LabTankB-Bottom | 1x1 | 64px | 192px | Yes | Frozen solid. The label says 'DO NOT THAW UNTIL 2099'. It's vibrating slightly. |
+| **F13** | LabTankA-Top | 1x1 | 0px | 128px | No | This specimen has only one eye. The label say: DON'T LOOK AT ITS EYE. |
+| **F14** | LabTankA-Bottom | 1x1 | 0px | 192px | Yes | This specimen has only one eye. The label say: DON'T LOOK AT ITS EYE. |
+| **F15** | LabTankB-Top | 1x1 | 64px | 128px | No | The specimen here is slowly swimming, why its surrounding turn yellow?. |
+| **F16** | LabTankB-Bottom | 1x1 | 64px | 192px | Yes | The specimen here is slowly swimming, why its surrounding turn yellow?. |
 | **F17** | WallHangingB | 1x1 | 448px | 0px | No | 'DAYS SINCE ACCIDENTAL MUTATION: 0'. Someone just crossed out the '1'. |
 | **F18** | PotPlantA-Top | 1x1 | 384px | 64px | No | Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship. |
 | **F19** | PotPlantA-Bottom | 1x1 | 384px | 128px | Yes | Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship. |
 | **F20** | PotPlantB-Top | 1x1 | 448px | 64px | No | Looks like a plant, smells like old gym socks. Science still isn't sure why. |
 | **F21** | PotPlantB-Bottom | 1x1 | 448px | 128px | Yes | Looks like a plant, smells like old gym socks. Science still isn't sure why. |
-| **F22** | LabTankC-Top | 1x1 | 128px | 128px | No | Filled with a fluid so blue it technically shouldn't exist in this dimension. |
-| **F23** | LabTankC-Bottom | 1x1 | 128px | 192px | Yes | Filled with a fluid so blue it technically shouldn't exist in this dimension. |
+| **F22** | LabTankC-Top | 1x1 | 128px | 128px | No | Why did the cold specimen refuse to talk? Because it had minus zero interest in your thermal energy. |
+| **F23** | LabTankC-Bottom | 1x1 | 128px | 192px | Yes | Why did the cold specimen refuse to talk? Because it had minus zero interest in your thermal energy. |
 | **F24** | PotPlantC-Top | 1x1 | 448px | 192px | No | The leaves are glowing. It might be happy, or it might be preparing for ignition. |
 | **F25** | PotPlantC-Bottom | 1x1 | 448px | 256px | Yes | The leaves are glowing. It might be happy, or it might be preparing for ignition. |
 | **F26** | TableD-Left | 1x1 | 256px | 64px | Yes | Reserved for 'The Important People'. Includes a built-in panic button. |
@@ -104,10 +104,18 @@ Used for atmospheric decoration via the `objects` system. Props follow the class
 | **F49** | KeyItem-DataPad | 1x1 | 320px | 448px | Yes | Mostly contains encrypted logs, but some files are just high-score records for 'Snake'. |
 | **F50** | KeyItem-RoomKey | 1x1 | 384px | 448px | Yes | A magnetic keycard. Smells like the Director's expensive cologne. |
 | **F51** | KeyItem-SauceBottle | 1x1 | 448px | 448px | Yes | Label: 'SUPERNOVA SAUCE'. Scoville rating: YES. Lab-certified to burn through metal. |
-| **F52** | BigCabinet-TopLeft | 1x1 | 384px | 320px | No | Organized chaos. Opening it risks a landslide of clipboards and broken test tubes. |
-| **F53** | BigCabinet-TopRight | 1x1 | 448px | 320px | No | Organized chaos. Opening it risks a landslide of clipboards and broken test tubes. |
-| **F54** | BigCabinet-BottomLeft | 1x1 | 384px | 384px | Yes | Organized chaos. Opening it risks a landslide of clipboards and broken test tubes. |
-| **F55** | BigCabinet-BottomRight | 1x1 | 448px | 384px | Yes | Organized chaos. Opening it risks a landslide of clipboards and broken test tubes. |
+| **F52** | Cabinet-Big-TopLeft | 1x1 | 384px | 320px | No | Organized chaos. Opening it risks a landslide of clipboards and broken test tubes. |
+| **F53** | Cabinet-Big-TopRight | 1x1 | 448px | 320px | No | Organized chaos. Opening it risks a landslide of clipboards and broken test tubes. |
+| **F54** | Cabinet-Big-BottomLeft | 1x1 | 384px | 384px | Yes | Organized chaos. Opening it risks a landslide of clipboards and broken test tubes. |
+| **F55** | Cabinet-Big-BottomRight | 1x1 | 448px | 384px | Yes | Organized chaos. Opening it risks a landslide of clipboards and broken test tubes. |
+| **F56** | TableLeaderB-Top | 1x1 | 256px | 384px | Yes | 'Why all the table has to be this meesy?' asked by the Janitor. |
+| **F57** | TableLeaderB-Bottom | 1x1 | 256px | 448px | Yes | 'Why all the table has to be this meesy?' asked by the Janitor. |
+| **F58** | Cabinet-Small | 1x1 | 320px | 384px | Yes | I can see the little cockcroach's crawing out! |
+| **F59** | PotPlant-Small | 1x1 | 192px | 448px | Yes | Look like normal plant, or is it? |
+| **F60** | Cartonbox-Small | 1x1 | 128px | 448px | Yes | This box is heavier than it look |
+| **F61** | Cartonbox-Pile-Top | 1x1 | 64px | 384px | No | Please don't fall on my head |
+| **F62** | Cartonbox-Pile-Bottom | 1x1 | 64px | 448px | Yes | Please don't fall on my head |
+| **F63** | KeyItem-SecretCard | 1x1 | 0px | 448px | Yes | This is the best ultimate super rare card ever! |
 
 ---
 

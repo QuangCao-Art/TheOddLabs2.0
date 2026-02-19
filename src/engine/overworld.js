@@ -27,6 +27,7 @@ export const Overworld = {
     dialogueQueue: [],
     typingInterval: null,
     isTransitioning: false,
+    isPaused: false,
     logsCollected: [], // Array of log IDs found
 
     zones: {
@@ -59,23 +60,21 @@ export const Overworld = {
                 { id: 'labTankB-B_lob_bl', x: 7, y: 3, type: 'prop', name: 'Cryo Tank' },
                 { id: 'labTankC-T_lob_br', x: 8, y: 2, type: 'prop', name: 'Chemical Reactor' },
                 { id: 'labTankC-B_lob_br', x: 8, y: 3, type: 'prop', name: 'Chemical Reactor' },
-                // Reception Hub (Upgraded)
-                { id: 'tableLeaderA-L_reception', x: 8, y: 5, type: 'prop', name: 'Leader Desk', hiddenLogId: '002' },
-                { id: 'tableLeaderA-R_reception', x: 9, y: 5, type: 'prop', name: 'Leader Desk' },
-                { id: 'tableA_lobby_side', x: 7, y: 5, type: 'prop', name: 'Side Table' },
                 { id: 'jenzi', x: 4, y: 4, type: 'npc', name: 'Jenzi' },
-                { id: 'chairA-F_lobby_client', x: 8, y: 4, type: 'prop', name: 'Lab Chair' },
-                { id: 'chairC_reception', x: 8, y: 5, type: 'prop', name: 'Executive Chair' },
                 { id: 'chairA-R_lobby_wait1', x: 1, y: 5, type: 'prop', name: 'Lab Chair' },
                 { id: 'chairA-R_lobby_wait2', x: 1, y: 6, type: 'prop', name: 'Lab Chair' },
-                { id: 'chairA-L_lobby_reception_guest', x: 9, y: 6, type: 'prop', name: 'Lab Chair' },
+                // Reception Desk
+                { id: 'TableLeaderB-Top_reception', x: 8, y: 5, type: 'prop', name: 'Leader Desk', hiddenLogId: '002' },
+                { id: 'TableLeaderB-Bottom_reception', x: 8, y: 6, type: 'prop', name: 'Leader Desk' },
+                { id: 'chairA-L_reception_desk', x: 9, y: 5, type: 'prop', name: 'Lab Chair' },
                 // Storage & Decor
                 // PotPlants instead of cylinder tables
                 { id: 'potPlantB-T_lob1', x: 4, y: 2, type: 'prop', name: 'Decorative Fern' },
                 { id: 'potPlantB-B_lob1', x: 4, y: 3, type: 'prop', name: 'Decorative Fern', hiddenLogId: '001' },
                 { id: 'potPlantB-T_lob2', x: 6, y: 2, type: 'prop', name: 'Decorative Fern' },
                 { id: 'potPlantB-B_lob2', x: 6, y: 3, type: 'prop', name: 'Decorative Fern' },
-                { id: 'wallHangingA_lob1', x: 3, y: 2, type: 'prop', name: 'Lab Protocol' }
+                { id: 'wallHangingA_lob1', x: 3, y: 2, type: 'prop', name: 'Lab Protocol' },
+                { id: 'npc_male_lob1', x: 2, y: 5, type: 'npc', name: 'Researcher Mark' }
             ],
             doors: [
                 { x: 5, y: 2, targetZone: 'atrium', targetX: 9, targetY: 9 }
@@ -115,16 +114,23 @@ export const Overworld = {
                 { id: 'labTankA-B_at_tl', x: 1, y: 3, type: 'prop', name: 'Corner Array' },
                 { id: 'labTankA-T_at_tr', x: 17, y: 2, type: 'prop', name: 'Corner Array' },
                 { id: 'labTankA-B_at_tr', x: 17, y: 3, type: 'prop', name: 'Corner Array' },
-                // Big Cabinets in the red marks
-                { id: 'bigCabinet-TL_1', x: 5, y: 2, type: 'prop', name: 'Equipment Cabinet' },
-                { id: 'bigCabinet-TR_1', x: 6, y: 2, type: 'prop', name: 'Equipment Cabinet' },
-                { id: 'bigCabinet-BL_1', x: 5, y: 3, type: 'prop', name: 'Equipment Cabinet' },
-                { id: 'bigCabinet-BR_1', x: 6, y: 3, type: 'prop', name: 'Equipment Cabinet' },
+                // Large Cabinets in the North Stations
+                { id: 'Cabinet-Big-TopLeft_at1', x: 5, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'Cabinet-Big-TopRight_at1', x: 6, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'Cabinet-Big-BottomLeft_at1', x: 5, y: 3, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'Cabinet-Big-BottomRight_at1', x: 6, y: 3, type: 'prop', name: 'Storage Cabinet' },
 
-                { id: 'bigCabinet-TL_2', x: 12, y: 2, type: 'prop', name: 'Equipment Cabinet' },
-                { id: 'bigCabinet-TR_2', x: 13, y: 2, type: 'prop', name: 'Equipment Cabinet' },
-                { id: 'bigCabinet-BL_2', x: 12, y: 3, type: 'prop', name: 'Equipment Cabinet' },
-                { id: 'bigCabinet-BR_2', x: 13, y: 3, type: 'prop', name: 'Equipment Cabinet' },
+                { id: 'Cabinet-Big-TopLeft_at2', x: 12, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'Cabinet-Big-TopRight_at2', x: 13, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'Cabinet-Big-BottomLeft_at2', x: 12, y: 3, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'Cabinet-Big-BottomRight_at2', x: 13, y: 3, type: 'prop', name: 'Storage Cabinet' },
+
+                // Small Cabinets flanking the central path
+                { id: 'Cabinet-Small_at1', x: 7, y: 3, type: 'prop', name: 'Supply Cabinet' },
+                { id: 'Cabinet-Small_at2', x: 8, y: 3, type: 'prop', name: 'Supply Cabinet' },
+                { id: 'Cabinet-Small_at3', x: 10, y: 3, type: 'prop', name: 'Supply Cabinet' },
+                { id: 'Cabinet-Small_at4', x: 11, y: 3, type: 'prop', name: 'Supply Cabinet' },
+
                 // Shifted from bottom to Northern Stations
                 { id: 'labTankA-T_at_n1', x: 4, y: 2, type: 'prop', name: 'Station Tank' },
                 { id: 'labTankA-B_at_n1', x: 4, y: 3, type: 'prop', name: 'Station Tank' },
@@ -160,7 +166,9 @@ export const Overworld = {
                 { id: 'tableC-T_at4', x: 10, y: 5, type: 'prop', name: 'Atrium Core Table' },
                 { id: 'tableC-B_at4', x: 10, y: 6, type: 'prop', name: 'Atrium Core Table' },
                 { id: 'chairA-F_at3', x: 8, y: 7, type: 'prop', name: 'Lab Chair' },
-                { id: 'chairA-F_at4', x: 10, y: 7, type: 'prop', name: 'Lab Chair' }
+                { id: 'chairA-F_at4', x: 10, y: 7, type: 'prop', name: 'Lab Chair' },
+                { id: 'npc_female_at1', x: 9, y: 5, type: 'npc', name: 'Assistant Sarah' },
+                { id: 'npc_male_at1', x: 14, y: 7, type: 'npc', name: 'Researcher Mark' }
             ],
             doors: [
                 { x: 9, y: 10, targetZone: 'lobby', targetX: 5, targetY: 3 },
@@ -398,17 +406,17 @@ export const Overworld = {
         'tableDeviceA': { hasCollision: true, info: "A protein sequencer that occasionally plays elevator music when it's bored." },
         'tableC-T': { hasCollision: false, info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
         'tableC-B': { hasCollision: true, info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
-        'labTankA-T': { hasCollision: false, info: "This specimen waves back if you tap the glass. Rules say: DON'T WAVE BACK." },
-        'labTankA-B': { hasCollision: true, info: "This specimen waves back if you tap the glass. Rules say: DON'T WAVE BACK." },
-        'labTankB-T': { hasCollision: false, info: "Frozen solid. The label says 'DO NOT THAW UNTIL 2099'. It's vibrating slightly." },
-        'labTankB-B': { hasCollision: true, info: "Frozen solid. The label says 'DO NOT THAW UNTIL 2099'. It's vibrating slightly." },
+        'labTankA-T': { hasCollision: false, info: "This specimen has only one eye. The label say: DON'T LOOK AT ITS EYE." },
+        'labTankA-B': { hasCollision: true, info: "This specimen has only one eye. The label say: DON'T LOOK AT ITS EYE." },
+        'labTankB-T': { hasCollision: false, info: "The specimen here is slowly swimming, why its surrounding turn yellow?." },
+        'labTankB-B': { hasCollision: true, info: "The specimen here is slowly swimming, why its surrounding turn yellow?." },
         'wallHangingB': { hasCollision: false, info: "'DAYS SINCE ACCIDENTAL MUTATION: 0'. Someone just crossed out the '1'." },
         'potPlantA-T': { hasCollision: false, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
         'potPlantA-B': { hasCollision: true, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
         'potPlantB-T': { hasCollision: false, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
         'potPlantB-B': { hasCollision: true, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
-        'labTankC-T': { hasCollision: false, info: "Filled with a fluid so blue it technically shouldn't exist in this dimension." },
-        'labTankC-B': { hasCollision: true, info: "Filled with a fluid so blue it technically shouldn't exist in this dimension." },
+        'labTankC-T': { hasCollision: false, info: "Why did the cold specimen refuse to talk? Because it had minus zero interest in your thermal energy." },
+        'labTankC-B': { hasCollision: true, info: "Why did the cold specimen refuse to talk? Because it had minus zero interest in your thermal energy." },
         'potPlantC-T': { hasCollision: false, info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
         'potPlantC-B': { hasCollision: true, info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
         'tableD-L': { hasCollision: true, info: "Reserved for 'The Important People'. Includes a built-in panic button." },
@@ -427,25 +435,25 @@ export const Overworld = {
         'incubatorA-TR': { hasCollision: false, info: "A standard-issue Cell synthesis machine. Humms with the potential of new life." },
         'incubatorA-BL': { hasCollision: true, info: "A standard-issue Cell synthesis machine. Humms with the potential of new life." },
         'incubatorA-BR': { hasCollision: true, info: "A standard-issue Cell synthesis machine. Humms with the potential of new life." },
-        'megaIncubatorA-TL': { hasCollision: false, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-        'megaIncubatorA-TR': { hasCollision: false, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-        'megaIncubatorA-midL': { hasCollision: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-        'megaIncubatorA-midR': { hasCollision: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-        'megaIncubatorA-BL': { hasCollision: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
         'megaIncubatorA-BR': { hasCollision: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-        'bigCabinet-TL': { hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-        'bigCabinet-TR': { hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-        'bigCabinet-BL': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-        'bigCabinet-BR': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
+        'Cabinet-Big-TopLeft': { hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
+        'Cabinet-Big-TopRight': { hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
+        'Cabinet-Big-BottomLeft': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
+        'Cabinet-Big-BottomRight': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
+        'TableLeaderB-Top': { hasCollision: true, info: "'Why all the table has to be this meesy?' asked by the Janitor." },
+        'TableLeaderB-Bottom': { hasCollision: true, info: "'Why all the table has to be this meesy?' asked by the Janitor." },
+        'Cabinet-Small': { hasCollision: true, info: "I can see the little cockcroach's crawing out!" },
         'boxHandA': { hasCollision: true, info: "Labeled: 'FRAGILE - BIOLOGICAL SAMPLES - DO NOT SHAKE'. It just made a sneeze sound." },
         'keyItem-DataPad': { hasCollision: true, info: "Mostly contains encrypted logs, but some files are just high-score records for 'Snake'." },
         'keyItem-RoomKey': { hasCollision: true, info: "A magnetic keycard. Smells like the Director's expensive cologne." },
         'keyItem-SauceBottle': { hasCollision: true, info: "Label: 'SUPERNOVA SAUCE'. Scoville rating: YES. Lab-certified to burn through metal." },
-        'bigCabinet-TopLeft': { hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-        'bigCabinet-TopRight': { hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-        'bigCabinet-BottomLeft': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-        'bigCabinet-BottomRight': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-        'chairC': { hasCollision: true, info: "A high-back executive chair that squeaks in a way that sounds suspiciously like judging your life choices." }
+        'chairC': { hasCollision: true, info: "A high-back executive chair that squeaks in a way that sounds suspiciously like judging your life choices." },
+        'PotPlant-Small': { hasCollision: true, info: "Look like normal plant, or is it?" },
+        'Cartonbox-Small': { hasCollision: true, info: "This box is heavier than it look" },
+        'Cartonbox-Pile-Top': { hasCollision: false, info: "Please don't fall on my head" },
+        'Cartonbox-Pile-Bottom': { hasCollision: true, info: "Please don't fall on my head" },
+        'KeyItem-SecretCard': { hasCollision: true, info: "This is the best ultimate super rare card ever!" },
+        'log': { hasCollision: false, info: "A data pad containing potentially sensitive research notes. Better give it a read." }
     },
 
     getFurnitureMeta(objId) {
@@ -532,7 +540,7 @@ export const Overworld = {
 
                 // Class hierarchy: .world-object .[type] .[specific-id]
                 el.id = `npc-${obj.id}`;
-                const specificClass = obj.id.split('_')[0]; // e.g., 'lana', 'dyzes', 'jenzi'
+                const specificClass = obj.id.startsWith('npc_') ? obj.id.split('_').slice(0, 2).join('_') : obj.id.split('_')[0];
                 el.className = `world-object ${obj.type} ${specificClass}`;
 
                 // Add direction class if it's an NPC
@@ -545,6 +553,7 @@ export const Overworld = {
                 el.style.height = `${(obj.height || 1) * this.tileSize}px`;
                 el.style.left = `${obj.x * this.tileSize}px`;
                 el.style.top = `${obj.y * this.tileSize}px`;
+                el.style.zIndex = obj.y + (obj.height || 1) + 10;
 
                 // RPG Layering: If object has no collision, it should render over the player
                 const meta = this.getFurnitureMeta(obj.id);
@@ -583,7 +592,7 @@ export const Overworld = {
 
         window.addEventListener('keydown', (e) => {
             if (document.getElementById('screen-overworld').classList.contains('hidden')) return;
-            if (e.key.toLowerCase() === 'e') this.interact();
+            if (e.key.toLowerCase() === 'f') this.interact();
             if (e.key.toLowerCase() === 'escape') {
                 document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
                 document.getElementById('screen-main-menu').classList.remove('hidden');
@@ -604,7 +613,7 @@ export const Overworld = {
     },
 
     handleMovementInput() {
-        if (this.player.isMoving || this.isDialogueActive || this.isTransitioning) return;
+        if (this.player.isMoving || this.isDialogueActive || this.isTransitioning || this.isPaused) return;
 
         const move = { x: 0, y: 0 };
         if (this.keysPressed.has('w') || this.keysPressed.has('arrowup')) move.y = -1;
@@ -780,6 +789,7 @@ export const Overworld = {
 
             // 3. Move Player relative to Map
             playerEl.style.transform = `translate(${this.player.x * this.tileSize}px, ${this.player.y * this.tileSize}px)`;
+            playerEl.style.zIndex = this.player.y + 1 + 10;
         }
 
         // 2. Update Map Position (Camera Follow)
@@ -807,6 +817,7 @@ export const Overworld = {
     },
 
     interact() {
+        if (this.isPaused) return;
         if (this.isDialogueActive) {
             if (this.isTyping) {
                 // Instant Complete
@@ -905,12 +916,20 @@ export const Overworld = {
                 "Lydrosome is a marvel of tactical evolution.",
                 "But your presence here is... unscheduled.",
                 "Let us see if your mind is as sharp as your cell's membrane."
+            ],
+            'npc_female': [
+                "Working under Director Capsain is... intense. He's a visionary, but those vision quests take a toll.",
+                "Have you checked the data logs? We've lost track of so many entries lately."
+            ],
+            'npc_male': [
+                "Stay sharp, Intern. The cells in this ward are more reactive than usual today.",
+                "If you see Jenzi, tell him the bio-sampler is ready. He's probably slacking in the lounge again."
             ]
         };
 
         const key = npc.id.split('_')[0];
         const lines = dialogueDb[key] || ["..."];
-        this.showDialogue(npc.name, lines);
+        this.showDialogue(npc.name, lines, npc.id);
     },
 
     collectLog(logId) {
@@ -924,15 +943,38 @@ export const Overworld = {
         window.dispatchEvent(new CustomEvent('datalog-found', { detail: { id: logId } }));
     },
 
-    showDialogue(name, lines) {
+    showDialogue(name, lines, npcId = null) {
         this.isDialogueActive = true;
         this.dialogueQueue = [...lines]; // Clone the array
 
         const box = document.getElementById('dialogue-box');
         const nameEl = document.getElementById('dialogue-name');
+        const portraitOverlay = document.getElementById('npc-portrait-overlay');
+        const portraitImg = document.getElementById('npc-portrait-img');
 
         if (box) box.classList.remove('hidden');
         if (nameEl) nameEl.textContent = name;
+
+        // Reset and Show Portrait if applicable
+        if (portraitOverlay && portraitImg) {
+            portraitOverlay.classList.add('hidden');
+            portraitImg.src = '';
+
+            const portraitMap = {
+                'jenzi': 'Character_FullArt_Jenzi.png',
+                'lana': 'Character_FullArt_Lana.png',
+                'dyzes': 'Character_FullArt_Dyzes.png',
+                'capsain': 'Character_FullArt_Director.png',
+                'npc_female': 'Character_FullArt_NPC_Female.png',
+                'npc_male': 'Character_FullArt_NPC_Male.png'
+            };
+
+            const key = npcId ? (npcId.startsWith('npc_') ? npcId.split('_').slice(0, 2).join('_') : npcId.split('_')[0]) : null;
+            if (key && portraitMap[key]) {
+                portraitImg.src = `assets/images/${portraitMap[key]}`;
+                portraitOverlay.classList.remove('hidden');
+            }
+        }
 
         this.nextDialogue();
     },
@@ -978,6 +1020,7 @@ export const Overworld = {
     closeDialogue() {
         this.isDialogueActive = false;
         document.getElementById('dialogue-box')?.classList.add('hidden');
+        document.getElementById('npc-portrait-overlay')?.classList.add('hidden');
         this.currentDialoguePartner = null;
     }
 };

@@ -26,6 +26,48 @@ const RADIUS = 130; // Calibrated for pixel-perfect alignment with background as
 let battleLogHistory = [];
 let previousScreen = 'screen-main-menu';
 
+// Inventory Navigation State
+let invNav = {
+    active: false,
+    tabIndex: 0, // 0: Logs, 1: Items, 2: Cells
+    itemIndex: 0
+};
+
+const updateInvNav = (isKeyboardAction = false) => {
+    const tabs = ['logs', 'items', 'status'];
+    const currentTabId = tabs[invNav.tabIndex];
+
+    // 1. Update Tab Visuals
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === invNav.tabIndex);
+    });
+
+    // 2. Show correct tab content
+    document.querySelectorAll('.inventory-tab').forEach(t => t.classList.add('hidden'));
+    const activeTab = document.getElementById(`tab-${currentTabId}`);
+    if (activeTab) activeTab.classList.remove('hidden');
+
+    // 3. Highlight selected item
+    if (!activeTab) return;
+    const items = activeTab.querySelectorAll('.log-item, .key-item-slot, .status-item');
+    if (items.length === 0) return;
+
+    if (invNav.itemIndex >= items.length) invNav.itemIndex = Math.max(0, items.length - 1);
+
+    items.forEach((item, idx) => {
+        item.classList.toggle('nav-selected', idx === invNav.itemIndex);
+    });
+
+    // 4. Update Detail Panel
+    const selectedItem = items[invNav.itemIndex];
+    if (selectedItem && isKeyboardAction) {
+        // Auto-scroll to keep item in view during keyboard nav
+        selectedItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        selectedItem.click();
+    }
+};
+
 // Initialization
 function init() {
     try {
@@ -80,6 +122,7 @@ function setupEventListeners() {
     // Menu Controls
     document.getElementById('btn-start-overworld')?.addEventListener('click', () => {
         showScreen('screen-overworld');
+        resetGame(); // Ensure parties/stats are initialized for inventory
         Overworld.init();
     });
 
@@ -98,7 +141,7 @@ function setupEventListeners() {
         showScreen('screen-main-menu');
     });
 
-    document.getElementById('btn-battle-back')?.addEventListener('click', () => showScreen('screen-main-menu'));
+    document.getElementById('btn-battle-back')?.addEventListener('click', () => showScreen(previousScreen));
     document.getElementById('btn-battle-rulebook')?.addEventListener('click', () => showScreen('screen-rulebook'));
     document.getElementById('btn-open-rulebook')?.addEventListener('click', () => showScreen('screen-rulebook'));
     document.getElementById('btn-rulebook-back')?.addEventListener('click', () => showScreen(previousScreen));
@@ -108,24 +151,40 @@ function setupEventListeners() {
         renderCellContainer();
         showScreen('screen-cell-container');
     });
-    document.getElementById('btn-container-back')?.addEventListener('click', () => showScreen('screen-main-menu'));
+    document.getElementById('btn-container-back')?.addEventListener('click', () => showScreen(previousScreen));
     document.getElementById('btn-close-card')?.addEventListener('click', () => {
         document.getElementById('monster-card-modal').classList.add('hidden');
     });
 
     // Inventory Controls
     document.getElementById('btn-inventory-back')?.addEventListener('click', () => {
-        showScreen(previousScreen);
+        document.getElementById('screen-inventory').classList.add('hidden');
     });
 
+    // Card Preview Controls
+    const previewOverlay = document.getElementById('card-preview-overlay');
+    const previewImg = document.getElementById('preview-image');
+    const detailCardImg = document.getElementById('inventory-detail-card');
+
+    if (detailCardImg && previewOverlay && previewImg) {
+        detailCardImg.addEventListener('click', () => {
+            if (detailCardImg.src && !detailCardImg.src.includes('placeholder')) {
+                previewImg.src = detailCardImg.src;
+                previewOverlay.classList.remove('hidden');
+            }
+        });
+
+        previewOverlay.addEventListener('click', () => {
+            previewOverlay.classList.add('hidden');
+        });
+    }
+
     const tabBtns = document.querySelectorAll('.tab-btn');
-    tabBtns.forEach(btn => {
+    tabBtns.forEach((btn, idx) => {
         btn.addEventListener('click', () => {
-            const tabId = btn.dataset.tab;
-            document.querySelectorAll('.inventory-tab').forEach(t => t.classList.add('hidden'));
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            tabBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            invNav.tabIndex = idx;
+            invNav.itemIndex = 0;
+            updateInvNav();
         });
     });
 
@@ -138,23 +197,87 @@ function setupEventListeners() {
         if (countEl) countEl.innerText = Overworld.logsCollected.length;
     });
 
-    // Global ESC Key Listener for Rulebook
+
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
+        const key = e.key.toLowerCase();
+        const inventoryOverlay = document.getElementById('screen-inventory');
+        const isInvOpen = inventoryOverlay && !inventoryOverlay.classList.contains('hidden');
+
+        if (key === 'escape') {
+            const previewOverlay = document.getElementById('card-preview-overlay');
+            if (previewOverlay && !previewOverlay.classList.contains('hidden')) {
+                previewOverlay.classList.add('hidden');
+                return;
+            }
+
             const rulebookScreen = document.getElementById('screen-rulebook');
-            const inventoryScreen = document.getElementById('screen-inventory');
+            const inventoryOverlay = document.getElementById('screen-inventory');
+            const cellContainer = document.getElementById('screen-cell-container');
+            const battleScreen = document.getElementById('screen-battle');
+
             if (rulebookScreen && !rulebookScreen.classList.contains('hidden')) {
                 showScreen(previousScreen);
+                return;
             }
-            if (inventoryScreen && !inventoryScreen.classList.contains('hidden')) {
+            if (isInvOpen) {
+                inventoryOverlay.classList.add('hidden');
+                invNav.active = false;
+                Overworld.isPaused = false;
+                return;
+            }
+            if (cellContainer && !cellContainer.classList.contains('hidden')) {
                 showScreen(previousScreen);
+                return;
+            }
+            if (battleScreen && !battleScreen.classList.contains('hidden')) {
+                showScreen(previousScreen);
+                return;
             }
         }
-        if (e.key.toLowerCase() === 'i') {
+
+        if (key === 'r') {
             const isOverworld = !document.getElementById('screen-overworld').classList.contains('hidden');
-            if (isOverworld) {
-                renderInventory();
-                showScreen('screen-inventory');
+            if (isOverworld && inventoryOverlay) {
+                if (!isInvOpen) {
+                    renderInventory();
+                    inventoryOverlay.classList.remove('hidden');
+                    invNav.active = true;
+                    invNav.tabIndex = 0;
+                    invNav.itemIndex = 0;
+                    Overworld.isPaused = true;
+                    updateInvNav();
+                } else {
+                    inventoryOverlay.classList.add('hidden');
+                    invNav.active = false;
+                    Overworld.isPaused = false;
+                }
+            }
+            return;
+        }
+
+        // Inventory Specific Navigation
+        if (invNav.active && isInvOpen) {
+            const tabs = ['logs', 'items', 'status'];
+            const activeTab = document.getElementById(`tab-${tabs[invNav.tabIndex]}`);
+            const items = activeTab.querySelectorAll('.log-item, .key-item-slot, .status-item');
+
+            if (key === 'q') { // Tab Left
+                invNav.tabIndex = (invNav.tabIndex - 1 + tabs.length) % tabs.length;
+                invNav.itemIndex = 0;
+                updateInvNav(true);
+            } else if (key === 'e') { // Tab Right
+                invNav.tabIndex = (invNav.tabIndex + 1) % tabs.length;
+                invNav.itemIndex = 0;
+                updateInvNav(true);
+            } else if (key === 'w' || key === 'arrowup' || key === 'a' || key === 'arrowleft') {
+                invNav.itemIndex = (invNav.itemIndex - 1 + items.length) % items.length;
+                updateInvNav(true);
+            } else if (key === 's' || key === 'arrowdown' || key === 'd' || key === 'arrowright') {
+                invNav.itemIndex = (invNav.itemIndex + 1) % items.length;
+                updateInvNav(true);
+            } else if (key === 'f' || key === 'enter') {
+                const selectedItem = items[invNav.itemIndex];
+                if (selectedItem) selectedItem.click();
             }
         }
     });
@@ -799,63 +922,149 @@ const setStyle = (selector, prop, val) => {
 function renderInventory() {
     const logList = document.getElementById('inventory-log-list');
     const itemGrid = document.getElementById('inventory-item-grid');
-    const statusList = document.getElementById('status-party-list');
+    const statusList = document.getElementById('inventory-status-list');
+    const detailTitle = document.getElementById('inventory-detail-title');
+    const detailDesc = document.getElementById('inventory-detail-desc');
+    const detailCard = document.getElementById('inventory-detail-card');
+
     if (!logList || !itemGrid || !statusList) return;
 
-    // 1. Populate Logs (Total 20)
-    logList.innerHTML = '';
-    for (let i = 1; i <= 20; i++) {
-        const id = i.toString().padStart(3, '0');
-        const isFound = Overworld.logsCollected.includes(id);
-        const item = document.createElement('div');
-        item.className = `log-item ${isFound ? '' : 'locked'}`;
-        item.innerHTML = `
-            <span class="log-id">#${id}</span>
-            <span class="log-status">${isFound ? 'DECRYPTED' : 'ENCRYPTED DATA'}</span>
-        `;
-        if (isFound) {
-            item.onclick = () => {
-                // Placeholder for viewing log text
-                Overworld.showDialogue(`DataLog #${id}`, ["Log content loading... [NOT IMPLEMENTED]"]);
-            };
+    // Helper to update the detail panel
+    const updateDetail = (title, desc, imgSrc) => {
+        if (detailTitle) detailTitle.innerText = title;
+        if (detailDesc) detailDesc.innerText = desc;
+        const cardContainer = detailCard ? detailCard.closest('.detail-card-container') : null;
+        if (imgSrc) {
+            if (detailCard) detailCard.src = imgSrc;
+            if (cardContainer) cardContainer.style.display = '';
+        } else {
+            if (cardContainer) cardContainer.style.display = 'none';
         }
+    };
+
+    // DataLog Entries (from story_lore.md)
+    const dataLogs = [
+        { id: '001', tag: 'HISTORY', title: 'Mission Statement', text: "The Odd Labs was founded on the belief that the microscopic world holds the cure for the macro-world. We heal the earth by healing the cell." },
+        { id: '002', tag: 'FLUFF', title: 'The Coffee Incident', text: "Someone left a half-empty mug in the incubator. It has grown a fuzzy purple mold. It isn't sentient, but it did try to eat my pen." },
+        { id: '003', tag: 'INFO', title: 'Security Protocols', text: "Entrance gates now require a valid Bio-Signature match. Unregistered interns will be teased by Jenzi until they cry. - Management." },
+        { id: '004', tag: 'TEASE', title: 'Missing Footage', text: "Automatic backup failed during the '82 Incident. Exactly 4 minutes of footage are missing from the central hub. Capsain claims it was 'ozone interference'." },
+        { id: '005', tag: 'FUN', title: 'Noodle Tuesday', text: "Cafeteria Update: Noodle Tuesday is now the highest energy-consumption day in the lab. Director Capsain was seen carrying 12 packs of 'Inferno' brand." },
+        { id: '006', tag: 'INFO', title: 'Botanic Breakthrough', text: "Lana successfully integrated chlorophyll into a fibroblast today. The resulting 'Cambihil' is incredibly stable." },
+        { id: '007', tag: 'TEASE', title: "Lana's Complaint", text: "The Director is spending far too much time in the maintenance closet of Sector 4. He brings a bowl of noodles in there every day. Sus." },
+        { id: '008', tag: 'FUN', title: 'Photosynthesis Party', text: "Cambihils actually grow 15% faster when exposed to high-tempo music. Lana hates it, but the data doesn't lie." },
+        { id: '009', tag: 'TEASE', title: 'The Spicy Aroma', text: "Lana noted a 'pungent, peppery smell' coming from the vents near the Old Lab wing. She logged it as 'botanical mutation fumes'." },
+        { id: '010', tag: 'INFO', title: 'Private Key Log', text: "Lana changed the lock on her private storage. Hint: It's the same day she first successfully grew a Cell. (Is she hiding something? - Anon)." },
+        { id: '011', tag: 'INFO', title: "Dyzes' Observations", text: "Scientist Dyzes reports that the 'Lydrosome' mutation shows 99% tissue compatibility with the human host." },
+        { id: '012', tag: 'TEASE', title: 'Protein Analysis', text: "Looking at the 'mutation' under zoom. These aren't radiation burns. These are protein capsicum interactions. Is that a chili seed?" },
+        { id: '013', tag: 'FUN', title: 'The Chill Factor', text: "Observation on Nitrophil: For a Thermogenic Cell it is remarkably laid back. We've officially dubbed it the 'Chill-y' cell." },
+        { id: '014', tag: 'TEASE', title: 'Point Zero', text: "Dyzes found a data fragment mentioning 'Point Zero'. It's a location not listed in the current blueprints. Capsain deleted the rest." },
+        { id: '015', tag: 'INFO', title: 'Cellular Harmony', text: "Dyzes believes the Cells are actually trying to communicate. He spent two hours talking to a Lydrosome today. It waved back." },
+        { id: '016', tag: 'FUN', title: 'Noodle Review (Draft)', text: "User: Capsain82. Review: Inferno Brand Chili Sauce. Rating: 5/5. Potency is perfect. One drop fell in workspace—hope nobody noticed." },
+        { id: '017', tag: 'TEASE', title: "Official '82 Report", text: "Official Cause: Faulty reactor shield. Note: Clean-up crew reported a 'spicy aroma'. Logged as 'oxidized metal ozone'." },
+        { id: '018', tag: 'FLUFF', title: 'Logistics Update', text: "Monthly Order: 1 Case of Industrial-Strength Antacid. Priority for the Director's Office." },
+        { id: '019', tag: 'TEASE', title: "Director's Secret Folder", text: "ACCESS DENIED. Folder Name: [Petri Dish #0 - My Little Accident]. Password hint: What makes everything better? (Spices?)" },
+        { id: '020', tag: 'CLIMAX', title: "The Director's Private Note", text: "Origin is now 15cm. Its orange glow is getting brighter. If they ever find out the project was born from a noodle accident, I'm ruined." },
+        { id: '999', tag: 'SECRET', title: 'The Burden of Pride', text: "I spent an hour today just talking to Origin. I have to shout and complain about 'monstrous anomalies' so the board doesn't suspect. But here... I wish I could just tell everyone. I'm so sorry, little buddy.", secret: true }
+    ];
+
+    // 1. Populate Logs (21 total, including the secret)
+    logList.innerHTML = '';
+
+    // Debug: mark all logs as found
+    dataLogs.forEach(log => {
+        if (!Overworld.logsCollected.includes(log.id)) {
+            Overworld.logsCollected.push(log.id);
+        }
+    });
+
+    dataLogs.forEach((log, i) => {
+        const isFound = Overworld.logsCollected.includes(log.id);
+        const item = document.createElement('div');
+        item.className = `log-item ${isFound ? '' : 'locked'} ${log.secret ? 'secret' : ''}`;
+        item.innerHTML = `
+            <span class="log-id">#${log.id}</span>
+            <span class="log-status">${isFound ? `[${log.tag}] ${log.title}` : 'ENCRYPTED DATA'}</span>
+        `;
+        item.onclick = () => {
+            invNav.itemIndex = i;
+            updateInvNav(false);
+            if (isFound) {
+                updateDetail(`[${log.tag}] LOG #${log.id}: ${log.title}`, log.text, null);
+            } else {
+                updateDetail(`LOCKED LOG #${log.id}`, "DATA IS CURRENTLY ENCRYPTED. \n\nExplore furniture in the overworld to initialize decryption sequence for this memory fragment.", null);
+            }
+        };
         logList.appendChild(item);
-    }
+    });
 
     // 2. Populate Key Items
     itemGrid.innerHTML = '';
     const keyItems = [
-        { id: 'old_lab_key', name: 'Old Lab Key', icon: 'key' },
-        { id: 'inferno_sauce', name: 'Inferno Sauce', icon: 'bottle' }
+        { id: 'datapad', name: 'KeyItem-DataPad', desc: 'Mostly contains encrypted logs, but some files are just high-score records for \'Snake\'.', icon: 'data-pad' },
+        { id: 'room_key', name: 'KeyItem-RoomKey', desc: 'A magnetic keycard. Smells like the Director\'s expensive cologne.', icon: 'room-key' },
+        { id: 'sauce_bottle', name: 'KeyItem-SauceBottle', desc: 'Label: \'SUPERNOVA SAUCE\'. Scoville rating: YES. Lab-certified to burn through metal.', icon: 'sauce-bottle' }
     ];
 
-    keyItems.forEach(item => {
+    // For debug/testing: give these items to the player if not found
+    keyItems.forEach(k => {
+        if (!gameState.items.includes(k.id)) gameState.items.push(k.id);
+    });
+
+    keyItems.forEach((item, index) => {
         const slot = document.createElement('div');
         slot.className = 'key-item-slot';
-        // Check if player has the item (will need a gameState.items array)
         const hasItem = gameState.items && gameState.items.includes(item.id);
+
         if (hasItem) {
-            slot.innerHTML = `
-                <img src="assets/images/item_${item.id}.png" alt="${item.name}">
-                <div class="key-item-name">${item.name}</div>
-            `;
+            slot.innerHTML = `<div class="key-item-sprite ${item.icon}"></div>`;
+            slot.onclick = () => {
+                invNav.itemIndex = index;
+                updateInvNav(false);
+                // Visual active state
+                document.querySelectorAll('.key-item-slot').forEach(s => s.classList.remove('active'));
+                slot.classList.add('active');
+                updateDetail(item.name.toUpperCase(), item.desc, 'assets/images/Card_Placeholder.png');
+            };
+        } else {
+            slot.classList.add('locked');
+            slot.innerHTML = `<span class="icon" style="font-size: 2rem; opacity: 0.2">🔒</span>`;
+            slot.onclick = () => updateDetail("UNKNOWN OBJECT", "ITEM NOT ACQUIRED. Continue your research to discover critical mission equipment.", 'assets/images/Card_Placeholder.png');
         }
         itemGrid.appendChild(slot);
     });
 
     // 3. Populate Cell Status
     statusList.innerHTML = '';
-    gameState.playerParty.forEach(cell => {
+    gameState.playerParty.forEach((cell, index) => {
         const item = document.createElement('div');
         item.className = 'status-item glass-panel';
+
+        // Calculate HP percent for the bar
+        const hpPercent = (cell.hp / cell.maxHp) * 100;
+
+        const iconName = cell.id.charAt(0).toUpperCase() + cell.id.slice(1);
         item.innerHTML = `
-            <div class="status-header">
-                <span class="status-name">${cell.name}</span>
-                <span class="status-lvl">LVL ${cell.level || 1}</span>
+            <div class="status-cell-icon">
+                <img src="assets/images/${iconName}.png" alt="${cell.name}">
             </div>
-            <div class="status-row">HP: ${cell.hp}/${cell.maxHp}</div>
-            <div class="status-xp-bar"><div class="xp-fill" style="width: 20%"></div></div>
+            <div class="status-info">
+                <div class="status-name">${cell.name.toUpperCase()} <span style="font-size: 0.7rem; color: var(--color-player); opacity: 0.8;">[LVL ${cell.level || 1}]</span></div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">HEALTH VITALITY: ${cell.hp}/${cell.maxHp}</div>
+                <div class="status-hp-bar">
+                    <div class="hp-fill" style="width: ${hpPercent}%"></div>
+                </div>
+            </div>
         `;
+        item.onclick = () => {
+            invNav.itemIndex = index;
+            updateInvNav(false);
+            // Add visual active state
+            document.querySelectorAll('.status-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+
+            const cardImg = `assets/images/Card_${iconName}.png`;
+            updateDetail(cell.name.toUpperCase(), cell.lore, cardImg);
+        };
         statusList.appendChild(item);
     });
 }
@@ -1444,12 +1653,18 @@ function checkGameOver() {
 
 function showScreen(screenId) {
     const currentVisible = Array.from(document.querySelectorAll('.screen')).find(s => !s.classList.contains('hidden'));
-    if (currentVisible && screenId === 'screen-rulebook') {
+
+    // Track previous screen for "back" functionality, but don't set it if the target is rulebook
+    // (though rulebook already sets it, let's make it consistent)
+    if (currentVisible && screenId !== currentVisible.id) {
+        // Special case: don't make the rulebook or inventory overworld the 'previous' of main menu if logically we want to go back to main menu
+        // But generally, tracking the last visible screen is what "back" means.
         previousScreen = currentVisible.id;
     }
 
     document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-    document.getElementById(screenId).classList.remove('hidden');
+    const target = document.getElementById(screenId);
+    if (target) target.classList.remove('hidden');
 }
 
 function resetGame() {

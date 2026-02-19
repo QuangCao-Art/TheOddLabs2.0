@@ -28,14 +28,14 @@
 
         <!-- Overworld Screen -->
         <div id="screen-overworld" class="screen hidden">
+            <div id="overworld-ui">
+                <div id="log-count-display">DATA LOGS: <span id="log-count">0</span></div>
+                <div id="location-display">LOCATION: <span id="location-name">LAB LOBBY</span></div>
+            </div>
             <div id="overworld-viewport">
                 <div id="overworld-map">
                     <div id="player-sprite"></div>
                 </div>
-            </div>
-            <div id="overworld-ui">
-                <div id="log-count-display">DATA LOGS: <span id="log-count">0</span> / 15</div>
-                <div id="location-display">LOCATION: <span id="location-name">LAB LOBBY</span></div>
             </div>
 
             <!-- Dialogue System -->
@@ -45,6 +45,11 @@
                     <p id="dialogue-text">Text content goes here...</p>
                 </div>
                 <div id="dialogue-indicator">▼</div>
+            </div>
+
+            <!-- NPC Full Art Portrait Overlay -->
+            <div id="npc-portrait-overlay" class="hidden">
+                <img id="npc-portrait-img" src="" alt="NPC Portrait">
             </div>
         </div>
 
@@ -284,42 +289,64 @@
         </div>
 
         <!-- Inventory Screen -->
-        <div id="screen-inventory" class="screen hidden">
+        <div id="screen-inventory" class="overlay hidden">
             <div id="inventory-panel" class="glass-panel">
                 <div class="header-with-tabs">
-                    <h2 class="neon-text">RESEARCH LOGS</h2>
+                    <h2 class="neon-text">INVENTORY</h2>
                     <div class="tabs">
                         <button class="tab-btn active" data-tab="logs">DATA LOGS</button>
                         <button class="tab-btn" data-tab="items">KEY ITEMS</button>
+                        <button class="tab-btn" data-tab="status">CELL STATUS</button>
                     </div>
                 </div>
 
                 <div id="inventory-layout">
-                    <!-- Logs Section -->
-                    <div id="tab-logs" class="inventory-tab">
-                        <div class="log-list" id="inventory-log-list">
-                            <!-- Populated by JS -->
+                    <!-- LEFT COLUMN: Lists/Grids -->
+                    <div id="inventory-list-side">
+                        <!-- Logs Section -->
+                        <div id="tab-logs" class="inventory-tab">
+                            <div class="log-list" id="inventory-log-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Items Section -->
+                        <div id="tab-items" class="inventory-tab hidden">
+                            <div class="key-items-grid" id="inventory-item-grid">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Status Section -->
+                        <div id="tab-status" class="inventory-tab hidden">
+                            <div class="status-list" id="inventory-status-list">
+                                <!-- Populated by JS -->
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Items Section -->
-                    <div id="tab-items" class="inventory-tab hidden">
-                        <div class="key-items-grid" id="inventory-item-grid">
-                            <!-- Populated by JS -->
+                    <!-- RIGHT COLUMN: Detailed Technical Readout -->
+                    <div id="inventory-detail-panel" class="glass-panel">
+                        <div class="detail-card-container">
+                            <img id="inventory-detail-card" src="assets/images/Card_Placeholder.png" alt="Detail Card">
+                        </div>
+                        <div class="detail-text-content">
+                            <h3 id="inventory-detail-title">SELECT DATA</h3>
+                            <div class="header-line"></div>
+                            <p id="inventory-detail-desc">Initial tactical readout standby...</p>
                         </div>
                     </div>
-
-                    <!-- Status Sidebar -->
-                    <aside id="inventory-status" class="glass-panel">
-                        <h3 class="panel-title">CELL STATUS</h3>
-                        <div id="status-party-list">
-                            <!-- Active Cell stats show here -->
-                        </div>
-                    </aside>
                 </div>
 
                 <div class="rulebook-footer">
-                    <button id="btn-inventory-back" class="btn-neon">RETURN TO BASE [ESC]</button>
+                    <div class="inv-controls-guide">
+                        <span><b>W/S</b> Navigate</span>
+                        <span><b>Q/E</b> Tab</span>
+                        <span><b>F</b> Select</span>
+                        <span><b>CLICK IMG</b> Full-Screen</span>
+                        <span><b>ESC</b> Back</span>
+                    </div>
+                    <button id="btn-inventory-back" class="btn-neon">BACK TO LAB</button>
                 </div>
             </div>
         </div>
@@ -490,6 +517,14 @@
                     <button id="btn-restart" class="btn-neon">REINITIALIZE</button>
                     <button id="btn-return-menu" class="btn-neon">MAIN MENU</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Full-screen Card Preview Overlay -->
+        <div id="card-preview-overlay" class="overlay hidden">
+            <div class="preview-content">
+                <img id="preview-image" src="" alt="Card Display">
+                <div class="preview-hint">CLICK ANYWHERE OR PRESS ESC TO CLOSE</div>
             </div>
         </div>
     </div>
