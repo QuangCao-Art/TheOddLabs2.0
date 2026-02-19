@@ -417,8 +417,8 @@ export const Overworld = {
         'potPlantA-B': { hasCollision: true, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
         'potPlantB-T': { hasCollision: false, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
         'potPlantB-B': { hasCollision: true, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
-        'labTankC-T': { hasCollision: false, info: "Why did the cold specimen refuse to talk? Because it had minus zero interest in your thermal energy." },
-        'labTankC-B': { hasCollision: true, info: "Why did the cold specimen refuse to talk? Because it had minus zero interest in your thermal energy." },
+        'labTankC-T': { hasCollision: false, info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
+        'labTankC-B': { hasCollision: true, info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
         'potPlantC-T': { hasCollision: false, info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
         'potPlantC-B': { hasCollision: true, info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
         'tableD-L': { hasCollision: true, info: "Reserved for 'The Important People'. Includes a built-in panic button." },
@@ -864,7 +864,8 @@ export const Overworld = {
 
             // Normal Lore Inspection
             if (meta && meta.info) {
-                this.showDialogue(obj.name || "Laboratory Asset", [meta.info]);
+                const infoLines = Array.isArray(meta.info) ? meta.info : [meta.info];
+                this.showDialogue(obj.name || "Laboratory Asset", infoLines);
             } else {
                 // Fallback for objects without metadata
                 this.showDialogue(obj.name || "Object", [
