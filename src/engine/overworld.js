@@ -74,7 +74,7 @@ export const Overworld = {
                 { id: 'potPlantB-T_lob2', x: 6, y: 2, type: 'prop', name: 'Decorative Fern' },
                 { id: 'potPlantB-B_lob2', x: 6, y: 3, type: 'prop', name: 'Decorative Fern' },
                 { id: 'wallHangingA_lob1', x: 3, y: 2, type: 'prop', name: 'Lab Protocol' },
-                { id: 'npc_male_lob1', x: 2, y: 5, type: 'npc', name: 'Researcher Mark' }
+                { id: 'npc_male_lob1', x: 7, y: 5, type: 'npc', name: 'Researcher Mark' }
             ],
             doors: [
                 { x: 5, y: 2, targetZone: 'atrium', targetX: 9, targetY: 9 }
@@ -88,7 +88,7 @@ export const Overworld = {
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1], // Row 0 (Edge)
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11], // Row 1 (Mid-Top)
-                [10, 15, 15, 15, 15, 15, 15, 15, 15, 22, 15, 15, 15, 15, 15, 15, 15, 15, 11], // Row 2 (Mid-Bottom + Door)
+                [10, 15, 32, 32, 15, 15, 15, 15, 15, 22, 15, 15, 15, 15, 15, 32, 32, 15, 11], // Row 2 (Mid-Bottom + Windows)
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 3
                 [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Row 4 (Side Doors Closed - Human on right)
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 5
@@ -106,7 +106,6 @@ export const Overworld = {
                 { id: 'tableB-R_n1', x: 3, y: 3, type: 'prop', name: 'Lab Station' },
                 { id: 'tableB-L_n2', x: 15, y: 3, type: 'prop', name: 'Lab Station' },
                 { id: 'tableB-R_n2', x: 16, y: 3, type: 'prop', name: 'Lab Station' },
-                { id: 'tableLabCylindersA_at1', x: 3, y: 6, type: 'prop', name: 'Lab Cylinders' },
                 { id: 'wallHangingA_at1', x: 7, y: 2, type: 'prop', name: 'Wall Plate' },
                 { id: 'wallHangingA_at2', x: 11, y: 2, type: 'prop', name: 'Wall Plate' },
                 // Corner Tank Arrays
@@ -492,6 +491,7 @@ export const Overworld = {
         const mapEl = document.getElementById('overworld-map');
 
         mapEl.style.gridTemplateColumns = `repeat(${zone.width}, ${this.tileSize}px)`;
+        mapEl.style.gridTemplateRows = `repeat(${zone.height}, ${this.tileSize}px)`;
 
         // Remove player sprite temporarily so it doesn't get purged by innerHTML = ''
         const playerSprite = document.getElementById('player-sprite');
@@ -513,7 +513,7 @@ export const Overworld = {
                 // CLOSED DOORS are walls, OPEN DOORS are floors
                 const isClosedDoor = [20, 22, 24, 25, 28, 29, 30, 31].includes(tileID);
                 const isOpenDoor = [21, 23, 26, 27].includes(tileID);
-                const isGenericWall = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19].includes(tileID);
+                const isGenericWall = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 32].includes(tileID);
 
                 if (isGenericWall || isClosedDoor) {
                     tile.classList.add('wall');
