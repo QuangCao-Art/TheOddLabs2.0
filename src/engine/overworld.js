@@ -29,6 +29,8 @@ export const Overworld = {
     isTransitioning: false,
     isPaused: false,
     logsCollected: [], // Array of log IDs found
+    lastTurnTime: 0,
+    gameLoopActive: false,
 
     zones: {
         lobby: {
@@ -131,10 +133,10 @@ export const Overworld = {
                 { id: 'Cabinet-Small_at4', x: 11, y: 3, type: 'prop', name: 'Supply Cabinet' },
 
                 // Shifted from bottom to Northern Stations
-                { id: 'labTankA-T_at_n1', x: 4, y: 2, type: 'prop', name: 'Station Tank' },
-                { id: 'labTankA-B_at_n1', x: 4, y: 3, type: 'prop', name: 'Station Tank' },
-                { id: 'labTankA-T_at_n2', x: 14, y: 2, type: 'prop', name: 'Station Tank' },
-                { id: 'labTankA-B_at_n2', x: 14, y: 3, type: 'prop', name: 'Station Tank' },
+                { id: 'labTankB-T_at_n1', x: 4, y: 2, type: 'prop', name: 'Station Tank' },
+                { id: 'labTankB-B_at_n1', x: 4, y: 3, type: 'prop', name: 'Station Tank' },
+                { id: 'labTankB-T_at_n2', x: 14, y: 2, type: 'prop', name: 'Station Tank' },
+                { id: 'labTankB-B_at_n2', x: 14, y: 3, type: 'prop', name: 'Station Tank' },
                 // Cluster A (West)
                 { id: 'tableC-T_at1', x: 5, y: 5, type: 'prop', name: 'Atrium Core Table' },
                 { id: 'tableC-B_at1', x: 5, y: 6, type: 'prop', name: 'Atrium Core Table' },
@@ -177,7 +179,7 @@ export const Overworld = {
                 { x: 0, y: 6, targetZone: 'kitchen', targetX: 6, targetY: 6 },
                 { x: 0, y: 8, targetZone: 'entertainment', targetX: 6, targetY: 6 },
                 { x: 18, y: 8, targetZone: 'storage', targetX: 1, targetY: 6 },
-                { x: 0, y: 4, targetZone: 'botanic', targetX: 13, targetY: 8 },
+                { x: 0, y: 4, targetZone: 'botanic', targetX: 13, targetY: 13 },
                 { x: 18, y: 4, targetZone: 'human', targetX: 1, targetY: 8 },
                 { x: 9, y: 2, targetZone: 'executive', targetX: 7, targetY: 7 }
             ]
@@ -209,12 +211,17 @@ export const Overworld = {
         botanic: {
             name: 'BOTANIC SECTOR',
             width: 15,
-            height: 11,
-            spawn: { x: 7, y: 8 },
+            height: 16,
+            spawn: { x: 7, y: 13 },
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
                 [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Expansion Row 1
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Expansion Row 2
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Expansion Row 3
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Expansion Row 4
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Expansion Row 5
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
@@ -225,38 +232,61 @@ export const Overworld = {
                 [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [
-                { id: 'tableC-T_bot', x: 2, y: 7, type: 'prop', name: 'Experimental Table' },
-                { id: 'tableC-B_bot', x: 2, y: 8, type: 'prop', name: 'Experimental Table' },
-                { id: 'chairA-L_bot', x: 3, y: 7, type: 'prop', name: 'Lab Chair' },
-                // Lush Botanic Garden Grid
-                { id: 'potPlantA-T_bot1', x: 1, y: 3, type: 'prop', name: 'Specimen Plant' },
-                { id: 'potPlantA-B_bot1', x: 1, y: 4, type: 'prop', name: 'Specimen Plant' },
-                { id: 'potPlantB-T_bot2', x: 3, y: 3, type: 'prop', name: 'Specimen Plant' },
-                { id: 'potPlantB-B_bot2', x: 3, y: 4, type: 'prop', name: 'Specimen Plant' },
-                { id: 'potPlantA-T_bot3', x: 11, y: 3, type: 'prop', name: 'Specimen Plant' },
-                { id: 'potPlantA-B_bot3', x: 11, y: 4, type: 'prop', name: 'Specimen Plant' },
-                { id: 'potPlantB-T_bot4', x: 13, y: 3, type: 'prop', name: 'Specimen Plant' },
-                { id: 'potPlantB-B_bot4', x: 13, y: 4, type: 'prop', name: 'Specimen Plant' },
-                // Row 2
-                { id: 'potPlantA-T_bot5', x: 1, y: 5, type: 'prop', name: 'Specimen Plant' },
-                { id: 'potPlantA-B_bot5', x: 1, y: 6, type: 'prop', name: 'Specimen Plant' },
-                { id: 'potPlantB-T_bot6', x: 3, y: 5, type: 'prop', name: 'Specimen Plant' },
-                { id: 'potPlantB-B_bot6', x: 3, y: 6, type: 'prop', name: 'Specimen Plant' },
-                // New PotPlantC Specimens
-                { id: 'potPlantC-T_bot7', x: 5, y: 3, type: 'prop', name: 'Exotic Specimen' },
-                { id: 'potPlantC-B_bot7', x: 5, y: 4, type: 'prop', name: 'Exotic Specimen' },
-                { id: 'potPlantC-T_bot8', x: 9, y: 3, type: 'prop', name: 'Exotic Specimen' },
-                { id: 'potPlantC-B_bot8', x: 9, y: 4, type: 'prop', name: 'Exotic Specimen' },
-                // Tanks
-                { id: 'labTankA-T_bot1', x: 12, y: 3, type: 'prop', name: 'Nutrient Tank' },
-                { id: 'labTankA-B_bot1', x: 12, y: 4, type: 'prop', name: 'Nutrient Tank' },
-                { id: 'labTankA-T_bot2', x: 2, y: 3, type: 'prop', name: 'Nutrient Tank' },
-                { id: 'labTankA-B_bot2', x: 2, y: 4, type: 'prop', name: 'Nutrient Tank' },
-                { id: 'log_089', x: 7, y: 7, type: 'log', name: 'DataLog #089' },
-                { id: 'lana', x: 7, y: 3, type: 'npc', name: 'Lana' }
+                { id: 'log_089', x: 7, y: 12, type: 'log', name: 'DataLog #089' },
+                { id: 'lana', x: 7, y: 8, type: 'npc', name: 'Lana' },
+                // Tier 1 Tanks
+                { id: 'labTankA-T_bot1', x: 1, y: 7, type: 'prop', name: 'Research Tank' },
+                { id: 'labTankA-B_bot1', x: 1, y: 8, type: 'prop', name: 'Research Tank' },
+                { id: 'labTankA-T_bot2', x: 3, y: 7, type: 'prop', name: 'Research Tank' },
+                { id: 'labTankA-B_bot2', x: 3, y: 8, type: 'prop', name: 'Research Tank' },
+                { id: 'labTankA-T_bot3', x: 11, y: 7, type: 'prop', name: 'Research Tank' },
+                { id: 'labTankA-B_bot3', x: 11, y: 8, type: 'prop', name: 'Research Tank' },
+                { id: 'labTankA-T_bot4', x: 13, y: 7, type: 'prop', name: 'Research Tank' },
+                { id: 'labTankA-B_bot4', x: 13, y: 8, type: 'prop', name: 'Research Tank' },
+                // Central Glowing Hedge (F24/F25)
+                { id: 'potPlantC-T_bot1', x: 2, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot1', x: 2, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot2', x: 3, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot2', x: 3, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot3', x: 4, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot3', x: 4, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot4', x: 5, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot4', x: 5, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot5', x: 6, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot5', x: 6, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot6', x: 7, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot6', x: 7, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot7', x: 8, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot7', x: 8, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot8', x: 9, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot8', x: 9, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot9', x: 10, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot9', x: 10, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot10', x: 11, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot10', x: 11, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot11', x: 12, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot11', x: 12, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
+                // Side Gardens (F18/19 and F20/21)
+                { id: 'potPlantA-T_bot1', x: 1, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot1', x: 1, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot2', x: 2, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot2', x: 2, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot3', x: 3, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot3', x: 3, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot4', x: 4, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot4', x: 4, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot5', x: 5, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot5', x: 5, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot6', x: 6, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot6', x: 6, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantB-T_bot1', x: 8, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot1', x: 8, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot2', x: 9, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot2', x: 9, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot3', x: 10, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot3', x: 10, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot4', x: 11, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot4', x: 11, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot5', x: 12, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot5', x: 12, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot6', x: 13, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot6', x: 13, y: 12, type: 'prop', name: 'Specimen Fern' },
+                // Lower Station Tank
+                { id: 'labTankA-T_bot5', x: 1, y: 13, type: 'prop', name: 'Research Tank' },
+                { id: 'labTankA-B_bot5', x: 1, y: 14, type: 'prop', name: 'Research Tank' },
+                // Research Wall (Row 9 -> Row 14)
+                { id: 'tableD-L_bot1', x: 2, y: 14, type: 'prop', name: 'Research Station' },
+                { id: 'tableD-R_bot1', x: 3, y: 14, type: 'prop', name: 'Research Station' },
+                { id: 'Cartonbox-Small_bot1', x: 4, y: 14, type: 'prop', name: 'Biological Sample' },
+                { id: 'Cartonbox-Small_bot2', x: 5, y: 14, type: 'prop', name: 'Biological Sample' },
+                { id: 'tableDeviceA_bot', x: 6, y: 14, type: 'prop', name: 'Protein Sequencer' },
+                { id: 'Cartonbox-Small_bot3', x: 7, y: 14, type: 'prop', name: 'Biological Sample' },
+                { id: 'tableLabCylindersA_bot', x: 8, y: 14, type: 'prop', name: 'Lab Cylinders' },
+                { id: 'Cartonbox-Small_bot4', x: 9, y: 14, type: 'prop', name: 'Biological Sample' },
+                { id: 'tableLeaderA-L_bot', x: 10, y: 14, type: 'prop', name: 'Lead Analysis Desk' },
+                { id: 'tableLeaderA-R_bot', x: 11, y: 14, type: 'prop', name: 'Lead Analysis Desk' },
+                { id: 'tableD-L_bot2', x: 12, y: 14, type: 'prop', name: 'Research Station' },
+                { id: 'tableD-R_bot2', x: 13, y: 14, type: 'prop', name: 'Research Station' }
             ],
             doors: [
-                { x: 14, y: 8, targetZone: 'atrium', targetX: 1, targetY: 4 }
+                { x: 14, y: 13, targetZone: 'atrium', targetX: 1, targetY: 4 }
             ]
         },
         human: {
@@ -413,10 +443,10 @@ export const Overworld = {
         'labTankB-T': { hasCollision: false, info: "The specimen here is slowly swimming, why its surrounding turn yellow?." },
         'labTankB-B': { hasCollision: true, info: "The specimen here is slowly swimming, why its surrounding turn yellow?." },
         'wallHangingB': { hasCollision: false, info: "'DAYS SINCE ACCIDENTAL MUTATION: 0'. Someone just crossed out the '1'." },
-        'potPlantA-T': { hasCollision: false, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
-        'potPlantA-B': { hasCollision: true, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
-        'potPlantB-T': { hasCollision: false, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
-        'potPlantB-B': { hasCollision: true, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
+        'potPlantA-T': { hasCollision: false, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
+        'potPlantA-B': { hasCollision: true, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
+        'potPlantB-T': { hasCollision: false, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
+        'potPlantB-B': { hasCollision: true, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
         'labTankC-T': { hasCollision: false, info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
         'labTankC-B': { hasCollision: true, info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
         'potPlantC-T': { hasCollision: false, info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
@@ -478,9 +508,8 @@ export const Overworld = {
             setTimeout(() => {
                 if (playerEl) playerEl.classList.remove('no-transition');
                 if (mapEl) mapEl.classList.remove('no-transition');
-            }, 60);
-
-            console.log("Overworld Initialization Complete.");
+                this.startLoop();
+            }, 100);
         }, 50);
     },
 
@@ -606,19 +635,48 @@ export const Overworld = {
             if (document.getElementById('screen-overworld').classList.contains('hidden')) return;
             const key = e.key.toLowerCase();
             this.keysPressed.add(key);
-            this.handleMovementInput();
+            // No longer calling handleMovementInput directly to avoid repeat delay
         });
 
         window.addEventListener('keyup', (e) => {
             const key = e.key.toLowerCase();
             this.keysPressed.delete(key);
         });
+
+        // Ensure loop starts if we regain focus
+        window.addEventListener('focus', () => this.startLoop());
+        window.addEventListener('blur', () => this.stopLoop());
+    },
+
+    startLoop() {
+        if (this.gameLoopActive) return;
+        this.gameLoopActive = true;
+        this.gameLoop();
+    },
+
+    stopLoop() {
+        this.gameLoopActive = false;
+    },
+
+    gameLoop() {
+        if (!this.gameLoopActive) return;
+
+        // Only run if overworld is visible
+        const overworldVisible = !document.getElementById('screen-overworld').classList.contains('hidden');
+        if (overworldVisible && !this.isPaused && !this.isTransitioning) {
+            this.handleMovementInput();
+        }
+
+        requestAnimationFrame(() => this.gameLoop());
     },
 
     handleMovementInput() {
         if (this.player.isMoving || this.isDialogueActive || this.isTransitioning || this.isPaused) return;
 
         const move = { x: 0, y: 0 };
+        const keys = Array.from(this.keysPressed);
+
+        // Prioritize last key or specific order
         if (this.keysPressed.has('w') || this.keysPressed.has('arrowup')) move.y = -1;
         else if (this.keysPressed.has('s') || this.keysPressed.has('arrowdown')) move.y = 1;
         else if (this.keysPressed.has('a') || this.keysPressed.has('arrowleft')) move.x = -1;
@@ -626,8 +684,6 @@ export const Overworld = {
 
         if (move.x !== 0 || move.y !== 0) {
             this.tryMove(move.x, move.y);
-        } else {
-            this.updatePlayerPosition(); // Ensure idle state if no keys held
         }
     },
 
@@ -642,15 +698,21 @@ export const Overworld = {
         if (dy < 0) targetDir = 'up';
 
         // 2. Turn-in-place Logic
-        // If current direction is different, turn first and stop
         if (this.player.direction !== targetDir) {
-            console.log(`Turning to face: ${targetDir}`);
             this.player.direction = targetDir;
+            this.lastTurnTime = Date.now();
             this.updatePlayerPosition();
             return;
         }
 
-        // 3. Movement Logic (only runs if already facing targetDir)
+        // 3. Movement Delay Logic (Turn-then-Walk Smoothing)
+        // If we just turned, wait 150ms before allowing move
+        const now = Date.now();
+        if (now - this.lastTurnTime < 150) {
+            return;
+        }
+
+        // 4. Movement Logic (only runs if already facing targetDir and delay passed)
 
         const nextX = this.player.x + dx;
         const nextY = this.player.y + dy;

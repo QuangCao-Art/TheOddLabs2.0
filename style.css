@@ -2073,9 +2073,8 @@ body {
 .key-item-sprite {
     width: 64px;
     height: 64px;
-    background-image: url('assets/images/Lab_TileSet_02.png?v=4');
+    background-image: url('assets/images/Lab_TileSet_02.png?v=10');
     background-size: 512px 512px;
-    image-rendering: pixelated;
     filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.5));
     transform: scale(1.1);
     transition: all 0.3s;
@@ -3171,7 +3170,7 @@ body {
     height: 64px;
     box-sizing: border-box;
     /* TILESYSTEM: Official Lab_TileSet_01 asset */
-    background-image: url('assets/images/Lab_TileSet_01.png?v=4');
+    background-image: url('assets/images/Lab_TileSet_01.png?v=10');
     background-size: 512px 512px;
     /* Set a large size to accommodate the coords, we can adjust if needed */
     background-repeat: no-repeat;
@@ -3234,157 +3233,157 @@ body {
 }
 
 .t-0 {
-    background-position: calc(-0px / 2) calc(-0px / 2);
+    background-position: calc(-0px / 4) calc(-0px / 4);
 }
 
 .t-1 {
-    background-position: calc(-256px / 2) calc(-0px / 2);
+    background-position: calc(-512px / 4) calc(-0px / 4);
 }
 
 .t-2 {
-    background-position: calc(-0px / 2) calc(-256px / 2);
+    background-position: calc(-0px / 4) calc(-512px / 4);
 }
 
 .t-3 {
-    background-position: calc(-256px / 2) calc(-256px / 2);
+    background-position: calc(-512px / 4) calc(-512px / 4);
 }
 
 .t-4 {
-    background-position: calc(-384px / 2) calc(-0px / 2);
+    background-position: calc(-768px / 4) calc(-0px / 4);
 }
 
 .t-5 {
-    background-position: calc(-512px / 2) calc(-0px / 2);
+    background-position: calc(-1024px / 4) calc(-0px / 4);
 }
 
 .t-6 {
-    background-position: calc(-384px / 2) calc(-128px / 2);
+    background-position: calc(-768px / 4) calc(-256px / 4);
 }
 
 .t-7 {
-    background-position: calc(-512px / 2) calc(-128px / 2);
+    background-position: calc(-1024px / 4) calc(-256px / 4);
 }
 
 .t-8 {
-    background-position: calc(-128px / 2) calc(-0px / 2);
+    background-position: calc(-256px / 4) calc(-0px / 4);
 }
 
 .t-9 {
-    background-position: calc(-128px / 2) calc(-256px / 2);
+    background-position: calc(-256px / 4) calc(-512px / 4);
 }
 
 .t-10 {
-    background-position: calc(-0px / 2) calc(-128px / 2);
+    background-position: calc(-0px / 4) calc(-256px / 4);
 }
 
 .t-11 {
-    background-position: calc(-256px / 2) calc(-128px / 2);
+    background-position: calc(-512px / 4) calc(-256px / 4);
 }
 
 .t-12 {
-    background-position: calc(-128px / 2) calc(-128px / 2);
+    background-position: calc(-256px / 4) calc(-256px / 4);
 }
 
 /* Room Layout Mappings */
 .t-13 {
-    background-position: calc(-128px / 2) calc(-640px / 2);
+    background-position: calc(-256px / 4) calc(-1280px / 4);
 }
 
 /* EmptyFill */
 .t-14 {
-    background-position: calc(-128px / 2) calc(-384px / 2);
+    background-position: calc(-256px / 4) calc(-768px / 4);
 }
 
 /* Floor-Basic */
 .t-15 {
-    background-position: calc(-128px / 2) calc(-512px / 2);
+    background-position: calc(-256px / 4) calc(-1024px / 4);
 }
 
 /* Wall-Middle-Top */
 .t-16 {
-    background-position: calc(0px / 2) calc(-384px / 2);
+    background-position: calc(0px / 4) calc(-768px / 4);
 }
 
 /* Wall-Middle-Bottom */
 .t-17 {
-    background-position: calc(0px / 2) calc(-512px / 2);
+    background-position: calc(0px / 4) calc(-1024px / 4);
 }
 
 /* Wall-Left-Top */
 .t-18 {
-    background-position: calc(-256px / 2) calc(-384px / 2);
+    background-position: calc(-512px / 4) calc(-768px / 4);
 }
 
 /* Wall-Left-Bottom */
 .t-19 {
-    background-position: calc(-256px / 2) calc(-512px / 2);
+    background-position: calc(-512px / 4) calc(-1024px / 4);
 }
 
 /* Wall-Right-Top */
 .t-20 {
-    background-position: calc(-384px / 2) calc(-256px / 2);
+    background-position: calc(-768px / 4) calc(-512px / 4);
 }
 
 /* Wall-Right-Bottom */
 
 /* Door Mappings */
 .t-21 {
-    background-position: calc(-512px / 2) calc(-256px / 2);
+    background-position: calc(-1024px / 4) calc(-512px / 4);
 }
 
 /* Door-Edge-Bottom-Close */
 .t-22 {
-    background-position: calc(-384px / 2) calc(-384px / 2);
+    background-position: calc(-768px / 4) calc(-768px / 4);
 }
 
 /* Door-Edge-Bottom-Open */
 .t-23 {
-    background-position: calc(-512px / 2) calc(-384px / 2);
+    background-position: calc(-1024px / 4) calc(-768px / 4);
 }
 
 /* Door-Basic-Close */
 .t-24 {
-    background-position: calc(-640px / 2) calc(-128px / 2);
+    background-position: calc(-1280px / 4) calc(-256px / 4);
 }
 
 /* Door-Basic-Open */
 .t-25 {
-    background-position: calc(-768px / 2) calc(-128px / 2);
+    background-position: calc(-1536px / 4) calc(-256px / 4);
 }
 
 /* Door-Edge-Left-Close */
 .t-26 {
-    background-position: calc(-640px / 2) calc(-256px / 2);
+    background-position: calc(-1280px / 4) calc(-512px / 4);
 }
 
 /* Door-Edge-Right-Close */
 .t-27 {
-    background-position: calc(-768px / 2) calc(-256px / 2);
+    background-position: calc(-1536px / 4) calc(-512px / 4);
 }
 
 /* Door-Edge-Right-Open */
 .t-28 {
-    background-position: calc(-384px / 2) calc(-512px / 2);
+    background-position: calc(-768px / 4) calc(-1024px / 4);
 }
 
 /* Door-Basic-Locked */
 .t-29 {
-    background-position: calc(-512px / 2) calc(-512px / 2);
+    background-position: calc(-1024px / 4) calc(-1024px / 4);
 }
 
 /* Door-Edge-Left-Locked */
 .t-30 {
-    background-position: calc(-640px / 2) calc(-512px / 2);
+    background-position: calc(-1280px / 4) calc(-1024px / 4);
 }
 
 /* Door-Edge-Right-Locked */
 .t-31 {
-    background-position: calc(-768px / 2) calc(-512px / 2);
+    background-position: calc(-1536px / 4) calc(-1024px / 4);
 }
 
 /* Window-Basic */
 .t-32 {
-    background-position: calc(-640px / 2) calc(-384px / 2);
+    background-position: calc(-1280px / 4) calc(-768px / 4);
 }
 
 .tile.interactable {
@@ -3405,17 +3404,17 @@ body {
 
 /* NPCs & CHARACTERS */
 .npc {
-    width: 89.6px !important;
-    height: 89.6px !important;
+    width: 90px !important;
+    height: 90px !important;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center bottom;
-    margin-top: -36.27px;
-    /* (89.6 - 64) + 10.67 shift */
-    margin-left: -12.8px;
-    /* (89.6 - 64) / 2 Center */
+    margin-top: -36px;
+    /* (90 - 64) + 10 shift */
+    margin-left: -13px;
+    /* (90 - 64) / 2 Center */
     z-index: 6;
-    background-size: 358.4px 358.4px !important;
+    background-size: 360px 360px !important;
     background-repeat: no-repeat !important;
 }
 
@@ -3425,15 +3424,15 @@ body {
 }
 
 .npc.face-up {
-    background-position: 0px -89.6px;
+    background-position: 0px -90px;
 }
 
 .npc.face-right {
-    background-position: 0px -179.2px;
+    background-position: 0px -180px;
 }
 
 .npc.face-left {
-    background-position: 0px -268.8px;
+    background-position: 0px -270px;
 }
 
 .npc.jenzi {
@@ -3463,19 +3462,17 @@ body {
 #overworld-map .tile {
     width: 64px;
     height: 64px;
-    background-image: url('assets/images/Lab_TileSet_01.png?v=7');
+    background-image: url('assets/images/Lab_TileSet_01.png?v=10');
     background-size: 512px 512px;
-    image-rendering: pixelated;
     float: left;
 }
 
 #overworld-map .world-object.prop,
 #overworld-map .world-object.trigger,
 #overworld-map .world-object.sign {
-    background-image: url('assets/images/Lab_TileSet_02.png?v=6');
+    background-image: url('assets/images/Lab_TileSet_02.png?v=10');
     background-size: 512px 512px;
-    image-rendering: pixelated;
-    transform: translateY(-10.6px) translateZ(0);
+    transform: translateY(-10px) translateZ(0);
     backface-visibility: hidden;
 }
 
@@ -3485,276 +3482,272 @@ body {
 
 /* Furniture Tileset 02 Mapping */
 .world-object.prop.chairA-L {
-    background-position: calc(-0px / 2) calc(-0px / 2);
+    background-position: calc(-0px / 4) calc(-0px / 4);
 }
 
 .world-object.prop.chairA-R {
-    background-position: calc(-128px / 2) calc(-0px / 2);
+    background-position: calc(-256px / 4) calc(-0px / 4);
 }
 
 .world-object.prop.chairA-F {
-    background-position: calc(-256px / 2) calc(-0px / 2);
+    background-position: calc(-512px / 4) calc(-0px / 4);
 }
 
 .world-object.prop.tableA {
-    background-position: calc(-384px / 2) calc(-0px / 2);
+    background-position: calc(-768px / 4) calc(-0px / 4);
 }
 
 .world-object.prop.tableB-L {
-    background-position: calc(-512px / 2) calc(-0px / 2);
+    background-position: calc(-1024px / 4) calc(-0px / 4);
 }
 
 .world-object.prop.tableB-R {
-    background-position: calc(-640px / 2) calc(-0px / 2);
+    background-position: calc(-1280px / 4) calc(-0px / 4);
 }
 
 .world-object.prop.wallHangingA {
-    background-position: calc(-768px / 2) calc(-0px / 2);
+    background-position: calc(-1536px / 4) calc(-0px / 4);
 }
 
 .world-object.prop.tableComputerA {
-    background-position: calc(-0px / 2) calc(-128px / 2);
+    background-position: calc(-0px / 4) calc(-256px / 4);
 }
 
 .world-object.prop.tableLabCylindersA {
-    background-position: calc(-128px / 2) calc(-128px / 2);
+    background-position: calc(-256px / 4) calc(-256px / 4);
 }
 
 .world-object.prop.tableDeviceA {
-    background-position: calc(-256px / 2) calc(-128px / 2);
+    background-position: calc(-512px / 4) calc(-256px / 4);
 }
 
 .world-object.prop.tableC-T {
-    background-position: calc(-384px / 2) calc(-128px / 2);
+    background-position: calc(-768px / 4) calc(-256px / 4);
 }
 
 .world-object.prop.tableC-B {
-    background-position: calc(-384px / 2) calc(-256px / 2);
+    background-position: calc(-768px / 4) calc(-512px / 4);
 }
 
 .world-object.prop.labTankA-T {
-    background-position: calc(-0px / 2) calc(-256px / 2);
+    background-position: calc(-0px / 4) calc(-512px / 4);
 }
 
 .world-object.prop.labTankA-B {
-    background-position: calc(-0px / 2) calc(-384px / 2);
+    background-position: calc(-0px / 4) calc(-768px / 4);
 }
 
 .world-object.prop.labTankB-T {
-    background-position: calc(-128px / 2) calc(-256px / 2);
+    background-position: calc(-256px / 4) calc(-512px / 4);
 }
 
 .world-object.prop.labTankB-B {
-    background-position: calc(-128px / 2) calc(-384px / 2);
+    background-position: calc(-256px / 4) calc(-768px / 4);
 }
 
 .world-object.prop.wallHangingB {
-    background-position: calc(-896px / 2) calc(-0px / 2);
+    background-position: calc(-1792px / 4) calc(-0px / 4);
 }
 
 .world-object.prop.potPlantA-T {
-    background-position: calc(-768px / 2) calc(-128px / 2);
+    background-position: calc(-1536px / 4) calc(-256px / 4);
 }
 
 .world-object.prop.potPlantA-B {
-    background-position: calc(-768px / 2) calc(-256px / 2);
+    background-position: calc(-1536px / 4) calc(-512px / 4);
 }
 
 .world-object.prop.potPlantB-T {
-    background-position: calc(-896px / 2) calc(-128px / 2);
+    background-position: calc(-1792px / 4) calc(-256px / 4);
 }
 
 .world-object.prop.potPlantB-B {
-    background-position: calc(-896px / 2) calc(-256px / 2);
+    background-position: calc(-1792px / 4) calc(-512px / 4);
 }
 
 .world-object.prop.labTankC-T {
-    background-position: calc(-256px / 2) calc(-256px / 2);
+    background-position: calc(-512px / 4) calc(-512px / 4);
 }
 
 .world-object.prop.labTankC-B {
-    background-position: calc(-256px / 2) calc(-384px / 2);
+    background-position: calc(-512px / 4) calc(-768px / 4);
 }
 
 .world-object.prop.potPlantC-T {
-    background-position: calc(-896px / 2) calc(-384px / 2);
+    background-position: calc(-1792px / 4) calc(-768px / 4);
 }
 
 .world-object.prop.potPlantC-B {
-    background-position: calc(-896px / 2) calc(-512px / 2);
+    background-position: calc(-1792px / 4) calc(-1024px / 4);
 }
 
 .world-object.prop.tableD-L {
-    background-position: calc(-512px / 2) calc(-128px / 2);
+    background-position: calc(-1024px / 4) calc(-256px / 4);
 }
 
 .world-object.prop.tableD-R {
-    background-position: calc(-640px / 2) calc(-128px / 2);
+    background-position: calc(-1280px / 4) calc(-256px / 4);
 }
 
 .world-object.prop.tableLeaderA-L {
-    background-position: calc(-512px / 2) calc(-256px / 2);
+    background-position: calc(-1024px / 4) calc(-512px / 4);
 }
 
 .world-object.prop.tableLeaderA-R {
-    background-position: calc(-640px / 2) calc(-256px / 2);
+    background-position: calc(-1280px / 4) calc(-512px / 4);
 }
 
 .world-object.prop.tableDirectorA-L {
-    background-position: calc(-512px / 2) calc(-384px / 2);
+    background-position: calc(-1024px / 4) calc(-768px / 4);
 }
 
 .world-object.prop.tableDirectorA-R {
-    background-position: calc(-640px / 2) calc(-384px / 2);
+    background-position: calc(-1280px / 4) calc(-768px / 4);
 }
 
 .world-object.prop.bedA-L {
-    background-position: calc(-512px / 2) calc(-512px / 2);
+    background-position: calc(-1024px / 4) calc(-1024px / 4);
 }
 
 .world-object.prop.bedA-R {
-    background-position: calc(-640px / 2) calc(-512px / 2);
+    background-position: calc(-1280px / 4) calc(-1024px / 4);
 }
 
 .world-object.prop.skeletonA-T {
-    background-position: calc(-768px / 2) calc(-384px / 2);
+    background-position: calc(-1536px / 4) calc(-768px / 4);
 }
 
 .world-object.prop.skeletonA-B {
-    background-position: calc(-768px / 2) calc(-512px / 2);
+    background-position: calc(-1536px / 4) calc(-1024px / 4);
 }
 
 .world-object.prop.tableNoodleA {
-    background-position: calc(-512px / 2) calc(-640px / 2);
+    background-position: calc(-1024px / 4) calc(-1280px / 4);
 }
 
 .world-object.prop.emptyNoodleBowlA {
-    background-position: calc(-640px / 2) calc(-640px / 2);
+    background-position: calc(-1280px / 4) calc(-1280px / 4);
 }
 
 .world-object.prop.incubatorA-TL {
-    background-position: calc(-0px / 2) calc(-512px / 2);
+    background-position: calc(-0px / 4) calc(-1024px / 4);
 }
 
 .world-object.prop.incubatorA-TR {
-    background-position: calc(-128px / 2) calc(-512px / 2);
+    background-position: calc(-256px / 4) calc(-1024px / 4);
 }
 
 .world-object.prop.incubatorA-BL {
-    background-position: calc(-0px / 2) calc(-640px / 2);
+    background-position: calc(-0px / 4) calc(-1280px / 4);
 }
 
 .world-object.prop.incubatorA-BR {
-    background-position: calc(-128px / 2) calc(-640px / 2);
+    background-position: calc(-256px / 4) calc(-1280px / 4);
 }
 
 .world-object.prop.megaIncubatorA-TL {
-    background-position: calc(-256px / 2) calc(-512px / 2);
+    background-position: calc(-512px / 4) calc(-1024px / 4);
 }
 
 .world-object.prop.megaIncubatorA-TR {
-    background-position: calc(-384px / 2) calc(-512px / 2);
+    background-position: calc(-768px / 4) calc(-1024px / 4);
 }
 
 .world-object.prop.megaIncubatorA-midL {
-    background-position: calc(-256px / 2) calc(-640px / 2);
+    background-position: calc(-512px / 4) calc(-1280px / 4);
 }
 
 .world-object.prop.megaIncubatorA-midR {
-    background-position: calc(-384px / 2) calc(-640px / 2);
+    background-position: calc(-768px / 4) calc(-1280px / 4);
 }
 
 .world-object.prop.megaIncubatorA-BL {
-    background-position: calc(-256px / 2) calc(-768px / 2);
+    background-position: calc(-512px / 4) calc(-1536px / 4);
 }
 
 .world-object.prop.megaIncubatorA-BR {
-    background-position: calc(-384px / 2) calc(-768px / 2);
+    background-position: calc(-768px / 4) calc(-1536px / 4);
 }
 
 .world-object.prop.boxHandA {
-    background-position: calc(-384px / 2) calc(-384px / 2);
+    background-position: calc(-768px / 4) calc(-768px / 4);
 }
 
 .world-object.prop.keyItem-DataPad {
-    background-position: calc(-640px / 2) calc(-896px / 2);
+    background-position: calc(-1280px / 4) calc(-1792px / 4);
 }
 
 .world-object.prop.keyItem-RoomKey {
-    background-position: calc(-768px / 2) calc(-896px / 2);
+    background-position: calc(-1536px / 4) calc(-1792px / 4);
 }
 
 .world-object.prop.keyItem-SauceBottle {
-    background-position: calc(-896px / 2) calc(-896px / 2);
+    background-position: calc(-1792px / 4) calc(-1792px / 4);
 }
 
 .world-object.prop.Cabinet-Big-TopLeft {
-    background-position: calc(-768px / 2) calc(-640px / 2);
+    background-position: calc(-1536px / 4) calc(-1280px / 4);
 }
 
 .world-object.prop.Cabinet-Big-TopRight {
-    background-position: calc(-896px / 2) calc(-640px / 2);
+    background-position: calc(-1792px / 4) calc(-1280px / 4);
 }
 
 .world-object.prop.Cabinet-Big-BottomLeft {
-    background-position: calc(-768px / 2) calc(-768px / 2);
+    background-position: calc(-1536px / 4) calc(-1536px / 4);
 }
 
 .world-object.prop.Cabinet-Big-BottomRight {
-    background-position: calc(-896px / 2) calc(-768px / 2);
+    background-position: calc(-1792px / 4) calc(-1536px / 4);
 }
 
 .world-object.prop.TableLeaderB-Top {
-    background-position: calc(-512px / 2) calc(-768px / 2);
+    background-position: calc(-1024px / 4) calc(-1536px / 4);
 }
 
 .world-object.prop.TableLeaderB-Bottom {
-    background-position: calc(-512px / 2) calc(-896px / 2);
+    background-position: calc(-1024px / 4) calc(-1792px / 4);
 }
 
 .world-object.prop.Cabinet-Small {
-    background-position: calc(-640px / 2) calc(-768px / 2);
+    background-position: calc(-1280px / 4) calc(-1536px / 4);
 }
 
-.world-object.prop.chairC {
-    background-position: calc(-256px / 2) calc(-896px / 2);
-}
 
 .world-object.prop.PotPlant-Small {
-    background-position: calc(-384px / 2) calc(-896px / 2);
+    background-position: calc(-768px / 4) calc(-1792px / 4);
 }
 
 .world-object.prop.Cartonbox-Small {
-    background-position: calc(-256px / 2) calc(-896px / 2);
+    background-position: calc(-512px / 4) calc(-1792px / 4);
 }
 
 .world-object.prop.Cartonbox-Pile-Top {
-    background-position: calc(-128px / 2) calc(-768px / 2);
+    background-position: calc(-256px / 4) calc(-1536px / 4);
 }
 
 .world-object.prop.Cartonbox-Pile-Bottom {
-    background-position: calc(-128px / 2) calc(-896px / 2);
+    background-position: calc(-256px / 4) calc(-1792px / 4);
 }
 
 .world-object.prop.KeyItem-SecretCard {
-    background-position: calc(-0px / 2) calc(-896px / 2);
+    background-position: calc(-0px / 4) calc(-1792px / 4);
 }
 
 #player-sprite {
-    width: 89.6px;
-    /* Scaled to 1.4x tile size to match NPCs */
-    height: 89.6px;
+    width: 90px;
+    height: 90px;
     background-image: url('assets/images/T_Char_Sprite_Player_01.png?v=6') !important;
     background-repeat: no-repeat !important;
-    background-size: 358.4px 358.4px !important;
-    /* Exact 4x4 grid (89.6 * 4) */
+    background-size: 360px 360px !important;
+    /* Exact 4x4 grid (90 * 4) */
     background-position: 0px 0px;
     position: absolute;
     top: 0;
-    margin-top: -36.27px;
-    /* (89.6 - 64) + 10.67 shift */
-    margin-left: -12.8px;
-    /* (89.6 - 64) / 2 Center */
+    margin-top: -36px;
+    /* (90 - 64) + 10 shift */
+    margin-left: -13px;
+    /* (90 - 64) / 2 Center */
     transition: transform 0.35s linear;
     will-change: transform;
     pointer-events: none;
@@ -3767,17 +3760,17 @@ body {
 
 /* Row 1 */
 #player-sprite.face-up {
-    background-position-y: -89.6px;
+    background-position-y: -90px;
 }
 
 /* Row 2 */
 #player-sprite.face-right {
-    background-position-y: -179.2px;
+    background-position-y: -180px;
 }
 
 /* Row 3 */
 #player-sprite.face-left {
-    background-position-y: -268.8px;
+    background-position-y: -270px;
 }
 
 /* Row 4 */

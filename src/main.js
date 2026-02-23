@@ -159,6 +159,8 @@ function setupEventListeners() {
     // Inventory Controls
     document.getElementById('btn-inventory-back')?.addEventListener('click', () => {
         document.getElementById('screen-inventory').classList.add('hidden');
+        invNav.active = false;
+        Overworld.isPaused = false;
     });
 
     // Card Preview Controls
