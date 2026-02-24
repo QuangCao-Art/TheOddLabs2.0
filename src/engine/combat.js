@@ -154,7 +154,7 @@ export function resolveTurn(state) {
 
 export function checkOverload(cell) {
     if (cell.pp >= cell.maxPp) {
-        return 10; // Recoil damage
+        return 30; // Pellicle Discharge damage
     }
     return 0;
 }

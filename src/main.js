@@ -1260,8 +1260,15 @@ async function resolvePhase() {
         }
     }
 
-    // 5. VFX Feedback
-    applyMatchVFX(results.actualDist, results.effectiveDist, ghost);
+    // 5. MAP Activation VFX (Nodes pulse based on skill effect)
+    const defenderNode = results.attacker === 'PLAYER' ? gameState.enemy.currentNode : gameState.player.currentNode;
+    triggerMAPActivationVFX(defenderNode, move);
+    if (dMove) triggerMAPActivationVFX(defenderNode, dMove);
+
+    // 6. Final VFX Feedback (Hit flash)
+    setTimeout(() => {
+        applyMatchVFX(results.actualDist, results.effectiveDist, ghost);
+    }, 400); // Wait for activation pulse to peak
 
     if (results.ppGain > 0) {
         spawnPellicleVFX(results.attacker, results.ppGain);
@@ -1296,10 +1303,7 @@ async function resolvePhase() {
         playerContainer.classList.remove('anim-lunge-player', 'anim-heavy-lunge-player', 'anim-hit-shake', 'pellicle-aura');
         enemyContainer.classList.remove('anim-lunge-enemy', 'anim-heavy-lunge-enemy', 'anim-hit-shake', 'pellicle-aura');
 
-        if (checkGameOver()) {
-            gameState.isProcessing = false;
-            return;
-        }
+        if (checkGameOver()) return;
 
         gameState.phase = 'MOVE_SELECTION';
         gameState.currentTurn = gameState.currentTurn === 'PLAYER' ? 'ENEMY' : 'PLAYER';
@@ -1319,19 +1323,28 @@ async function resolvePhase() {
             spawnHealNumber(container, results.defenderHeal);
         }
 
-        // Overload Recall Damage (At start of next turn)
-        const nextAttacker = gameState.currentTurn === 'PLAYER' ? gameState.player : gameState.enemy;
-        const recoil = checkOverload(nextAttacker);
-        if (recoil > 0) {
-            nextAttacker.hp = Math.max(0, nextAttacker.hp - recoil);
-            const container = gameState.currentTurn === 'PLAYER'
-                ? document.querySelector('.player-display .monster-portrait-container')
-                : document.querySelector('.enemy-display .monster-portrait-container');
-            spawnDamageNumber(container, recoil);
-            container.classList.add('anim-hit-shake');
-            setTimeout(() => container.classList.remove('anim-hit-shake'), 400);
-            nextAttacker.pp = 0; // Discharge after overload
+        // Overload Recall Damage (Both monsters discharge at start of next phase)
+        let overloadTriggered = false;
+        [gameState.player, gameState.enemy].forEach(target => {
+            const recoil = checkOverload(target);
+            if (recoil > 0) {
+                overloadTriggered = true;
+                target.hp = Math.max(0, target.hp - recoil);
+                const isP = target === gameState.player;
+                const container = isP
+                    ? document.querySelector('.player-display .monster-portrait-container')
+                    : document.querySelector('.enemy-display .monster-portrait-container');
 
+                addLog(`[OVERLOAD] ${target.name} suffered a Pellicle Discharge! -${recoil} HP`);
+                spawnDamageNumber(container, recoil);
+                container.classList.add('anim-hit-shake', 'flash-red');
+                setTimeout(() => container.classList.remove('anim-hit-shake', 'flash-red'), 600);
+                target.pp = 0; // Discharge after overload
+            }
+        });
+
+        if (overloadTriggered) {
+            updateUI();
             if (checkGameOver()) {
                 gameState.isProcessing = false;
                 return;
@@ -1463,9 +1476,72 @@ function applyMatchVFX(actualDist, effectiveDist, ghost) {
     setTimeout(() => label.remove(), 1000);
 }
 
+/**
+ * Triggers activation VFX on pentagon nodes based on MAP skill effects.
+ * @param {number} defenderNode 
+ * @param {Object} move 
+ */
+function triggerMAPActivationVFX(defenderNode, move) {
+    if (!move) return;
+
+    const nodes = document.querySelectorAll('#interactive-pentagon .node');
+    const getAbsoluteIndex = (relDist) => {
+        // Find all indices at this relative distance from defenderNode
+        const indices = [];
+        for (let i = 0; i < 5; i++) {
+            const diff = Math.abs(i - defenderNode);
+            const dist = Math.min(diff, 5 - diff);
+            if (dist === relDist) indices.push(i);
+        }
+        return indices;
+    };
+
+    // Helper to apply class to specific distances
+    const applyToDist = (dist, className) => {
+        const absoluteIndices = getAbsoluteIndex(dist);
+        absoluteIndices.forEach(idx => {
+            const node = Array.from(nodes).find(n => parseInt(n.dataset.index) === idx);
+            if (node) node.classList.add(className);
+        });
+    };
+
+    // Logic based on skill modifiers (Mapping user requests to technical properties)
+    if (move.matchExpand === 1 || move.matchOffset === -1) {
+        // [EASY TARGET]: 3 Red (Dist 0, 1), 2 Yellow (Dist 2)
+        applyToDist(0, 'node-activate-match');
+        applyToDist(1, 'node-activate-match');
+        applyToDist(2, 'node-activate-near');
+    } else if (move.matchRisky) {
+        // [ALL OR NOTHING]: 1 Red (Dist 0), 4 Far (Dist 1, 2)
+        applyToDist(0, 'node-activate-match');
+        applyToDist(1, 'node-activate-far');
+        applyToDist(2, 'node-activate-far');
+    } else if (move.matchFixed === 1) {
+        // [RELIABLE HIT]: All 5 Yellow
+        applyToDist(0, 'node-activate-near');
+        applyToDist(1, 'node-activate-near');
+        applyToDist(2, 'node-activate-near');
+    } else if (move.matchFixed === 2) {
+        // [PUNY SLAP]: All 5 White
+        applyToDist(0, 'node-activate-far');
+        applyToDist(1, 'node-activate-far');
+        applyToDist(2, 'node-activate-far');
+    } else if (move.matchExpand === 2) {
+        // [PERFECT STRIKE]: All 5 Red
+        applyToDist(0, 'node-activate-match');
+        applyToDist(1, 'node-activate-match');
+        applyToDist(2, 'node-activate-match');
+    } else if (move.id === 'drunk_man' || move.matchFixed === 3) {
+        // [DRUNK MAN]: 1 Near (Dist 0), 4 Far (Dist 1, 2)
+        applyToDist(0, 'node-activate-near');
+        applyToDist(1, 'node-activate-far');
+        applyToDist(2, 'node-activate-far');
+    }
+}
+
 function clearVFX() {
     interactiveNodes.forEach(node => {
-        node.classList.remove('flash-red', 'flash-yellow', 'flash-far', 'flash-white', 'highlight');
+        node.classList.remove('flash-red', 'flash-yellow', 'flash-far', 'flash-white', 'highlight', 'node-activate-match', 'node-activate-near', 'node-activate-far');
     });
 
     const pent = document.getElementById('interactive-pentagon');
@@ -1617,6 +1693,11 @@ function executeMonsterSwitch(benchIndex) {
     if (!targetMonster || gameState.isProcessing) return;
 
     gameState.isProcessing = true;
+
+    // Instant Reset: Snap back to center immediately when switch is confirmed
+    isDragging = false;
+    resetSelectorCore(true);
+
     const oldName = gameState.player.name;
     addLog(`Recalling ${oldName}...`);
 
@@ -1634,17 +1715,12 @@ function executeMonsterSwitch(benchIndex) {
         gameState.player.currentNode = null;
         gameState.enemy.currentNode = null;
 
-        // Reset selection core
-        resetSelectorCore();
-
-        gameState.isProcessing = false;
-
-        // Update UI
-        updateUI();
 
         // Battle Entry Animation (Pod Drop)
         triggerBattleEntry('.player-display', () => {
             updateBattleCard(targetMonster.name);
+            gameState.isProcessing = false; // Release lock only after deployment
+            updateUI();
         });
     });
 }
@@ -1655,9 +1731,18 @@ function checkGameOver() {
 
     if (!isPlayerDefeated && !isEnemyDefeated) return false;
 
-    // NEW: Handle simultaneous knockouts by processing them sequentially.
-    // We prioritize Enemy faint logic first, then check player in the callback.
+    // Helper to wrap up turn state after replacements
+    const finalizeTurnSequence = () => {
+        gameState.phase = 'NODE_SELECTION';
+        gameState.currentTurn = (gameState.currentTurn === 'PLAYER') ? 'ENEMY' : 'PLAYER';
+        resetSelectorCore(true);
+        gameState.isProcessing = false;
+        updateUI();
+    };
+
     if (isEnemyDefeated) {
+        resetSelectorCore();
+
         triggerMonsterExit('.enemy-display', () => {
             const nextMonster = gameState.enemyParty.find(m => m.hp > 0);
             if (nextMonster) {
@@ -1665,15 +1750,17 @@ function checkGameOver() {
                 gameState.enemy = nextMonster;
                 updateUI();
                 triggerBattleEntry('.enemy-display', () => {
-                    // After enemy is replaced, check if player still needs replacement
-                    checkGameOver();
+                    // Check if player ALSO fainted during the exchange
+                    if (!checkGameOver()) {
+                        finalizeTurnSequence();
+                    }
                 });
             } else {
-                // If enemy is gone, check if player also needs replacement before victory
                 if (isPlayerDefeated) {
                     checkGameOver();
                 } else {
-                    showGameOver(false); // Success
+                    showGameOver(false); // Victory
+                    gameState.isProcessing = false;
                 }
             }
         });
@@ -1681,6 +1768,9 @@ function checkGameOver() {
     }
 
     if (isPlayerDefeated) {
+        isDragging = false;
+        resetSelectorCore();
+
         triggerMonsterExit('.player-display', () => {
             const nextMonster = gameState.playerParty.find(m => m.hp > 0);
             if (nextMonster) {
@@ -1689,10 +1779,11 @@ function checkGameOver() {
                 updateUI();
                 triggerBattleEntry('.player-display', () => {
                     updateBattleCard(nextMonster.name);
-                    resetSelectorCore();
+                    finalizeTurnSequence();
                 });
             } else {
-                showGameOver(true); // Failure
+                showGameOver(true); // Defeat
+                gameState.isProcessing = false;
             }
         });
         return true;

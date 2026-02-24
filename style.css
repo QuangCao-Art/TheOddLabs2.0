@@ -308,6 +308,43 @@ body {
     z-index: 100 !important;
 }
 
+/* NODE ACTIVATION VFX (MAP EFFECTS) */
+.node-activate-match {
+    animation: node-activate-pulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    border-color: var(--color-match);
+    box-shadow: 0 0 30px var(--color-match), inset 0 0 10px var(--color-match);
+}
+
+.node-activate-near {
+    animation: node-activate-pulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    border-color: var(--color-near);
+    box-shadow: 0 0 30px var(--color-near), inset 0 0 10px var(--color-near);
+}
+
+.node-activate-far {
+    animation: node-activate-pulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes node-activate-pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.5;
+    }
+
+    30% {
+        transform: translate(-50%, -50%) scale(1.6);
+        opacity: 1;
+        filter: brightness(2);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
+    }
+}
+
 /* ENEMY GHOST INDICATOR */
 .enemy-ghost {
     position: absolute;
@@ -1207,6 +1244,85 @@ body {
 .draggable-core:active {
     cursor: grabbing;
     scale: 0.9;
+}
+
+/* NODE ACTIVATION VFX */
+.node.node-activate-match {
+    animation: node-activate-pulse-red 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.node.node-activate-near {
+    animation: node-activate-pulse-yellow 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.node.node-activate-far {
+    animation: node-activate-pulse-white 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes node-activate-pulse-red {
+    0% {
+        scale: 1;
+        box-shadow: 0 0 0px var(--color-match);
+        filter: brightness(1);
+    }
+
+    30% {
+        scale: 1.5;
+        box-shadow: 0 0 40px var(--color-match);
+        background: var(--color-match);
+        filter: brightness(1.8);
+        z-index: 100;
+    }
+
+    100% {
+        scale: 1;
+        box-shadow: 0 0 5px var(--color-match);
+        filter: brightness(1);
+    }
+}
+
+@keyframes node-activate-pulse-yellow {
+    0% {
+        scale: 1;
+        box-shadow: 0 0 0px var(--color-near);
+        filter: brightness(1);
+    }
+
+    30% {
+        scale: 1.5;
+        box-shadow: 0 0 40px var(--color-near);
+        background: var(--color-near);
+        filter: brightness(1.8);
+        z-index: 100;
+    }
+
+    100% {
+        scale: 1;
+        box-shadow: 0 0 5px var(--color-near);
+        filter: brightness(1);
+    }
+}
+
+@keyframes node-activate-pulse-white {
+    0% {
+        scale: 1;
+        box-shadow: 0 0 0px white;
+        filter: brightness(1);
+    }
+
+    30% {
+        scale: 1.5;
+        box-shadow: 0 0 40px white;
+        background: white;
+        filter: brightness(1.8);
+        z-index: 100;
+    }
+
+    100% {
+        scale: 1;
+        box-shadow: 0 0 5px white;
+        filter: brightness(1);
+    }
 }
 
 /* COMMAND CONTROLS */
@@ -2874,16 +2990,18 @@ body {
 .node.burned::after,
 .node.jammed::after,
 .node.blocked::after {
-    content: '??';
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;
+    width: 150%;
+    height: 150%;
     transform: translate(-50%, -50%);
-    font-size: 1.8rem;
-    font-family: 'Orbitron', sans-serif;
-    color: var(--color-match);
-    /* Red */
-    text-shadow: 0 0 15px rgba(255, 59, 48, 0.9);
+    background-image: url('assets/images/padlock.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 0 8px rgba(255, 59, 48, 0.9));
     pointer-events: none;
 }
 
