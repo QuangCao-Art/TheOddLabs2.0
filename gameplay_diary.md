@@ -15,7 +15,7 @@ This document serves as a technical log and handover guide for "The Odd Labs 2.0
 ### 1.2 Pellicle Points (PP) & HP
 - **Passive Shield**: Damage taken is reduced by `PP * 3`.
 - **PP Generation**: Gained every turn based on MAP distance (even on defense).
-- **Overload Recall**: Starting a turn with **10 PP** (Max) causes **10 HP recoil damage**. This prevents "PP Camping".
+- **Pellicle Discharge (Overload)**: Starting a turn with **10 PP** (Max) causes an immediate **30 HP Pellicle Discharge**. This prevents "PP Camping" and forces tactical resource rotation.
 - **Asymmetric Turns**: To clarify combat, only the **Attacker** deals damage. The **Defender** only gains/uses PP and mitigates damage.
 
 ## 2. Major Updates & Fixes
@@ -204,10 +204,10 @@ To improve phase clarity, the tactic pentagon now uses dedicated high-fidelity a
 - **Visuals**: The defeated monster portrait performs a **death-fade** (opacity 0 + grayscale) while a high-fidelity container asset drops from `-250%` vertical height.
 - **Timing**: Integrated a **1.8s cinematic pause** in the `checkGameOver` loop to allow the play to witness the heavy impact and bounce.
 
-### 2.37 PP Overload Restoration (Legacy Sync)
-- **Visual Alert**: Restored the missing **"Overload Alert"**. The PP bar now pulses **vibrant red** when reaching the 10 PP limit, powered by a new `@keyframes pp-pulse-red`.
-- **Overload Recall (Damage)**: Re-integrated the turn-start recoil mechanic. Reaching the limit now triggers a 10 HP "Overload Recall" penalty at the start of the next turn, preventing resource camping.
-- **Visual Feedback**: Recoil damage is accompanied by a **damage number** and a **portrait shake**, ensuring the penalty is visceral and undeniable.
+### 2.37 Overload (Pellicle Discharge) Overhaul
+- **High-Stakes Penalty**: Re-tooled the legacy recoil into a critical "Pellicle Discharge." Reaching the 10 PP limit now deals **30 HP damage** (up from 10).
+- **Universal Logic**: The system now checks **both** combatants during turn transitions, ensuring that a fully-charged defender also suffers the penalty before the board reset.
+- **Diagnostic Feedback**: Added a specific `[OVERLOAD]` log entry and a `flash-red` portrait animation to emphasize the danger of the discharge.
 
 ### 2.38 Dynamic Move Info Panel (Contextual Tooltips)
 - **Concept**: To prevent the info panel from obscuring move buttons, implemented dynamic vertical positioning and auto-scaling.
@@ -288,4 +288,7 @@ To improve phase clarity, the tactic pentagon now uses dedicated high-fidelity a
 - **Tactical Logic Enrichment**: Implemented `Overgrowth` (Match Expand), `Hydro Shot` (High Risk), and `Cellulose Wall/Ion Veil` (Official MAP Suite) to expand strategic variety.
 - **Cell Container Optimization**: Resolved a critical interaction bug where slot images blocked drag-and-drop events. Implemented `pointer-events: auto` and moved the draggable target to the entire `.slot` container for 100% reliable grabbing.
 - **Bi-Directional Drag-and-Drop**: Completed the DND cycle by allowing monsters to be dragged **out of the team slots** and back to the collection grid, effectively removing them from the active roster.
-- **Leader Visual Designation**: Added a dedicated "LEADER" label and orange accent to the first team slot to clarify battle initialization.
+### 2.52 Locked Node Visual Overhaul
+- **Professional Iconography**: Replaced the placeholder `??` text for disabled nodes (Burned/Jammed) with a high-fidelity `padlock.png` asset.
+- **Tactical Scaling**: Calibrated the padlock icon to **150%** of the node's dimensions, creating a massive, unavoidable visual signal that overflows the diagnostic grid.
+- **Semantic Rendering**: Paired the icon with a red `drop-shadow` glow to maintain the "Hazardous" data aesthetic while improving immediate scannability of the tactical arena.

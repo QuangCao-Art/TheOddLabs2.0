@@ -47,8 +47,8 @@ A fundamental expansion of the **Matching Attack Placement (MAP)** system.
 | **RELIABLE HIT** | Super Near | **5 Near** | Consistent chip damage. |
 | **PUNY SLAP** | Super Far | **5 Far** | Intentional weak hit. |
 | **ALL OR NOTHING**| Risky Match | **1 Match, 4 Far** | High-risk skill shots. |
-| **CHOICEBLOCK** | Node Block | **Lock Node** | Prevents selection for 1 next turn. |
-| **HURTBLOCK** | Node Block | **Lock Node** | Disables the nodes used by both players this turn, preventing them from being re-selected in the next turn. |
+| **CHOICEBLOCK** | Node Block | **Lock Node** | Prevents selection for 1 next turn. Marked by a 🔒. |
+| **HURTBLOCK** | Node Block | **Lock Node** | Disables the nodes used by both players this turn. Marked by a 🔒. |
 
 ---
 
@@ -72,9 +72,9 @@ A fundamental expansion of the **Matching Attack Placement (MAP)** system.
 - Only the **Attacker** deals damage.
 - When it's your **Defense Turn**, your skills swap to **Defense Moves**.
 
-### ⚡ PP Overload & Recall
+### ⚡ PP Overload (Pellicle Discharge)
 - **The Limit**: Maximum of **10 PP**.
-- **The Penalty**: Starting a turn with 10 PP triggers **Overload Recall**, dealing **10 HP damage** and discharging all PP. 
+- **The Penalty**: Starting a turn with 10 PP triggers a **Pellicle Discharge**, dealing **30 HP damage** and discharging all PP. 
 
 ### 🧪 Elemental Advantage
 - Advantage (e.g., Thermogenic vs Botanic): **1.5x Damage**.

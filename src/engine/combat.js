@@ -125,15 +125,15 @@ export function resolveTurn(state) {
         console.log(`[REFLECT] ${defenderMove.name} returned ${reflectDamage} damage to attacker.`);
     }
 
-    // 6. PP Generation (Using effective distance)
-    const ppGain = getPPGain(effectiveDist);
-    attacker.pp = Math.min(attacker.maxPp, attacker.pp + ppGain);
-
-    // 7. Move Cost (Attacker)
+    // 6. Move Cost (Attacker - Pay First)
     if (attackerMove.type === 'pellicle') attacker.pp -= attackerMove.cost;
 
-    // 8. Move Cost (Defender - New System)
+    // 7. Move Cost (Defender - New System)
     if (defenderMove && defenderMove.type === 'pellicle') defender.pp -= defenderMove.cost;
+
+    // 8. PP Generation (Reward Second - Prevents overflow cap wasting reward)
+    const ppGain = getPPGain(effectiveDist);
+    attacker.pp = Math.min(attacker.maxPp, attacker.pp + ppGain);
 
     return {
         actualDist,

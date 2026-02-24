@@ -49,8 +49,8 @@ A fundamental expansion of the **Matching Attack Placement (MAP)** system.
 | **RELIABLE HIT** | Super Near | **5 Near** | Consistent chip damage. |
 | **PUNY SLAP** | Super Far | **5 Far** | Intentional weak hit. |
 | **ALL OR NOTHING**| Risky Match | **1 Match, 4 Far** | High-risk skill shots. |
-| **CHOICEBLOCK** | Node Block | **Lock Node** | Prevents selection for 1 next turn. |
-| **HURTBLOCK** | Node Block | **Lock Node** | Disables the nodes used by both players this turn, preventing them from being re-selected in the next turn. |
+| **CHOICEBLOCK** | Node Block | **Lock Node** | Prevents selection for 1 next turn. Marked by a 🔒 icon. |
+| **HURTBLOCK** | Node Block | **Lock Node** | Disables the nodes used by both players this turn. Marked by a 🔒 icon. |
 
 ### 2.2 Global Color Coding Rules
 The laboratory uses a semantic color system to ensure absolute tactical clarity:
@@ -108,6 +108,12 @@ The final damage resolved against HP follows this hierarchy:
 
 > [!NOTE]
 > Every hit is guaranteed a floor of **1 HP Damage**, regardless of defense stats or PP levels.
+
+### 4.3 Pellicle Overload (Discharge)
+To prevent "Pellicle Camping," monsters are subject to an energy limit:
+- **Max Limit**: 10 PP.
+- **Discharge Penalty**: Starting a turn with 10 PP triggers a **Pellicle Discharge**. 
+- **Effect**: The monster suffers **30 HP damage** and resets to **0 PP** before the next phase begins.
 
 ### 4.1 Multipliers
 1. **Type Effectiveness**: **1.5x** (Advantage) or **0.75x** (Disadvantage). Calculated based on the **Attacker's Move Type** vs the **Defender's Monster Type**.

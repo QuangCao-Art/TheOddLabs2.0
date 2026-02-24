@@ -85,9 +85,9 @@ export const AI = {
         }
 
         // ChoiceBlock & HurtBlock Enforcement: Avoid all blocked nodes
-        if (enemy.blockedNodes.includes(targetNode)) {
+        if (enemy.blockedNodes.some(b => b.index === targetNode)) {
             // Pick a random node that ISN'T in the blocked list
-            const available = [0, 1, 2, 3, 4].filter(n => !enemy.blockedNodes.includes(n));
+            const available = [0, 1, 2, 3, 4].filter(n => !enemy.blockedNodes.some(b => b.index === n));
             if (available.length > 0) {
                 targetNode = available[Math.floor(Math.random() * available.length)];
             }

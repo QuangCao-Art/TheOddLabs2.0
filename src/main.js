@@ -663,7 +663,7 @@ function onDrag(e) {
     let minDist = 40; // Detection radius
 
     interactiveNodes.forEach((node, idx) => {
-        const isBlocked = gameState.player.blockedNodes.includes(idx);
+        const isBlocked = gameState.player.blockedNodes.some(b => b.index === idx);
         const rect = node.getBoundingClientRect();
         const nx = rect.left + rect.width / 2;
         const ny = rect.top + rect.height / 2;
@@ -688,7 +688,7 @@ function endDrag(e) {
 
     let targetIndex = -1;
     interactiveNodes.forEach((node, idx) => {
-        const isBlocked = gameState.player.blockedNodes.includes(idx);
+        const isBlocked = gameState.player.blockedNodes.some(b => b.index === idx);
         const rect = node.getBoundingClientRect();
         const nx = rect.left + rect.width / 2;
         const ny = rect.top + rect.height / 2;
@@ -828,13 +828,11 @@ function updateUI() {
 
     interactiveNodes.forEach((node, idx) => {
         const isTarget = showSelection && gameState.player.currentNode === idx;
-        const isBurned = gameState.player.burnedNodes.some(b => b.index === idx);
-        const isJammed = gameState.player.jammedNodes.some(b => b.index === idx);
+        const isBlocked = gameState.player.blockedNodes.some(b => b.index === idx);
 
         node.classList.toggle('selected', isTarget);
-        node.classList.toggle('burned', isBurned);
-        node.classList.toggle('jammed', isJammed);
-        node.classList.toggle('blocked', isBurned || isJammed); // Keep 'blocked' for general styling if needed
+        node.classList.toggle('blocked', isBlocked);
+        node.classList.toggle('burned', isBlocked); // Keep burned class for the padlock styling
 
         if (isTarget) {
             node.classList.toggle('yellow', isDefense);
@@ -1296,7 +1294,10 @@ async function resolvePhase() {
         }, 400);
     }
 
-    // 7. Reset Turn
+    // 7. Reset Turn (Capture indices BEFORE reset for block logic)
+    const capturedPlayerNode = gameState.player.currentNode;
+    const capturedEnemyNode = gameState.enemy.currentNode;
+
     setTimeout(() => {
         resetPositions();
         clearVFX();
@@ -1351,71 +1352,58 @@ async function resolvePhase() {
             }
         }
 
-        // 7. Block Aging & New Triggers (v2.92)
+        // 7. Block Aging & New Triggers (Consolidated blockedNodes v2.93)
         // Age existing blocks
-        gameState.player.burnedNodes = gameState.player.burnedNodes.map(b => ({ ...b, duration: b.duration - 1 })).filter(b => b.duration > 0);
-        gameState.player.jammedNodes = gameState.player.jammedNodes.map(b => ({ ...b, duration: b.duration - 1 })).filter(b => b.duration > 0);
+        gameState.player.blockedNodes = gameState.player.blockedNodes
+            .map(b => ({ ...b, duration: b.duration - 1 }))
+            .filter(b => b.duration > 0);
 
-        gameState.enemy.burnedNodes = gameState.enemy.burnedNodes.map(b => ({ ...b, duration: b.duration - 1 })).filter(b => b.duration > 0);
-        gameState.enemy.jammedNodes = gameState.enemy.jammedNodes.map(b => ({ ...b, duration: b.duration - 1 })).filter(b => b.duration > 0);
+        gameState.enemy.blockedNodes = gameState.enemy.blockedNodes
+            .map(b => ({ ...b, duration: b.duration - 1 }))
+            .filter(b => b.duration > 0);
 
-        const newPlayerBurned = [];
-        const newEnemyBurned = [];
-        const newPlayerJammed = [];
-        const newEnemyJammed = [];
+        const newPlayerBlocked = [];
+        const newEnemyBlocked = [];
 
-        // ChoiceBlock Trigger (New duration: 2 phases)
+        // ChoiceBlock Trigger (Duration: 1 full cycle)
         if (gameState.currentTurn === 'PLAYER') {
             const move = gameState.player.selectedMove ? gameState.player.moves.find(m => m.id === gameState.player.selectedMove) : null;
-            if (move?.hasChoiceBlock) newPlayerBurned.push({ index: gameState.player.currentNode, duration: 1 });
+            if (move?.hasChoiceBlock) newPlayerBlocked.push({ index: capturedPlayerNode, duration: 1 });
 
-            const eMove = gameState.enemy.defenseMoves.find(m => m.id === results.defenderMoveId);
-            if (eMove?.hasChoiceBlock) newEnemyBurned.push({ index: gameState.enemy.currentNode, duration: 1 });
+            const eMove = dMove;
+            if (eMove?.hasChoiceBlock) newEnemyBlocked.push({ index: capturedEnemyNode, duration: 1 });
         } else {
             const move = gameState.enemy.selectedMove ? gameState.enemy.moves.find(m => m.id === gameState.enemy.selectedMove) : null;
-            if (move?.hasChoiceBlock) newEnemyBurned.push({ index: gameState.enemy.currentNode, duration: 1 });
+            if (move?.hasChoiceBlock) newEnemyBlocked.push({ index: capturedEnemyNode, duration: 1 });
 
-            const pMove = gameState.player.defenseMoves.find(m => m.id === results.defenderMoveId);
-            if (pMove?.hasChoiceBlock) newPlayerBurned.push({ index: gameState.player.currentNode, duration: 1 });
+            const pMove = dMove;
+            if (pMove?.hasChoiceBlock) newPlayerBlocked.push({ index: capturedPlayerNode, duration: 1 });
         }
 
-        // HurtBlock Trigger (Specific Snare logic - New duration: 2 phases)
+        // HurtBlock Trigger (Snare logic)
         const isPlayerAttacker = results.attacker === 'PLAYER';
-        const defenderMoveset = isPlayerAttacker ? gameState.enemy.defenseMoves : gameState.player.defenseMoves;
-        const dSkill = defenderMoveset.find(m => m.id === results.defenderMoveId);
+        const dSkill = dMove; // Use pre-looked up defender move
 
         if (dSkill?.hasHurtBlock) {
             // Snare triggered -> BOTH nodes are disabled for BOTH players
-            newPlayerJammed.push({ index: gameState.player.currentNode, duration: 1 });
-            newPlayerJammed.push({ index: gameState.enemy.currentNode, duration: 1 });
-            newEnemyJammed.push({ index: gameState.player.currentNode, duration: 1 });
-            newEnemyJammed.push({ index: gameState.enemy.currentNode, duration: 1 });
+            // Use CAPTURED indices because gameState.player.currentNode is now null
+            newPlayerBlocked.push({ index: capturedPlayerNode, duration: 1 });
+            newPlayerBlocked.push({ index: capturedEnemyNode, duration: 1 });
+            newEnemyBlocked.push({ index: capturedPlayerNode, duration: 1 });
+            newEnemyBlocked.push({ index: capturedEnemyNode, duration: 1 });
         }
 
         // Merge new into existing (avoiding duplicates on same node)
-        newPlayerBurned.forEach(nb => {
-            if (!gameState.player.burnedNodes.some(eb => eb.index === nb.index)) gameState.player.burnedNodes.push(nb);
+        newPlayerBlocked.forEach(nb => {
+            if (!gameState.player.blockedNodes.some(eb => eb.index === nb.index)) {
+                gameState.player.blockedNodes.push(nb);
+            }
         });
-        newPlayerJammed.forEach(nb => {
-            if (!gameState.player.jammedNodes.some(eb => eb.index === nb.index)) gameState.player.jammedNodes.push(nb);
+        newEnemyBlocked.forEach(nb => {
+            if (!gameState.enemy.blockedNodes.some(eb => eb.index === nb.index)) {
+                gameState.enemy.blockedNodes.push(nb);
+            }
         });
-        newEnemyBurned.forEach(nb => {
-            if (!gameState.enemy.burnedNodes.some(eb => eb.index === nb.index)) gameState.enemy.burnedNodes.push(nb);
-        });
-        newEnemyJammed.forEach(nb => {
-            if (!gameState.enemy.jammedNodes.some(eb => eb.index === nb.index)) gameState.enemy.jammedNodes.push(nb);
-        });
-
-        // Update flattened blockedNodes for AI / UI Interaction
-        gameState.player.blockedNodes = [...new Set([
-            ...gameState.player.burnedNodes.map(b => b.index),
-            ...gameState.player.jammedNodes.map(b => b.index)
-        ])];
-
-        gameState.enemy.blockedNodes = [...new Set([
-            ...gameState.enemy.burnedNodes.map(b => b.index),
-            ...gameState.enemy.jammedNodes.map(b => b.index)
-        ])];
 
         gameState.player.currentNode = null;
         gameState.enemy.currentNode = null;
@@ -1570,7 +1558,12 @@ async function performJump(ghost) {
 }
 
 function resetPositions() {
-    // Removed translate reset as jump is disabled
+    // 1. Sanitize Interactive Pentagon (Clear Ghosts / Debris)
+    document.querySelectorAll('.enemy-ghost').forEach(g => g.remove());
+
+    // 2. Data Reset
+    gameState.player.currentNode = null;
+    gameState.enemy.currentNode = null;
 }
 
 function spawnDamageNumber(targetEl, amount, isCrit = false, typeMultiplier = 1.0) {
@@ -1740,6 +1733,44 @@ function checkGameOver() {
         updateUI();
     };
 
+    // 1. Double Neutralization Logic
+    if (isPlayerDefeated && isEnemyDefeated) {
+        addLog(`[CRITICAL] Double Neutralization detected. Tactical reset core engaging...`);
+        isDragging = false;
+        resetSelectorCore();
+
+        let exitsFinished = 0;
+        const onExitComplete = () => {
+            exitsFinished++;
+            if (exitsFinished < 2) return;
+
+            // Both have left, now check for follow-up
+            const nextPlayer = gameState.playerParty.find(m => m.hp > 0);
+            const nextEnemy = gameState.enemyParty.find(m => m.hp > 0);
+
+            if (!nextPlayer && !nextEnemy) {
+                showGameOver(true); // Draw (mission failure for player)
+            } else if (!nextPlayer) {
+                showGameOver(true); // Failure
+            } else if (!nextEnemy) {
+                showGameOver(false); // Victory (unusual on double death but possible if player has more)
+            } else {
+                // Both have replacements
+                gameState.player = nextPlayer;
+                gameState.enemy = nextEnemy;
+                updateUI();
+
+                let entriesFinished = 0;
+                triggerBattleEntry('.player-display', () => { entriesFinished++; if (entriesFinished === 2) finalizeTurnSequence(); });
+                triggerBattleEntry('.enemy-display', () => { entriesFinished++; if (entriesFinished === 2) finalizeTurnSequence(); });
+            }
+        };
+
+        triggerMonsterExit('.player-display', onExitComplete);
+        triggerMonsterExit('.enemy-display', onExitComplete);
+        return true;
+    }
+
     if (isEnemyDefeated) {
         resetSelectorCore();
 
@@ -1778,18 +1809,20 @@ function checkGameOver() {
                 gameState.player = nextMonster;
                 updateUI();
                 triggerBattleEntry('.player-display', () => {
-                    updateBattleCard(nextMonster.name);
-                    finalizeTurnSequence();
+                    // Check if AI ALSO fainted (reflection etc)
+                    if (!checkGameOver()) {
+                        finalizeTurnSequence();
+                    }
                 });
             } else {
-                showGameOver(true); // Defeat
+                showGameOver(true); // Failure
                 gameState.isProcessing = false;
             }
         });
         return true;
     }
 
-    return true;
+    return false;
 }
 
 function showGameOver(isFailure) {
@@ -1833,8 +1866,6 @@ function resetGame() {
             ...data,
             currentNode: null,
             blockedNodes: [],
-            burnedNodes: [],
-            jammedNodes: [],
             hp: data.hp,
             pp: 1,
             selectedMove: data.moves[0].id
