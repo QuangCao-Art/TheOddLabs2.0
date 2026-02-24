@@ -43,10 +43,12 @@ export function calculateDamage(attacker, defender, move, dist) {
     console.log(`[DMG CALC] ${move.name} | Ratio: ${statRatio.toFixed(2)} | Type: x${typeEffect} | MAP: x${gpm} | Roll: x${randomRoll.toFixed(2)}`);
 
     // Shield Step: Pellicle reduction
+    const shieldAbsorbed = Math.min(baseDamage - 1, defender.pp * 3);
     const finalDamage = Math.max(1, baseDamage - (defender.pp * 3));
 
     return {
         damage: Math.round(finalDamage),
+        shieldAbsorbed: Math.round(shieldAbsorbed),
         isCrit: critMult > 1.0,
         typeMultiplier: typeEffect,
         gpm,
@@ -151,7 +153,7 @@ export function resolveTurn(state) {
 }
 
 export function checkOverload(cell) {
-    if (cell.pp >= 10) {
+    if (cell.pp >= cell.maxPp) {
         return 10; // Recoil damage
     }
     return 0;

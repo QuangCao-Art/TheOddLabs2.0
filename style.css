@@ -410,6 +410,7 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
+    border-radius: 50%;
 }
 
 .monster-portrait {
@@ -417,7 +418,6 @@ body {
     height: 90%;
     object-fit: contain;
     filter: drop-shadow(0 0 5px var(--color-player));
-    transition: all 0.2s;
 }
 
 .monster-float-layer {
@@ -725,6 +725,31 @@ body {
     z-index: 500;
     pointer-events: none;
     animation: float-up-fade 1.2s ease-out forwards;
+}
+
+.shield-number {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #00f2fe;
+    font-size: 1.4rem;
+    font-weight: 900;
+    font-family: 'Orbitron', sans-serif;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px #00f2fe;
+    z-index: 501;
+    pointer-events: none;
+    animation: float-up-fade 1.2s ease-out forwards;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.shield-vfx-icon {
+    width: 22px;
+    height: 22px;
+    filter: invert(72%) sepia(61%) saturate(2978%) hue-rotate(149deg) brightness(101%) contrast(107%) drop-shadow(0 0 5px #00f2fe);
+    margin-right: 2px;
 }
 
 @keyframes float-up-fade {
@@ -1371,7 +1396,7 @@ body {
 .dead-cell-container img {
     width: 100%;
     height: 100%;
-    filter: grayscale(100%) brightness(0.6) contrast(1.2) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
+    filter: brightness(1) contrast(1.2) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
     opacity: 0.9;
 }
 
@@ -1415,7 +1440,7 @@ body {
 
 /* MONSTER RECALL (Shrink into container) */
 .anim-recall-exit {
-    animation: recall-exit 0.4s ease-in forwards;
+    animation: recall-exit 0.2s ease-in forwards;
 }
 
 @keyframes recall-exit {
@@ -1432,6 +1457,69 @@ body {
     }
 }
 
+/* BEGIN BATTLE POP & DISSOLVE */
+.anim-monster-pop {
+    animation: monster-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes monster-pop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.anim-container-dissolve {
+    animation: container-dissolve 0.5s ease-out forwards;
+}
+
+@keyframes container-dissolve {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.9;
+        filter: brightness(1.5) blur(0px);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+        filter: brightness(3) blur(10px);
+    }
+}
+
+.anim-container-capture {
+    animation: container-capture 0.8s ease-out forwards;
+}
+
+@keyframes container-capture {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+
+    30% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+        filter: brightness(1.5);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+        filter: brightness(1);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+}
+
 .anim-recall-return-player {
     animation: recall-return-player 0.6s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
 }
@@ -1442,34 +1530,34 @@ body {
 
 @keyframes recall-return-player {
     0% {
-        transform: scale(0.6) translateY(20px) translateX(0);
+        transform: scale(0.6) translateY(20px);
         opacity: 0;
     }
 
     20% {
         opacity: 1;
-        transform: scale(0.8) translateY(20px) translateX(0);
+        transform: scale(0.8) translateY(20px);
     }
 
     100% {
-        transform: scale(0.3) translateY(20px) translateX(-600px);
+        transform: scale(0.3) translateY(20px);
         opacity: 0;
     }
 }
 
 @keyframes recall-return-enemy {
     0% {
-        transform: scale(0.6) translateY(20px) translateX(0);
+        transform: scale(0.6) translateY(20px);
         opacity: 0;
     }
 
     20% {
         opacity: 1;
-        transform: scale(0.8) translateY(20px) translateX(0);
+        transform: scale(0.8) translateY(20px);
     }
 
     100% {
-        transform: scale(0.3) translateY(20px) translateX(600px);
+        transform: scale(0.3) translateY(20px);
         opacity: 0;
     }
 }
@@ -2796,7 +2884,7 @@ body {
 
 .detail-stats-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     width: 100%;
 }
@@ -3459,6 +3547,18 @@ body {
     background-image: url('assets/images/T_Char_Sprite_NPC_Female_01.png?v=6');
 }
 
+.no-transition {
+    transition: none !important;
+}
+
+#overworld-map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.35s linear;
+    will-change: transform;
+}
+
 #overworld-map .tile {
     width: 64px;
     height: 64px;
@@ -3883,4 +3983,46 @@ body {
         opacity: 1;
         transform: scale(1) translateY(0);
     }
+}
+
+/* SHIELD PULSE VFX */
+.anim-shield-pulse {
+    position: relative;
+}
+
+.anim-shield-pulse::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10;
+    animation: shield-pulse-effect 0.6s ease-out forwards;
+}
+
+@keyframes shield-pulse-effect {
+    0% {
+        filter: drop-shadow(0 0 0px #00f2fe) brightness(1);
+        box-shadow: 0 0 0px 0px rgba(0, 242, 254, 0);
+    }
+
+    30% {
+        filter: drop-shadow(0 0 25px #00f2fe) brightness(1.5);
+        box-shadow: 0 0 0px 8px rgba(0, 242, 254, var(--shield-opacity, 0.8));
+    }
+
+    100% {
+        filter: drop-shadow(0 0 0px #00f2fe) brightness(1);
+        box-shadow: 0 0 0px 0px rgba(0, 242, 254, 0);
+    }
+}
+
+/* BATTLE LOG STYLES */
+.shield-mitigation {
+    color: #a0f0ff !important;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(0, 242, 254, 0.5);
 }

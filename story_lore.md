@@ -181,28 +181,56 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ### Background Scientist Dialogue (Random NPCs)
 
-These dialogue lines are randomly assigned to the various researchers found walking the lab halls.
+These dialogue lines are randomly assigned to generic researchers based on the sector they are currently in. The `//` symbol indicates a manual page break in the dialogue window.
 
-1.  *"Have you seen the latest readings on the Nitrophils? They seem to have a higher metabolic rate whenever it's Noodle Tuesday. Strange correlation."*
-2.  *"The Director was shouting in the cafeteria again. He called the Nitrophils 'bio-hazardous junk' and threatened to incinerate any dish with a red stain. I've never seen someone so angry at a cell."*
-3.  *"Lana is brilliant with those Cambihils, but she has to hide them when the Director walks by. He calls them 'invasive weeds' and says they're a disgrace to the department."*
-4.  *"Working in Human Cell Research with Dyzes is great, but the Lydrosomes keep trying to 'clean' my coffee mug with high-pressure jets. It's quite a messy way to start the morning."*
-5.  *"I remember the Leak of '82... supposedly. The Director still uses it as an excuse to ignore the Cells. He calls them 'failed remnants of a dark day' whenever he's in a bad mood."*
-6.  *"The Cells are so helpful! One of them helped me reorganize my entire filing cabinet. Although, it did categorize everything by 'color' instead of 'alphabetical'."*
-7.  *"Why is the vending machine always out of Spicy Peanuts? I suspect the Director is buying the entire stock for his late-night shifts."*
-8.  *"Did you hear? A junior intern claims to have seen a 'giant' cell in the old storage wing. Probably just lack of sleep and too many energy drinks."*
-9.  *"The new bio-blue interface is much easier on the eyes, don't you think? It makes the whole lab feel more tactical and professional."*
-10. *"I tried to pet a Nitrophil today. It was remarkably soft, and it just stared at my lunch with such intense, spicy curiosity. They're almost... cute."*
-11. *"Fun fact: Cambihils actually photosynthetic at a 15% higher efficiency rate when they're near a window. They're basically high-speed solar panels with leaves."*
-12. *"Did you know Lydrosomes can use their osmotic pressure to precisely target debris? I saw one pressure-cleaning a set of microscopes in the breakroom yesterday. Not a speck of dust left."*
-13. *"The Osmotic types are fascinating. They can filter an entire liter of lab-grade water in under ten seconds. We haven't had a clogged sink since they arrived."*
-14. *"Thermogenic cells like Nitrophil have a resting body temperature that could boil an egg. The Director calls them 'walking fire hazards' and banned them from the executive floor."*
-15. *"Viral-type cells don't actually 'infect'—they just share data at a molecular level. The Director hates them the most; he says they're 'biological parasites' that should have been deleted years ago."*
-16. *"I heard rumors from the Alpha-Beta Sector. They're working on a 'Dual Combatant' pair called Dip-Alpha and Dip-Beta. Apparently, they're inseparable. If one goes down, it's a disaster for everyone's energy levels."*
-17. *"Sector 7 is trying to fix a 'buggy' mitochondria they're calling Mitonegy. It’s supposed to act like a transformer, patching up colleagues' membranes automatically. Sounds like a maintenance nightmare."*
-18. *"Have you seen the blueprints for the 'Kerashell'? It's a Keratinocyte with an armor plates made of skin protein. They say it can take a beating with almost zero energy cost. I wish my lab coat was that durable."*
-19. *"I heard the Scavenger team in the basement is working on 'Chlarob'. It's based on Chlamydia, but instead of making you sick, it's programmed to thieve energy from enemy cells. Tactical, but a bit creepy."*
-20. *"Watch out for the 'Canobolus' project in the Fungal Ward. It’s a Ballistospore with a catapult mechanism. They say it roots itself into the floor and just starts peppering its target with high-pressure spores like a machine gun."*
+#### Zone: Lab Lobby (Entrance)
+1. *"Welcome to Odd Labs!// Please keep your badge visible at all times and avoid the bio-hazard chutes."*
+2. *"The Incubation Chamber is just ahead.// Have you picked your signature cell yet? Career paths depend on it!"*
+3. *"Don't mind the security guards.// They're mostly here for... aesthetic compliance and to keep the cells in check."*
+4. *"If you're looking for the Director, he's usually in the Executive Suite.// Or hiding in the cafeteria during 'Noodle Tuesday'."*
+5. *"Stay sharp, Intern.// This lobby might look peaceful, but the research floors are quite the tactical maze."*
+6. *"I'm heading to the breakroom.// Apparently, the coffee machine finally stopped dispensing blue sludge."*
+
+#### Zone: Main Atrium (The Hub)
+1. *"Have you seen the latest readings on the Nitrophils?// They seem to have a higher metabolic rate whenever it's Noodle Tuesday.// Strange correlation."*
+2. *"The Director was shouting in the cafeteria again.// He called the Nitrophils 'bio-hazardous junk' and threatened to incinerate any dish with a red stain.// I've never seen someone so angry at a cell."*
+3. *"I remember the Leak of '82... supposedly.// The Director still uses it as an excuse to ignore the Cells.// He calls them 'failed remnants of a dark day' whenever he's in a bad mood."*
+4. *"The Cells are so helpful! One of them helped me reorganize my entire filing cabinet.// Although, it did categorize everything by 'color' instead of 'alphabetical'."*
+5. *"Why is the vending machine always out of Spicy Peanuts?// I suspect the Director is buying the entire stock for his late-night shifts."*
+6. *"Did you hear? A junior intern claims to have seen a 'giant' cell in the old storage wing.// Probably just lack of sleep and too many energy drinks."*
+7. *"The new bio-blue interface is much easier on the eyes, don't you think?// It makes the whole lab feel more tactical and professional."*
+8. *"I tried to pet a Nitrophil today.// It was remarkably soft, and it just stared at my lunch with such intense, spicy curiosity.// They're almost... cute."*
+9. *"Did you know Lydrosomes can use their osmotic pressure to precisely target debris?// I saw one pressure-cleaning a set of microscopes in the breakroom yesterday. Not a speck of dust left."*
+10. *"The Osmotic types are fascinating.// They can filter an entire liter of lab-grade water in under ten seconds.// We haven't had a clogged sink since they arrived."*
+11. *"Thermogenic cells like Nitrophil have a resting body temperature that could boil an egg.// The Director calls them 'walking fire hazards' and banned them from the executive floor."*
+12. *"I heard rumors from the Alpha-Beta Sector.// They're working on a 'Dual Combatant' pair called Dip-Alpha and Dip-Beta.// Apparently, they're inseparable. If one goes down, it's a disaster for everyone's energy levels."*
+13. *"I saw a senior researcher trying to 'authenticate' a Bikini Card using a high-powered electron microscope.// He claimed he was checking for 'tactical watermarks,' but he hasn't blinked in three hours.// Curious dedication to the craft, really."*
+14. *"Why is everyone suddenly trading 'Swimsuit Variants' of the Cell cards?// I heard the holographic foil is made of 'distilled summer vibes' and makes your Pellicle look 10% more fabulous.// I need one for... thermal testing."*
+15. *"I tried to explain my research to a Lydrosome,// but it just went right over its head.// I guess I shouldn't have expected it to absorb information that quickly.// It has zero osmotic interest in my career."*
+16. *"What if we synthesized a cell that only eats student loans?// We'd have to give it a very high affinity for 'depleted wallets' and 'unpaid interest'.// I think it's a Nobel Prize waiting to happen."*
+17. *"Did you know that some cells in the Botanic Sector can actually hear you scream?// Well, not 'hear' in the traditional sense, but they respond to high-frequency vibrations.// So if you're having a bad day, please scream quietly.// You're stressing the ferns."*
+18. *"I asked the Nitrophils if they knew any jokes about thermal dynamics.// They acts like they're too 'hot' to handle.// I really need to stop talking to the thermogenic specimens."*
+19. *"I've been calculating the trajectory of a Nitrophil launched from a high-pressure bio-chute.// If we get the angle right, we could technically deliver spicy noodles across the entire lab in 0.8 seconds.// The Director's office is right in the flight path, though."*
+20. *"Did you know the 'anti-slip' coating on the stairs is actually a layer of modified adhesive cells that 'lick' your shoes to keep them in place?// It works wonders, but the feeling of a thousand tiny tongues tasting your sneakers is... technically questionable.// And remarkably loud on quiet shifts."*
+
+#### Zone: Botanic Sector (Lana's Wing)
+1. *"Lana is brilliant with those Cambihils, but she has to hide them when the Director walks by.// He calls them 'invasive weeds' and says they're a disgrace to the department."*
+2. *"Fun fact: Cambihils actually photosynthetic at a 15% higher efficiency rate when they're near a window.// They're basically high-speed solar panels with leaves."*
+3. *"Watch out for the 'Canobolus' project in the Fungal Ward.// It’s a Ballistospore with a catapult mechanism.// They say it roots itself into the floor and just starts peppering its target with high-pressure spores like a machine gun."*
+4. *"The humidity in here is great for the ferns, but it's murder on my paperwork."*
+5. *"Did you see the glowing hedge move?// Lana says it's just 'bio-active curiosity', but I'm not so sure."*
+6. *"Lana spends more time talking to the plants than most of us.// Can't blame her, really. At least the plants don't complain about data entry."*
+7. *"Lana claims her 'Bikini Collection' is purely for 'UV radiation benchmarks'.// Right... and I'm sure that floral-pattern one is for 'camouflaging with the hydrangeas'.// She's not fooling anyone."*
+
+#### Zone: Human Research Ward (Dyzes' Wing)
+1. *"Working in Human Cell Research with Dyzes is great,// but the Lydrosomes keep trying to 'clean' my coffee mug with high-pressure jets. It's quite a messy way to start the morning."*
+2. *"Viral-type cells don't actually 'infect'—they just share data at a molecular level.// The Director hates them the most;// he says they're 'biological parasites' that should have been deleted years ago."*
+3. *"Sector 7 is trying to fix a 'buggy' mitochondria they're calling Mitonegy.// It’s supposed to act like a transformer, patching up colleagues' membranes automatically.// Sounds like a maintenance nightmare."*
+4. *"Have you seen the blueprints for the 'Kerashell'?// It's a Keratinocyte with an armor plates made of skin protein.// They say it can take a beating with almost zero energy cost.// I wish my lab coat was that durable."*
+5. *"I heard the Scavenger team in the basement is working on Chlarob.// It's based on Chlamydia, but instead of making you sick, it's programmed to thieve energy from enemy cells. Tactical, but a bit creepy."*
+6. *"Micro-tactical data is coming in fast today.// Dyzes is going to be pleased with the latest Lydrosome stats."*
+7. *"I asked Dyzes for a Band-Aid after a papercut.// He tried to give me a 'Lydrosome-infused regenerating patch' that cost more than my monthly salary.// I just used a napkin instead."*
+8. *"Dyzes says the human-cell interface is 98% stable.// I'm just wondering about what happens with that last 2%."*
 
 ### Background Staff Appearance & Behavior
 - **Appearance**: Standard white lab coats with "Odd Labs" armbands. Badge colors indicate department:

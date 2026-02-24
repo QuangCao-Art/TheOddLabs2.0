@@ -542,7 +542,9 @@ function openMonsterCard(monsterId) {
         'detail-hp': monster.hp,
         'detail-pp': monster.maxPp,
         'detail-atk': monster.atk,
-        'detail-def': monster.def
+        'detail-def': monster.def,
+        'detail-spd': monster.spd || 10,
+        'detail-crit': (monster.crit || 5) + '%'
     };
 
     for (const [id, val] of Object.entries(stats)) {
@@ -1101,7 +1103,7 @@ async function resolvePhase() {
     // 4. Combat Resolution
     const results = resolveTurn(gameState);
 
-    // Logging
+    // Logging and metadata for VFX
     const attackerName = results.attacker === 'PLAYER' ? 'You' : 'Enemy';
     const defenderName = results.attacker === 'PLAYER' ? 'Enemy' : 'You';
 
@@ -1157,15 +1159,38 @@ async function resolvePhase() {
         void playerContainer.offsetWidth; // Force reflow
         playerContainer.classList.add(lungeClass);
         if (isPellicle) playerContainer.classList.add('pellicle-aura');
-        if (results.hitResult.damage > 0) {
+        if (results.hitResult.damage > 0 || results.hitResult.shieldAbsorbed > 0) {
             setTimeout(() => {
-                enemyContainer.classList.remove('anim-hit-shake');
+                enemyContainer.classList.remove('anim-hit-shake', 'anim-shield-pulse');
                 void enemyContainer.offsetWidth; // Force reflow
+
+                // Shake if there was any impact (damage or shield block)
                 enemyContainer.classList.add('anim-hit-shake');
-                spawnDamageNumber(enemyContainer, results.hitResult.damage, results.hitResult.isCrit, results.typeMultiplier);
-                if (results.hitResult.isCrit) {
-                    document.getElementById('game-container').classList.add('anim-screen-shake');
-                    setTimeout(() => document.getElementById('game-container').classList.remove('anim-screen-shake'), 400);
+
+                // Trigger Shield Pulse if shielding occurred
+                if (results.hitResult.shieldAbsorbed > 0) {
+                    const defender = gameState.enemy;
+                    const ppRatio = defender.pp / defender.maxPp;
+                    enemyContainer.style.setProperty('--shield-opacity', ppRatio.toFixed(2));
+                    enemyContainer.classList.add('anim-shield-pulse');
+
+                    if (results.hitResult.shieldAbsorbed >= 5) {
+                        addLog(`[SHIELDED] Pellicle blocked ${results.hitResult.shieldAbsorbed} DMG!`, 'shield-mitigation');
+                        spawnShieldNumber(enemyContainer, results.hitResult.shieldAbsorbed);
+                    }
+
+                    setTimeout(() => {
+                        enemyContainer.classList.remove('anim-shield-pulse');
+                        enemyContainer.style.removeProperty('--shield-opacity');
+                    }, 600);
+                }
+
+                if (results.hitResult.damage > 0) {
+                    spawnDamageNumber(enemyContainer, results.hitResult.damage, results.hitResult.isCrit, results.typeMultiplier);
+                    if (results.hitResult.isCrit) {
+                        document.getElementById('game-container').classList.add('anim-screen-shake');
+                        setTimeout(() => document.getElementById('game-container').classList.remove('anim-screen-shake'), 400);
+                    }
                 }
             }, 150);
         }
@@ -1174,15 +1199,38 @@ async function resolvePhase() {
         void enemyContainer.offsetWidth; // Force reflow
         enemyContainer.classList.add(lungeClass);
         if (isPellicle) enemyContainer.classList.add('pellicle-aura');
-        if (results.hitResult.damage > 0) {
+        if (results.hitResult.damage > 0 || results.hitResult.shieldAbsorbed > 0) {
             setTimeout(() => {
-                playerContainer.classList.remove('anim-hit-shake');
+                playerContainer.classList.remove('anim-hit-shake', 'anim-shield-pulse');
                 void playerContainer.offsetWidth; // Force reflow
+
+                // Shake if there was any impact
                 playerContainer.classList.add('anim-hit-shake');
-                spawnDamageNumber(playerContainer, results.hitResult.damage, results.hitResult.isCrit, results.typeMultiplier);
-                if (results.hitResult.isCrit) {
-                    document.getElementById('game-container').classList.add('anim-screen-shake');
-                    setTimeout(() => document.getElementById('game-container').classList.remove('anim-screen-shake'), 400);
+
+                // Trigger Shield Pulse if shielding occurred
+                if (results.hitResult.shieldAbsorbed > 0) {
+                    const defender = gameState.player;
+                    const ppRatio = defender.pp / defender.maxPp;
+                    playerContainer.style.setProperty('--shield-opacity', ppRatio.toFixed(2));
+                    playerContainer.classList.add('anim-shield-pulse');
+
+                    if (results.hitResult.shieldAbsorbed >= 5) {
+                        addLog(`[SHIELDED] Pellicle blocked ${results.hitResult.shieldAbsorbed} DMG!`, 'shield-mitigation');
+                        spawnShieldNumber(playerContainer, results.hitResult.shieldAbsorbed);
+                    }
+
+                    setTimeout(() => {
+                        playerContainer.classList.remove('anim-shield-pulse');
+                        playerContainer.style.removeProperty('--shield-opacity');
+                    }, 600);
+                }
+
+                if (results.hitResult.damage > 0) {
+                    spawnDamageNumber(playerContainer, results.hitResult.damage, results.hitResult.isCrit, results.typeMultiplier);
+                    if (results.hitResult.isCrit) {
+                        document.getElementById('game-container').classList.add('anim-screen-shake');
+                        setTimeout(() => document.getElementById('game-container').classList.remove('anim-screen-shake'), 400);
+                    }
                 }
             }, 150);
         }
@@ -1433,6 +1481,24 @@ function spawnDamageNumber(targetEl, amount, isCrit = false, typeMultiplier = 1.
     setTimeout(() => dmgEl.remove(), 1200);
 }
 
+function spawnShieldNumber(targetEl, amount) {
+    const shieldEl = document.createElement('div');
+    shieldEl.className = 'shield-number';
+
+    const icon = document.createElement('img');
+    icon.src = 'assets/images/shield.png';
+    icon.className = 'shield-vfx-icon';
+
+    const text = document.createElement('span');
+    text.innerText = amount;
+
+    shieldEl.appendChild(icon);
+    shieldEl.appendChild(text);
+
+    targetEl.appendChild(shieldEl);
+    setTimeout(() => shieldEl.remove(), 1200);
+}
+
 function spawnHealNumber(targetEl, amount) {
     const healEl = document.createElement('div');
     healEl.className = 'heal-number';
@@ -1526,64 +1592,34 @@ function executeMonsterSwitch(benchIndex) {
     const oldName = gameState.player.name;
     addLog(`Recalling ${oldName}...`);
 
-    const display = document.querySelector('.player-display');
-    const portrait = display.querySelector('.monster-portrait');
+    triggerMonsterExit('.player-display', () => {
+        addLog(`Deploying ${targetMonster.name}!`);
 
-    // 1. Recall Animation
-    if (portrait) {
-        portrait.classList.add('anim-recall-exit');
-    }
+        // Finalize state change
+        gameState.player = targetMonster;
 
-    setTimeout(() => {
-        // 2. CelContainer Visual Flash & Fly to Bench
-        if (portrait) {
-            portrait.classList.remove('anim-recall-exit');
-            portrait.src = "assets/images/CellContainer.png";
-            portrait.style.transform = "scale(0.8) translateY(20px)";
-            portrait.style.filter = "none";
+        // Turn Swap
+        gameState.currentTurn = 'ENEMY';
+        gameState.phase = 'NODE_SELECTION';
 
-            // Trigger Fly Back Animation
-            void portrait.offsetWidth; // Force reflow
-            portrait.classList.add('anim-recall-return-player');
+        // Reset node selections
+        gameState.player.currentNode = null;
+        gameState.enemy.currentNode = null;
+
+        // Reset selection core
+        if (selectionCore) {
+            selectionCore.style.transition = 'all 0.4s ease-in-out';
+            selectionCore.style.transform = `translate(-50%, -50%)`;
         }
 
-        setTimeout(() => {
-            addLog(`Deploying ${targetMonster.name}!`);
+        gameState.isProcessing = false;
 
-            // Finalize state change
-            gameState.player = targetMonster;
+        // Update UI
+        updateUI();
 
-            // Turn Swap
-            gameState.currentTurn = 'ENEMY';
-            gameState.phase = 'NODE_SELECTION';
-
-            // Reset node selections
-            gameState.player.currentNode = null;
-            gameState.enemy.currentNode = null;
-
-            // Reset selection core
-            if (selectionCore) {
-                selectionCore.style.transition = 'all 0.4s ease-in-out';
-                selectionCore.style.transform = `translate(-50%, -50%)`;
-            }
-
-            gameState.isProcessing = false;
-
-            // Update UI will reset the portrait src and visibility
-            updateUI();
-
-            // Ensure portrait is visible and reset for deployment
-            if (portrait) {
-                portrait.classList.remove('anim-recall-return-player');
-                portrait.style.opacity = "1";
-                portrait.style.transform = "scale(1)";
-                portrait.style.filter = ""; // Reset to CSS default (restores glow)
-            }
-
-            // 3. Heavy Deploy Animation
-            triggerHeavyDeploy('.player-display');
-        }, 500); // Wait for recall-return animation
-    }, 400); // After recall-exit finishes
+        // Battle Entry Animation (Pod Drop)
+        triggerBattleEntry('.player-display');
+    });
 }
 
 function checkGameOver() {
@@ -1593,64 +1629,49 @@ function checkGameOver() {
     if (!isPlayerDefeated && !isEnemyDefeated) return false;
 
     // Handle Defeat (Visuals)
-    const loserDisplay = document.querySelector(isPlayerDefeated ? '.player-display' : '.enemy-display');
-    const loserPortrait = loserDisplay.querySelector('.monster-portrait');
-    loserPortrait.classList.add('death-fade');
+    const loserSelector = isPlayerDefeated ? '.player-display' : '.enemy-display';
 
-    setTimeout(() => {
-        const container = document.createElement('div');
-        container.className = 'dead-cell-container animate-heavy-drop';
-        container.innerHTML = `<img src="assets/images/CellContainer.png">`;
-        loserDisplay.appendChild(container);
-    }, 300);
-
-    // Check Party Status
-    if (isPlayerDefeated) {
-        const nextMonster = gameState.playerParty.find(m => m.hp > 0);
-        if (nextMonster) {
-            addLog(`${gameState.player.name} neutralized. Deploying next entity...`);
-            setTimeout(() => {
+    // Unified Exit Sequence (Monster Shrink + Container Capture)
+    triggerMonsterExit(loserSelector, () => {
+        // Check Party Status
+        if (isPlayerDefeated) {
+            const nextMonster = gameState.playerParty.find(m => m.hp > 0);
+            if (nextMonster) {
+                addLog(`${gameState.player.name} neutralized. Deploying next entity...`);
                 gameState.player = nextMonster;
-                document.querySelectorAll('.dead-cell-container').forEach(c => c.remove());
-                loserPortrait.classList.remove('death-fade');
                 updateUI();
-                triggerHeavyDeploy('.player-display');
-            }, 2000);
-            return false;
-        }
-    } else if (isEnemyDefeated) {
-        const nextMonster = gameState.enemyParty.find(m => m.hp > 0);
-        if (nextMonster) {
-            addLog(`Target neutralized. Next target incoming...`);
-            setTimeout(() => {
+                triggerBattleEntry('.player-display');
+                return;
+            }
+        } else if (isEnemyDefeated) {
+            const nextMonster = gameState.enemyParty.find(m => m.hp > 0);
+            if (nextMonster) {
+                addLog(`Target neutralized. Next target incoming...`);
                 gameState.enemy = nextMonster;
-                document.querySelectorAll('.dead-cell-container').forEach(c => c.remove());
-                loserPortrait.classList.remove('death-fade');
                 updateUI();
-                triggerHeavyDeploy('.enemy-display');
-            }, 2000);
-            return false;
+                triggerBattleEntry('.enemy-display');
+                return;
+            }
         }
-    }
 
-    // Party-wide Defeat
-    setTimeout(() => {
+        // Party-wide Defeat (if no next monster was deployed)
         const overlay = document.getElementById('game-over-overlay');
         const title = document.getElementById('game-over-title');
         const msg = document.getElementById('game-over-message');
 
-        if (isPlayerDefeated) {
-            title.innerHTML = `SYSTEM <span class="neon-text">FAILURE</span>`;
-            msg.innerText = `All cellular entities have been neutralized.`;
-        } else {
-            title.innerHTML = `MISSION <span class="neon-text">SUCCESS</span>`;
-            msg.innerText = `All target entities have been purged.`;
+        if (overlay && title && msg) {
+            if (isPlayerDefeated) {
+                title.innerHTML = `SYSTEM <span class="neon-text">FAILURE</span>`;
+                msg.innerText = `All cellular entities have been neutralized. Lab integrity compromised.`;
+            } else {
+                title.innerHTML = `MISSION <span class="neon-text">SUCCESS</span>`;
+                msg.innerText = `All target entities have been purged. Objective secured.`;
+            }
+            overlay.classList.remove('hidden');
         }
+    });
 
-        overlay.classList.remove('hidden');
-    }, 1800);
-
-    return true;
+    return true; // Game is ending or switching
 }
 
 function showScreen(screenId) {
@@ -1700,7 +1721,18 @@ function resetGame() {
     gameState.player = gameState.playerParty[0];
     gameState.enemy = gameState.enemyParty[0];
 
-    gameState.currentTurn = 'PLAYER';
+    // Determine Starting Turn based on Speed
+    const playerSpd = gameState.player.spd || 10;
+    const enemySpd = gameState.enemy.spd || 10;
+
+    if (playerSpd >= enemySpd) {
+        gameState.currentTurn = 'PLAYER';
+        addLog(`${gameState.player.name} is faster! Initializing initiative...`);
+    } else {
+        gameState.currentTurn = 'ENEMY';
+        addLog(`${gameState.enemy.name} is faster! Defensive protocols active.`);
+    }
+
     gameState.phase = 'NODE_SELECTION';
 
     // Clear death visuals
@@ -1734,6 +1766,10 @@ function resetGame() {
     if (bioText) bioText.innerText = 'Select a cellular entity to initialize tactical readout.';
 
     updateUI();
+
+    // Trigger Battle Entry Sequence
+    triggerBattleEntry('.player-display');
+    triggerBattleEntry('.enemy-display');
 }
 
 function triggerBenchFeedback(slot) {
@@ -1745,13 +1781,71 @@ function triggerBenchFeedback(slot) {
     }
 }
 
-function triggerHeavyDeploy(displaySelector) {
-    const portrait = document.querySelector(`${displaySelector} .monster-portrait`);
-    if (portrait) {
-        portrait.classList.remove('anim-heavy-deploy');
-        void portrait.offsetWidth; // Force reflow
-        portrait.classList.add('anim-heavy-deploy');
+
+function triggerMonsterExit(displaySelector, callback) {
+    const display = document.querySelector(displaySelector);
+    const portrait = display?.querySelector('.monster-portrait');
+    if (!display || !portrait) {
+        if (callback) callback();
+        return;
     }
+
+    // 1. Reset Classes & Force Reflow
+    portrait.classList.remove('anim-recall-exit', 'anim-monster-pop');
+    void portrait.offsetWidth;
+
+    // 2. Monster Shrink
+    portrait.classList.add('anim-recall-exit');
+
+    // 3. Container Capture
+    const container = document.createElement('div');
+    container.className = 'dead-cell-container anim-container-capture';
+    container.innerHTML = `<img src="assets/images/CellContainer.png">`;
+    display.appendChild(container);
+
+    // 4. Coordination
+    setTimeout(() => {
+        portrait.classList.remove('anim-recall-exit');
+        portrait.style.opacity = "0"; // Keep hidden for next deployment
+        container.remove();
+        if (callback) callback();
+    }, 800); // Matches container-capture duration
+}
+
+
+function triggerBattleEntry(displaySelector) {
+    const display = document.querySelector(displaySelector);
+    const portrait = display?.querySelector('.monster-portrait');
+    if (!display || !portrait) return;
+
+    // 1. Reset Classes & Force Reflow
+    portrait.classList.remove('anim-recall-exit', 'anim-monster-pop');
+    portrait.style.opacity = "0";
+    portrait.style.transform = "scale(0)";
+    void portrait.offsetWidth;
+
+    // 2. Spawn CellContainer
+    const container = document.createElement('div');
+    container.className = 'dead-cell-container animate-heavy-drop'; // Reuse drop style
+    container.innerHTML = `<img src="assets/images/CellContainer.png">`;
+    display.appendChild(container);
+
+    // 3. Orchestration
+    setTimeout(() => {
+        // Container Dissolve
+        container.classList.remove('animate-heavy-drop');
+        void container.offsetWidth;
+        container.classList.add('anim-container-dissolve');
+
+        // Monster Pop Out
+        setTimeout(() => {
+            portrait.style.opacity = "1";
+            portrait.classList.add('anim-monster-pop');
+
+            // Clean up container
+            setTimeout(() => container.remove(), 500);
+        }, 300); // Mid-dissolve
+    }, 800); // After heavy drop settles
 }
 
 init();

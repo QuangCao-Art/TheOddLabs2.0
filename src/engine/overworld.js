@@ -94,7 +94,7 @@ export const Overworld = {
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 3
                 [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Row 4 (Side Doors Closed - Human on right)
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 5
-                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 31], // Row 6 (Kitchen opposite - Locked Old Lab)
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Row 6 (Kitchen opposite - Specimen Storage)
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 7
                 [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Row 8 (Storage Entrance / Entertainment Entrance)
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 9
@@ -138,12 +138,18 @@ export const Overworld = {
                 { id: 'labTankB-T_at_n2', x: 14, y: 2, type: 'prop', name: 'Station Tank' },
                 { id: 'labTankB-B_at_n2', x: 14, y: 3, type: 'prop', name: 'Station Tank' },
                 // Cluster A (West)
-                { id: 'tableC-T_at1', x: 5, y: 5, type: 'prop', name: 'Atrium Core Table' },
-                { id: 'tableC-B_at1', x: 5, y: 6, type: 'prop', name: 'Atrium Core Table' },
-                { id: 'chairA-L_at1', x: 6, y: 5, type: 'prop', name: 'Lab Chair' },
-                { id: 'chairA-L_at2', x: 6, y: 6, type: 'prop', name: 'Lab Chair' },
-                { id: 'chairA-R_at3', x: 4, y: 5, type: 'prop', name: 'Lab Chair' },
-                { id: 'chairA-R_at4', x: 4, y: 6, type: 'prop', name: 'Lab Chair' },
+                { id: 'tableC-T_at_nw', x: 3, y: 5, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'tableC-B_at_nw', x: 3, y: 6, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'chairA-R_at_nw1', x: 2, y: 5, type: 'prop', name: 'Lab Chair' },
+                { id: 'chairA-R_at_nw2', x: 2, y: 6, type: 'prop', name: 'Lab Chair' },
+                { id: 'tableD-L_at_nw_s', x: 2, y: 7, type: 'prop', name: 'Analysis Table' },
+                { id: 'tableD-R_at_nw_s', x: 3, y: 7, type: 'prop', name: 'Analysis Table' },
+                { id: 'tableC-T_at1', x: 6, y: 5, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'tableC-B_at1', x: 6, y: 6, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'chairA-R_at3', x: 5, y: 5, type: 'prop', name: 'Lab Chair' },
+                { id: 'chairA-R_at4', x: 5, y: 6, type: 'prop', name: 'Lab Chair' },
+                { id: 'tableD-L_at1_s', x: 5, y: 7, type: 'prop', name: 'Analysis Table' },
+                { id: 'tableD-R_at1_s', x: 6, y: 7, type: 'prop', name: 'Analysis Table' },
                 // Cluster B (East) - Cleared per user request
                 { id: 'tableD-L_atB1', x: 12, y: 5, type: 'prop', name: 'Executive Desk' },
                 { id: 'tableD-R_atB1', x: 13, y: 5, type: 'prop', name: 'Executive Desk' },
@@ -166,22 +172,112 @@ export const Overworld = {
                 { id: 'tableC-B_at3', x: 8, y: 6, type: 'prop', name: 'Atrium Core Table' },
                 { id: 'tableC-T_at4', x: 10, y: 5, type: 'prop', name: 'Atrium Core Table' },
                 { id: 'tableC-B_at4', x: 10, y: 6, type: 'prop', name: 'Atrium Core Table' },
-                { id: 'PotPlant-Small_at1', x: 8, y: 7, type: 'prop', name: 'Atrium Decoration' },
-                { id: 'PotPlant-Small_at2', x: 10, y: 7, type: 'prop', name: 'Atrium Decoration' },
-                { id: 'PotPlant-Small_at5', x: 5, y: 7, type: 'prop', name: 'Atrium Decoration' },
                 { id: 'PotPlant-Small_at6', x: 1, y: 9, type: 'prop', name: 'Atrium Decoration' },
                 { id: 'PotPlant-Small_at7', x: 17, y: 9, type: 'prop', name: 'Atrium Decoration' },
-                { id: 'npc_female_at1', x: 9, y: 5, type: 'npc', name: 'Assistant Sarah' },
-                { id: 'npc_male_at1', x: 14, y: 7, type: 'npc', name: 'Researcher Mark' }
+                { id: 'npc_female_at1', x: 7, y: 7, type: 'npc', name: 'Assistant Sarah' },
+                { id: 'npc_male_at1', x: 14, y: 7, type: 'npc', name: 'Researcher Mark' },
+                { id: 'npc_male_at2', x: 2, y: 4, type: 'npc', name: 'Researcher Paul' },
+                { id: 'npc_female_at2', x: 11, y: 4, type: 'npc', name: 'Scientist Julia' },
+                { id: 'npc_male_at3', x: 11, y: 9, type: 'npc', name: 'Biologist Tom' }
             ],
             doors: [
                 { x: 9, y: 10, targetZone: 'lobby', targetX: 5, targetY: 3 },
-                { x: 0, y: 6, targetZone: 'kitchen', targetX: 6, targetY: 6 },
+                { x: 0, y: 6, targetZone: 'kitchen', targetX: 9, targetY: 6 },
                 { x: 0, y: 8, targetZone: 'entertainment', targetX: 6, targetY: 6 },
                 { x: 18, y: 8, targetZone: 'storage', targetX: 1, targetY: 6 },
                 { x: 0, y: 4, targetZone: 'botanic', targetX: 13, targetY: 13 },
-                { x: 18, y: 4, targetZone: 'human', targetX: 1, targetY: 8 },
+                { x: 18, y: 4, targetZone: 'human', targetX: 1, targetY: 13 },
+                { x: 18, y: 6, targetZone: 'specimenStorage', targetX: 1, targetY: 4 },
                 { x: 9, y: 2, targetZone: 'executive', targetX: 7, targetY: 7 }
+            ]
+        },
+        specimenStorage: {
+            name: 'SPECIMEN STORAGE',
+            width: 20,
+            height: 7,
+            spawn: { x: 1, y: 4 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1], // Row 0
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11], // Row 1
+                [10, 15, 15, 15, 15, 15, 22, 15, 15, 15, 15, 15, 15, 28, 15, 15, 15, 15, 15, 11], // Row 2 (Unlocked Door to Human Ward)
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 3
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 31], // Row 4
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 5
+                [2, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 29, 9, 9, 9, 9, 9, 3] // Row 6 (Doors at x=6 and x=13)
+            ],
+            objects: [
+                // Top Row of Tanks (Varied)
+                { id: 'labTankA-T_spec1', x: 1, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-B_spec1', x: 1, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-T_spec2', x: 2, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-B_spec2', x: 2, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-T_spec3', x: 3, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-B_spec3', x: 3, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-T_spec4', x: 4, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-B_spec4', x: 4, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-T_spec5', x: 5, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-B_spec5', x: 5, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-T_spec6', x: 9, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-B_spec6', x: 9, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-T_spec7', x: 7, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-B_spec7', x: 7, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-T_spec8', x: 8, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-B_spec8', x: 8, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-T_spec10', x: 10, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-B_spec10', x: 10, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-T_spec11', x: 11, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-B_spec11', x: 11, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-T_spec12', x: 12, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-B_spec12', x: 12, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-T_spec14', x: 14, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-B_spec14', x: 14, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-T_spec15', x: 15, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-B_spec15', x: 15, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-T_spec16', x: 16, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-B_spec16', x: 16, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-T_spec17', x: 17, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-B_spec17', x: 17, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-T_spec18', x: 18, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-B_spec18', x: 18, y: 3, type: 'prop', name: 'Specimen Tank' },
+
+                // Bottom Row of Tanks (Varied)
+                { id: 'labTankA-T_spec19', x: 1, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-B_spec19', x: 1, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-T_spec20', x: 2, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-B_spec20', x: 2, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-T_spec21', x: 3, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-B_spec21', x: 3, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-T_spec22', x: 4, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-B_spec22', x: 4, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-T_spec23', x: 5, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-B_spec23', x: 5, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-T_spec24', x: 9, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-B_spec24', x: 9, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-T_spec25', x: 7, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-B_spec25', x: 7, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-T_spec26', x: 8, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-B_spec26', x: 8, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-T_spec28', x: 10, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-B_spec28', x: 10, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-T_spec29', x: 11, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-B_spec29', x: 11, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-T_spec30', x: 12, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-B_spec30', x: 12, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-T_spec32', x: 14, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-B_spec32', x: 14, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-T_spec33', x: 15, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-B_spec33', x: 15, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-T_spec34', x: 16, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankA-B_spec34', x: 16, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-T_spec35', x: 17, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankB-B_spec35', x: 17, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-T_spec36', x: 18, y: 4, type: 'prop', name: 'Specimen Tank' },
+                { id: 'labTankC-B_spec36', x: 18, y: 5, type: 'prop', name: 'Specimen Tank' }
+            ],
+            doors: [
+                { x: 0, y: 4, targetZone: 'atrium', targetX: 17, targetY: 6 },
+                { x: 6, y: 6, targetZone: 'storage', targetX: 5, targetY: 3 },
+                { x: 6, y: 2, targetZone: 'human', targetX: 7, targetY: 14 }
             ]
         },
         old_lab: {
@@ -217,83 +313,125 @@ export const Overworld = {
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
                 [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Expansion Row 1
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Expansion Row 2
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Expansion Row 3
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Expansion Row 4
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Expansion Row 5
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Exit to Atrium (On the wall)
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [
-                { id: 'log_089', x: 7, y: 12, type: 'log', name: 'DataLog #089' },
-                { id: 'lana', x: 7, y: 8, type: 'npc', name: 'Lana' },
-                // Tier 1 Tanks
-                { id: 'labTankA-T_bot1', x: 1, y: 7, type: 'prop', name: 'Research Tank' },
-                { id: 'labTankA-B_bot1', x: 1, y: 8, type: 'prop', name: 'Research Tank' },
-                { id: 'labTankA-T_bot2', x: 3, y: 7, type: 'prop', name: 'Research Tank' },
-                { id: 'labTankA-B_bot2', x: 3, y: 8, type: 'prop', name: 'Research Tank' },
-                { id: 'labTankA-T_bot3', x: 11, y: 7, type: 'prop', name: 'Research Tank' },
-                { id: 'labTankA-B_bot3', x: 11, y: 8, type: 'prop', name: 'Research Tank' },
-                { id: 'labTankA-T_bot4', x: 13, y: 7, type: 'prop', name: 'Research Tank' },
-                { id: 'labTankA-B_bot4', x: 13, y: 8, type: 'prop', name: 'Research Tank' },
-                // Central Glowing Hedge (F24/F25)
-                { id: 'potPlantC-T_bot1', x: 2, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot1', x: 2, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot2', x: 3, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot2', x: 3, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot3', x: 4, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot3', x: 4, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot4', x: 5, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot4', x: 5, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot5', x: 6, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot5', x: 6, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot6', x: 7, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot6', x: 7, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot7', x: 8, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot7', x: 8, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot8', x: 9, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot8', x: 9, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot9', x: 10, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot9', x: 10, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot10', x: 11, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot10', x: 11, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot11', x: 12, y: 9, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot11', x: 12, y: 10, type: 'prop', name: 'Bioluminescent Bush' },
-                // Side Gardens (F18/19 and F20/21)
-                { id: 'potPlantA-T_bot1', x: 1, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot1', x: 1, y: 12, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot2', x: 2, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot2', x: 2, y: 12, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot3', x: 3, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot3', x: 3, y: 12, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot4', x: 4, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot4', x: 4, y: 12, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot5', x: 5, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot5', x: 5, y: 12, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot6', x: 6, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot6', x: 6, y: 12, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantB-T_bot1', x: 8, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot1', x: 8, y: 12, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot2', x: 9, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot2', x: 9, y: 12, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot3', x: 10, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot3', x: 10, y: 12, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot4', x: 11, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot4', x: 11, y: 12, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot5', x: 12, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot5', x: 12, y: 12, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot6', x: 13, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot6', x: 13, y: 12, type: 'prop', name: 'Specimen Fern' },
-                // Lower Station Tank
-                { id: 'labTankA-T_bot5', x: 1, y: 13, type: 'prop', name: 'Research Tank' },
-                { id: 'labTankA-B_bot5', x: 1, y: 14, type: 'prop', name: 'Research Tank' },
-                // Research Wall (Row 9 -> Row 14)
+                { id: 'lana', x: 7, y: 3, type: 'npc', name: 'Lana' },
+                { id: 'log_089', x: 13, y: 13, type: 'log', name: 'DataLog #089' },
+                // North Storage Row (y=3 with y=2 tops)
+                { id: 'Cabinet-Big-TopLeft_bot1', x: 1, y: 2, type: 'prop', name: 'Storage Unit' },
+                { id: 'Cabinet-Big-TopRight_bot1', x: 2, y: 2, type: 'prop', name: 'Storage Unit' },
+                { id: 'Cabinet-Big-BottomLeft_bot1', x: 1, y: 3, type: 'prop', name: 'Storage Unit' },
+                { id: 'Cabinet-Big-BottomRight_bot1', x: 2, y: 3, type: 'prop', name: 'Storage Unit' },
+                { id: 'Cabinet-Small_bot1', x: 3, y: 3, type: 'prop', name: 'Supply Cabinet' },
+                { id: 'Cabinet-Small_bot2', x: 11, y: 3, type: 'prop', name: 'Supply Cabinet' },
+                { id: 'Cabinet-Big-TopLeft_bot2', x: 12, y: 2, type: 'prop', name: 'Storage Unit' },
+                { id: 'Cabinet-Big-TopRight_bot2', x: 13, y: 2, type: 'prop', name: 'Storage Unit' },
+                { id: 'Cabinet-Big-BottomLeft_bot2', x: 12, y: 3, type: 'prop', name: 'Storage Unit' },
+                { id: 'Cabinet-Big-BottomRight_bot2', x: 13, y: 3, type: 'prop', name: 'Storage Unit' },
+                // Upper Garden Cluster (y=4,5,6,7) - STACK at x=4
+                { id: 'potPlantC-T_bot1', x: 2, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot1', x: 2, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot2', x: 3, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot2', x: 3, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot3a', x: 4, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot3a', x: 4, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot3b', x: 4, y: 5, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot3b', x: 4, y: 6, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot3c', x: 4, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot3c', x: 4, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot4', x: 5, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot4', x: 5, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot5', x: 6, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot5', x: 6, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'labTankA-T_bot1', x: 8, y: 4, type: 'prop', name: 'Research Tank' }, { id: 'labTankA-B_bot1', x: 8, y: 5, type: 'prop', name: 'Research Tank' },
+                { id: 'labTankA-T_bot2', x: 9, y: 4, type: 'prop', name: 'Research Tank' }, { id: 'labTankA-B_bot2', x: 9, y: 5, type: 'prop', name: 'Research Tank' },
+                { id: 'incubatorA-TL_bot1', x: 10, y: 4, type: 'prop', name: 'Incubation Chamber' }, { id: 'incubatorA-TR_bot1', x: 11, y: 4, type: 'prop', name: 'Incubation Chamber' },
+                { id: 'incubatorA-BL_bot1', x: 10, y: 5, type: 'prop', name: 'Incubation Chamber' }, { id: 'incubatorA-BR_bot1', x: 11, y: 5, type: 'prop', name: 'Incubation Chamber' },
+                { id: 'labTankA-T_bot3', x: 12, y: 4, type: 'prop', name: 'Research Tank' }, { id: 'labTankA-B_bot3', x: 12, y: 5, type: 'prop', name: 'Research Tank' },
+                { id: 'labTankA-T_bot4', x: 13, y: 4, type: 'prop', name: 'Research Tank' }, { id: 'labTankA-B_bot4', x: 13, y: 5, type: 'prop', name: 'Research Tank' },
+                // Middle Garden Cluster (y=6,7)
+                { id: 'potPlantC-T_bot6', x: 2, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot6', x: 2, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot7', x: 3, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot7', x: 3, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot9', x: 5, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot9', x: 5, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot10', x: 6, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot10', x: 6, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'Cartonbox-Small_bot1', x: 8, y: 7, type: 'prop', name: 'Archived Samples' },
+                { id: 'tableLeaderA-L_bot1', x: 9, y: 7, type: 'prop', name: 'Lead Analysis Desk' },
+                { id: 'tableLeaderA-R_bot1', x: 10, y: 7, type: 'prop', name: 'Lead Analysis Desk' },
+                { id: 'Cartonbox-Pile-Top_bot1', x: 11, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'Cartonbox-Pile-Bottom_bot1', x: 11, y: 7, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'KeyItem-SecretCard_bot1', x: 12, y: 7, type: 'prop', name: 'Access Key' },
+                { id: 'Cartonbox-Pile-Top_bot2', x: 13, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'Cartonbox-Pile-Bottom_bot2', x: 13, y: 7, type: 'prop', name: 'Stacked Boxes' },
+                // Refined Hedge Row (y=8) with Column 7 Path
+                { id: 'PotPlant-Small_bot1', x: 1, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'PotPlant-Small_bot2', x: 2, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'PotPlant-Small_bot3', x: 3, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'PotPlant-Small_bot4', x: 4, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'PotPlant-Small_bot5', x: 5, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'PotPlant-Small_bot6', x: 6, y: 8, type: 'prop', name: 'Decorative Bush' },
+                // Path at x=7
+                { id: 'PotPlant-Small_bot7', x: 8, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'PotPlant-Small_bot8', x: 9, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'PotPlant-Small_bot9', x: 10, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'PotPlant-Small_bot10', x: 11, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'PotPlant-Small_bot11', x: 12, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'PotPlant-Small_bot12', x: 13, y: 8, type: 'prop', name: 'Decorative Bush' },
+                // Expanded Lower Garden Rows (y=9-12) - STACKS at x=4 and x=10
+                { id: 'potPlantA-T_bot1', x: 2, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot1', x: 2, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot2', x: 3, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot2', x: 3, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot3a', x: 4, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot3a', x: 4, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot3b', x: 4, y: 10, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot3b', x: 4, y: 11, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot3c', x: 4, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot3c', x: 4, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot4', x: 5, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot4', x: 5, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot5', x: 6, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot5', x: 6, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantB-T_bot1', x: 8, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot1', x: 8, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot2', x: 9, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot2', x: 9, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot3a', x: 10, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot3a', x: 10, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot3b', x: 10, y: 10, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot3b', x: 10, y: 11, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot3c', x: 10, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot3c', x: 10, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot4', x: 11, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot4', x: 11, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot5', x: 12, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot5', x: 12, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantA-T_bot6', x: 2, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot6', x: 2, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot7', x: 3, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot7', x: 3, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot9', x: 5, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot9', x: 5, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantA-T_bot10', x: 6, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot10', x: 6, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'potPlantB-T_bot6', x: 8, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot6', x: 8, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot7', x: 9, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot7', x: 9, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot9', x: 11, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot9', x: 11, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'potPlantB-T_bot10', x: 12, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot10', x: 12, y: 12, type: 'prop', name: 'Specimen Fern' },
+                // Final Station Wall (y=13,14)
+                { id: 'Cartonbox-Pile-Top_bot3', x: 1, y: 13, type: 'prop', name: 'Stacked Boxes' }, { id: 'Cartonbox-Pile-Bottom_bot3', x: 1, y: 14, type: 'prop', name: 'Stacked Boxes' },
                 { id: 'tableD-L_bot1', x: 2, y: 14, type: 'prop', name: 'Research Station' },
                 { id: 'tableD-R_bot1', x: 3, y: 14, type: 'prop', name: 'Research Station' },
-                { id: 'Cartonbox-Small_bot1', x: 4, y: 14, type: 'prop', name: 'Biological Sample' },
-                { id: 'Cartonbox-Small_bot2', x: 5, y: 14, type: 'prop', name: 'Biological Sample' },
-                { id: 'tableDeviceA_bot', x: 6, y: 14, type: 'prop', name: 'Protein Sequencer' },
-                { id: 'Cartonbox-Small_bot3', x: 7, y: 14, type: 'prop', name: 'Biological Sample' },
-                { id: 'tableLabCylindersA_bot', x: 8, y: 14, type: 'prop', name: 'Lab Cylinders' },
-                { id: 'Cartonbox-Small_bot4', x: 9, y: 14, type: 'prop', name: 'Biological Sample' },
-                { id: 'tableLeaderA-L_bot', x: 10, y: 14, type: 'prop', name: 'Lead Analysis Desk' },
-                { id: 'tableLeaderA-R_bot', x: 11, y: 14, type: 'prop', name: 'Lead Analysis Desk' },
+                { id: 'Cartonbox-Small_bot2', x: 4, y: 14, type: 'prop', name: 'Archived Samples' },
+                { id: 'Cartonbox-Small_bot3', x: 5, y: 14, type: 'prop', name: 'Archived Samples' },
+                { id: 'tableDeviceA_bot1', x: 6, y: 14, type: 'prop', name: 'Protein Sequencer' },
+                { id: 'tableLabCylindersA_bot1', x: 8, y: 14, type: 'prop', name: 'Lab Cylinders' },
+                { id: 'Cartonbox-Small_bot5', x: 9, y: 14, type: 'prop', name: 'Archived Samples' },
+                { id: 'tableLeaderA-L_bot2', x: 10, y: 14, type: 'prop', name: 'Lead Analysis Desk' },
+                { id: 'tableLeaderA-R_bot2', x: 11, y: 14, type: 'prop', name: 'Lead Analysis Desk' },
                 { id: 'tableD-L_bot2', x: 12, y: 14, type: 'prop', name: 'Research Station' },
-                { id: 'tableD-R_bot2', x: 13, y: 14, type: 'prop', name: 'Research Station' }
+                { id: 'tableD-R_bot2', x: 13, y: 14, type: 'prop', name: 'Research Station' },
+                // Staff NPCs
+                { id: 'npc_male_bot1', x: 2, y: 13, type: 'npc', name: 'Researcher Evan' },
+                { id: 'npc_female_bot1', x: 1, y: 5, type: 'npc', name: 'Scientist Clara' },
+                { id: 'npc_male_bot2', x: 13, y: 9, type: 'npc', name: 'Tech Leo' },
+                { id: 'npc_female_bot2', x: 9, y: 11, type: 'npc', name: 'Biologist Mia' }
             ],
             doors: [
-                { x: 14, y: 13, targetZone: 'atrium', targetX: 1, targetY: 4 }
+                { x: 14, y: 13, targetZone: 'atrium', targetX: 1, targetY: 4 },
+                { x: 7, y: 15, targetZone: 'kitchen', targetX: 7, targetY: 3 }
             ]
         },
         human: {
             name: 'HUMAN RESEARCH WARD',
             width: 15,
-            height: 11,
-            spawn: { x: 7, y: 8 },
+            height: 16,
+            spawn: { x: 7, y: 13 },
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
@@ -303,23 +441,90 @@ export const Overworld = {
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Exit to Atrium (Closed)
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+                [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [
-                { id: 'tableC-T_hum', x: 5, y: 3, type: 'prop', name: 'Analysis Table' },
-                { id: 'tableC-B_hum', x: 5, y: 4, type: 'prop', name: 'Analysis Table' },
-                { id: 'chairA-L_hum', x: 6, y: 3, type: 'prop', name: 'Lab Chair' },
-                { id: 'labTankA-T_hum1', x: 3, y: 5, type: 'prop', name: 'Osmotic Tank' },
-                { id: 'labTankA-B_hum1', x: 3, y: 6, type: 'prop', name: 'Osmotic Tank' },
-                { id: 'labTankA-T_hum2', x: 11, y: 5, type: 'prop', name: 'Osmotic Tank' },
-                { id: 'labTankA-B_hum2', x: 11, y: 6, type: 'prop', name: 'Osmotic Tank' },
-                { id: 'log_212', x: 7, y: 6, type: 'log', name: 'DataLog #212' },
-                { id: 'dyzes', x: 7, y: 3, type: 'npc', name: 'Dyzes' }
+                { id: 'dyzes', x: 7, y: 3, type: 'npc', name: 'Dyzes' },
+                { id: 'log_212', x: 7, y: 14, type: 'log', name: 'DataLog #212' },
+
+                // Row 3 (Cabinets, Boxes, NPCs)
+                { id: 'Cabinet-Big-TopLeft_hum1', x: 1, y: 2, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-TopRight_hum1', x: 2, y: 2, type: 'prop', name: 'Human Archive' },
+                { id: 'Cabinet-Big-BottomLeft_hum1', x: 1, y: 3, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-BottomRight_hum1', x: 2, y: 3, type: 'prop', name: 'Human Archive' },
+
+                { id: 'Cabinet-Big-TopLeft_hum2', x: 3, y: 2, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-TopRight_hum2', x: 4, y: 2, type: 'prop', name: 'Human Archive' },
+                { id: 'Cabinet-Big-BottomLeft_hum2', x: 3, y: 3, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-BottomRight_hum2', x: 4, y: 3, type: 'prop', name: 'Human Archive' },
+
+                { id: 'boxHandA_hum1', x: 5, y: 3, type: 'prop', name: 'Hand Samples' },
+                { id: 'boxHandA_hum2', x: 9, y: 3, type: 'prop', name: 'Hand Samples' },
+
+                { id: 'Cabinet-Big-TopLeft_hum3', x: 10, y: 2, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-TopRight_hum3', x: 11, y: 2, type: 'prop', name: 'Human Archive' },
+                { id: 'Cabinet-Big-BottomLeft_hum3', x: 10, y: 3, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-BottomRight_hum3', x: 11, y: 3, type: 'prop', name: 'Human Archive' },
+
+                { id: 'Cabinet-Big-TopLeft_hum4', x: 12, y: 2, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-TopRight_hum4', x: 13, y: 2, type: 'prop', name: 'Human Archive' },
+                { id: 'Cabinet-Big-BottomLeft_hum4', x: 12, y: 3, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-BottomRight_hum4', x: 13, y: 3, type: 'prop', name: 'Human Archive' },
+
+                // Row 4-5 (Solid Stasis Row)
+                { id: 'labTankC-T_hum_r1a', x: 1, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1a', x: 1, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'labTankC-T_hum_r1b', x: 2, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1b', x: 2, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'labTankC-T_hum_r1c', x: 3, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1c', x: 3, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'labTankC-T_hum_r1d', x: 4, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1d', x: 4, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'labTankC-T_hum_r1e', x: 5, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1e', x: 5, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'labTankC-T_hum_r1f', x: 6, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1f', x: 6, y: 5, type: 'prop', name: 'Stasis Tank' },
+
+                { id: 'labTankC-T_hum_r1g', x: 8, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1g', x: 8, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'labTankC-T_hum_r1h', x: 9, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1h', x: 9, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'labTankC-T_hum_r1i', x: 10, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1i', x: 10, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'labTankC-T_hum_r1j', x: 11, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1j', x: 11, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'labTankC-T_hum_r1k', x: 12, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1k', x: 12, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'labTankC-T_hum_r1l', x: 13, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1l', x: 13, y: 5, type: 'prop', name: 'Stasis Tank' },
+
+                // Row 7 (Medical Row)
+                { id: 'bedA-L_hum7a', x: 2, y: 7, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum7a', x: 3, y: 7, type: 'prop', name: 'Medical Pod' },
+                { id: 'skeletonA-T_hum7', x: 4, y: 6, type: 'prop', name: 'Anatomical Model' }, { id: 'skeletonA-B_hum7', x: 4, y: 7, type: 'prop', name: 'Anatomical Model' },
+                { id: 'bedA-L_hum7b', x: 5, y: 7, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum7b', x: 6, y: 7, type: 'prop', name: 'Medical Pod' },
+                { id: 'bedA-L_hum7c', x: 8, y: 7, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum7c', x: 9, y: 7, type: 'prop', name: 'Medical Pod' },
+                { id: 'bedA-L_hum7d', x: 11, y: 7, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum7d', x: 12, y: 7, type: 'prop', name: 'Medical Pod' },
+
+                // Row 9 (Medical Row)
+                { id: 'skeletonA-T_hum9a', x: 1, y: 8, type: 'prop', name: 'Anatomical Model' }, { id: 'skeletonA-B_hum9a', x: 1, y: 9, type: 'prop', name: 'Anatomical Model' },
+                { id: 'bedA-L_hum9a', x: 2, y: 9, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum9a', x: 3, y: 9, type: 'prop', name: 'Medical Pod' },
+                { id: 'bedA-L_hum9b', x: 5, y: 9, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum9b', x: 6, y: 9, type: 'prop', name: 'Medical Pod' },
+                { id: 'skeletonA-T_hum9b', x: 7, y: 8, type: 'prop', name: 'Anatomical Model' }, { id: 'skeletonA-B_hum9b', x: 7, y: 9, type: 'prop', name: 'Anatomical Model' },
+                { id: 'bedA-L_hum9c', x: 8, y: 9, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum9c', x: 9, y: 9, type: 'prop', name: 'Medical Pod' },
+                { id: 'bedA-L_hum9d', x: 11, y: 9, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum9d', x: 12, y: 9, type: 'prop', name: 'Medical Pod' },
+                { id: 'skeletonA-T_hum9c', x: 13, y: 8, type: 'prop', name: 'Anatomical Model' }, { id: 'skeletonA-B_hum9c', x: 13, y: 9, type: 'prop', name: 'Anatomical Model' },
+
+                // Row 11 (Medical Row)
+                { id: 'bedA-L_hum11a', x: 2, y: 11, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum11a', x: 3, y: 11, type: 'prop', name: 'Medical Pod' },
+                { id: 'bedA-L_hum11b', x: 5, y: 11, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum11b', x: 6, y: 11, type: 'prop', name: 'Medical Pod' },
+                { id: 'skeletonA-T_hum11', x: 7, y: 10, type: 'prop', name: 'Anatomical Model' }, { id: 'skeletonA-B_hum11', x: 7, y: 11, type: 'prop', name: 'Anatomical Model' },
+                { id: 'bedA-L_hum11c', x: 8, y: 11, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum11c', x: 9, y: 11, type: 'prop', name: 'Medical Pod' },
+                { id: 'bedA-L_hum11d', x: 11, y: 11, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum11d', x: 12, y: 11, type: 'prop', name: 'Medical Pod' },
+
+                // Row 14 (Desks & Devices)
+                { id: 'tableDeviceA_hum14a', x: 1, y: 14, type: 'prop', name: 'Bio-Sampler' },
+                { id: 'tableLabCylindersA_hum14a', x: 2, y: 14, type: 'prop', name: 'Cylinder Array' },
+                { id: 'tableDeviceA_hum14b', x: 3, y: 14, type: 'prop', name: 'Bio-Sampler' },
+                { id: 'tableDeviceA_hum14c', x: 4, y: 14, type: 'prop', name: 'Bio-Sampler' },
+                { id: 'tableDeviceA_hum14d', x: 5, y: 14, type: 'prop', name: 'Bio-Sampler' },
+                { id: 'tableLabCylindersA_hum14b', x: 6, y: 14, type: 'prop', name: 'Cylinder Array' },
+                { id: 'tableDeviceA_hum14e', x: 8, y: 14, type: 'prop', name: 'Bio-Sampler' },
+                { id: 'tableDeviceA_hum14f', x: 9, y: 14, type: 'prop', name: 'Bio-Sampler' },
+                { id: 'tableLabCylindersA_hum14c', x: 10, y: 14, type: 'prop', name: 'Cylinder Array' },
+                { id: 'tableDeviceA_hum14g', x: 11, y: 14, type: 'prop', name: 'Bio-Sampler' },
+                { id: 'tableLabCylindersA_hum14d', x: 12, y: 14, type: 'prop', name: 'Cylinder Array' },
+                { id: 'tableDeviceA_hum14h', x: 13, y: 14, type: 'prop', name: 'Bio-Sampler' }
             ],
             doors: [
-                { x: 0, y: 8, targetZone: 'atrium', targetX: 17, targetY: 4 }
+                { x: 0, y: 13, targetZone: 'atrium', targetX: 17, targetY: 4 },
+                { x: 7, y: 15, targetZone: 'specimenStorage', targetX: 6, targetY: 3 }
             ]
         },
         executive: {
@@ -347,54 +552,54 @@ export const Overworld = {
         },
         kitchen: {
             name: 'STAFF KITCHEN',
-            width: 8,
+            width: 11,
             height: 8,
-            spawn: { x: 4, y: 6 },
+            spawn: { x: 7, y: 6 },
             layout: [
-                [0, 8, 8, 8, 8, 8, 8, 1],
-                [10, 14, 14, 14, 14, 14, 14, 11],
-                [10, 15, 15, 15, 15, 15, 15, 11],
-                [10, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 25], // Exit to Atrium (In the wall)
-                [2, 9, 9, 9, 9, 9, 9, 3]
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 15, 22, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Exit to Atrium (In the wall)
+                [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 3]
             ],
             objects: [
-                { id: 'tableB-L_kit', x: 2, y: 4, type: 'prop', name: 'Dining Table' },
-                { id: 'tableB-R_kit', x: 3, y: 4, type: 'prop', name: 'Dining Table' },
-                { id: 'chairA-F_kit1', x: 2, y: 5, type: 'prop', name: 'Kitchen Chair' },
-                { id: 'chairA-F_kit2', x: 3, y: 5, type: 'prop', name: 'Kitchen Chair' },
-                { id: 'tableComputerA_kit', x: 6, y: 4, type: 'prop', name: 'Staff PC' },
-                { id: 'log_042', x: 6, y: 3, type: 'log', name: 'DataLog #042' }
+                { id: 'tableB-L_kit', x: 5, y: 4, type: 'prop', name: 'Dining Table' },
+                { id: 'tableB-R_kit', x: 6, y: 4, type: 'prop', name: 'Dining Table' },
+                { id: 'chairA-F_kit1', x: 5, y: 5, type: 'prop', name: 'Kitchen Chair' },
+                { id: 'chairA-F_kit2', x: 6, y: 5, type: 'prop', name: 'Kitchen Chair' },
+                { id: 'tableComputerA_kit', x: 9, y: 4, type: 'prop', name: 'Staff PC' },
+                { id: 'log_042', x: 9, y: 3, type: 'log', name: 'DataLog #042' }
             ],
             doors: [
-                { x: 7, y: 6, targetZone: 'atrium', targetX: 1, targetY: 6 }
+                { x: 10, y: 6, targetZone: 'atrium', targetX: 1, targetY: 6 },
+                { x: 7, y: 2, targetZone: 'botanic', targetX: 7, targetY: 14 },
+                { x: 7, y: 7, targetZone: 'entertainment', targetX: 4, targetY: 3 }
             ]
         },
         storage: {
             name: 'STORAGE BAY',
-            width: 8,
+            width: 10,
             height: 8,
             spawn: { x: 1, y: 6 },
             layout: [
-                [0, 8, 8, 8, 8, 8, 8, 1],
-                [10, 14, 14, 14, 14, 14, 14, 11],
-                [10, 15, 15, 15, 15, 15, 15, 11],
-                [10, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 11],
-                [24, 13, 13, 13, 13, 13, 13, 11], // Exit to Atrium (On the left wall)
-                [2, 9, 9, 9, 9, 9, 9, 3]
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 22, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Exit to Atrium (On the left wall)
+                [2, 9, 9, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [
-                { id: 'tableLabCylindersA_st1', x: 5, y: 3, type: 'prop', name: 'Storage Rack' },
-                { id: 'tableLabCylindersA_st2', x: 6, y: 3, type: 'prop', name: 'Storage Rack' },
-                { id: 'tableDeviceA_st', x: 5, y: 4, type: 'prop', name: 'Bio-Sampler' },
                 { id: 'log_012', x: 3, y: 3, type: 'log', name: 'DataLog #012' }
             ],
             doors: [
-                { x: 0, y: 6, targetZone: 'atrium', targetX: 17, targetY: 8 }
+                { x: 0, y: 6, targetZone: 'atrium', targetX: 17, targetY: 8 },
+                { x: 5, y: 2, targetZone: 'specimenStorage', targetX: 6, targetY: 6 }
             ]
         },
         entertainment: {
@@ -405,7 +610,7 @@ export const Overworld = {
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 14, 14, 14, 14, 11],
-                [10, 15, 15, 15, 15, 15, 15, 11],
+                [10, 15, 15, 15, 22, 15, 15, 11],
                 [10, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 11],
@@ -416,11 +621,12 @@ export const Overworld = {
                 { id: 'tableA_ent', x: 3, y: 4, type: 'prop', name: 'Gaming Table' },
                 { id: 'chairA-R_ent', x: 2, y: 4, type: 'prop', name: 'Lounge Chair' },
                 { id: 'chairA-L_ent', x: 4, y: 4, type: 'prop', name: 'Lounge Chair' },
-                { id: 'wallHangingA_ent', x: 4, y: 2, type: 'prop', name: 'Art Display' },
-                { id: 'log_077', x: 4, y: 5, type: 'log', name: 'DataLog #077' }
+                { id: 'wallHangingA_ent', x: 3, y: 2, type: 'prop', name: 'Art Display' },
+                { id: 'log_077', x: 5, y: 5, type: 'log', name: 'DataLog #077' }
             ],
             doors: [
-                { x: 7, y: 6, targetZone: 'atrium', targetX: 1, targetY: 8 }
+                { x: 7, y: 6, targetZone: 'atrium', targetX: 1, targetY: 8 },
+                { x: 4, y: 2, targetZone: 'kitchen', targetX: 7, targetY: 6 }
             ]
         }
     },
@@ -613,6 +819,7 @@ export const Overworld = {
 
         // Ensure teleport is instant
         playerSprite.classList.add('no-transition');
+        mapEl.classList.add('no-transition');
         this.updatePlayerPosition();
 
         document.getElementById('location-name').textContent = zone.name;
@@ -942,11 +1149,29 @@ export const Overworld = {
         // 3. Tile Interaction (Special Locked Messages)
         if (targetX >= 0 && targetX < zone.width && targetY >= 0 && targetY < zone.height) {
             const tileID = zone.layout[targetY][targetX];
-            if (tileID === 29) { // Bottom Locked Door (WC)
-                this.showDialogue("Restroom Facility", [
-                    "Both of the WCs are broken due to some Cell mischievous.",
-                    "Sanitation protocols are currently offline."
-                ]);
+            const lockedTiles = [28, 29, 30, 31];
+
+            if (lockedTiles.includes(tileID)) {
+                // Check if it's the Atrium WC (coordinates 13,10 or 14,10 in Atrium)
+                const isAtriumWC = this.currentZone === 'atrium' && targetY === 10 && (targetX === 13 || targetX === 14);
+
+                if (isAtriumWC) {
+                    this.showDialogue("Restroom Facility", [
+                        "A stray Nitrophyl broke the pipes again.",
+                        "Staff are 'regrettably' skipping sanitation protocols until it's fixed."
+                    ]);
+                } else if (this.currentZone === 'lobby' && targetX === 5 && targetY === 7) {
+                    this.showDialogue("Security Gate", [
+                        "This door is locked.",
+                        "Where are you going, anyway?",
+                        "My logs suggest there's nothing but empty arrays beyond this sector."
+                    ]);
+                } else {
+                    this.showDialogue("Security Gate", [
+                        "This door is locked.",
+                        "Probably for saving the electric bill..."
+                    ]);
+                }
             }
         }
     },
@@ -983,6 +1208,7 @@ export const Overworld = {
                 "But your presence here is... unscheduled.",
                 "Let us see if your mind is as sharp as your cell's membrane."
             ],
+            // Basic NPC archetypes (can be used as fallbacks)
             'npc_female': [
                 "Working under Director Capsain is... intense. He's a visionary, but those vision quests take a toll.",
                 "Have you checked the data logs? We've lost track of so many entries lately."
@@ -993,8 +1219,75 @@ export const Overworld = {
             ]
         };
 
+        // Random Dialogue Pools categorized by zone (from story_lore.md + new entries)
+        const randomPools = {
+            atrium: [
+                ["Have you seen the latest readings on the Nitrophils?// They seem to have a higher metabolic rate whenever it's Noodle Tuesday.// Strange correlation."],
+                ["The Director was shouting in the cafeteria again.// He called the Nitrophils 'bio-hazardous junk'// and threatened to incinerate any dish with a red stain.// I've never seen someone so angry at a cell."],
+                ["I remember the Leak of '82... supposedly.// The Director still uses it as an excuse to ignore the Cells.// He calls them 'failed remnants of a dark day' whenever he's in a bad mood."],
+                ["The Cells are so helpful! One of them helped me reorganize my entire filing cabinet.// Although, it did categorize everything by 'color' instead of 'alphabetical'."],
+                ["Why is the vending machine always out of Spicy Peanuts?// I suspect the Director is buying the entire stock for his late-night shifts."],
+                ["Did you hear? A junior intern claims to have seen a 'giant' cell in the old storage wing.// Probably just lack of sleep and too many energy drinks."],
+                ["The new bio-blue interface is much easier on the eyes, don't you think?// It makes the whole lab feel more tactical and professional."],
+                ["I tried to pet a Nitrophil today.// It was remarkably soft, and it just stared at my lunch with such intense, spicy curiosity.// They're almost... cute."],
+                ["Did you know Lydrosomes can use their osmotic pressure to precisely target debris?// I saw one pressure-cleaning a set of microscopes in the breakroom yesterday.// Not a speck of dust left."],
+                ["The Osmotic types are fascinating.// They can filter an entire liter of lab-grade water in under ten seconds.// We haven't had a clogged sink since they arrived."],
+                ["Thermogenic cells like Nitrophil have a resting body temperature that could boil an egg.// The Director calls them 'walking fire hazards' and banned them from the executive floor."],
+                ["I heard rumors from the Alpha-Beta Sector.// They're working on a 'Dual Combatant' pair called Dip-Alpha and Dip-Beta.// Apparently, they're inseparable.// If one goes down, it's a disaster for everyone's energy levels."],
+                ["I saw a senior researcher trying to 'authenticate' a Bikini Card// using a high-powered electron microscope.// He claimed he was checking for 'tactical watermarks,//'but he hasn't blinked in three hours.// Curious dedication to the craft, really."],
+                ["Why is everyone suddenly trading 'Swimsuit Variants' of the Cell cards?// I heard the holographic foil is made of 'distilled summer vibes'// and makes your Pellicle look 10% more fabulous.// I need one for... thermal testing."],
+                ["I tried to explain my research to a Lydrosome,// but it just went right over its head.// I guess I shouldn't have expected it to absorb information that quickly.// It has zero osmotic interest in my career."],
+                ["What if we synthesized a cell that only eats student loans?// We'd have to give it a very high affinity for 'depleted wallets' and 'unpaid interest'.// I think it's a Nobel Prize waiting to happen."],
+                ["Did you know that some cells in the Botanic Sector can actually hear you scream?// Well, not 'hear' in the traditional sense, but they respond to high-frequency vibrations.// So if you're having a bad day, please scream quietly.// You're stressing the ferns."],
+                ["I asked the Nitrophils if they knew any jokes about thermal dynamics.// They acts like they're too 'hot' to handle.// I really need to stop talking to the thermogenic specimens."],
+                ["I've been calculating the trajectory of a Nitrophil launched from a high-pressure bio-chute.// If we get the angle right, we could technically deliver spicy noodles across the entire lab in 0.8 seconds.// The Director's office is right in the flight path, though."],
+                ["Did you know the 'anti-slip' coating on the stairs is actually a layer of modified adhesive cells that 'lick' your shoes to keep them in place?// It works wonders, but the feeling of a thousand tiny tongues tasting your sneakers is... technically questionable.// And remarkably loud on quiet shifts."]
+            ],
+            lobby: [
+                ["Welcome to Odd Labs!// Please keep your badge visible at all times and avoid the bio-hazard chutes."],
+                ["The Incubation Chamber is just ahead.// Have you picked your signature cell yet? Career paths depend on it!"],
+                ["Don't mind the security guards.// They're mostly here for... aesthetic compliance and to keep the cells in check."],
+                ["If you're looking for the Director, he's usually in the Executive Suite.// Or hiding in the cafeteria during 'Noodle Tuesday'."],
+                ["Stay sharp, Intern.// This lobby might look peaceful, but the research floors are quite the tactical maze."],
+                ["I'm heading to the breakroom.// Apparently, the coffee machine finally stopped dispensing blue sludge."]
+            ],
+            botanic: [
+                ["Lana is brilliant with those Cambihils, but she has to hide them when the Director walks by.// He calls them 'invasive weeds' and says they're a disgrace to the department."],
+                ["Fun fact: Cambihils actually photosynthetic at a 15% higher efficiency rate// when they're near a window.// They're basically high-speed solar panels with leaves."],
+                ["Watch out for the 'Canobolus' project in the Fungal Ward.// It’s a Ballistospore with a catapult mechanism.// They say it roots itself into the floor// and just starts peppering its target with high-pressure spores like a machine gun."],
+                ["The humidity in here is great for the ferns, but it's murder on my paperwork."],
+                ["Did you see the glowing hedge move?// Lana says it's just 'bio-active curiosity', but I'm not so sure."],
+                ["Lana spends more time talking to the plants than most of us.// Can't blame her, really. At least the plants don't complain about data entry."],
+                ["Lana claims her 'Bikini Collection' is purely for 'UV radiation benchmarks'.// Right... and I'm sure that floral-pattern one is for 'camouflaging with the hydrangeas'.// She's not fooling anyone."]
+            ],
+            human: [
+                ["Working in Human Cell Research with Dyzes is great,// but the Lydrosomes keep trying to 'clean' my coffee mug with high-pressure jets. It's quite a messy way to start the morning."],
+                ["Viral-type cells don't actually 'infect'—they just share data at a molecular level.// The Director hates them the most;// he says they're 'biological parasites' that should have been deleted years ago."],
+                ["Sector 7 is trying to fix a 'buggy' mitochondria they're calling Mitonegy.// It’s supposed to act like a transformer, patching up colleagues' membranes automatically.// Sounds like a maintenance nightmare."],
+                ["Have you seen the blueprints for the 'Kerashell'?// It's a Keratinocyte with an armor plates made of skin protein.// They say it can take a beating with almost zero energy cost.// I wish my lab coat was that durable."],
+                ["I heard the Scavenger team in the basement is working on 'Chlarob'.// It's based on Chlamydia, but instead of making you sick, it's programmed to thieve energy from enemy cells. Tactical, but a bit creepy."],
+                ["Micro-tactical data is coming in fast today.// Dyzes is going to be pleased with the latest Lydrosome stats."],
+                ["I asked Dyzes for a Band-Aid after a papercut.// He tried to give me a 'Lydrosome-infused regenerating patch' that cost more than my monthly salary.// I just used a napkin instead."],
+                ["Dyzes says the human-cell interface is 98% stable.// I'm just wondering about what happens with that last 2%."]
+            ]
+        };
+
         const key = npc.id.split('_')[0];
-        const lines = dialogueDb[key] || ["..."];
+        let lines = dialogueDb[key] || ["..."];
+
+        // Apply randomization to generic staff types based on location
+        if (npc.id.startsWith('npc_male') || npc.id.startsWith('npc_female')) {
+            // Determine pool based on zone
+            let activePool = randomPools.atrium; // default
+            if (this.currentZone === 'lobby') activePool = randomPools.lobby;
+            if (this.currentZone === 'botanic') activePool = randomPools.botanic;
+            if (this.currentZone === 'human') activePool = randomPools.human;
+            if (this.currentZone === 'kitchen') activePool = randomPools.atrium;
+
+            const randomIndex = Math.floor(Math.random() * activePool.length);
+            lines = activePool[randomIndex];
+        }
+
         this.showDialogue(npc.name, lines, npc.id);
     },
 
@@ -1011,7 +1304,19 @@ export const Overworld = {
 
     showDialogue(name, lines, npcId = null) {
         this.isDialogueActive = true;
-        this.dialogueQueue = [...lines]; // Clone the array
+
+        // Parse '//' as a page break marker
+        const parsedLines = [];
+        lines.forEach(line => {
+            if (typeof line === 'string' && line.includes('//')) {
+                const segments = line.split('//').map(s => s.trim()).filter(s => s.length > 0);
+                parsedLines.push(...segments);
+            } else {
+                parsedLines.push(line);
+            }
+        });
+
+        this.dialogueQueue = [...parsedLines]; // Load parsed lines into queue
 
         const box = document.getElementById('dialogue-box');
         const nameEl = document.getElementById('dialogue-name');
