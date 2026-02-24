@@ -22,6 +22,12 @@ const pentagonRect = interactivePentagon?.getBoundingClientRect();
 // Constants for positioning
 const RADIUS = 130; // Calibrated for pixel-perfect alignment with background asset
 
+function resetSelectorCore(instant = false) {
+    if (!selectionCore) return;
+    selectionCore.style.transition = instant ? 'none' : 'all 0.4s ease-in-out';
+    selectionCore.style.transform = `translate(-50%, -50%)`;
+}
+
 // Battle Log State
 let battleLogHistory = [];
 let previousScreen = 'screen-main-menu';
@@ -411,6 +417,16 @@ function updateBattleCard(monsterName) {
     // Sync bio text update midway through the rotation (0.4s)
     setTimeout(() => {
         bioText.innerText = monsterData?.lore || "Tactical data gathering...";
+
+        // Update Stat Grid
+        if (monsterData) {
+            setSafe('#card-hp', 'innerText', monsterData.maxHp);
+            setSafe('#card-pp', 'innerText', monsterData.maxPp);
+            setSafe('#card-crit', 'innerText', `${monsterData.crit}%`);
+            setSafe('#card-atk', 'innerText', monsterData.atk);
+            setSafe('#card-def', 'innerText', monsterData.def);
+            setSafe('#card-spd', 'innerText', monsterData.spd);
+        }
     }, 400);
 
     // Monster data update triggered (Glow shifted to Arena Portraits)
@@ -707,6 +723,10 @@ function endDrag(e) {
 
 function updateUI() {
     // Update Stats (Central Arena)
+    const playerPpPercent = gameState.player.pp / gameState.player.maxPp;
+    const playerPpColor = `hsl(183, ${10 + 90 * playerPpPercent}%, ${40 + 10 * playerPpPercent}%)`;
+    document.querySelector('.player-display')?.style.setProperty('--pp-color', playerPpColor);
+
     setStyle('.player-display .hp-fill', 'width', `${(gameState.player.hp / gameState.player.maxHp) * 100}%`);
     setStyle('.player-display .pp-fill', 'width', `${(gameState.player.pp / gameState.player.maxPp) * 100}%`);
     document.querySelector('.player-display .pp-fill')?.classList.toggle('overload', gameState.player.pp >= 10);
@@ -718,6 +738,10 @@ function updateUI() {
     const pImg = document.querySelector('.player-display .monster-portrait');
     if (pImg) pImg.src = `assets/images/${gameState.player.name}_Back.png`;
     if (pLayer) pLayer.classList.toggle('anim-attacker-float', gameState.currentTurn === 'PLAYER');
+
+    const enemyPpPercent = gameState.enemy.pp / gameState.enemy.maxPp;
+    const enemyPpColor = `hsl(183, ${10 + 90 * enemyPpPercent}%, ${40 + 10 * enemyPpPercent}%)`;
+    document.querySelector('.enemy-display')?.style.setProperty('--pp-color', enemyPpColor);
 
     setStyle('.enemy-display .hp-fill', 'width', `${(gameState.enemy.hp / gameState.enemy.maxHp) * 100}%`);
     setStyle('.enemy-display .pp-fill', 'width', `${(gameState.enemy.pp / gameState.enemy.maxPp) * 100}%`);
@@ -1307,6 +1331,11 @@ async function resolvePhase() {
             container.classList.add('anim-hit-shake');
             setTimeout(() => container.classList.remove('anim-hit-shake'), 400);
             nextAttacker.pp = 0; // Discharge after overload
+
+            if (checkGameOver()) {
+                gameState.isProcessing = false;
+                return;
+            }
         }
 
         // 7. Block Aging & New Triggers (v2.92)
@@ -1379,8 +1408,7 @@ async function resolvePhase() {
         gameState.enemy.currentNode = null;
 
         // Reset selection core to center AFTER resolution
-        selectionCore.style.transition = 'all 0.4s ease-in-out';
-        selectionCore.style.transform = `translate(-50%, -50%)`;
+        resetSelectorCore();
 
         gameState.isProcessing = false;
         updateUI();
@@ -1607,10 +1635,7 @@ function executeMonsterSwitch(benchIndex) {
         gameState.enemy.currentNode = null;
 
         // Reset selection core
-        if (selectionCore) {
-            selectionCore.style.transition = 'all 0.4s ease-in-out';
-            selectionCore.style.transform = `translate(-50%, -50%)`;
-        }
+        resetSelectorCore();
 
         gameState.isProcessing = false;
 
@@ -1618,7 +1643,9 @@ function executeMonsterSwitch(benchIndex) {
         updateUI();
 
         // Battle Entry Animation (Pod Drop)
-        triggerBattleEntry('.player-display');
+        triggerBattleEntry('.player-display', () => {
+            updateBattleCard(targetMonster.name);
+        });
     });
 }
 
@@ -1628,50 +1655,67 @@ function checkGameOver() {
 
     if (!isPlayerDefeated && !isEnemyDefeated) return false;
 
-    // Handle Defeat (Visuals)
-    const loserSelector = isPlayerDefeated ? '.player-display' : '.enemy-display';
-
-    // Unified Exit Sequence (Monster Shrink + Container Capture)
-    triggerMonsterExit(loserSelector, () => {
-        // Check Party Status
-        if (isPlayerDefeated) {
-            const nextMonster = gameState.playerParty.find(m => m.hp > 0);
-            if (nextMonster) {
-                addLog(`${gameState.player.name} neutralized. Deploying next entity...`);
-                gameState.player = nextMonster;
-                updateUI();
-                triggerBattleEntry('.player-display');
-                return;
-            }
-        } else if (isEnemyDefeated) {
+    // NEW: Handle simultaneous knockouts by processing them sequentially.
+    // We prioritize Enemy faint logic first, then check player in the callback.
+    if (isEnemyDefeated) {
+        triggerMonsterExit('.enemy-display', () => {
             const nextMonster = gameState.enemyParty.find(m => m.hp > 0);
             if (nextMonster) {
                 addLog(`Target neutralized. Next target incoming...`);
                 gameState.enemy = nextMonster;
                 updateUI();
-                triggerBattleEntry('.enemy-display');
-                return;
-            }
-        }
-
-        // Party-wide Defeat (if no next monster was deployed)
-        const overlay = document.getElementById('game-over-overlay');
-        const title = document.getElementById('game-over-title');
-        const msg = document.getElementById('game-over-message');
-
-        if (overlay && title && msg) {
-            if (isPlayerDefeated) {
-                title.innerHTML = `SYSTEM <span class="neon-text">FAILURE</span>`;
-                msg.innerText = `All cellular entities have been neutralized. Lab integrity compromised.`;
+                triggerBattleEntry('.enemy-display', () => {
+                    // After enemy is replaced, check if player still needs replacement
+                    checkGameOver();
+                });
             } else {
-                title.innerHTML = `MISSION <span class="neon-text">SUCCESS</span>`;
-                msg.innerText = `All target entities have been purged. Objective secured.`;
+                // If enemy is gone, check if player also needs replacement before victory
+                if (isPlayerDefeated) {
+                    checkGameOver();
+                } else {
+                    showGameOver(false); // Success
+                }
             }
-            overlay.classList.remove('hidden');
-        }
-    });
+        });
+        return true;
+    }
 
-    return true; // Game is ending or switching
+    if (isPlayerDefeated) {
+        triggerMonsterExit('.player-display', () => {
+            const nextMonster = gameState.playerParty.find(m => m.hp > 0);
+            if (nextMonster) {
+                addLog(`${gameState.player.name} neutralized. Deploying next entity...`);
+                gameState.player = nextMonster;
+                updateUI();
+                triggerBattleEntry('.player-display', () => {
+                    updateBattleCard(nextMonster.name);
+                    resetSelectorCore();
+                });
+            } else {
+                showGameOver(true); // Failure
+            }
+        });
+        return true;
+    }
+
+    return true;
+}
+
+function showGameOver(isFailure) {
+    const overlay = document.getElementById('game-over-overlay');
+    const title = document.getElementById('game-over-title');
+    const msg = document.getElementById('game-over-message');
+
+    if (overlay && title && msg) {
+        if (isFailure) {
+            title.innerHTML = `SYSTEM <span class="neon-text">FAILURE</span>`;
+            msg.innerText = `All cellular entities have been neutralized. Lab integrity compromised.`;
+        } else {
+            title.innerHTML = `MISSION <span class="neon-text">SUCCESS</span>`;
+            msg.innerText = `All target entities have been purged. Objective secured.`;
+        }
+        overlay.classList.remove('hidden');
+    }
 }
 
 function showScreen(screenId) {
@@ -1740,10 +1784,7 @@ function resetGame() {
     document.querySelectorAll('.monster-portrait').forEach(p => p.classList.remove('death-fade'));
 
     // Reset selection core to center
-    if (selectionCore) {
-        selectionCore.style.transition = 'none';
-        selectionCore.style.transform = 'translate(-50%, -50%)';
-    }
+    resetSelectorCore(true);
 
     // Clear all node highlights/selections
     interactiveNodes.forEach(n => n.classList.remove('selected', 'highlight'));
@@ -1768,7 +1809,10 @@ function resetGame() {
     updateUI();
 
     // Trigger Battle Entry Sequence
-    triggerBattleEntry('.player-display');
+    triggerBattleEntry('.player-display', () => {
+        // Auto-flip monster card to show player monster after deployment
+        updateBattleCard(gameState.player.name);
+    });
     triggerBattleEntry('.enemy-display');
 }
 
@@ -1800,23 +1844,29 @@ function triggerMonsterExit(displaySelector, callback) {
     // 3. Container Capture
     const container = document.createElement('div');
     container.className = 'dead-cell-container anim-container-capture';
-    container.innerHTML = `<img src="assets/images/CellContainer.png">`;
+    const containerImg = displaySelector.includes('player') ? 'CellContainer_Back.png' : 'CellContainer.png';
+    container.innerHTML = `<img src="assets/images/${containerImg}">`;
     display.appendChild(container);
 
     // 4. Coordination
     setTimeout(() => {
         portrait.classList.remove('anim-recall-exit');
-        portrait.style.opacity = "0"; // Keep hidden for next deployment
+        // Ensure it's hidden but use a class or consistent style
+        portrait.style.opacity = "0";
+        portrait.style.transform = "scale(0)";
         container.remove();
         if (callback) callback();
     }, 800); // Matches container-capture duration
 }
 
 
-function triggerBattleEntry(displaySelector) {
+function triggerBattleEntry(displaySelector, callback) {
     const display = document.querySelector(displaySelector);
     const portrait = display?.querySelector('.monster-portrait');
-    if (!display || !portrait) return;
+    if (!display || !portrait) {
+        if (callback) callback();
+        return;
+    }
 
     // 1. Reset Classes & Force Reflow
     portrait.classList.remove('anim-recall-exit', 'anim-monster-pop');
@@ -1827,7 +1877,9 @@ function triggerBattleEntry(displaySelector) {
     // 2. Spawn CellContainer
     const container = document.createElement('div');
     container.className = 'dead-cell-container animate-heavy-drop'; // Reuse drop style
-    container.innerHTML = `<img src="assets/images/CellContainer.png">`;
+
+    const containerImg = displaySelector.includes('player') ? 'CellContainer_Back.png' : 'CellContainer.png';
+    container.innerHTML = `<img src="assets/images/${containerImg}">`;
     display.appendChild(container);
 
     // 3. Orchestration
@@ -1840,12 +1892,15 @@ function triggerBattleEntry(displaySelector) {
         // Monster Pop Out
         setTimeout(() => {
             portrait.style.opacity = "1";
+            portrait.style.transform = "scale(1)"; // Clear the scale(0) reset
             portrait.classList.add('anim-monster-pop');
+
+            if (callback) callback();
 
             // Clean up container
             setTimeout(() => container.remove(), 500);
         }, 300); // Mid-dissolve
-    }, 800); // After heavy drop settles
+    }, 1400); // After heavy drop settles
 }
 
 init();
