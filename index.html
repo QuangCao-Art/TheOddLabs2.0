@@ -19,7 +19,7 @@
             <div class="menu-options">
                 <button id="btn-start-overworld" class="btn-neon">START GAME</button>
                 <button id="btn-start-battle" class="btn-neon">DEBUG BATTLE</button>
-                <button id="btn-open-cell-container" class="btn-neon">CELL CONTAINER</button>
+                <button id="btn-open-management" class="btn-neon">SQUAD MANAGEMENT</button>
                 <button id="btn-open-rulebook" class="btn-neon">RULEBOOK</button>
                 <button class="btn-neon disabled">SETTINGS</button>
             </div>
@@ -53,26 +53,70 @@
             </div>
         </div>
 
-        <!-- Cell Container (Team Management) -->
-        <div id="screen-cell-container" class="screen hidden">
-            <div id="container-layout">
-                <section id="team-loadout" class="glass-panel">
-                    <h3 class="panel-title">ACTIVE <span class="neon-text">TEAM</span></h3>
+        <!-- Unified Management Hub (SQUAD & CATALYST) -->
+        <div id="screen-management-hub" class="screen hidden">
+            <div id="hub-header">
+                <h2 class="neon-text">MANAGEMENT <span class="white-text">HUB</span></h2>
+                <div id="side-toggle-container">
+                    <button id="btn-side-player" class="side-btn active">PLAYER SQUAD</button>
+                    <button id="btn-side-opponent" class="side-btn">DEBUG OPPONENT</button>
+                </div>
+            </div>
+
+            <div id="management-layout">
+                <aside id="squad-management" class="glass-panel">
+                    <h3 class="panel-title squad-title">ACTIVE <span class="neon-text">SQUAD</span></h3>
                     <div class="team-slots">
                         <div class="slot" data-slot="0"></div>
                         <div class="slot" data-slot="1"></div>
                         <div class="slot" data-slot="2"></div>
                     </div>
-                </section>
+                    <div class="setup-hint">DRAG TO ASSIGN | CLICK TO UPGRADE</div>
 
-                <section id="celldex-grid" class="glass-panel">
-                    <h3 class="panel-title">CELL <span class="neon-text">DEX</span></h3>
-                    <div class="grid-container"></div>
-                </section>
+                    <div class="panel-divider"></div>
+
+                    <h3 class="panel-title">CELL <span class="neon-text">STORAGE</span></h3>
+                    <div class="grid-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </aside>
+
+                <!-- Center: The Catalyst Core (Slots & Branching) -->
+                <main id="catalyst-core" class="glass-panel">
+                    <div id="selected-monster-header">
+                        <h2 id="catalyst-monster-name" class="neon-text">SELECT CELL</h2>
+                        <div id="catalyst-monster-stats-peek">
+                            <span class="stat-mini">HP: <b id="peek-hp">--</b></span>
+                            <span class="stat-mini">PP: <b id="peek-pp">--</b></span>
+                            <span class="stat-mini">ATK: <b id="peek-atk">--</b></span>
+                            <span class="stat-mini">DEF: <b id="peek-def">--</b></span>
+                            <span class="stat-mini">SPD: <b id="peek-spd">--</b></span>
+                            <span class="stat-mini">CRT: <b id="peek-crt">--</b></span>
+                        </div>
+                    </div>
+
+                    <div id="slot-canvas-container">
+                        <canvas id="slot-connections"></canvas>
+                        <div id="slots-anchor">
+                            <!-- Base 3 Slots and expanded slots will be injected here -->
+                        </div>
+                    </div>
+                </main>
+
+                <!-- Right: C-Card Box -->
+                <aside id="catalyst-box" class="glass-panel">
+                    <h3 class="panel-title">C-CARD <span class="neon-text">BOX</span></h3>
+                    <div id="card-box-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </aside>
             </div>
 
             <div class="container-footer">
-                <button id="btn-container-back" class="btn-neon">RETURN TO BASE [ESC]</button>
+                <div id="protocol-hint">
+                    <i class="fas fa-microscope"></i> PROTOCOL: MAX 10 SLOTS • UNIQUE IDS • RECURSIVE BRANCH REMOVAL
+                </div>
+                <button id="btn-hub-back" class="btn-neon">RETURN TO BASE [ESC]</button>
             </div>
         </div>
 

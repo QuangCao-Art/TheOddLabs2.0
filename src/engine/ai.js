@@ -7,34 +7,33 @@ export const AI = {
     /**
      * Selects the best move for the enemy based on fuzzy logic and "Neural Noise".
      */
-    selectMove(enemy, isAttacking) {
+    selectMove(enemy, isAttacking, player = null) {
         const moveset = isAttacking ? enemy.moves : enemy.defenseMoves;
-        const availablePP = enemy.pp;
         const hpPercent = (enemy.hp / enemy.maxHp) * 100;
+        const isLysis = enemy.pp < 0;
+        const minPp = enemy.maxPp * -1;
 
         // NEURAL NOISE: 15% chance to ignore optimal strategy and pick a random affordable move
         if (Math.random() < 0.15) {
-            const affordable = moveset.filter(m => (m.cost || 0) <= availablePP);
+            const affordable = moveset.filter(m => m.type !== 'pellicle' || enemy.pp > minPp);
             return affordable[Math.floor(Math.random() * affordable.length)] || moveset[0];
         }
 
         // 1. DEFENSE LOGIC (Defense Phase)
         if (!isAttacking) {
             // Priority: Survival (Fuzzy check)
-            if (hpPercent < 45 && availablePP >= 4 && Math.random() < 0.8) {
+            // Smarter Debt Check: Avoid spending if in Lysis unless critically low on HP
+            const canAffordDefense = !isLysis || hpPercent < 25;
+
+            if (hpPercent < 45 && canAffordDefense && enemy.pp >= 4 && Math.random() < 0.8) {
                 const magmaChitin = moveset.find(m => m.id === 'magma_chitin');
                 if (magmaChitin) return magmaChitin;
             }
 
-            // Tactical Mitigation (Fuzzy check)
-            if (availablePP >= 2 && Math.random() < 0.6) {
+            // Tactical Mitigation
+            if (canAffordDefense && enemy.pp >= 2 && Math.random() < 0.6) {
                 const thermoShell = moveset.find(m => m.id === 'thermo_shell');
                 if (thermoShell) return thermoShell;
-            }
-
-            // Counter-Intuitive Aggression: 20% chance to skip defense and "save" PP
-            if (hpPercent > 60 && Math.random() < 0.2) {
-                return moveset.find(m => m.id === 'quick_dodge') || moveset[0];
             }
 
             return moveset.find(m => m.id === 'quick_dodge') || moveset[0];
@@ -42,15 +41,25 @@ export const AI = {
 
         // 2. ATTACK LOGIC (Attack Phase)
         // Critical Spend: High chance to use expensive skills if at risk of Overload (PP >= 8)
-        if (availablePP >= 8 && Math.random() < 0.9) {
+        if (enemy.pp >= 8 && Math.random() < 0.9) {
             const highCost = moveset.filter(m => m.type === 'pellicle' && m.cost > 0)
                 .sort((a, b) => b.cost - a.cost);
-            if (highCost.length > 0 && availablePP >= highCost[0].cost) return highCost[0];
+            if (highCost.length > 0) return highCost[0];
         }
 
-        // Calculated Aggression: Weighted chance for affordable Pellicle skills
-        const affordablePellicle = moveset.filter(m => m.type === 'pellicle' && availablePP >= m.cost);
-        const pChance = hpPercent > 70 ? 0.7 : 0.4; // More aggressive at high health
+        // Calculated Aggression: Weighted chance for Pellicle skills
+        const affordablePellicle = moveset.filter(m => m.type === 'pellicle' && enemy.pp > minPp);
+
+        // DEBT AWARENESS: Drastically reduce aggro if in Lysis
+        let pChance = hpPercent > 70 ? 0.7 : 0.4;
+        if (isLysis) pChance = 0.15; // Only 15% chance to over-exert
+
+        // FINAL GAMBIT: If player is low on health, become MUCH more aggressive even in Lysis
+        if (player && (player.hp / player.maxHp) < 0.25) {
+            console.log("[AI] FINAL GAMBIT! Risking Lysis for the kill. 🛡️⚡");
+            pChance = 0.85;
+        }
+
         if (affordablePellicle.length > 0 && Math.random() < pChance) {
             return affordablePellicle[Math.floor(Math.random() * affordablePellicle.length)];
         }

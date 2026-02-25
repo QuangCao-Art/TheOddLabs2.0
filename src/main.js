@@ -1,8 +1,9 @@
 ﻿import { gameState } from './engine/state.js';
-import { resolveTurn, getDistance, checkOverload } from './engine/combat.js';
+import { resolveTurn, getDistance, checkOverload, getModifiedStats } from './engine/combat.js';
 import { AI } from './engine/ai.js';
 import { MONSTERS } from './data/monsters.js';
 import { Overworld } from './engine/overworld.js';
+import { CARDS, LEVEL_REWARDS } from './data/cards.js';
 
 // DOM References
 const interactivePentagon = document.getElementById('interactive-pentagon');
@@ -37,6 +38,13 @@ let invNav = {
     active: false,
     tabIndex: 0, // 0: Logs, 1: Items, 2: Cells
     itemIndex: 0
+};
+
+let catalystState = {
+    activeSide: 'PLAYER', // 'PLAYER' or 'OPPONENT'
+    activeMonsterIdx: 0,
+    draggedCardId: null,
+    dragSourceSlot: null // null if box, or { monsterIdx, slotIdx }
 };
 
 const updateInvNav = (isKeyboardAction = false) => {
@@ -78,6 +86,27 @@ const updateInvNav = (isKeyboardAction = false) => {
 function init() {
     try {
         console.log("Odd Labs 2.0 Initializing...");
+
+        // Pre-populate player party for menus
+        const initMonster = (id) => createMonsterInstance(id);
+        // Initialize Teams
+        if (!gameState.enemyTeam) {
+            gameState.enemyTeam = ['nitrophil', 'cambihil', 'lydrosome'];
+        }
+
+        gameState.playerParty = gameState.playerTeam
+            .filter(id => id !== null)
+            .map(id => initMonster(id));
+
+        gameState.enemyParty = gameState.enemyTeam
+            .filter(id => id !== null)
+            .map(id => initMonster(id));
+
+        // Debug: Initialize levels
+        gameState.playerLevel = 15;
+        gameState.enemyLevel = 15;
+        fillDebugBoxes();
+
         setupNodePositions();
         setupEventListeners();
         showScreen('screen-main-menu');
@@ -86,6 +115,12 @@ function init() {
         console.error("Initialization Failed:", e);
         alert("Game failed to initialize. Check Console (F12).");
     }
+}
+
+function fillDebugBoxes() {
+    const allCardIds = Object.keys(CARDS);
+    gameState.cardBox = [...allCardIds];
+    gameState.enemyCardBox = [...allCardIds];
 }
 
 function setupNodePositions() {
@@ -152,14 +187,32 @@ function setupEventListeners() {
     document.getElementById('btn-open-rulebook')?.addEventListener('click', () => showScreen('screen-rulebook'));
     document.getElementById('btn-rulebook-back')?.addEventListener('click', () => showScreen(previousScreen));
 
-    // Cell Container Controls
-    document.getElementById('btn-open-cell-container')?.addEventListener('click', () => {
-        renderCellContainer();
-        showScreen('screen-cell-container');
+    // Unified Management Hub Controls
+    document.getElementById('btn-open-management')?.addEventListener('click', () => {
+        showScreen('screen-management-hub');
+        renderManagementHub();
     });
-    document.getElementById('btn-container-back')?.addEventListener('click', () => showScreen(previousScreen));
+    document.getElementById('btn-hub-back')?.addEventListener('click', () => showScreen('screen-main-menu'));
+
     document.getElementById('btn-close-card')?.addEventListener('click', () => {
         document.getElementById('monster-card-modal').classList.add('hidden');
+    });
+
+    // Side Toggle Logic
+    document.getElementById('btn-side-player')?.addEventListener('click', () => {
+        catalystState.activeSide = 'PLAYER';
+        catalystState.activeMonsterIdx = 0;
+        document.getElementById('btn-side-player').classList.add('active');
+        document.getElementById('btn-side-opponent').classList.remove('active');
+        renderManagementHub();
+    });
+
+    document.getElementById('btn-side-opponent')?.addEventListener('click', () => {
+        catalystState.activeSide = 'OPPONENT';
+        catalystState.activeMonsterIdx = 0;
+        document.getElementById('btn-side-opponent').classList.add('active');
+        document.getElementById('btn-side-player').classList.remove('active');
+        renderManagementHub();
     });
 
     // Inventory Controls
@@ -220,7 +273,7 @@ function setupEventListeners() {
 
             const rulebookScreen = document.getElementById('screen-rulebook');
             const inventoryOverlay = document.getElementById('screen-inventory');
-            const cellContainer = document.getElementById('screen-cell-container');
+            const managementHub = document.getElementById('screen-management-hub');
             const battleScreen = document.getElementById('screen-battle');
 
             if (rulebookScreen && !rulebookScreen.classList.contains('hidden')) {
@@ -233,8 +286,8 @@ function setupEventListeners() {
                 Overworld.isPaused = false;
                 return;
             }
-            if (cellContainer && !cellContainer.classList.contains('hidden')) {
-                showScreen(previousScreen);
+            if (managementHub && !managementHub.classList.contains('hidden')) {
+                showScreen('screen-main-menu');
                 return;
             }
             if (battleScreen && !battleScreen.classList.contains('hidden')) {
@@ -456,80 +509,7 @@ function showMoveInfo(moveId) {
 }
 
 // CELL CONTAINER LOGIC
-function renderCellContainer() {
-    const grid = document.querySelector('.grid-container');
-    const slots = document.querySelectorAll('.slot');
-    if (!grid || !slots) return;
 
-    // 1. Render CellDex Grid
-    grid.innerHTML = '';
-    gameState.cellDex.forEach(monsterId => {
-        const monster = MONSTERS[monsterId];
-        const icon = document.createElement('div');
-        icon.className = 'monster-icon';
-        icon.draggable = true;
-        icon.dataset.id = monsterId;
-        icon.innerHTML = `<img src="assets/images/${monster.name}.png" alt="${monster.name}">`;
-
-        // Click to Open Card
-        icon.addEventListener('click', (e) => {
-            if (e.detail === 1) { // Single click for card
-                openMonsterCard(monsterId);
-            }
-        });
-
-        // Drag Start
-        icon.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('monsterId', monsterId);
-            e.dataTransfer.setData('sourceSlot', ""); // Mark as coming from grid
-            icon.style.opacity = '0.5';
-        });
-
-        icon.addEventListener('dragend', () => {
-            icon.style.opacity = '1';
-        });
-
-        grid.appendChild(icon);
-    });
-
-    // 2. Render Team Slots
-    updateTeamSlots();
-}
-
-function updateTeamSlots() {
-    const slots = document.querySelectorAll('.slot');
-    slots.forEach((slot, index) => {
-        const monsterId = gameState.playerTeam[index];
-        slot.innerHTML = '';
-        if (monsterId) {
-            const monster = MONSTERS[monsterId];
-            const img = document.createElement('img');
-            img.src = `assets/images/${monster.name}.png`;
-            // img.style with removed pointer-events:none will inherited styles from CSS
-            slot.appendChild(img);
-
-            // Robust Dragging: Set draggable on the SLOT itself
-            slot.draggable = true;
-            slot.style.cursor = 'grab';
-
-            // Remove previous listener if any (clean re-render)
-            slot.ondragstart = (e) => {
-                e.dataTransfer.setData('monsterId', monsterId);
-                e.dataTransfer.setData('sourceSlot', index);
-                slot.style.opacity = '0.5';
-            };
-
-            slot.ondragend = () => {
-                slot.style.opacity = '1';
-            };
-        } else {
-            slot.draggable = false;
-            slot.style.cursor = 'default';
-            slot.ondragstart = null;
-            slot.ondragend = null;
-        }
-    });
-}
 
 function openMonsterCard(monsterId) {
     const monster = MONSTERS[monsterId];
@@ -722,34 +702,55 @@ function endDrag(e) {
 }
 
 function updateUI() {
-    // Update Stats (Central Arena)
-    const playerPpPercent = gameState.player.pp / gameState.player.maxPp;
-    const playerPpColor = `hsl(183, ${10 + 90 * playerPpPercent}%, ${40 + 10 * playerPpPercent}%)`;
-    document.querySelector('.player-display')?.style.setProperty('--pp-color', playerPpColor);
+    // Update PP Stats (Central Arena) - Bi-directional Bar
+    const pPP = gameState.player.pp;
+    const pMax = gameState.player.maxPp;
+    const pIsLysis = pPP < 0;
+
+    // Width logic: Bar refills visually when negative
+    const pFillPercent = (Math.abs(pPP) / pMax) * 100;
+
+    // Color logic: Blue/Cyan for positive, Orangish-Red for negative
+    const pColor = pIsLysis
+        ? 'var(--color-lysis)'
+        : `hsl(183, ${10 + 90 * (pPP / pMax)}%, ${40 + 10 * (pPP / pMax)}%)`;
+
+    setStyle('.player-display .pp-fill', 'width', `${pFillPercent}%`);
+    setStyle('.player-display .pp-fill', 'background', pColor);
+    document.querySelector('.player-display .pp-fill')?.classList.toggle('overload', pPP >= 10);
+    document.querySelector('.player-display .pp-label')?.classList.toggle('lysis', pIsLysis);
 
     setStyle('.player-display .hp-fill', 'width', `${(gameState.player.hp / gameState.player.maxHp) * 100}%`);
-    setStyle('.player-display .pp-fill', 'width', `${(gameState.player.pp / gameState.player.maxPp) * 100}%`);
-    document.querySelector('.player-display .pp-fill')?.classList.toggle('overload', gameState.player.pp >= 10);
-    setSafe('#player-hp-val', 'innerText', `${gameState.player.hp} / ${gameState.player.maxHp}`);
-    setSafe('#player-pp-val', 'innerText', `${gameState.player.pp} / ${gameState.player.maxPp}`);
+    setSafe('#player-hp-val', 'textContent', `${gameState.player.hp} / ${gameState.player.maxHp}`);
+    const playerPpText = pIsLysis ? `${pPP} / -${pMax}` : `${pPP} / ${pMax}`;
+    setSafe('#player-pp-val', 'textContent', playerPpText);
 
-    setSafe('.player-display .name', 'innerHTML', gameState.player.name);
+    setSafe('.player-display .name', 'textContent', gameState.player.name);
     const pLayer = document.querySelector('.player-display .monster-float-layer');
     const pImg = document.querySelector('.player-display .monster-portrait');
     if (pImg) pImg.src = `assets/images/${gameState.player.name}_Back.png`;
     if (pLayer) pLayer.classList.toggle('anim-attacker-float', gameState.currentTurn === 'PLAYER');
 
-    const enemyPpPercent = gameState.enemy.pp / gameState.enemy.maxPp;
-    const enemyPpColor = `hsl(183, ${10 + 90 * enemyPpPercent}%, ${40 + 10 * enemyPpPercent}%)`;
-    document.querySelector('.enemy-display')?.style.setProperty('--pp-color', enemyPpColor);
+    // Enemy PP
+    const ePP = gameState.enemy.pp;
+    const eMax = gameState.enemy.maxPp;
+    const eIsLysis = ePP < 0;
+    const eFillPercent = Math.min(100, (Math.abs(ePP) / eMax) * 100);
+    const eColor = eIsLysis
+        ? 'var(--color-lysis)'
+        : `hsl(183, ${10 + 90 * (ePP / eMax)}%, ${40 + 10 * (ePP / eMax)}%)`;
+
+    setStyle('.enemy-display .pp-fill', 'width', `${eFillPercent}%`);
+    setStyle('.enemy-display .pp-fill', 'background', eColor);
+    document.querySelector('.enemy-display .pp-fill')?.classList.toggle('overload', ePP >= 10);
+    document.querySelector('.enemy-display .pp-label')?.classList.toggle('lysis', eIsLysis);
 
     setStyle('.enemy-display .hp-fill', 'width', `${(gameState.enemy.hp / gameState.enemy.maxHp) * 100}%`);
-    setStyle('.enemy-display .pp-fill', 'width', `${(gameState.enemy.pp / gameState.enemy.maxPp) * 100}%`);
-    document.querySelector('.enemy-display .pp-fill')?.classList.toggle('overload', gameState.enemy.pp >= 10);
-    setSafe('#enemy-hp-val', 'innerText', `${gameState.enemy.hp} / ${gameState.enemy.maxHp}`);
-    setSafe('#enemy-pp-val', 'innerText', `${gameState.enemy.pp} / ${gameState.enemy.maxPp}`);
+    setSafe('#enemy-hp-val', 'textContent', `${gameState.enemy.hp} / ${gameState.enemy.maxHp}`);
+    const enemyPpText = eIsLysis ? `${ePP} / -${eMax}` : `${ePP} / ${eMax}`;
+    setSafe('#enemy-pp-val', 'textContent', enemyPpText);
 
-    setSafe('.enemy-display .name', 'innerHTML', gameState.enemy.name);
+    setSafe('.enemy-display .name', 'textContent', gameState.enemy.name);
     const eLayer = document.querySelector('.enemy-display .monster-float-layer');
     const eImg = document.querySelector('.enemy-display .monster-portrait');
     if (eImg) eImg.src = `assets/images/${gameState.enemy.name}.png`;
@@ -848,8 +849,10 @@ function updateUI() {
     // Check if current selection is valid for THIS moveset
     let currentMove = moveset.find(m => m.id === gameState.player.selectedMove);
 
-    // Auto-Fallback: If selection is invalid (wrong phase) or unaffordable
-    const canAfford = currentMove && (currentMove.type !== 'pellicle' || gameState.player.pp >= currentMove.cost);
+    // Auto-Fallback: If selection is invalid (wrong phase) or critically over-extended
+    // Debt Limit: Cannot spend if already at -maxPP
+    const isDebtLimitReached = gameState.player.pp <= (gameState.player.maxPp * -1);
+    const canAfford = currentMove && (currentMove.type !== 'pellicle' || !isDebtLimitReached);
 
     if (!currentMove || !canAfford) {
         gameState.player.selectedMove = moveset[0].id;
@@ -870,7 +873,7 @@ function updateUI() {
         const nameEl = btn.querySelector('.move-name');
         if (nameEl) nameEl.innerText = move.name;
 
-        const moveAffordable = move.type !== 'pellicle' || gameState.player.pp >= move.cost;
+        const moveAffordable = move.type !== 'pellicle' || !isDebtLimitReached;
         btn.classList.toggle('disabled', !moveAffordable);
         btn.classList.toggle('active', gameState.player.selectedMove === move.id);
         btn.classList.toggle('defense', !isPlayerPhase);
@@ -1107,7 +1110,7 @@ async function resolvePhase() {
 
     // 1. AI Choice
     const isEnemyAttacking = gameState.currentTurn === 'ENEMY';
-    const selectedMove = AI.selectMove(gameState.enemy, isEnemyAttacking);
+    const selectedMove = AI.selectMove(gameState.enemy, isEnemyAttacking, gameState.player);
     gameState.enemy.selectedMove = selectedMove.id;
     gameState.enemy.currentNode = AI.selectNode(gameState.enemy, gameState.player);
 
@@ -1145,6 +1148,10 @@ async function resolvePhase() {
         addLog("It's a BREACH!!!", 'super-effective');
     } else if (results.typeMultiplier < 1.0) {
         addLog("It's RESISTED...", 'resisted');
+    }
+
+    if (results.isLysis) {
+        addLog(`${defenderName} in [LYSIS STATE]: Structural failure detected!`, 'lysis');
     }
 
     if (dMove && dMove.id !== 'quick_dodge') {
@@ -1209,6 +1216,11 @@ async function resolvePhase() {
 
                 if (results.hitResult.damage > 0) {
                     spawnDamageNumber(enemyContainer, results.hitResult.damage, results.hitResult.isCrit, results.typeMultiplier);
+
+                    if (results.isLysis) {
+                        spawnLysisNumber(enemyContainer, results.hitResult.lysisPenalty);
+                    }
+
                     if (results.hitResult.isCrit) {
                         document.getElementById('game-container').classList.add('anim-screen-shake');
                         setTimeout(() => document.getElementById('game-container').classList.remove('anim-screen-shake'), 400);
@@ -1249,6 +1261,11 @@ async function resolvePhase() {
 
                 if (results.hitResult.damage > 0) {
                     spawnDamageNumber(playerContainer, results.hitResult.damage, results.hitResult.isCrit, results.typeMultiplier);
+
+                    if (results.isLysis) {
+                        spawnLysisNumber(playerContainer, results.hitResult.lysisPenalty);
+                    }
+
                     if (results.hitResult.isCrit) {
                         document.getElementById('game-container').classList.add('anim-screen-shake');
                         setTimeout(() => document.getElementById('game-container').classList.remove('anim-screen-shake'), 400);
@@ -1578,6 +1595,24 @@ function spawnDamageNumber(targetEl, amount, isCrit = false, typeMultiplier = 1.
     setTimeout(() => dmgEl.remove(), 1200);
 }
 
+function spawnLysisNumber(targetEl, amount) {
+    const lysisEl = document.createElement('div');
+    lysisEl.className = 'lysis-number';
+
+    const icon = document.createElement('img');
+    icon.src = 'assets/images/shield_broken.png';
+    icon.className = 'lysis-vfx-icon';
+
+    const text = document.createElement('span');
+    text.innerText = amount;
+
+    lysisEl.appendChild(icon);
+    lysisEl.appendChild(text);
+
+    targetEl.appendChild(lysisEl);
+    setTimeout(() => lysisEl.remove(), 1200);
+}
+
 function spawnShieldNumber(targetEl, amount) {
     const shieldEl = document.createElement('div');
     shieldEl.className = 'shield-number';
@@ -1859,29 +1894,18 @@ function showScreen(screenId) {
 }
 
 function resetGame() {
-    // 1. Initialize Parties
-    const initializeMonster = (id) => {
-        const data = JSON.parse(JSON.stringify(MONSTERS[id]));
-        return {
-            ...data,
-            currentNode: null,
-            blockedNodes: [],
-            hp: data.hp,
-            pp: 1,
-            selectedMove: data.moves[0].id
-        };
+    // 1. Initialize Parties (Preserving hub modifications if IDs match)
+    const updatePartyInstances = (currentParty, teamIds) => {
+        return teamIds
+            .filter(id => id !== null)
+            .map(id => {
+                const existing = currentParty.find(m => m.id === id);
+                return createMonsterInstance(id, existing);
+            });
     };
 
-    gameState.playerParty = gameState.playerTeam
-        .filter(id => id !== null)
-        .map(id => initializeMonster(id));
-
-    // Enemy Party (Giving enemy 3 monsters as well for balanced 3v3)
-    gameState.enemyParty = [
-        initializeMonster('nitrophil'),
-        initializeMonster('cambihil'),
-        initializeMonster('lydrosome')
-    ];
+    gameState.playerParty = updatePartyInstances(gameState.playerParty, gameState.playerTeam);
+    gameState.enemyParty = updatePartyInstances(gameState.enemyParty, gameState.enemyTeam);
 
     // Set Active Combatants
     gameState.player = gameState.playerParty[0];
@@ -2023,6 +2047,491 @@ function triggerBattleEntry(displaySelector, callback) {
             setTimeout(() => container.remove(), 500);
         }, 300); // Mid-dissolve
     }, 1400); // After heavy drop settles
+}
+
+
+// UNIFIED MANAGEMENT HUB LOGIC
+function renderManagementHub() {
+    renderCellStorage();
+    updateTeamSlots();
+    updateCatalystBox();
+    updateCatalystCore();
+}
+
+function renderCellStorage() {
+    const grid = document.querySelector('.grid-container');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    // If opponent, show all monsters for debug. If player, show cellDex.
+    const monstersToShow = catalystState.activeSide === 'OPPONENT'
+        ? Object.keys(MONSTERS)
+        : gameState.cellDex;
+
+    monstersToShow.forEach(name => {
+        const icon = document.createElement('div');
+        icon.className = 'monster-icon';
+        icon.draggable = true;
+        const imgName = name.charAt(0).toUpperCase() + name.slice(1);
+        icon.innerHTML = `<img src="assets/images/${imgName}.png" alt="${name}">`;
+
+        icon.ondragstart = (e) => {
+            e.dataTransfer.setData('monsterName', name);
+            e.dataTransfer.setData('sourceSide', catalystState.activeSide);
+        };
+
+        // Click to preview/open card
+        icon.onclick = () => openMonsterCard(name);
+
+        grid.appendChild(icon);
+    });
+}
+
+function updateTeamSlots() {
+    const slots = document.querySelectorAll('.slot');
+    const party = catalystState.activeSide === 'PLAYER' ? gameState.playerParty : gameState.enemyParty;
+    const team = catalystState.activeSide === 'PLAYER' ? gameState.playerTeam : gameState.enemyTeam; // Use enemyTeam if exists, or fallback
+
+    const labels = ["First", "Second", "Third"];
+
+    slots.forEach((slot, idx) => {
+        slot.innerHTML = '';
+        // Subtle active state handled in CSS
+        slot.classList.toggle('active', idx === catalystState.activeMonsterIdx);
+
+        // Add position label
+        const labelText = document.createElement('div');
+        labelText.className = 'slot-label';
+        labelText.innerText = labels[idx];
+        slot.appendChild(labelText);
+
+        const monster = party[idx];
+        if (monster) {
+            const imgName = monster.name.charAt(0).toUpperCase() + monster.name.slice(1);
+            const img = document.createElement('img');
+            img.src = `assets/images/${imgName}.png`;
+            img.alt = monster.name;
+            slot.appendChild(img);
+
+            slot.draggable = true;
+            slot.ondragstart = (e) => {
+                e.dataTransfer.setData('sourceSlot', idx);
+                e.dataTransfer.setData('sourceSide', catalystState.activeSide);
+            };
+        }
+
+        slot.onclick = () => {
+            if (monster) {
+                catalystState.activeMonsterIdx = idx;
+                renderManagementHub();
+            }
+        };
+
+        slot.ondragover = (e) => e.preventDefault();
+        slot.ondrop = (e) => {
+            e.preventDefault();
+            const monsterName = e.dataTransfer.getData('monsterName');
+            const sourceSlot = e.dataTransfer.getData('sourceSlot');
+            const sourceSide = e.dataTransfer.getData('sourceSide');
+
+            if (sourceSide !== catalystState.activeSide) {
+                addLog("Cannot transfer Cells between Player and Opponent.");
+                return;
+            }
+
+            const targetParty = catalystState.activeSide === 'PLAYER' ? gameState.playerParty : gameState.enemyParty;
+            const targetTeam = catalystState.activeSide === 'PLAYER' ? gameState.playerTeam : gameState.enemyTeam;
+
+            if (monsterName) {
+                // Assign new monster from Dex/Storage
+                const data = JSON.parse(JSON.stringify(MONSTERS[monsterName]));
+                targetParty[idx] = {
+                    ...data,
+                    currentNode: null,
+                    blockedNodes: [],
+                    equippedCards: [],
+                    hp: data.hp,
+                    pp: 1,
+                    selectedMove: data.moves[0].id
+                };
+                if (catalystState.activeSide === 'PLAYER') {
+                    gameState.playerTeam[idx] = monsterName;
+                } else {
+                    gameState.enemyTeam[idx] = monsterName;
+                }
+            } else if (sourceSlot !== "") {
+                // Swap slots
+                const sourceIdx = parseInt(sourceSlot);
+                const tempParty = targetParty[idx];
+                targetParty[idx] = targetParty[sourceIdx];
+                targetParty[sourceIdx] = tempParty;
+
+                if (catalystState.activeSide === 'PLAYER') {
+                    const tempTeam = gameState.playerTeam[idx];
+                    gameState.playerTeam[idx] = gameState.playerTeam[sourceIdx];
+                    gameState.playerTeam[sourceIdx] = tempTeam;
+                } else {
+                    const tempTeam = gameState.enemyTeam[idx];
+                    gameState.enemyTeam[idx] = gameState.enemyTeam[sourceIdx];
+                    gameState.enemyTeam[sourceIdx] = tempTeam;
+                }
+            }
+            renderManagementHub();
+        };
+    });
+}
+
+function updateCatalystBox() {
+    const grid = document.getElementById('card-box-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    const box = catalystState.activeSide === 'PLAYER' ? gameState.cardBox : gameState.enemyCardBox;
+    const counts = {};
+    box.forEach(id => counts[id] = (counts[id] || 0) + 1);
+
+    Object.keys(counts).forEach(cardId => {
+        const card = CARDS[cardId];
+        if (!card) return;
+
+        const count = counts[cardId];
+        const item = document.createElement('div');
+        item.className = `box-card tier-${card.tier}`;
+        item.draggable = true;
+
+        item.innerHTML = `
+            <div class="name">${card.name}</div>
+            <div class="count">x${count}</div>
+            <div class="tier">Tier ${card.tier}</div>
+        `;
+
+        item.ondragstart = (e) => {
+            catalystState.draggedCardId = cardId;
+            catalystState.dragSourceSide = catalystState.activeSide;
+            catalystState.dragSourceSlot = null;
+            e.dataTransfer.setData('text/plain', cardId);
+            document.querySelectorAll('.catalyst-slot').forEach(s => s.classList.add('highlight'));
+        };
+
+        item.ondragend = () => {
+            document.querySelectorAll('.catalyst-slot').forEach(s => s.classList.remove('highlight'));
+        };
+
+        grid.appendChild(item);
+    });
+}
+
+function updateCatalystCore() {
+    const anchor = document.getElementById('slots-anchor');
+    const party = catalystState.activeSide === 'PLAYER' ? gameState.playerParty : gameState.enemyParty;
+    const monster = party[catalystState.activeMonsterIdx];
+    const nameEl = document.getElementById('catalyst-monster-name');
+    if (!anchor || !monster) return;
+
+    nameEl.textContent = monster.name;
+    const level = catalystState.activeSide === 'PLAYER' ? gameState.playerLevel : gameState.enemyLevel;
+    const stats = getModifiedStats(monster, level);
+    const hpPeek = document.getElementById('peek-hp');
+    const ppPeek = document.getElementById('peek-pp');
+    const atkPeek = document.getElementById('peek-atk');
+    const defPeek = document.getElementById('peek-def');
+    const spdPeek = document.getElementById('peek-spd');
+    const crtPeek = document.getElementById('peek-crt');
+
+    const bonuses = { hp: 0, pp: 0, atk: 0, def: 0, spd: 0, crt: 0 };
+    monster.equippedCards.forEach(ec => {
+        const card = CARDS[ec.cardId];
+        if (card && card.stats) {
+            bonuses.hp += (card.stats.hp || 0);
+            bonuses.pp += (card.stats.pp || 0);
+            bonuses.atk += (card.stats.atk || 0);
+            bonuses.def += (card.stats.def || 0);
+            bonuses.spd += (card.stats.spd || 0);
+            bonuses.crt += (card.stats.crit || 0);
+        }
+    });
+
+    const fmt = (base, bonus) => bonus > 0 ? `${base + bonus} (${base} + ${bonus})` : base;
+
+    if (hpPeek) hpPeek.textContent = fmt(monster.maxHp, bonuses.hp);
+    if (ppPeek) ppPeek.textContent = fmt(monster.maxPp, bonuses.pp);
+    if (atkPeek) atkPeek.textContent = fmt(monster.atk, bonuses.atk);
+    if (defPeek) defPeek.textContent = fmt(monster.def, bonuses.def);
+    if (spdPeek) spdPeek.textContent = fmt(monster.spd, bonuses.spd);
+    if (crtPeek) {
+        const total = monster.crit + bonuses.crt;
+        crtPeek.textContent = bonuses.crt > 0
+            ? `${total}% (${monster.crit}% + ${bonuses.crt}%)`
+            : `${monster.crit}%`;
+    }
+
+    anchor.innerHTML = '';
+
+    // Add Monster Icon at the very top (Root of the tree)
+    const monsterIcon = document.createElement('div');
+    monsterIcon.className = 'catalyst-monster-root';
+    const imgName = monster.name.charAt(0).toUpperCase() + monster.name.slice(1);
+    monsterIcon.innerHTML = `<img src="assets/images/${imgName}.png" alt="${monster.name}">`;
+    anchor.appendChild(monsterIcon);
+
+    const slotPositions = calculateSlotLayout(monster);
+
+    slotPositions.forEach((pos, idx) => {
+        const slotDiv = document.createElement('div');
+        slotDiv.className = 'catalyst-slot';
+        slotDiv.style.left = `${pos.x}px`;
+        slotDiv.style.top = `${pos.y}px`;
+        slotDiv.dataset.slotIdx = idx;
+
+        const equippedCard = monster.equippedCards.find(ec => ec.slotIndex === idx);
+
+        if (equippedCard) {
+            const card = CARDS[equippedCard.cardId];
+            slotDiv.classList.add('occupied', `tier-${card.tier}`);
+            slotDiv.innerHTML = `
+                <div class="c-card-ui" draggable="true">
+                    <div class="card-name">${card.name}</div>
+                    <div class="card-stats">
+                        ${Object.entries(card.stats).map(([k, v]) => `
+                            <div class="stat-row"><span>${k.toUpperCase()}</span> <span>+${v}</span></div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            const cardEl = slotDiv.querySelector('.c-card-ui');
+            cardEl.ondragstart = (e) => {
+                catalystState.draggedCardId = equippedCard.cardId;
+                catalystState.dragSourceSlot = { monsterIdx: catalystState.activeMonsterIdx, slotIdx: idx };
+                e.dataTransfer.setData('text/plain', equippedCard.cardId);
+            };
+
+            slotDiv.onclick = (e) => {
+                if (e.ctrlKey) {
+                    unequipCard(catalystState.activeMonsterIdx, idx);
+                }
+            };
+        }
+
+        slotDiv.ondragover = (e) => e.preventDefault();
+        slotDiv.ondrop = (e) => {
+            e.preventDefault();
+            const cardId = e.dataTransfer.getData('text/plain');
+            equipCard(catalystState.activeMonsterIdx, idx, cardId);
+        };
+
+        anchor.appendChild(slotDiv);
+    });
+
+    drawConnections(slotPositions, monster);
+}
+
+function calculateSlotLayout(monster) {
+    // 1. Initialize 3 base slots
+    let slots = [
+        { id: 0, parent: -1, level: 0, children: [] },
+        { id: 1, parent: -1, level: 0, children: [] },
+        { id: 2, parent: -1, level: 0, children: [] }
+    ];
+
+    // 2. Build the tree structure up to 10 slots
+    let currentIndex = 0;
+    while (currentIndex < slots.length && slots.length < 10) {
+        const equipped = monster.equippedCards.find(ec => ec.slotIndex === currentIndex);
+        if (equipped) {
+            const card = CARDS[equipped.cardId];
+            const childCount = card.slots || 0;
+            for (let i = 0; i < childCount; i++) {
+                if (slots.length >= 10) break;
+                const newId = slots.length;
+                const newNode = { id: newId, parent: currentIndex, level: slots[currentIndex].level + 1, children: [] };
+                slots[currentIndex].children.push(newNode);
+                slots.push(newNode);
+            }
+        }
+        currentIndex++;
+    }
+
+    // 3. Subtree Width Calculation (to prevent overlap)
+    const memoWidth = {};
+    const getSubtreeWidth = (id) => {
+        if (memoWidth[id] !== undefined) return memoWidth[id];
+        const node = slots[id];
+        if (node.children.length === 0) return 1;
+        let w = 0;
+        node.children.forEach(c => w += getSubtreeWidth(c.id));
+        memoWidth[id] = Math.max(w, 1);
+        return memoWidth[id];
+    };
+
+    // 4. Position Assignment
+    const PADDING_X = 180;
+    const PADDING_Y = 280;
+    const positions = new Array(slots.length);
+
+    const assignPos = (id, leftLimit, width) => {
+        const node = slots[id];
+        const centerX = leftLimit + (width * PADDING_X) / 2;
+        positions[id] = {
+            x: centerX - 70, // 140 width / 2
+            y: node.level * PADDING_Y + 180, // Start below monster icon with more gap
+            parent: node.parent
+        };
+
+        if (node.children.length > 0) {
+            let currentLeft = leftLimit;
+            node.children.forEach(child => {
+                const childWidth = getSubtreeWidth(child.id);
+                assignPos(child.id, currentLeft, childWidth);
+                currentLeft += childWidth * PADDING_X;
+            });
+        }
+    };
+
+    // Calculate total base width to center the whole tree
+    let totalBaseWidth = 0;
+    const baseSlots = slots.filter(s => s.parent === -1);
+    baseSlots.forEach(s => totalBaseWidth += getSubtreeWidth(s.id));
+
+    let currentX = 800 - (totalBaseWidth * PADDING_X) / 2; // Offset from 1600px anchor center
+    baseSlots.forEach(s => {
+        const w = getSubtreeWidth(s.id);
+        assignPos(s.id, currentX, w);
+        currentX += w * PADDING_X;
+    });
+
+    return positions;
+}
+
+function drawConnections(positions, monster) {
+    const canvas = document.getElementById('slot-connections');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const anchor = document.getElementById('slots-anchor');
+    if (!anchor) return;
+
+    // Unified coordinate system (1600x2000 matching the anchor)
+    canvas.width = 1600;
+    canvas.height = 2000;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = 'rgba(0, 243, 255, 0.4)';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+
+    const rootX = 800; // Center of 1600px anchor
+    const rootIconY = 40; // Shifted down 20px to match CSS
+    const rootIconBottom = rootIconY + 100;
+    const firstRowY = positions.length > 0 ? positions[0].y : 0;
+    const rootBranchY = rootIconBottom + (firstRowY - rootIconBottom) / 2;
+
+    // Draw from Root Icon to Base Slots
+    const baseSlots = positions.filter(p => p.parent === -1);
+    if (baseSlots.length > 0) {
+        ctx.beginPath();
+        ctx.moveTo(rootX, rootIconBottom);
+        ctx.lineTo(rootX, rootBranchY);
+
+        baseSlots.forEach(pos => {
+            const slotCenterX = pos.x + 70;
+            ctx.moveTo(rootX, rootBranchY);
+            ctx.lineTo(slotCenterX, rootBranchY);
+            ctx.lineTo(slotCenterX, pos.y);
+        });
+        ctx.stroke();
+    }
+
+    // Draw connections between parent and child slots
+    positions.forEach((pos, idx) => {
+        if (pos.parent !== -1) {
+            const parent = positions[pos.parent];
+            const startX = parent.x + 70;
+            const startY = parent.y + 180; // Bottom of parent card
+            const endX = pos.x + 70;
+            const endY = pos.y;            // Top of child card
+
+            // Calculate vertical midpoint for Manhattan path
+            const midY = startY + (endY - startY) / 2;
+
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(startX, midY); // Down from parent
+            ctx.lineTo(endX, midY);   // Horizontal branch
+            ctx.lineTo(endX, endY);   // Down to child
+            ctx.stroke();
+        }
+    });
+}
+
+function equipCard(monsterIdx, slotIdx, cardId) {
+    const party = catalystState.activeSide === 'PLAYER' ? gameState.playerParty : gameState.enemyParty;
+    const monster = party[monsterIdx];
+    const card = CARDS[cardId];
+
+    if (monster.equippedCards.some(ec => ec.cardId === cardId)) {
+        addLog("Cannot equip duplicate cards on same Cell.");
+        return;
+    }
+
+    const existing = monster.equippedCards.find(ec => ec.slotIndex === slotIdx);
+    if (existing) unequipCard(monsterIdx, slotIdx);
+
+    if (catalystState.dragSourceSlot) {
+        const sourceParty = catalystState.activeSide === 'PLAYER' ? gameState.playerParty : gameState.enemyParty;
+        const sourceMonster = sourceParty[catalystState.dragSourceSlot.monsterIdx];
+        sourceMonster.equippedCards = sourceMonster.equippedCards.filter(ec => ec.slotIndex !== catalystState.dragSourceSlot.slotIdx);
+    } else {
+        const box = catalystState.activeSide === 'PLAYER' ? gameState.cardBox : gameState.enemyCardBox;
+        const index = box.indexOf(cardId);
+        if (index > -1) box.splice(index, 1);
+    }
+
+    monster.equippedCards.push({ slotIndex: parseInt(slotIdx), cardId: cardId });
+    renderManagementHub();
+}
+
+function unequipCard(monsterIdx, slotIdx) {
+    const party = catalystState.activeSide === 'PLAYER' ? gameState.playerParty : gameState.enemyParty;
+    const monster = party[monsterIdx];
+    const index = monster.equippedCards.findIndex(ec => ec.slotIndex === slotIdx);
+    if (index === -1) return;
+
+    const removed = monster.equippedCards.splice(index, 1)[0];
+    const box = catalystState.activeSide === 'PLAYER' ? gameState.cardBox : gameState.enemyCardBox;
+    box.push(removed.cardId);
+
+    processRecursiveRemoval(monster, slotIdx);
+    renderManagementHub();
+}
+
+function processRecursiveRemoval(monster, parentSlotIdx) {
+    const newPositions = calculateSlotLayout(monster);
+    const validIndices = new Set(newPositions.map((_, i) => i));
+    const box = catalystState.activeSide === 'PLAYER' ? gameState.cardBox : gameState.enemyCardBox;
+
+    const invalidEquipped = monster.equippedCards.filter(ec => !validIndices.has(ec.slotIndex));
+    invalidEquipped.forEach(ec => {
+        const idx = monster.equippedCards.indexOf(ec);
+        if (idx > -1) {
+            const removed = monster.equippedCards.splice(idx, 1)[0];
+            box.push(removed.cardId);
+            processRecursiveRemoval(monster, ec.slotIndex);
+        }
+    });
+}
+
+
+function createMonsterInstance(id, existing = null) {
+    const data = JSON.parse(JSON.stringify(MONSTERS[id]));
+    return {
+        ...data,
+        currentNode: null,
+        blockedNodes: [],
+        equippedCards: existing ? [...existing.equippedCards] : [],
+        hp: data.hp,
+        pp: 1,
+        selectedMove: data.moves[0].id
+    };
 }
 
 init();
