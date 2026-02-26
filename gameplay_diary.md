@@ -292,3 +292,18 @@ To improve phase clarity, the tactic pentagon now uses dedicated high-fidelity a
 - **Professional Iconography**: Replaced the placeholder `??` text for disabled nodes (Burned/Jammed) with a high-fidelity `padlock.png` asset.
 - **Tactical Scaling**: Calibrated the padlock icon to **150%** of the node's dimensions, creating a massive, unavoidable visual signal that overflows the diagnostic grid.
 - **Semantic Rendering**: Paired the icon with a red `drop-shadow` glow to maintain the "Hazardous" data aesthetic while improving immediate scannability of the tactical arena.
+
+### 2.53 Catalyst Core: Vertical Tree Overhaul
+A complete structural redesign of the Catalyst Hub, shifting from a horizontal layout to a top-down tactical tree.
+
+- **Vertical Hierarchy**: Re-engineered the core layout to grow downwards from a centralized monster portrait. This creates a clear vertical progression from the Root to the Base and beyond.
+- **Manhattan Connections**: Implemented high-fidelity, square branching lines using a HTML5 Canvas overlay. The lines are drawn with a custom Manhattan algorithm that ensures branches never cross and always connect to the precise top/bottom centers of card slots.
+- **Unified Coordinate System**: Optimized the workspace width to **1600px** and height to **2000px**, synchronizing the CSS `slots-anchor` and the JavaScript `slot-connections` canvas for pixel-perfect alignment.
+- **Detailed Stat Breakdowns**: Overhauled the Hub header to display full tactical readouts for **HP, PP, ATK, DEF, SPD,** and **CRT**. 
+    - Stats utilize a `Total (Base + Bonus)` format (e.g., `120 (100 + 20)`).
+    - Crit Chance (CRT) is officially formatted with percentages (e.g., `15% (10% + 5%)`).
+- **Data Persistence**: Resolved a structural bug where Hub modifications were cleared upon entering battle. Changes made to the Catalyst tree now persist as part of the `playerState`, ensuring your custom builds are tactical significant in the arena.
+- **Minimalist HUD Polish**: 
+    - **Centered Action**: The "RETURN TO BASE" button is centered for ergonomic interaction.
+    - **Protocol Guide**: Integrated a tiny, left-aligned tactical hint that summarizes the core Catalyst rules (Slot limits, Unique IDs) without taking up precious screen real estate.
+- **UX Security**: Hardened the UI rendering by replacing all `innerHTML` calls with `textContent` or `createElement` to ensure safe, sanitized data injection for card names and stats.
