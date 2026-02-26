@@ -96,19 +96,23 @@ A fundamental expansion of the **Matching Attack Placement (MAP)** system.
 The Linear "Bio-Growth" model has been replaced by the **Catalyst Enhance Machine**.
 
 ### 1. The C-CARD System
-- **Tiers**: 
-    - **Tier 1 (Bronze)**: Basic stat adaptations.
-    - **Tier 2 (Cyan)**: Advanced stats + **1 Expansion Slot**.
-    - **Tier 3 (Purple)**: Elite adaptations + **2 Expansion Slots**.
-- **Equip Rule**: A Cell cannot equip two cards of the same ID (e.g., two "ATK Adaptor +5").
+C-Cards provide stat boosts and tactical slot expansion. They are grouped into 3 Standard Tiers:
+- **Tier 1**: Slot +0. Focus on pure stats with 4 rarity levels (1-3 and MAX).
+- **Tier 2**: Slot +1. Balanced stats (standard utility).
+- **Tier 3**: Slot +2. Advanced optimization (elite stats).
+
+### 2. Leader Cards (Tactical Overrides)
+Progression through Research Grades (RG) awards unique **Leader Cards**. Unlike standard cards, these provide powerful game-changing passives:
+- **The Second Brain** (Passive): Unlocks the 1st Pellicle (2nd Move) skill slot.
+- **The Third Brain** (Passive): Unlocks the 2nd Pellicle (3rd Move) skill slot.
+- **Oxidative Energy Burst** (Equipped): First hit of every battle deals **2.0x Damage**.
+- **Neural Initiative** (Equipped): Always act first regardless of speed.
+- **Molecular Dissolver** (Equipped): Damage ignores opponent Defense.
+
+### 3. Equipment Rules
+- **Unique Card Rule**: A Cell cannot equip two cards of the same ID (e.g., two "Muscle Fiber Overdrive (+5)").
 - **Slot Limit**: Maximum of **10 slots** per Cell.
 - **Recursive Removal**: Removing a card that provides expansion slots will automatically unequip all "child" cards in those slots.
-
-### 2. Leader Perks (Squad-Wide)
-Progressing through levels (Lvl 1-15) unlocks permanent squad bonuses:
-- **Lvl 5 (2nd Core)**: Unlocks the 2nd attack and defense skill slots.
-- **Lvl 10 (3rd Core)**: Unlocks the 3rd attack and defense skill slots.
-- **Lvl 15 (Burst Protocol)**: First attack of every battle deals **2.0x Damage**.
 
 ---
 

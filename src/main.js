@@ -41,10 +41,13 @@ let invNav = {
 };
 
 let catalystState = {
-    activeSide: 'PLAYER', // 'PLAYER' or 'OPPONENT'
+    activeSide: 'PLAYER', // 'PLAYER' or 'OPPONENT' (Legacy support)
+    activeProfile: 'player', // 'player', 'opponent', 'lana', etc.
     activeMonsterIdx: 0,
+    boxSortMode: 'tier', // 'tier', 'type', or 'rarity'
     draggedCardId: null,
-    dragSourceSlot: null // null if box, or { monsterIdx, slotIdx }
+    dragSourceSlot: null,
+    battleOpponentId: 'opponent'
 };
 
 const updateInvNav = (isKeyboardAction = false) => {
@@ -85,6 +88,7 @@ const updateInvNav = (isKeyboardAction = false) => {
 // Initialization
 function init() {
     try {
+        console.log("%c ODD LABS 2.0 - BATTLE ENGINE V1.25 LOADED ", "background: #00f3ff; color: #000; font-weight: bold;");
         console.log("Odd Labs 2.0 Initializing...");
 
         // Pre-populate player party for menus
@@ -102,10 +106,32 @@ function init() {
             .filter(id => id !== null)
             .map(id => initMonster(id));
 
-        // Debug: Initialize levels
-        gameState.playerLevel = 15;
-        gameState.enemyLevel = 15;
-        fillDebugBoxes();
+        // Initialize all profiles from teams
+        Object.keys(gameState.profiles).forEach(id => {
+            const p = gameState.profiles[id];
+            // Clear and rebuild party from team IDs
+            p.party = p.team.map(monsterName => {
+                const data = JSON.parse(JSON.stringify(MONSTERS[monsterName]));
+                return {
+                    ...data,
+                    id: Math.random().toString(36).substr(2, 9),
+                    equippedCards: [],
+                    hp: data.hp,
+                    pp: 1,
+                    maxHp: data.hp,
+                    maxPp: data.maxPp,
+                    selectedMove: data.moves[0].id,
+                    currentNode: 0,
+                    blockedNodes: [],
+                    turnCount: 0
+                };
+            });
+            syncCardsToLevel(id, p.level);
+        });
+
+        // Initialize display with player profile
+        const activeRGInput = document.getElementById('debug-active-rg');
+        if (activeRGInput) activeRGInput.value = gameState.profiles[catalystState.activeProfile].level;
 
         setupNodePositions();
         setupEventListeners();
@@ -117,10 +143,28 @@ function init() {
     }
 }
 
-function fillDebugBoxes() {
-    const allCardIds = Object.keys(CARDS);
-    gameState.cardBox = [...allCardIds];
-    gameState.enemyCardBox = [...allCardIds];
+function syncCardsToLevel(profileId, level) {
+    const profile = gameState.profiles[profileId];
+    if (!profile) return;
+
+    profile.cardBox = []; // Reset cardBox
+    for (let i = 1; i <= level; i++) {
+        const rewards = LEVEL_REWARDS[i];
+        if (rewards) {
+            rewards.forEach(cardId => {
+                profile.cardBox.push(cardId);
+            });
+        }
+    }
+    if (level > 0) {
+        // Add SECRET leaders for debug in all boxes for testing
+        const secretLeaders = ['leader_4', 'leader_5'];
+        secretLeaders.forEach(lid => {
+            if (!profile.cardBox.includes(lid)) profile.cardBox.push(lid);
+        });
+    }
+
+    console.log(`[DEBUG] Syncing ${profile.name} Card Box for RG-${level}. Cards: ${profile.cardBox.length}`);
 }
 
 function setupNodePositions() {
@@ -199,20 +243,63 @@ function setupEventListeners() {
     });
 
     // Side Toggle Logic
-    document.getElementById('btn-side-player')?.addEventListener('click', () => {
-        catalystState.activeSide = 'PLAYER';
-        catalystState.activeMonsterIdx = 0;
-        document.getElementById('btn-side-player').classList.add('active');
-        document.getElementById('btn-side-opponent').classList.remove('active');
-        renderManagementHub();
+    // Unified Profile Toggles
+    document.querySelectorAll('.side-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const profileId = e.target.dataset.profile;
+            if (!profileId) return;
+
+            catalystState.activeProfile = profileId;
+            catalystState.activeMonsterIdx = 0;
+
+            // Sync legacy side for combat compatibility if needed
+            catalystState.activeSide = (profileId === 'player') ? 'PLAYER' : 'OPPONENT';
+
+            // Update button visuals
+            document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+
+            // Update Debug UI for this profile
+            const activeRGInput = document.getElementById('debug-active-rg');
+            if (activeRGInput) activeRGInput.value = gameState.profiles[profileId].level;
+
+            renderManagementHub();
+        });
     });
 
-    document.getElementById('btn-side-opponent')?.addEventListener('click', () => {
-        catalystState.activeSide = 'OPPONENT';
-        catalystState.activeMonsterIdx = 0;
-        document.getElementById('btn-side-opponent').classList.add('active');
-        document.getElementById('btn-side-player').classList.remove('active');
-        renderManagementHub();
+    // Card Box Sort Tabs
+    document.querySelectorAll('.sort-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            catalystState.boxSortMode = e.target.dataset.sort;
+            document.querySelectorAll('.sort-tab').forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+            updateCatalystBox();
+        });
+    });
+
+    // RG Debug Listener (Active Profile)
+    document.getElementById('debug-active-rg')?.addEventListener('change', (e) => {
+        const val = parseInt(e.target.value);
+        if (!isNaN(val)) {
+            const profileId = catalystState.activeProfile;
+            gameState.profiles[profileId].level = Math.max(0, Math.min(15, val));
+            syncCardsToLevel(profileId, gameState.profiles[profileId].level);
+            renderManagementHub();
+        }
+    });
+
+    document.getElementById('debug-enable-battle')?.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            catalystState.battleOpponentId = catalystState.activeProfile;
+        } else {
+            catalystState.battleOpponentId = 'opponent';
+        }
+
+        const battleBtn = document.getElementById('btn-start-battle');
+        if (battleBtn) {
+            const profileName = gameState.profiles[catalystState.battleOpponentId].name;
+            battleBtn.innerText = `DEBUG BATTLE (${profileName})`;
+        }
     });
 
     // Inventory Controls
@@ -356,7 +443,7 @@ function setupEventListeners() {
             void portrait.offsetWidth;
             portrait.classList.add('anim-pulse');
         }
-        updateBattleCard(gameState.player.name);
+        updateBattleCard(gameState.player);
     });
 
     document.querySelector('.enemy-display .monster-portrait-container')?.addEventListener('click', (e) => {
@@ -367,7 +454,7 @@ function setupEventListeners() {
             void portrait.offsetWidth;
             portrait.classList.add('anim-pulse');
         }
-        updateBattleCard(gameState.enemy.name);
+        updateBattleCard(gameState.enemy);
     });
 
     // Cell Container Slot Listeners (Attached Once)
@@ -441,18 +528,59 @@ function setupEventListeners() {
             updateTeamSlots();
         }
     });
+
+    // RG Debug Listeners
+    document.getElementById('debug-player-rg')?.addEventListener('change', (e) => {
+        const val = parseInt(e.target.value);
+        if (!isNaN(val)) {
+            gameState.playerLevel = Math.max(1, Math.min(15, val));
+            syncCardsToLevel('PLAYER', gameState.playerLevel);
+            renderManagementHub();
+        }
+    });
+
+    document.getElementById('debug-enemy-rg')?.addEventListener('change', (e) => {
+        const val = parseInt(e.target.value);
+        if (!isNaN(val)) {
+            gameState.enemyLevel = Math.max(1, Math.min(15, val));
+            syncCardsToLevel('OPPONENT', gameState.enemyLevel);
+            renderManagementHub();
+        }
+    });
 }
 
-function updateBattleCard(monsterName) {
+function updateBattleCard(monsterOrName) {
     const cardInner = document.querySelector('.card-inner');
     const frontImg = document.getElementById('battle-card-front-img');
     const backImg = document.getElementById('battle-card-back-img');
     const bioText = document.getElementById('bio-text');
     if (!cardInner || !frontImg || !backImg || !bioText) return;
 
-    const monsterKey = monsterName.toLowerCase();
-    const monsterData = MONSTERS[monsterKey];
+    let monster;
+    if (typeof monsterOrName === 'string') {
+        const nameKey = monsterOrName.toLowerCase();
+        // Try to find in party first or use base
+        monster = gameState.playerParty.find(m => m.name.toLowerCase() === nameKey) ||
+            gameState.enemyParty.find(m => m.name.toLowerCase() === nameKey) ||
+            MONSTERS[nameKey];
+    } else {
+        monster = monsterOrName;
+    }
+
+    if (!monster) return;
+    const monsterName = monster.name;
     const newSrc = `assets/images/Card_${monsterName}.png`;
+
+    // Calculate Modified Stats for display
+    let currentLevel = 1;
+    if (gameState.playerParty.includes(monster)) {
+        currentLevel = gameState.profiles.player.level;
+    } else {
+        // Find which profile this monster belongs to (or use current active NPC)
+        const profileId = catalystState.activeProfile === 'player' ? 'opponent' : catalystState.activeProfile;
+        currentLevel = gameState.profiles[profileId].level;
+    }
+    const mStats = getModifiedStats(monster, currentLevel);
 
     // Check current orientation (0 = Back showing, 180 = Front showing)
     const isFlipped = cardInner.classList.contains('is-flipped');
@@ -469,17 +597,20 @@ function updateBattleCard(monsterName) {
 
     // Sync bio text update midway through the rotation (0.4s)
     setTimeout(() => {
-        bioText.innerText = monsterData?.lore || "Tactical data gathering...";
+        bioText.innerText = monster?.lore || "Tactical data gathering...";
+
+        const fmt = (base, modified) => {
+            const bonus = modified - base;
+            return bonus > 0 ? `${modified} (${base}+${bonus})` : modified;
+        };
 
         // Update Stat Grid
-        if (monsterData) {
-            setSafe('#card-hp', 'innerText', monsterData.maxHp);
-            setSafe('#card-pp', 'innerText', monsterData.maxPp);
-            setSafe('#card-crit', 'innerText', `${monsterData.crit}%`);
-            setSafe('#card-atk', 'innerText', monsterData.atk);
-            setSafe('#card-def', 'innerText', monsterData.def);
-            setSafe('#card-spd', 'innerText', monsterData.spd);
-        }
+        setSafe('#card-hp', 'innerText', fmt(monster.maxHp, mStats.maxHp));
+        setSafe('#card-pp', 'innerText', fmt(monster.maxPp, mStats.maxPp));
+        setSafe('#card-crit', 'innerText', mStats.crit > monster.crit ? `${mStats.crit}% (${monster.crit}%+${mStats.crit - monster.crit}%)` : `${mStats.crit}%`);
+        setSafe('#card-atk', 'innerText', fmt(monster.atk, mStats.atk));
+        setSafe('#card-def', 'innerText', fmt(monster.def, mStats.def));
+        setSafe('#card-spd', 'innerText', fmt(monster.spd, mStats.spd));
     }, 400);
 
     // Monster data update triggered (Glow shifted to Arena Portraits)
@@ -640,7 +771,7 @@ function onDrag(e) {
 
     // Check proximity to nodes for highlighting
     let nearestNode = null;
-    let minDist = 40; // Detection radius
+    let minDist = 60; // Detection radius (Increased for better accessibility)
 
     interactiveNodes.forEach((node, idx) => {
         const isBlocked = gameState.player.blockedNodes.some(b => b.index === idx);
@@ -674,7 +805,7 @@ function endDrag(e) {
         const ny = rect.top + rect.height / 2;
         const d = Math.hypot(clientX - nx, clientY - ny);
 
-        if (d < 40 && !isBlocked) {
+        if (d < 60 && !isBlocked) {
             targetIndex = parseInt(node.dataset.index);
         }
         node.classList.remove('highlight');
@@ -702,6 +833,8 @@ function endDrag(e) {
 }
 
 function updateUI() {
+    console.log("[DEBUG] Battle UI Updating...");
+    const isPlayerTurn = gameState.currentTurn === 'PLAYER';
     // Update PP Stats (Central Arena) - Bi-directional Bar
     const pPP = gameState.player.pp;
     const pMax = gameState.player.maxPp;
@@ -725,10 +858,37 @@ function updateUI() {
     const playerPpText = pIsLysis ? `${pPP} / -${pMax}` : `${pPP} / ${pMax}`;
     setSafe('#player-pp-val', 'textContent', playerPpText);
 
-    setSafe('.player-display .name', 'textContent', gameState.player.name);
+    moveButtons.forEach((btn, idx) => {
+        const moveId = btn.dataset.move;
+        const isPellicle = idx > 0; // Moves 1 and 2 are Pellicle
+        let unlocked = true;
+
+        if (isPellicle) {
+            const playerCardBox = gameState.profiles.player.cardBox || [];
+            if (idx === 1 && !playerCardBox.includes('leader_1')) unlocked = false;
+            if (idx === 2 && !playerCardBox.includes('leader_2')) unlocked = false;
+        }
+
+        btn.classList.toggle('locked', !unlocked);
+        btn.classList.toggle('disabled', !unlocked || gameState.phase !== 'MOVE_SELECTION');
+
+        if (!unlocked) {
+            btn.title = "Requires Leader Card to unlock";
+        } else {
+            btn.removeAttribute('title');
+        }
+    });
+
+    setSafe('.player-display .name-val', 'textContent', gameState.player.name);
+    setSafe('#player-rg', 'textContent', `RG-${gameState.playerLevel}`);
+    setSafe('.enemy-display .name-val', 'textContent', gameState.enemy.name);
+    setSafe('#enemy-rg', 'textContent', `RG-${gameState.enemyLevel || 1}`);
     const pLayer = document.querySelector('.player-display .monster-float-layer');
     const pImg = document.querySelector('.player-display .monster-portrait');
-    if (pImg) pImg.src = `assets/images/${gameState.player.name}_Back.png`;
+    const pNameRaw = gameState.player.name.toLowerCase();
+    const pNameCased = pNameRaw.charAt(0).toUpperCase() + pNameRaw.slice(1);
+    const hasBackSprite = ['Nitrophil', 'Cambihil', 'Lydrosome', 'Phagoburst'].includes(pNameCased);
+    if (pImg) pImg.src = hasBackSprite ? `assets/images/${pNameCased}_Back.png?v=22` : `assets/images/${pNameCased}.png?v=22`;
     if (pLayer) pLayer.classList.toggle('anim-attacker-float', gameState.currentTurn === 'PLAYER');
 
     // Enemy PP
@@ -750,10 +910,12 @@ function updateUI() {
     const enemyPpText = eIsLysis ? `${ePP} / -${eMax}` : `${ePP} / ${eMax}`;
     setSafe('#enemy-pp-val', 'textContent', enemyPpText);
 
-    setSafe('.enemy-display .name', 'textContent', gameState.enemy.name);
+    setSafe('.enemy-display .name-val', 'textContent', gameState.enemy.name);
     const eLayer = document.querySelector('.enemy-display .monster-float-layer');
     const eImg = document.querySelector('.enemy-display .monster-portrait');
-    if (eImg) eImg.src = `assets/images/${gameState.enemy.name}.png`;
+    const eNameRaw = gameState.enemy.name.toLowerCase();
+    const eNameCased = eNameRaw.charAt(0).toUpperCase() + eNameRaw.slice(1);
+    if (eImg) eImg.src = `assets/images/${eNameCased}.png?v=22`;
     if (eLayer) eLayer.classList.toggle('anim-attacker-float', gameState.currentTurn === 'ENEMY');
 
     // Update Player Bench (Side Monsters)
@@ -766,7 +928,9 @@ function updateUI() {
         if (slot) {
             const isDead = monster.hp <= 0;
             const isPlayerChoosing = (gameState.phase === 'NODE_SELECTION' || gameState.phase === 'MOVE_SELECTION') && gameState.currentTurn === 'PLAYER';
-            slot.innerHTML = `<img src="assets/images/${monster.name}.png" alt="${monster.name}">`;
+            const mNameRaw = monster.name.toLowerCase();
+            const mNameCased = mNameRaw.charAt(0).toUpperCase() + mNameRaw.slice(1);
+            slot.innerHTML = `<img src="assets/images/${mNameCased}.png?v=22" alt="${monster.name}">`;
             slot.classList.toggle('dead', isDead);
             slot.draggable = !isDead && isPlayerChoosing;
 
@@ -785,7 +949,7 @@ function updateUI() {
             slot.onclick = () => {
                 if (isDead) return;
                 triggerBenchFeedback(slot);
-                updateBattleCard(monster.name);
+                updateBattleCard(monster);
             };
             pBenchIdx++;
         }
@@ -806,13 +970,15 @@ function updateUI() {
         const slot = enemyBenchSlots[eBenchIdx];
         if (slot) {
             const isDead = monster.hp <= 0;
-            slot.innerHTML = `<img src="assets/images/${monster.name}.png" alt="${monster.name}">`;
+            const mNameRaw = monster.name.toLowerCase();
+            const mNameCased = mNameRaw.charAt(0).toUpperCase() + mNameRaw.slice(1);
+            slot.innerHTML = `<img src="assets/images/${mNameCased}.png?v=22" alt="${monster.name}">`;
             slot.classList.toggle('dead', isDead);
             slot.draggable = false;
             slot.onclick = () => {
                 if (isDead) return;
                 triggerBenchFeedback(slot);
-                updateBattleCard(monster.name);
+                updateBattleCard(monster);
             };
             eBenchIdx++;
         }
@@ -829,17 +995,14 @@ function updateUI() {
 
     interactiveNodes.forEach((node, idx) => {
         const isTarget = showSelection && gameState.player.currentNode === idx;
-        const isBlocked = gameState.player.blockedNodes.some(b => b.index === idx);
+        const playerBlockedArr = gameState.player.blockedNodes || [];
+        const isBlocked = playerBlockedArr.some(b => b.index === idx);
 
+        node.className = `node ${isPlayerTurn ? 'attack' : 'defense'}`;
         node.classList.toggle('selected', isTarget);
         node.classList.toggle('blocked', isBlocked);
-        node.classList.toggle('burned', isBlocked); // Keep burned class for the padlock styling
+        node.classList.toggle('burned', isBlocked);
 
-        if (isTarget) {
-            node.classList.toggle('yellow', isDefense);
-        } else {
-            node.classList.remove('yellow');
-        }
     });
 
     // 1. Target Moveset & Fallback Logic
@@ -896,7 +1059,6 @@ function updateUI() {
     });
 
     // Phase / Turn labels (Center Arena)
-    const isPlayerTurn = gameState.currentTurn === 'PLAYER';
     setSafe('.turn-indicator', 'innerText', isPlayerTurn ? 'YOUR TURN' : 'ENEMY TURN');
 
     let phaseName = gameState.phase.replace('_', ' ');
@@ -923,6 +1085,7 @@ function updateUI() {
         selectionCore.classList.toggle('attack', isPlayerTurn);
         selectionCore.classList.toggle('defense', !isPlayerTurn);
     }
+    console.log("[DEBUG] Battle UI Update Complete.");
 }
 
 // Helper to safely set element properties
@@ -1071,13 +1234,13 @@ function renderInventory() {
         // Calculate HP percent for the bar
         const hpPercent = (cell.hp / cell.maxHp) * 100;
 
-        const iconName = cell.id.charAt(0).toUpperCase() + cell.id.slice(1);
+        const iconName = cell.name.charAt(0).toUpperCase() + cell.name.slice(1);
         item.innerHTML = `
             <div class="status-cell-icon">
                 <img src="assets/images/${iconName}.png" alt="${cell.name}">
             </div>
             <div class="status-info">
-                <div class="status-name">${cell.name.toUpperCase()} <span style="font-size: 0.7rem; color: var(--color-player); opacity: 0.8;">[LVL ${cell.level || 1}]</span></div>
+                <div class="status-name">${cell.name.toUpperCase()} <span style="font-size: 0.7rem; color: #fff; opacity: 0.8;">[RG ${cell.level || 1}]</span></div>
                 <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">HEALTH VITALITY: ${cell.hp}/${cell.maxHp}</div>
                 <div class="status-hp-bar">
                     <div class="hp-fill" style="width: ${hpPercent}%"></div>
@@ -1433,7 +1596,6 @@ async function resolvePhase() {
     }, 1500);
 }
 
-
 function applyMatchVFX(actualDist, effectiveDist, ghost) {
     const isDefense = gameState.currentTurn === 'ENEMY';
     const targetNode = document.querySelector(`#interactive-pentagon .node[data-index="${gameState.player.currentNode}"]`);
@@ -1743,10 +1905,9 @@ function executeMonsterSwitch(benchIndex) {
         gameState.player.currentNode = null;
         gameState.enemy.currentNode = null;
 
-
         // Battle Entry Animation (Pod Drop)
         triggerBattleEntry('.player-display', () => {
-            updateBattleCard(targetMonster.name);
+            updateBattleCard(targetMonster);
             gameState.isProcessing = false; // Release lock only after deployment
             updateUI();
         });
@@ -1761,7 +1922,7 @@ function checkGameOver() {
 
     // Helper to wrap up turn state after replacements
     const finalizeTurnSequence = () => {
-        gameState.phase = 'NODE_SELECTION';
+        gameState.phase = 'MOVE_SELECTION';
         gameState.currentTurn = (gameState.currentTurn === 'PLAYER') ? 'ENEMY' : 'PLAYER';
         resetSelectorCore(true);
         gameState.isProcessing = false;
@@ -1894,18 +2055,17 @@ function showScreen(screenId) {
 }
 
 function resetGame() {
-    // 1. Initialize Parties (Preserving hub modifications if IDs match)
-    const updatePartyInstances = (currentParty, teamIds) => {
-        return teamIds
-            .filter(id => id !== null)
-            .map(id => {
-                const existing = currentParty.find(m => m.id === id);
-                return createMonsterInstance(id, existing);
-            });
-    };
+    // 1. Initialize Parties from Profiles
+    // Player is always the 'player' profile
+    const pProfile = gameState.profiles.player;
+    gameState.playerParty = pProfile.party;
+    gameState.playerLevel = pProfile.level; // Sync legacy field for combat engine
 
-    gameState.playerParty = updatePartyInstances(gameState.playerParty, gameState.playerTeam);
-    gameState.enemyParty = updatePartyInstances(gameState.enemyParty, gameState.enemyTeam);
+    // Enemy is the selected battle opponent profile (defaults to 'opponent')
+    let eProfileId = catalystState.battleOpponentId || 'opponent';
+    const eProfile = gameState.profiles[eProfileId];
+    gameState.enemyParty = eProfile.party;
+    gameState.enemyLevel = eProfile.level; // Sync legacy field
 
     // Set Active Combatants
     gameState.player = gameState.playerParty[0];
@@ -1915,9 +2075,16 @@ function resetGame() {
     const playerSpd = gameState.player.spd || 10;
     const enemySpd = gameState.enemy.spd || 10;
 
-    if (playerSpd >= enemySpd) {
+    // LEADER PERK #4: Initiative Zero
+    const hasLeader4 = gameState.player.equippedCards && gameState.player.equippedCards.some(s => s.cardId === 'leader_4');
+
+    if (hasLeader4 || playerSpd >= enemySpd) {
         gameState.currentTurn = 'PLAYER';
-        addLog(`${gameState.player.name} is faster! Initializing initiative...`);
+        if (hasLeader4) {
+            addLog(`[PERK] Neural Initiative: Always going first! ⚡`);
+        } else {
+            addLog(`${gameState.player.name} is faster! Initializing initiative...`);
+        }
     } else {
         gameState.currentTurn = 'ENEMY';
         addLog(`${gameState.enemy.name} is faster! Defensive protocols active.`);
@@ -1957,7 +2124,7 @@ function resetGame() {
     // Trigger Battle Entry Sequence
     triggerBattleEntry('.player-display', () => {
         // Auto-flip monster card to show player monster after deployment
-        updateBattleCard(gameState.player.name);
+        updateBattleCard(gameState.player);
     });
     triggerBattleEntry('.enemy-display');
 }
@@ -2002,7 +2169,7 @@ function triggerMonsterExit(displaySelector, callback) {
         portrait.style.transform = "scale(0)";
         container.remove();
         if (callback) callback();
-    }, 800); // Matches container-capture duration
+    }, 1000); // Matches container-capture duration
 }
 
 
@@ -2052,6 +2219,18 @@ function triggerBattleEntry(displaySelector, callback) {
 
 // UNIFIED MANAGEMENT HUB LOGIC
 function renderManagementHub() {
+    const battleContainer = document.getElementById('enable-battle-container');
+    const battleCheckbox = document.getElementById('debug-enable-battle');
+
+    if (battleContainer && battleCheckbox) {
+        if (catalystState.activeProfile === 'player') {
+            battleContainer.style.display = 'none';
+        } else {
+            battleContainer.style.display = 'flex';
+            battleCheckbox.checked = (catalystState.battleOpponentId === catalystState.activeProfile);
+        }
+    }
+
     renderCellStorage();
     updateTeamSlots();
     updateCatalystBox();
@@ -2063,10 +2242,11 @@ function renderCellStorage() {
     if (!grid) return;
     grid.innerHTML = '';
 
-    // If opponent, show all monsters for debug. If player, show cellDex.
-    const monstersToShow = catalystState.activeSide === 'OPPONENT'
-        ? Object.keys(MONSTERS)
-        : gameState.cellDex;
+    const profileId = catalystState.activeProfile;
+    // If player, show cellDex. Otherwise (NPCs/Opponent), show all monsters for debug presets.
+    const monstersToShow = profileId === 'player'
+        ? gameState.cellDex
+        : Object.keys(MONSTERS);
 
     monstersToShow.forEach(name => {
         const icon = document.createElement('div');
@@ -2089,8 +2269,9 @@ function renderCellStorage() {
 
 function updateTeamSlots() {
     const slots = document.querySelectorAll('.slot');
-    const party = catalystState.activeSide === 'PLAYER' ? gameState.playerParty : gameState.enemyParty;
-    const team = catalystState.activeSide === 'PLAYER' ? gameState.playerTeam : gameState.enemyTeam; // Use enemyTeam if exists, or fallback
+    const profile = gameState.profiles[catalystState.activeProfile];
+    const party = profile.party;
+    const team = profile.team;
 
     const labels = ["First", "Second", "Third"];
 
@@ -2135,18 +2316,20 @@ function updateTeamSlots() {
             const sourceSide = e.dataTransfer.getData('sourceSide');
 
             if (sourceSide !== catalystState.activeSide) {
-                addLog("Cannot transfer Cells between Player and Opponent.");
+                addLog("Cannot transfer Cells between different profiles.");
                 return;
             }
 
-            const targetParty = catalystState.activeSide === 'PLAYER' ? gameState.playerParty : gameState.enemyParty;
-            const targetTeam = catalystState.activeSide === 'PLAYER' ? gameState.playerTeam : gameState.enemyTeam;
+            const activeProfile = gameState.profiles[catalystState.activeProfile];
+            const targetParty = activeProfile.party;
+            const targetTeam = activeProfile.team;
 
             if (monsterName) {
                 // Assign new monster from Dex/Storage
                 const data = JSON.parse(JSON.stringify(MONSTERS[monsterName]));
                 targetParty[idx] = {
                     ...data,
+                    id: Math.random().toString(36).substr(2, 9),
                     currentNode: null,
                     blockedNodes: [],
                     equippedCards: [],
@@ -2186,28 +2369,99 @@ function updateCatalystBox() {
     if (!grid) return;
     grid.innerHTML = '';
 
-    const box = catalystState.activeSide === 'PLAYER' ? gameState.cardBox : gameState.enemyCardBox;
+    const profile = gameState.profiles[catalystState.activeProfile];
+    let box = [...profile.cardBox];
+
+    // Sorting Logic
+    const rarityOrder = { 'legendary': 4, 'epic': 3, 'rare': 2, 'uncommon': 1, 'common': 0 };
+    const typeOrder = { 'atk': 0, 'def': 1, 'hp': 2, 'spd': 3, 'pp': 4, 'crit': 5, 'leader': 6 };
+
+    box.sort((a, b) => {
+        const cardA = CARDS[a];
+        const cardB = CARDS[b];
+        if (!cardA || !cardB) return 0;
+
+        if (catalystState.boxSortMode === 'tier') {
+            const tierOrder = { '1': 0, '2': 1, '3': 2, 'L': 3 };
+            const diff = tierOrder[cardA.tier] - tierOrder[cardB.tier];
+            if (diff !== 0) return diff;
+            return cardA.name.localeCompare(cardB.name);
+        } else if (catalystState.boxSortMode === 'rarity') {
+            // Sort by Rarity Desc, then Name
+            const diff = rarityOrder[cardB.rarity] - rarityOrder[cardA.rarity];
+            if (diff !== 0) return diff;
+            return cardA.name.localeCompare(cardB.name);
+        } else {
+            // Sort by Type (Stat prioritized), then by Bonus Value (Low -> High)
+            const getTypeInfo = (c) => {
+                if (c.isLeader) return { type: 'leader', val: 0 };
+                const statKey = Object.keys(c.stats)[0] || 'atk';
+                const statVal = c.stats[statKey] || 0;
+                return { type: statKey, val: statVal };
+            };
+            const infoA = getTypeInfo(cardA);
+            const infoB = getTypeInfo(cardB);
+            const typeDiff = typeOrder[infoA.type] - typeOrder[infoB.type];
+            if (typeDiff !== 0) return typeDiff;
+
+            // Within same type, sort by bonus value (low to high)
+            const valDiff = infoA.val - infoB.val;
+            if (valDiff !== 0) return valDiff;
+
+            return cardA.name.localeCompare(cardB.name);
+        }
+    });
+
     const counts = {};
     box.forEach(id => counts[id] = (counts[id] || 0) + 1);
 
-    Object.keys(counts).forEach(cardId => {
+    // Filter unique IDs for display while maintaining sort order
+    const uniqueIds = [];
+    const seen = new Set();
+    box.forEach(id => {
+        if (!seen.has(id)) {
+            uniqueIds.push(id);
+            seen.add(id);
+        }
+    });
+
+    uniqueIds.forEach(cardId => {
         const card = CARDS[cardId];
         if (!card) return;
 
         const count = counts[cardId];
         const item = document.createElement('div');
-        item.className = `box-card tier-${card.tier}`;
+        item.className = `box-card rarity-${card.rarity} tier-${card.tier}`;
         item.draggable = true;
 
+        const statsHtml = Object.entries(card.stats || {}).map(([k, v]) => `
+            <div class="stat-peek">${k.toUpperCase()} +${v}</div>
+        `).join('');
+
+        const slotsHtml = card.slots > 0 ? `<div class="slot-peek">SLOT +${card.slots}</div>` : '';
+
+        const leaderTag = card.isLeader ? `<div class="leader-type-tag">${card.type === 'passive' ? 'P' : 'E'}</div>` : '';
+
         item.innerHTML = `
-            <div class="name">${card.name}</div>
+            <div class="card-tier-label">T${card.tier}</div>
+            <div class="rarity-label">${card.rarity === 'common' ? '' : card.rarity.charAt(0).toUpperCase()}</div>
+            <div class="card-main-content">
+                ${statsHtml}
+                ${slotsHtml}
+            </div>
+            ${leaderTag}
             <div class="count">x${count}</div>
-            <div class="tier">Tier ${card.tier}</div>
         `;
+
+        item.onclick = (e) => {
+            if (e.ctrlKey) return; // Ctrl click reserved for something else? No, keep it clean.
+            openCardDetail(cardId);
+        };
 
         item.ondragstart = (e) => {
             catalystState.draggedCardId = cardId;
             catalystState.dragSourceSide = catalystState.activeSide;
+            catalystState.dragSourceProfile = catalystState.activeProfile;
             catalystState.dragSourceSlot = null;
             e.dataTransfer.setData('text/plain', cardId);
             document.querySelectorAll('.catalyst-slot').forEach(s => s.classList.add('highlight'));
@@ -2223,13 +2477,15 @@ function updateCatalystBox() {
 
 function updateCatalystCore() {
     const anchor = document.getElementById('slots-anchor');
-    const party = catalystState.activeSide === 'PLAYER' ? gameState.playerParty : gameState.enemyParty;
+    const profile = gameState.profiles[catalystState.activeProfile];
+    const party = profile.party;
     const monster = party[catalystState.activeMonsterIdx];
     const nameEl = document.getElementById('catalyst-monster-name');
     if (!anchor || !monster) return;
 
     nameEl.textContent = monster.name;
-    const level = catalystState.activeSide === 'PLAYER' ? gameState.playerLevel : gameState.enemyLevel;
+    const level = profile.level;
+    setSafe('#catalyst-monster-rg', 'textContent', `RG-${level}`);
     const stats = getModifiedStats(monster, level);
     const hpPeek = document.getElementById('peek-hp');
     const ppPeek = document.getElementById('peek-pp');
@@ -2288,20 +2544,29 @@ function updateCatalystCore() {
         if (equippedCard) {
             const card = CARDS[equippedCard.cardId];
             slotDiv.classList.add('occupied', `tier-${card.tier}`);
+            const statsHtml = Object.entries(card.stats || {}).map(([k, v]) => `
+                <div class="stat-peek">${k.toUpperCase()} +${v}</div>
+            `).join('');
+            const slotsHtml = card.slots > 0 ? `<div class="slot-peek">SLOT +${card.slots}</div>` : '';
+
+            const leaderTag = card.isLeader ? `<div class="leader-type-tag">${card.type === 'passive' ? 'P' : 'E'}</div>` : '';
+
             slotDiv.innerHTML = `
-                <div class="c-card-ui" draggable="true">
-                    <div class="card-name">${card.name}</div>
-                    <div class="card-stats">
-                        ${Object.entries(card.stats).map(([k, v]) => `
-                            <div class="stat-row"><span>${k.toUpperCase()}</span> <span>+${v}</span></div>
-                        `).join('')}
+                <div class="c-card-ui rarity-${card.rarity} tier-${card.tier}" draggable="true">
+                    <div class="card-tier-label">T${card.tier}</div>
+                    <div class="rarity-label">${card.rarity === 'common' ? '' : card.rarity.charAt(0).toUpperCase()}</div>
+                    <div class="card-main-content">
+                        ${statsHtml}
+                        ${slotsHtml}
                     </div>
+                    ${leaderTag}
                 </div>
             `;
 
             const cardEl = slotDiv.querySelector('.c-card-ui');
             cardEl.ondragstart = (e) => {
                 catalystState.draggedCardId = equippedCard.cardId;
+                catalystState.dragSourceSide = catalystState.activeSide;
                 catalystState.dragSourceSlot = { monsterIdx: catalystState.activeMonsterIdx, slotIdx: idx };
                 e.dataTransfer.setData('text/plain', equippedCard.cardId);
             };
@@ -2309,6 +2574,8 @@ function updateCatalystCore() {
             slotDiv.onclick = (e) => {
                 if (e.ctrlKey) {
                     unequipCard(catalystState.activeMonsterIdx, idx);
+                } else {
+                    openCardDetail(equippedCard.cardId);
                 }
             };
         }
@@ -2464,41 +2731,58 @@ function drawConnections(positions, monster) {
 }
 
 function equipCard(monsterIdx, slotIdx, cardId) {
-    const party = catalystState.activeSide === 'PLAYER' ? gameState.playerParty : gameState.enemyParty;
+    const profile = gameState.profiles[catalystState.activeProfile];
+    const party = profile.party;
     const monster = party[monsterIdx];
     const card = CARDS[cardId];
 
-    if (monster.equippedCards.some(ec => ec.cardId === cardId)) {
+    // Allowed move: If dragging from a slot on the SAME monster, skip duplicate check
+    const isInternalMove = catalystState.dragSourceSlot &&
+        catalystState.dragSourceSlot.monsterIdx === monsterIdx &&
+        catalystState.dragSourceProfile === catalystState.activeProfile;
+
+    if (!isInternalMove && monster.equippedCards.some(ec => ec.cardId === cardId)) {
         addLog("Cannot equip duplicate cards on same Cell.");
         return;
     }
 
-    const existing = monster.equippedCards.find(ec => ec.slotIndex === slotIdx);
-    if (existing) unequipCard(monsterIdx, slotIdx);
+    // Capture source before we potentially clear it via unequip
+    const srcSlot = catalystState.dragSourceSlot;
+    const srcProfile = catalystState.dragSourceProfile;
 
-    if (catalystState.dragSourceSlot) {
-        const sourceParty = catalystState.activeSide === 'PLAYER' ? gameState.playerParty : gameState.enemyParty;
-        const sourceMonster = sourceParty[catalystState.dragSourceSlot.monsterIdx];
-        sourceMonster.equippedCards = sourceMonster.equippedCards.filter(ec => ec.slotIndex !== catalystState.dragSourceSlot.slotIdx);
+    // 1. Remove from source (Box or other Slot)
+    if (srcSlot) {
+        const srcParty = gameState.profiles[srcProfile].party;
+        const srcMonster = srcParty[srcSlot.monsterIdx];
+        srcMonster.equippedCards = srcMonster.equippedCards.filter(ec => ec.slotIndex !== srcSlot.slotIdx);
     } else {
-        const box = catalystState.activeSide === 'PLAYER' ? gameState.cardBox : gameState.enemyCardBox;
+        const box = gameState.profiles[srcProfile].cardBox;
         const index = box.indexOf(cardId);
         if (index > -1) box.splice(index, 1);
     }
 
+    // 2. Handle target slot replacement
+    const existing = monster.equippedCards.find(ec => ec.slotIndex === slotIdx);
+    if (existing) {
+        profile.cardBox.push(existing.cardId);
+        monster.equippedCards = monster.equippedCards.filter(ec => ec.slotIndex !== slotIdx);
+        processRecursiveRemoval(monster, slotIdx);
+    }
+
+    // 3. Place new card
     monster.equippedCards.push({ slotIndex: parseInt(slotIdx), cardId: cardId });
     renderManagementHub();
 }
 
 function unequipCard(monsterIdx, slotIdx) {
-    const party = catalystState.activeSide === 'PLAYER' ? gameState.playerParty : gameState.enemyParty;
+    const profile = gameState.profiles[catalystState.activeProfile];
+    const party = profile.party;
     const monster = party[monsterIdx];
     const index = monster.equippedCards.findIndex(ec => ec.slotIndex === slotIdx);
     if (index === -1) return;
 
     const removed = monster.equippedCards.splice(index, 1)[0];
-    const box = catalystState.activeSide === 'PLAYER' ? gameState.cardBox : gameState.enemyCardBox;
-    box.push(removed.cardId);
+    profile.cardBox.push(removed.cardId);
 
     processRecursiveRemoval(monster, slotIdx);
     renderManagementHub();
@@ -2530,9 +2814,75 @@ function createMonsterInstance(id, existing = null) {
         equippedCards: existing ? [...existing.equippedCards] : [],
         hp: data.hp,
         pp: 1,
+        turnCount: 0,
         selectedMove: data.moves[0].id
     };
 }
 
-init();
+function openCardDetail(cardId) {
+    const card = CARDS[cardId];
+    if (!card) return;
+
+    const modal = document.getElementById('card-detail-modal');
+    if (!modal) return;
+    modal.classList.add('active');
+
+    document.getElementById('detail-card-name').textContent = card.name;
+    document.getElementById('detail-card-desc').textContent = card.desc || '';
+    document.getElementById('detail-card-rarity').textContent = card.rarity === 'common' ? '' : card.rarity.toUpperCase();
+    document.getElementById('detail-card-tier').textContent = `TIER ${card.tier}`;
+
+    const typeLabel = document.getElementById('detail-card-type');
+    if (card.isLeader) {
+        typeLabel.innerHTML = `TYPE: <span class="white-text">LEADER [${card.type.toUpperCase()}]</span>`;
+        document.getElementById('detail-leader-tag').textContent = card.type === 'passive' ? 'P' : 'E';
+    } else {
+        typeLabel.innerHTML = `TYPE: <span class="white-text">ENHANCEMENT</span>`;
+        document.getElementById('detail-leader-tag').textContent = '';
+    }
+
+    const statsGrid = document.getElementById('detail-card-stats');
+    statsGrid.innerHTML = '';
+
+    if (card.stats) {
+        Object.entries(card.stats).forEach(([stat, val]) => {
+            const item = document.createElement('div');
+            item.className = 'detail-stat-item';
+            item.innerHTML = `
+                <div class="detail-stat-label">${stat}</div>
+                <div class="detail-stat-value">+${val}</div>
+            `;
+            statsGrid.appendChild(item);
+        });
+    }
+
+    if (card.slots > 0) {
+        const item = document.createElement('div');
+        item.className = 'detail-stat-item';
+        item.innerHTML = `
+            <div class="detail-stat-label">Extra Slots</div>
+            <div class="detail-stat-value">+${card.slots}</div>
+        `;
+        statsGrid.appendChild(item);
+    }
+
+    // Set preview image - using user requested placeholder
+    const imgEl = document.getElementById('detail-card-image');
+    imgEl.src = 'assets/images/Card_Placeholder.png';
+}
+
+// Add close listener for modal
+document.getElementById('close-card-detail')?.addEventListener('click', () => {
+    document.getElementById('card-detail-modal').classList.remove('active');
+});
+
+// Click outside to close
+document.getElementById('card-detail-modal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'card-detail-modal') {
+        e.target.classList.remove('active');
+    }
+});
+
+// Final Initialization
+window.addEventListener('load', init);
 

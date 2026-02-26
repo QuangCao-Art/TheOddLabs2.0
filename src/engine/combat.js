@@ -1,4 +1,5 @@
 import { CARDS } from '../data/cards.js';
+import { gameState } from './state.js';
 
 export const ELEMENTAL_TABLE = {
     THERMOGENIC: { BOTANIC: 1.5, KERATINIZED: 1.5, OSMOTIC: 0.75 },
@@ -39,12 +40,21 @@ export function calculateDamage(attacker, defender, move, dist) {
     const randomRoll = 0.85 + (Math.random() * 0.15);
 
     // Pokemon-inspired Ratio: ( (AttackerAtk / DefenderDef) * Power * 0.5 + 2 )
-    const statRatio = attacker.atk / defender.def;
+    let statRatio = attacker.atk / defender.def;
+
+    // LEADER PERK #5: Ignore Defense
+    const hasLeader5 = attacker.equippedCards && attacker.equippedCards.some(s => s.cardId === 'leader_5');
+    if (hasLeader5) {
+        console.log(`[PERK] Molecular Dissolver: Defense ignored! 🧪⚔️`);
+        statRatio = attacker.atk / 1; // Effectively 1 Def
+    }
+
     let baseDamage = ((statRatio * rawPower * 0.5) + 2) * typeEffect * critMult * gpm * randomRoll;
 
-    // LEADER PERK #3 (Level 15): x2 First Hit Damage
-    if (attacker.isPlayer && attacker.playerLevel >= 15 && attacker.turnCount === 1) {
-        console.log(`[PERK] OVERLOAD ALPHA: First Hit double damage applied! ⚡⚡`);
+    // LEADER PERK #3: x2 First Hit Damage
+    const hasLeader3 = attacker.equippedCards && attacker.equippedCards.some(s => s.cardId === 'leader_3');
+    if (hasLeader3 && attacker.turnCount === 0) {
+        console.log(`[PERK] Oxidative Energy Burst: First Hit double damage applied! ⚡⚡`);
         baseDamage *= 2;
     }
 
@@ -80,6 +90,12 @@ export function calculateDamage(attacker, defender, move, dist) {
 
 export function resolveTurn(state) {
     const { player, enemy, currentTurn, playerLevel } = state;
+
+    // LEADER PERK #4: Initiative Zero
+    // This override should probably happen before resolveTurn is even called, 
+    // but we can enforce it here by swapping turns if the condition is met.
+    // However, resolveTurn is usually called after a turn is chosen.
+    // We'll add logic in src/main.js for the core initiative.
     const actualDist = getDistance(player.currentNode, enemy.currentNode);
 
     // 1. Identify Attacker and Defender
@@ -173,7 +189,10 @@ export function resolveTurn(state) {
         attacker.pp = Math.min(attacker.maxPp, attacker.pp + ppGain);
     }
 
-    // 9. Sync back to original persistent state
+    // 9. Turn Tracking
+    attackerRef.turnCount++;
+
+    // 10. Sync back to original persistent state
     attackerRef.hp = attacker.hp;
     attackerRef.pp = attacker.pp;
     defenderRef.hp = defender.hp;

@@ -57,9 +57,33 @@
         <div id="screen-management-hub" class="screen hidden">
             <div id="hub-header">
                 <h2 class="neon-text">MANAGEMENT <span class="white-text">HUB</span></h2>
-                <div id="side-toggle-container">
-                    <button id="btn-side-player" class="side-btn active">PLAYER SQUAD</button>
-                    <button id="btn-side-opponent" class="side-btn">DEBUG OPPONENT</button>
+                <div id="profile-selector-container">
+                    <div id="side-toggle-container">
+                        <button id="btn-side-player" class="side-btn active" data-profile="player">PLAYER</button>
+                        <button id="btn-side-opponent" class="side-btn" data-profile="opponent">RIVAL</button>
+                        <button class="side-btn npc-btn" data-profile="lana">LANA</button>
+                        <button class="side-btn npc-btn" data-profile="dyzes">DYZES</button>
+                        <button class="side-btn npc-btn" data-profile="capsain">CAPSAIN</button>
+                        <button class="side-btn npc-btn" data-profile="jenzi">JENZI</button>
+                        <button class="side-btn npc-btn" data-profile="npc01">NPC-01</button>
+                        <button class="side-btn npc-btn" data-profile="npc02">NPC-02</button>
+                        <button class="side-btn npc-btn" data-profile="npc03">NPC-03</button>
+                    </div>
+                    <div id="rg-debug-panel" class="glass-panel">
+                        <div class="debug-row" style="display: flex; align-items: center; gap: 15px;">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <label id="debug-rg-label" style="margin:0;">ACTIVE RG:</label>
+                                <input type="number" id="debug-active-rg" min="0" max="15" value="15"
+                                    style="margin:0; width: 45px;">
+                            </div>
+                            <div id="enable-battle-container" style="display: none; align-items: center; gap: 8px;">
+                                <label for="debug-enable-battle"
+                                    style="font-size: 0.8rem; color: #fff; margin:0; line-height: 1;">ENABLE
+                                    BATTLE:</label>
+                                <input type="checkbox" id="debug-enable-battle" style="cursor: pointer; margin:0;">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -84,7 +108,10 @@
                 <!-- Center: The Catalyst Core (Slots & Branching) -->
                 <main id="catalyst-core" class="glass-panel">
                     <div id="selected-monster-header">
-                        <h2 id="catalyst-monster-name" class="neon-text">SELECT CELL</h2>
+                        <div id="catalyst-name-container">
+                            <h2 id="catalyst-monster-name" class="neon-text">SELECT CELL</h2>
+                            <span id="catalyst-monster-rg" class="rg-label">RG-30</span>
+                        </div>
                         <div id="catalyst-monster-stats-peek">
                             <span class="stat-mini">HP: <b id="peek-hp">--</b></span>
                             <span class="stat-mini">PP: <b id="peek-pp">--</b></span>
@@ -105,7 +132,14 @@
 
                 <!-- Right: C-Card Box -->
                 <aside id="catalyst-box" class="glass-panel">
-                    <h3 class="panel-title">C-CARD <span class="neon-text">BOX</span></h3>
+                    <div class="box-header">
+                        <h3 class="panel-title">C-CARD <span class="neon-text">BOX</span></h3>
+                        <div class="sort-tabs">
+                            <button class="sort-tab active" data-sort="tier">TIER</button>
+                            <button class="sort-tab" data-sort="type">TYPE</button>
+                            <button class="sort-tab" data-sort="rarity">RARITY</button>
+                        </div>
+                    </div>
                     <div id="card-box-grid">
                         <!-- Populated by JS -->
                     </div>
@@ -199,7 +233,7 @@
 
                         <div class="rule-item">
                             <div class="item-title">1. SIMULTANEOUS PREDICTION</div>
-                            <p>Every turn is a duel of minds. You and your opponent choose a **Node** on your respective
+                            <p>Every turn is a duel of minds. You and your RIVAL choose a **Node** on your respective
                                 Pentagons at the same time.</p>
                         </div>
 
@@ -460,7 +494,8 @@
                     <!-- ENEMY SIDE (TOP) -->
                     <section class="combatant-display enemy-display">
                         <div class="character-vitals">
-                            <div class="name">Nitrophil</div>
+                            <div class="name"><span class="name-val">Nitrophil</span> <span id="enemy-rg"
+                                    class="rg-label">RG-15</span></div>
                             <div class="vitals-stats">
                                 <div class="vitals-row">
                                     <div class="bar-label">HP</div>
@@ -504,7 +539,8 @@
                             </div>
                         </div>
                         <div class="character-vitals">
-                            <div class="name">Nitrophil</div>
+                            <div class="name"><span class="name-val">Nitrophil</span> <span id="player-rg"
+                                    class="rg-label">RG-15</span></div>
                             <div class="vitals-stats">
                                 <div class="vitals-row">
                                     <div class="bar-label">HP</div>
@@ -603,6 +639,29 @@
             <div class="preview-content">
                 <img id="preview-image" src="" alt="Card Display">
                 <div class="preview-hint">CLICK ANYWHERE OR PRESS ESC TO CLOSE</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Detail Modal -->
+    <div id="card-detail-modal" class="modal-overlay">
+        <div class="modal-content glass-panel card-detail-panel">
+            <button class="modal-close" id="close-card-detail">&times;</button>
+            <div class="card-detail-layout">
+                <div class="card-large-preview">
+                    <img id="detail-card-image" src="assets/images/Card_Placeholder.png" alt="Card Preview">
+                    <div id="detail-card-rarity" class="rarity-label"></div>
+                    <div id="detail-card-tier" class="card-tier-label"></div>
+                    <div id="detail-leader-tag" class="leader-type-tag"></div>
+                </div>
+                <div class="card-info-side">
+                    <h2 id="detail-card-name" class="neon-text">CARD NAME</h2>
+                    <div id="detail-card-type" class="detail-stat-row">TYPE: <span class="white-text">STAT</span></div>
+                    <p id="detail-card-desc" class="detail-description">Card description goes here...</p>
+                    <div id="detail-card-stats" class="detail-stats-grid">
+                        <!-- Stats injected here -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
