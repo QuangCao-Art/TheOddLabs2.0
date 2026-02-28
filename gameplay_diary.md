@@ -308,6 +308,18 @@ A complete structural redesign of the Catalyst Hub, shifting from a horizontal l
     - **Protocol Guide**: Integrated a tiny, left-aligned tactical hint that summarizes the core Catalyst rules (Slot limits, Unique IDs) without taking up precious screen real estate.
 - **UX Security**: Hardened the UI rendering by replacing all `innerHTML` calls with `textContent` or `createElement` to ensure safe, sanitized data injection for card names and stats.
 
+### 2.54 MAP Activation VFX: The Invisible Struggle
+A post-mortem on the challenges faced in restoring and refining the node-scale visual effects. 
+
+- **The CSS Shadow**: Discovered that the `transform: translate(-50%, -50%)` used for node positioning was being clobbered by the `scale()` animation. This was resolved by switching to **Absolute Left/Top** centering, freeing the `transform` property for dedicated VFX use.
+- **The Silent Crash**: A legacy helper function (`applyToDist`) was called instead of the newer `applyPulseVFX`, causing the entire combat resolution to fail silently in certain branches (e.g., `drunk_man`). 
+- **The UI Overwrite (Critical)**: The most elusive bug. `updateUI()` was using `node.className = ...` on every frame, which instantly stripped away any `node-activate-*` classes before they could even render. Refactored to use `classList.add/remove` for selective state management.
+- **Radial Scaling (Pivot Fix)**: Corrected the "bloom" effect by setting the `transform-origin` of the nodes to the center of the pentagon. This ensures nodes expand **outwards** from the core circle during activation, rather than scaling in-place.
+- **Sequential Timing (Final Fix)**: To ensure absolute clarity, the VFX was refactored into a strict chronological sequence:
+    - **MAP Activation Pulse (0.7s)**: Nodes in the pattern scale/glow for 2 alternate iterations (0.35s x 2).
+    - **Result Reveal (700ms)**: The moment the pattern clears, the **Match/Near/Far** flash begins its 3-iteration reveal (0.35s x 3 = 1.05s total flash) at the base node size. 
+- **Visibility Hardening**: Boosted the result flash priority by increasing CSS specificity to `.node.flash-*` and moved their definitions AFTER the activation classes. This guarantees the final result is always visible even if pattern cleanup has 1-2 frames of lag.
+
 - **Leader Card Integration**:
     - **Dynamic Slot Unlocking**: Implemented passive logic for "The Second Brain" and "The Third Brain," which dynamically enable the 1st and 2nd Pellicle skill slots as the player progresses through RG-5 and RG-9.
     - **Tactical Battle Perks**: 

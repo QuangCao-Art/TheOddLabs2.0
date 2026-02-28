@@ -197,8 +197,13 @@ export function resolveTurn(state) {
     // 10. Sync back to original persistent state
     attackerRef.hp = attacker.hp;
     attackerRef.pp = attacker.pp;
+    attackerRef.maxHp = attacker.maxHp;
+    attackerRef.maxPp = attacker.maxPp;
+
     defenderRef.hp = defender.hp;
     defenderRef.pp = defender.pp;
+    defenderRef.maxHp = defender.maxHp;
+    defenderRef.maxPp = defender.maxPp;
 
     return {
         actualDist,

@@ -156,15 +156,30 @@ function syncCardsToLevel(profileId, level) {
             });
         }
     }
-    if (level > 0) {
-        // Add SECRET leaders for debug in all boxes for testing
-        const secretLeaders = ['leader_4', 'leader_5'];
-        secretLeaders.forEach(lid => {
-            if (!profile.cardBox.includes(lid)) profile.cardBox.push(lid);
-        });
-    }
-
+    // REMOVED secretLeaders auto-add to ensure RG-1 test is clean as requested.
     console.log(`[DEBUG] Syncing ${profile.name} Card Box for RG-${level}. Cards: ${profile.cardBox.length}`);
+}
+
+/**
+ * Checks if a profile possesses a specific leader card, 
+ * searching both their card box and equipped slots across the entire party.
+ */
+function hasLeaderCard(profileId, cardId) {
+    const profile = gameState.profiles[profileId];
+    if (!profile) return false;
+
+    // 1. Check Card Box
+    if (profile.cardBox && profile.cardBox.includes(cardId)) return true;
+
+    // 2. Check Equipped Cards on ALL monsters in party
+    if (profile.party) {
+        for (const monster of profile.party) {
+            if (monster.equippedCards && monster.equippedCards.some(ec => ec.cardId === cardId)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 function setupNodePositions() {
@@ -174,7 +189,15 @@ function setupNodePositions() {
         const angleRad = (angleDeg - 90) * (Math.PI / 180);
         const x = Math.cos(angleRad) * RADIUS;
         const y = Math.sin(angleRad) * RADIUS;
-        node.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+
+        // Use top/left for position to avoid transform clobbering by animations
+        node.style.left = `calc(50% + ${x}px)`;
+        node.style.top = `calc(50% + ${y}px)`;
+        node.style.transform = `translate(-50%, -50%)`;
+
+        // Set transform-origin to the center of the pentagon (the core circle)
+        // Since the node is centered at (x, y) relative to 50% 50%, the center is at (-x, -y) from the node's center.
+        node.style.transformOrigin = `calc(50% - ${x}px) calc(50% - ${y}px)`;
     });
 }
 
@@ -976,9 +999,10 @@ function endDrag(e) {
 function updateUI() {
     console.log("[DEBUG] Battle UI Updating...");
     const isPlayerTurn = gameState.currentTurn === 'PLAYER';
-    // Update PP Stats (Central Arena) - Bi-directional Bar
+    // Calculate display stats including C-Card bonuses
+    const pStats = getModifiedStats(gameState.player, gameState.playerLevel);
     const pPP = gameState.player.pp;
-    const pMax = gameState.player.maxPp;
+    const pMax = pStats.maxPp;
     const pIsLysis = pPP < 0;
 
     // Width logic: Bar refills visually when negative
@@ -994,8 +1018,8 @@ function updateUI() {
     document.querySelector('.player-display .pp-fill')?.classList.toggle('overload', pPP >= 10);
     document.querySelector('.player-display .pp-label')?.classList.toggle('lysis', pIsLysis);
 
-    setStyle('.player-display .hp-fill', 'width', `${(gameState.player.hp / gameState.player.maxHp) * 100}%`);
-    setSafe('#player-hp-val', 'textContent', `${gameState.player.hp} / ${gameState.player.maxHp}`);
+    setStyle('.player-display .hp-fill', 'width', `${(gameState.player.hp / pStats.maxHp) * 100}%`);
+    setSafe('#player-hp-val', 'textContent', `${gameState.player.hp} / ${pStats.maxHp}`);
     const playerPpText = pIsLysis ? `${pPP} / -${pMax}` : `${pPP} / ${pMax}`;
     setSafe('#player-pp-val', 'textContent', playerPpText);
 
@@ -1036,8 +1060,9 @@ function updateUI() {
     if (pLayer) pLayer.classList.toggle('anim-attacker-float', gameState.currentTurn === 'PLAYER');
 
     // Enemy PP
+    const eStats = getModifiedStats(gameState.enemy, gameState.enemyLevel || 1);
     const ePP = gameState.enemy.pp;
-    const eMax = gameState.enemy.maxPp;
+    const eMax = eStats.maxPp;
     const eIsLysis = ePP < 0;
     const eFillPercent = Math.min(100, (Math.abs(ePP) / eMax) * 100);
     const eColor = eIsLysis
@@ -1049,8 +1074,8 @@ function updateUI() {
     document.querySelector('.enemy-display .pp-fill')?.classList.toggle('overload', ePP >= 10);
     document.querySelector('.enemy-display .pp-label')?.classList.toggle('lysis', eIsLysis);
 
-    setStyle('.enemy-display .hp-fill', 'width', `${(gameState.enemy.hp / gameState.enemy.maxHp) * 100}%`);
-    setSafe('#enemy-hp-val', 'textContent', `${gameState.enemy.hp} / ${gameState.enemy.maxHp}`);
+    setStyle('.enemy-display .hp-fill', 'width', `${(gameState.enemy.hp / eStats.maxHp) * 100}%`);
+    setSafe('#enemy-hp-val', 'textContent', `${gameState.enemy.hp} / ${eStats.maxHp}`);
     const enemyPpText = eIsLysis ? `${ePP} / -${eMax}` : `${ePP} / ${eMax}`;
     setSafe('#enemy-pp-val', 'textContent', enemyPpText);
 
@@ -1145,11 +1170,12 @@ function updateUI() {
         const playerBlockedArr = gameState.player.blockedNodes || [];
         const isBlocked = playerBlockedArr.some(b => b.index === idx);
 
-        node.className = `node ${isPlayerTurn ? 'attack' : 'defense'}`;
+        node.classList.remove('attack', 'defense');
+        node.classList.add(isPlayerTurn ? 'attack' : 'defense');
+
         node.classList.toggle('selected', isTarget);
         node.classList.toggle('blocked', isBlocked);
         node.classList.toggle('burned', isBlocked);
-
     });
 
     // 1. Target Moveset & Fallback Logic
@@ -1170,6 +1196,9 @@ function updateUI() {
     }
 
     // 2. Move buttons (Selection, Validation, and Dynamic Rendering)
+    const hasLeader1 = hasLeaderCard('player', 'leader_1');
+    const hasLeader2 = hasLeaderCard('player', 'leader_2');
+
     moveButtons.forEach((btn, idx) => {
         const move = moveset[idx];
         if (!move) {
@@ -1183,8 +1212,18 @@ function updateUI() {
         const nameEl = btn.querySelector('.move-name');
         if (nameEl) nameEl.innerText = move.name;
 
-        const moveAffordable = move.type !== 'pellicle' || !isDebtLimitReached;
-        btn.classList.toggle('disabled', !moveAffordable);
+        const pPP = gameState.player.pp;
+        const isPellicle = move.type === 'pellicle';
+
+        // Unlock Logic: leader_1 unlocks 2nd move, leader_2 unlocks 3rd move
+        let isPowerLocked = false;
+        if (idx === 1 && !hasLeader1) isPowerLocked = true;
+        if (idx === 2 && !hasLeader2) isPowerLocked = true;
+
+        const moveAffordable = !isPowerLocked && (move.type !== 'pellicle' || !isDebtLimitReached);
+
+        btn.classList.toggle('locked', isPowerLocked);
+        btn.classList.toggle('disabled', !isPowerLocked && !moveAffordable);
         btn.classList.toggle('active', gameState.player.selectedMove === move.id);
         btn.classList.toggle('defense', !isPlayerPhase);
 
@@ -1221,12 +1260,6 @@ function updateUI() {
         pentagonShape.classList.toggle('attack', isPlayerTurn);
         pentagonShape.classList.toggle('defense', !isPlayerTurn);
     }
-
-    // Dynamic Node & Core Colors
-    interactiveNodes.forEach(node => {
-        node.classList.toggle('attack', isPlayerTurn);
-        node.classList.toggle('defense', !isPlayerTurn);
-    });
 
     if (selectionCore) {
         selectionCore.classList.toggle('attack', isPlayerTurn);
@@ -1603,7 +1636,7 @@ async function resolvePhase() {
     // 6. Final VFX Feedback (Hit flash)
     setTimeout(() => {
         applyMatchVFX(results.actualDist, results.effectiveDist, ghost);
-    }, 400); // Wait for activation pulse to peak
+    }, 700); // Start immediately after 0.7s heartbeat pattern ends.
 
     if (results.ppGain > 0) {
         spawnPellicleVFX(results.attacker, results.ppGain);
@@ -1628,7 +1661,7 @@ async function resolvePhase() {
 
             // Log it
             console.log(`[VFX] Reflected ${results.reflectDamage} damage.`);
-        }, 400);
+        }, 700);
     }
 
     // 7. Reset Turn (Capture indices BEFORE reset for block logic)
@@ -1807,10 +1840,15 @@ function applyMatchVFX(actualDist, effectiveDist, ghost) {
  */
 function triggerMAPActivationVFX(defenderNode, move) {
     if (!move) return;
+    console.log(`[VFX] MAP ACTIVATION START: ${move.id} | Ref: ${defenderNode}`);
 
-    const nodes = document.querySelectorAll('#interactive-pentagon .node');
+    const interactiveNodes = document.querySelectorAll('#interactive-pentagon .node');
+
+    // Do NOT clear here, as attacker and defender moves might trigger simultaneously
+    // and we want both patterns to show if they overlap. 
+    // They will be cleaned up by the timeout.
+
     const getAbsoluteIndex = (relDist) => {
-        // Find all indices at this relative distance from defenderNode
         const indices = [];
         for (let i = 0; i < 5; i++) {
             const diff = Math.abs(i - defenderNode);
@@ -1820,50 +1858,60 @@ function triggerMAPActivationVFX(defenderNode, move) {
         return indices;
     };
 
-    // Helper to apply class to specific distances
-    const applyToDist = (dist, className) => {
-        const absoluteIndices = getAbsoluteIndex(dist);
-        absoluteIndices.forEach(idx => {
-            const node = Array.from(nodes).find(n => parseInt(n.dataset.index) === idx);
-            if (node) node.classList.add(className);
+    const applyPulseVFX = (relDist, className) => {
+        const indices = getAbsoluteIndex(relDist);
+        indices.forEach(idx => {
+            const node = Array.from(interactiveNodes).find(n => parseInt(n.dataset.index) === idx);
+            if (node) {
+                node.classList.add(className);
+            }
         });
     };
 
     // Logic based on skill modifiers (Mapping user requests to technical properties)
     if (move.matchExpand === 1 || move.matchOffset === -1) {
         // [EASY TARGET]: 3 Red (Dist 0, 1), 2 Yellow (Dist 2)
-        applyToDist(0, 'node-activate-match');
-        applyToDist(1, 'node-activate-match');
-        applyToDist(2, 'node-activate-near');
+        applyPulseVFX(0, 'node-activate-match');
+        applyPulseVFX(1, 'node-activate-match');
+        applyPulseVFX(2, 'node-activate-near');
     } else if (move.matchRisky) {
         // [ALL OR NOTHING]: 1 Red (Dist 0), 4 Far (Dist 1, 2)
-        applyToDist(0, 'node-activate-match');
-        applyToDist(1, 'node-activate-far');
-        applyToDist(2, 'node-activate-far');
+        applyPulseVFX(0, 'node-activate-match');
+        applyPulseVFX(1, 'node-activate-far');
+        applyPulseVFX(2, 'node-activate-far');
     } else if (move.matchFixed === 1) {
         // [RELIABLE HIT]: All 5 Yellow
-        applyToDist(0, 'node-activate-near');
-        applyToDist(1, 'node-activate-near');
-        applyToDist(2, 'node-activate-near');
+        applyPulseVFX(0, 'node-activate-near');
+        applyPulseVFX(1, 'node-activate-near');
+        applyPulseVFX(2, 'node-activate-near');
     } else if (move.matchFixed === 2) {
         // [PUNY SLAP]: All 5 White
-        applyToDist(0, 'node-activate-far');
-        applyToDist(1, 'node-activate-far');
-        applyToDist(2, 'node-activate-far');
+        applyPulseVFX(0, 'node-activate-far');
+        applyPulseVFX(1, 'node-activate-far');
+        applyPulseVFX(2, 'node-activate-far');
     } else if (move.matchExpand === 2) {
         // [PERFECT STRIKE]: All 5 Red
-        applyToDist(0, 'node-activate-match');
-        applyToDist(1, 'node-activate-match');
-        applyToDist(2, 'node-activate-match');
+        applyPulseVFX(0, 'node-activate-match');
+        applyPulseVFX(1, 'node-activate-match');
+        applyPulseVFX(2, 'node-activate-match');
     } else if (move.id === 'drunk_man' || move.matchFixed === 3) {
         // [DRUNK MAN]: 1 Near (Dist 0), 4 Far (Dist 1, 2)
-        applyToDist(0, 'node-activate-near');
-        applyToDist(1, 'node-activate-far');
-        applyToDist(2, 'node-activate-far');
+        applyPulseVFX(0, 'node-activate-near');
+        applyPulseVFX(1, 'node-activate-far');
+        applyPulseVFX(2, 'node-activate-far');
     }
+
+    // Auto-cleanup after resolution peak
+    setTimeout(() => {
+        console.log(`[VFX-CLEANUP] Removing activation pattern classes.`);
+        interactiveNodes.forEach(node => {
+            node.classList.remove('node-activate-match', 'node-activate-near', 'node-activate-far');
+        });
+    }, 700); // Clear pattern at exact end of 0.7s animation
 }
 
 function clearVFX() {
+    console.log(`[VFX-CLEANUP] clearVFX called (Full reset)`);
     interactiveNodes.forEach(node => {
         node.classList.remove('flash-red', 'flash-yellow', 'flash-far', 'flash-white', 'highlight', 'node-activate-match', 'node-activate-near', 'node-activate-far');
     });
@@ -1886,6 +1934,8 @@ async function performJump(ghost) {
         const ghostTargetNode = document.querySelector(`#interactive-pentagon .node[data-index="${gameState.enemy.currentNode}"]`);
         if (ghostTargetNode) {
             ghost.classList.add('visible');
+            ghost.style.top = ghostTargetNode.style.top;
+            ghost.style.left = ghostTargetNode.style.left;
             ghost.style.transform = ghostTargetNode.style.transform;
         }
     }
@@ -2223,6 +2273,18 @@ function resetGame() {
     const eProfile = gameState.profiles[eProfileId];
     gameState.enemyParty = eProfile.party;
     gameState.enemyLevel = eProfile.level; // Sync legacy field
+
+    // 2. Pre-apply Catalyst Bonuses to persistent max stats for the start of battle
+    const applyBonuses = (party, level) => {
+        party.forEach(monster => {
+            const mod = getModifiedStats(monster, level);
+            monster.maxHp = mod.maxHp;
+            monster.maxPp = mod.maxPp;
+            if (monster.hp > monster.maxHp) monster.hp = monster.maxHp; // Clamp if cards unequipped
+        });
+    };
+    applyBonuses(gameState.playerParty, gameState.playerLevel);
+    applyBonuses(gameState.enemyParty, gameState.enemyLevel);
 
     // Set Active Combatants
     gameState.player = gameState.playerParty[0];

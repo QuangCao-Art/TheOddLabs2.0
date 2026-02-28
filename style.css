@@ -144,17 +144,19 @@ body {
 
 .node {
     position: absolute;
-    top: 50%;
-    left: 50%;
     width: var(--node-size);
     height: var(--node-size);
-    background: rgba(5, 10, 20, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
+    background: rgba(5, 10, 20, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
     z-index: 30;
-    pointer-events: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     transform: translate(-50%, -50%);
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
 }
 
 .node.attack {
@@ -188,7 +190,7 @@ body {
         0 0 20px var(--color-attack),
         0 0 45px var(--color-attack),
         inset 0 0 15px var(--color-attack);
-    transform: translate(-50%, -50%) scale(1.25);
+    transform: translate(-50%, -50%) scale(1.4);
     border-color: #fff;
 }
 
@@ -197,16 +199,18 @@ body {
         0 0 20px var(--color-defense),
         0 0 45px var(--color-defense),
         inset 0 0 15px var(--color-defense);
-    transform: translate(-50%, -50%) scale(1.25);
+    transform: translate(-50%, -50%) scale(1.4);
     border-color: #fff;
 }
 
 .node.selected.attack {
+    transform: translate(-50%, -50%);
     border-color: var(--color-attack);
     box-shadow: 0 0 10px var(--color-attack);
 }
 
 .node.selected.defense {
+    transform: translate(-50%, -50%);
     border-color: var(--color-defense);
     box-shadow: 0 0 10px var(--color-defense);
 }
@@ -236,13 +240,15 @@ body {
 
     0%,
     100% {
+        transform: translate(-50%, -50%) scale(1.0);
         background: transparent;
         box-shadow: 0 0 0px var(--color-match);
     }
 
     50% {
+        transform: translate(-50%, -50%) scale(1.0);
         background: var(--color-match);
-        box-shadow: 0 0 50px var(--color-match);
+        box-shadow: 0 0 60px var(--color-match), 0 0 120px var(--color-match);
     }
 }
 
@@ -250,13 +256,15 @@ body {
 
     0%,
     100% {
+        transform: translate(-50%, -50%) scale(1.0);
         background: transparent;
         box-shadow: 0 0 0px var(--color-near);
     }
 
     50% {
+        transform: translate(-50%, -50%) scale(1.0);
         background: var(--color-near);
-        box-shadow: 0 0 50px var(--color-near);
+        box-shadow: 0 0 60px var(--color-near), 0 0 120px var(--color-near);
     }
 }
 
@@ -264,13 +272,15 @@ body {
 
     0%,
     100% {
+        transform: translate(-50%, -50%) scale(1.0);
         background: transparent;
         box-shadow: 0 0 0px white;
     }
 
     50% {
-        background: rgba(255, 255, 255, 0.8);
-        box-shadow: 0 0 50px white;
+        transform: translate(-50%, -50%) scale(1.0);
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 60px white, 0 0 120px white;
     }
 }
 
@@ -278,71 +288,81 @@ body {
 
     0%,
     100% {
+        transform: translate(-50%, -50%) scale(1.0);
         background: transparent;
         box-shadow: 0 0 0px var(--color-far);
     }
 
     50% {
+        transform: translate(-50%, -50%) scale(1.0);
         background: var(--color-far);
-        box-shadow: 0 0 50px var(--color-far);
+        box-shadow: 0 0 60px var(--color-far), 0 0 120px var(--color-far);
     }
 }
 
-.flash-far {
-    animation: flash-far 0.4s ease-in-out 2;
-    z-index: 100 !important;
-}
-
-.flash-red {
-    animation: flash-red 0.4s ease-in-out 2;
-    z-index: 100 !important;
-}
-
-.flash-yellow {
-    animation: flash-yellow 0.4s ease-in-out 2;
-    z-index: 100 !important;
-}
-
-.flash-white {
-    animation: flash-white 0.4s ease-in-out 2;
-    z-index: 100 !important;
-}
 
 /* NODE ACTIVATION VFX (MAP EFFECTS) */
-.node-activate-match {
-    animation: node-activate-pulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    border-color: var(--color-match);
-    box-shadow: 0 0 30px var(--color-match), inset 0 0 10px var(--color-match);
+.node.node-activate-match,
+.node.node-activate-near,
+.node.node-activate-far {
+    z-index: 100 !important;
+    opacity: 1 !important;
+    animation: node-heartbeat-v3 0.35s 2 alternate ease-in-out forwards;
 }
 
-.node-activate-near {
-    animation: node-activate-pulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    border-color: var(--color-near);
-    box-shadow: 0 0 30px var(--color-near), inset 0 0 10px var(--color-near);
+@keyframes node-heartbeat-v3 {
+    from {
+        transform: translate(-50%, -50%) scale(1.0);
+        background: rgba(5, 10, 20, 0.4);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        filter: brightness(1);
+    }
+
+    to {
+        transform: translate(-50%, -50%) scale(1.8);
+        background: var(--vfx-color, white);
+        border: 3px solid white;
+        box-shadow: 0 0 40px var(--vfx-color, white), 0 0 80px var(--vfx-color, white);
+        filter: brightness(1.2) blur(0.5px);
+    }
 }
 
-.node-activate-far {
-    animation: node-activate-pulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    border-color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.2);
+.node.node-activate-match {
+    --vfx-color: var(--color-match);
 }
 
-@keyframes node-activate-pulse {
-    0% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0.5;
-    }
+.node.node-activate-near {
+    --vfx-color: var(--color-near);
+}
 
-    30% {
-        transform: translate(-50%, -50%) scale(1.6);
-        opacity: 1;
-        filter: brightness(2);
-    }
+.node.node-activate-far {
+    --vfx-color: #ffffff;
+}
 
-    100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0.8;
-    }
+/* RESULT FLASHING (Takes priority over activation) */
+.node.flash-red,
+.node.flash-yellow,
+.node.flash-far,
+.node.flash-white {
+    z-index: 101 !important;
+    opacity: 1 !important;
+}
+
+.node.flash-red {
+    animation: flash-red 0.35s ease-in-out 3;
+}
+
+.node.flash-yellow {
+    animation: flash-yellow 0.35s ease-in-out 3;
+}
+
+.node.flash-far {
+    animation: flash-far 0.35s ease-in-out 3;
+}
+
+.node.flash-white {
+    animation: flash-white 0.35s ease-in-out 3;
 }
 
 /* ENEMY GHOST INDICATOR */
@@ -1473,6 +1493,37 @@ body {
 
 #move-info-panel.hidden {
     display: none;
+}
+
+.move-btn.locked {
+    position: relative;
+}
+
+.move-btn.locked * {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.move-btn.locked,
+.move-btn.disabled {
+    filter: grayscale(1);
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    border-color: #444 !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    box-shadow: none !important;
+}
+
+.move-btn.locked::after {
+    content: '🔒';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.8rem;
+    opacity: 0.9;
+    visibility: visible;
 }
 
 #info-move-name {
