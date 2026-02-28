@@ -71,3 +71,94 @@ export const LEVEL_REWARDS = {
     14: ['crit_3_s2'],
     15: ['pp_3_s2', 'leader_3']
 };
+
+export const NPC_PRESETS = {
+    jenzi: {
+        name: "Jenzi's Trickery",
+        description: "Focus on Speed and Precision to stay unreachable.",
+        team: ['nitrophil'],
+        minRG: 3,
+        slots: {
+            0: 'atk_5',
+            1: 'def_5',
+            2: 'spd_5'
+        }
+    },
+    lana: {
+        name: "Lana's Fortress",
+        description: "Maximum biological durability and botanical defense.",
+        team: ['cambihil'],
+        minRG: 5,
+        slots: {
+            0: 'hp_10',
+            1: 'def_5',
+            2: 'crit_2_s1', // Creates Slot 3 (RG 4)
+            3: 'pp_2_s1',   // Creates Slot 4 (RG 5)
+            4: 'pp_1'
+        }
+    },
+    dyzes: {
+        name: "Dyzes' Protocol",
+        description: "Optimized for energy efficiency and rapid execution.",
+        team: ['lydrosome', 'lydrosome', 'lydrosome'],
+        minRG: 9,
+        slots: {
+            0: 'spd_5',
+            1: 'pp_1',
+            2: 'atk_20_s2', // Creates Slot 3, 4 (RG 9)
+            3: 'spd_10_s1', // Creates Slot 5 (RG 7)
+            4: 'hp_30_s1',  // Creates Slot 6 (RG 8)
+            5: 'spd_15',
+            6: 'atk_10'
+        }
+    },
+    capsain: {
+        name: "Director's Order",
+        description: "Authoritarian brute force. High power, high defense.",
+        team: ['nitrophil', 'cambihil', 'lydrosome'],
+        minRG: 11,
+        slots: {
+            0: 'atk_20_s2', // Creates slot 3, 4
+            1: 'hp_30_s1',  // Creates slot 5
+            2: 'spd_10_s1', // Creates slot 6
+            3: 'atk_40',
+            4: 'def_40',
+            5: 'hp_60',
+            6: 'crit_2_s1', // Creates slot 7
+            7: 'pp_1'
+        }
+    },
+    npc01: {
+        name: "Balanced Readiness",
+        description: "Standard tactical spread for all-purpose combat.",
+        team: ['nitrophil'],
+        minRG: 1,
+        slots: {
+            0: 'atk_5',
+            1: 'hp_10',
+            2: 'def_5'
+        }
+    },
+    npc02: {
+        name: "Sturdy Bio-Signature",
+        description: "Focused on staying power and damage mitigation.",
+        team: ['cambihil'],
+        minRG: 1,
+        slots: {
+            0: 'hp_10',
+            1: 'def_5',
+            2: 'hp_20'
+        }
+    },
+    npc03: {
+        name: "Aggressive Probe",
+        description: "Focused on speed and critical openings.",
+        team: ['lydrosome'],
+        minRG: 1,
+        slots: {
+            0: 'spd_5',
+            1: 'crit_1',
+            2: 'atk_10'
+        }
+    }
+};

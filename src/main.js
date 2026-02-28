@@ -3,7 +3,7 @@ import { resolveTurn, getDistance, checkOverload, getModifiedStats } from './eng
 import { AI } from './engine/ai.js';
 import { MONSTERS } from './data/monsters.js';
 import { Overworld } from './engine/overworld.js';
-import { CARDS, LEVEL_REWARDS } from './data/cards.js';
+import { CARDS, LEVEL_REWARDS, NPC_PRESETS } from './data/cards.js';
 
 // DOM References
 const interactivePentagon = document.getElementById('interactive-pentagon');
@@ -2262,17 +2262,52 @@ function showScreen(screenId) {
 }
 
 function resetGame() {
-    // 1. Initialize Parties from Profiles
-    // Player is always the 'player' profile
-    const pProfile = gameState.profiles.player;
-    gameState.playerParty = pProfile.party;
-    gameState.playerLevel = pProfile.level; // Sync legacy field for combat engine
+    // 1. Initialize all NPC profiles: Seeding inventory and auto-applying presets
+    Object.entries(gameState.profiles).forEach(([profileId, profile]) => {
+        if (profileId === 'player' || profileId === 'opponent') return;
 
-    // Enemy is the selected battle opponent profile (defaults to 'opponent')
-    let eProfileId = catalystState.battleOpponentId || 'opponent';
-    const eProfile = gameState.profiles[eProfileId];
-    gameState.enemyParty = eProfile.party;
-    gameState.enemyLevel = eProfile.level; // Sync legacy field
+        // Reset party and clear box
+        profile.party = [];
+        profile.cardBox = [];
+
+        // Seed inventory and Team from their "Personal Signature Build"
+        if (NPC_PRESETS[profileId]) {
+            const preset = NPC_PRESETS[profileId];
+
+            // Set Team
+            if (preset.team) profile.team = [...preset.team];
+
+            // Re-create party members based on synced team
+            profile.party = profile.team.map(monId => createMonsterInstance(monId));
+
+            // Scale inventory to squad size so every monster can be equipped
+            profile.team.forEach(() => {
+                Object.values(preset.slots).forEach(cardId => {
+                    profile.cardBox.push(cardId);
+                });
+            });
+
+            // Auto-apply preset (Handles entire party)
+            catalystState.activeProfile = profileId;
+            catalystState.activeMonsterIdx = 0;
+            applyPreset(profileId, profileId);
+        }
+    });
+
+    // 2. Player and Opponent initialization (Standard flow)
+    const pProfile = gameState.profiles.player;
+    pProfile.party = pProfile.team.map(id => createMonsterInstance(id));
+    gameState.playerParty = pProfile.party;
+    gameState.playerLevel = pProfile.level;
+
+    // Clear player box (for sandbox testing, we seed it with some Tier 1s)
+    pProfile.cardBox = ['atk_5', 'def_5', 'hp_10', 'spd_5', 'atk_5', 'def_5', 'pp_1', 'crit_1'];
+
+    const oProfile = gameState.profiles.opponent;
+    oProfile.party = oProfile.team.map(id => createMonsterInstance(id));
+    gameState.enemyParty = oProfile.party;
+    gameState.enemyLevel = oProfile.level;
+    oProfile.cardBox = ['atk_10_s1', 'def_10_s1', 'hp_20', 'spd_10_s1', 'leader_1'];
 
     // 2. Pre-apply Catalyst Bonuses to persistent max stats for the start of battle
     const applyBonuses = (party, level) => {
@@ -2701,7 +2736,17 @@ function updateCatalystCore() {
     const party = profile.party;
     const monster = party[catalystState.activeMonsterIdx];
     const nameEl = document.getElementById('catalyst-monster-name');
+    const presetCtrl = document.getElementById('preset-control');
+    const presetSelector = document.getElementById('preset-selector');
     if (!anchor || !monster) return;
+
+    // Toggle Preset Control for NPCs
+    if (catalystState.activeProfile === 'player') {
+        presetCtrl.classList.add('hidden');
+    } else {
+        presetCtrl.classList.remove('hidden');
+        populatePresets(catalystState.activeProfile, monster.currentPresetId);
+    }
 
     nameEl.textContent = monster.name;
     const level = profile.level;
@@ -2811,6 +2856,106 @@ function updateCatalystCore() {
     });
 
     drawConnections(slotPositions, monster);
+
+    // Attach Selector Event
+    if (presetSelector) {
+        presetSelector.onchange = (e) => {
+            if (e.target.value) {
+                applyPreset(catalystState.activeProfile, e.target.value);
+            }
+        };
+    }
+}
+
+function populatePresets(profileId, currentPresetId = "") {
+    const selector = document.getElementById('preset-selector');
+    const profile = gameState.profiles[profileId];
+    if (!selector || !profile) return;
+    selector.innerHTML = '<option value="">-- CUSTOM --</option>';
+
+    // Always ensure it's visible for NPCs (including RG 0)
+    selector.parentElement.classList.remove('hidden');
+
+    Object.keys(NPC_PRESETS).forEach(key => {
+        const preset = NPC_PRESETS[key];
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = `${preset.name} (RG-${preset.minRG})`;
+
+        // Disable if preset RG is higher than current NPC RG
+        if (preset.minRG > profile.level) {
+            opt.disabled = true;
+            opt.textContent += " [LOCKED]";
+        }
+
+        // Use the monster's currentPresetId, or fall back to profileId if none set
+        const autoSelected = currentPresetId || profileId;
+        if (key === autoSelected) opt.selected = true;
+        selector.appendChild(opt);
+    });
+}
+
+function applyPreset(profileId, presetId) {
+    const profile = gameState.profiles[profileId];
+    const monster = profile.party[catalystState.activeMonsterIdx];
+    const preset = NPC_PRESETS[presetId];
+    if (!profile || !monster || !preset) return;
+
+    // Persist the preset ID
+    monster.currentPresetId = presetId;
+
+    // 1. Sync squad composition if defined
+    if (preset.team && JSON.stringify(profile.team) !== JSON.stringify(preset.team)) {
+        profile.team = [...preset.team];
+        profile.party = profile.team.map(id => createMonsterInstance(id));
+        // Reset active monster index if out of bounds
+        if (catalystState.activeMonsterIdx >= profile.party.length) {
+            catalystState.activeMonsterIdx = 0;
+        }
+    }
+
+    // 2. Clear all inventory for this profile's monsters (return to box)
+    profile.party.forEach((mon, mIdx) => {
+        const currentlyEquipped = [...mon.equippedCards];
+        currentlyEquipped.forEach(ec => unequipCard(mIdx, ec.slotIndex, true));
+    });
+
+    // 3. Determine defined unlocks at this level
+    const availableAtRG = [];
+    for (let rg = 1; rg <= profile.level; rg++) {
+        const rewards = LEVEL_REWARDS[rg] || [];
+        availableAtRG.push(...rewards);
+    }
+
+    // 4. Attempt to auto-equip from cardBox to all party members
+    // (Clearing drag source to avoid equipCard crashing)
+    catalystState.dragSourceProfile = profileId;
+    catalystState.dragSourceSlot = null;
+
+    profile.party.forEach((mon, mIdx) => {
+        // Persist the preset ID to every monster in the synchronized squad
+        mon.currentPresetId = presetId;
+
+        Object.entries(preset.slots).forEach(([slotIdx, cardId]) => {
+            const idx = parseInt(slotIdx);
+
+            // Skip if not unlocked at this RG
+            if (!availableAtRG.includes(cardId)) return;
+
+            // Check if card exists in the box
+            const boxIndex = profile.cardBox.indexOf(cardId);
+            if (boxIndex > -1) {
+                // Temporarily pivot state for this monster's equipment call
+                const prevIdx = catalystState.activeMonsterIdx;
+                catalystState.activeMonsterIdx = mIdx;
+                equipCard(mIdx, idx, cardId, true);
+                catalystState.activeMonsterIdx = prevIdx;
+            }
+        });
+    });
+
+    addLog(`Preset "${preset.name}" applied. Squad synchronized and signatures auto-slotted.`);
+    renderManagementHub();
 }
 
 function calculateSlotLayout(monster) {
@@ -2821,10 +2966,13 @@ function calculateSlotLayout(monster) {
         { id: 2, parent: -1, level: 0, children: [] }
     ];
 
-    // 2. Build the tree structure up to 10 slots
+    // 2. Build the tree structure based on equipment and capacity
+    // We want to ensure that if a preset defines a slot, it exists even if empty
     let currentIndex = 0;
     while (currentIndex < slots.length && slots.length < 10) {
         const equipped = monster.equippedCards.find(ec => ec.slotIndex === currentIndex);
+        // Also check if ANY card was EVER equipped here, or if it's a base slot
+        // For simplicity: if it has an equipped card, add its children.
         if (equipped) {
             const card = CARDS[equipped.cardId];
             const childCount = card.slots || 0;
@@ -2950,7 +3098,7 @@ function drawConnections(positions, monster) {
     });
 }
 
-function equipCard(monsterIdx, slotIdx, cardId) {
+function equipCard(monsterIdx, slotIdx, cardId, silent = false) {
     const profile = gameState.profiles[catalystState.activeProfile];
     const party = profile.party;
     const monster = party[monsterIdx];
@@ -2962,13 +3110,16 @@ function equipCard(monsterIdx, slotIdx, cardId) {
         catalystState.dragSourceProfile === catalystState.activeProfile;
 
     if (!isInternalMove && monster.equippedCards.some(ec => ec.cardId === cardId)) {
-        addLog("Cannot equip duplicate cards on same Cell.");
+        if (!silent) addLog("Cannot equip duplicate cards on same Cell.");
         return;
     }
 
+    // Manual change clears the preset
+    monster.currentPresetId = "";
+
     // Capture source before we potentially clear it via unequip
     const srcSlot = catalystState.dragSourceSlot;
-    const srcProfile = catalystState.dragSourceProfile;
+    const srcProfile = catalystState.dragSourceProfile || catalystState.activeProfile;
 
     // 1. Remove from source (Box or other Slot)
     if (srcSlot) {
@@ -2991,27 +3142,31 @@ function equipCard(monsterIdx, slotIdx, cardId) {
 
     // 3. Place new card
     monster.equippedCards.push({ slotIndex: parseInt(slotIdx), cardId: cardId });
-    renderManagementHub();
+    if (!silent) renderManagementHub();
 }
 
-function unequipCard(monsterIdx, slotIdx) {
+function unequipCard(monsterIdx, slotIdx, silent = false) {
     const profile = gameState.profiles[catalystState.activeProfile];
     const party = profile.party;
     const monster = party[monsterIdx];
     const index = monster.equippedCards.findIndex(ec => ec.slotIndex === slotIdx);
     if (index === -1) return;
 
+    monster.currentPresetId = "";
     const removed = monster.equippedCards.splice(index, 1)[0];
     profile.cardBox.push(removed.cardId);
 
     processRecursiveRemoval(monster, slotIdx);
-    renderManagementHub();
+    if (!silent) renderManagementHub();
 }
 
 function processRecursiveRemoval(monster, parentSlotIdx) {
+    const profile = gameState.profiles[catalystState.activeProfile];
+    if (!profile) return;
+
     const newPositions = calculateSlotLayout(monster);
     const validIndices = new Set(newPositions.map((_, i) => i));
-    const box = catalystState.activeSide === 'PLAYER' ? gameState.cardBox : gameState.enemyCardBox;
+    const box = profile.cardBox;
 
     const invalidEquipped = monster.equippedCards.filter(ec => !validIndices.has(ec.slotIndex));
     invalidEquipped.forEach(ec => {
@@ -3027,7 +3182,12 @@ function processRecursiveRemoval(monster, parentSlotIdx) {
 
 function createMonsterInstance(id, existing = null) {
     const data = JSON.parse(JSON.stringify(MONSTERS[id]));
-    return {
+    const defaultPresetId = NPC_PRESETS[id] ? id : "";
+
+    // Determine initial preset
+    const currentPresetId = existing ? existing.currentPresetId : defaultPresetId;
+
+    const monster = {
         ...data,
         currentNode: null,
         blockedNodes: [],
@@ -3035,8 +3195,10 @@ function createMonsterInstance(id, existing = null) {
         hp: data.hp,
         pp: 1,
         turnCount: 0,
-        selectedMove: data.moves[0].id
+        selectedMove: data.moves[0].id,
+        currentPresetId: currentPresetId
     };
+    return monster;
 }
 
 function openCardDetail(cardId) {
