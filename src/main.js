@@ -212,8 +212,132 @@ function setupEventListeners() {
     });
 
     document.getElementById('btn-start-battle')?.addEventListener('click', () => {
-        showScreen('screen-battle');
+        const opponentId = catalystState.battleOpponentId || 'opponent';
+        startPreBattleSequence(opponentId);
+    });
+
+    /* --- PRE-BATTLE SEQUENCE LOGIC --- */
+    const PRE_BATTLE_DATA = {
+        'player': { art: 'Character_FullArt_Rival', dialogue: "Analysis commencing. Do not disappoint." },
+        'opponent': { art: 'Character_FullArt_Rival', dialogue: "Analysis commencing. Do not disappoint." },
+        'lana': { art: 'Character_FullArt_Lana', dialogue: "Prepare for a lesson in botanical efficiency!" },
+        'dyzes': { art: 'Character_FullArt_Dyzes', dialogue: "Let's see if your tactical vibe is strong enough." },
+        'capsain': { art: 'Character_FullArt_Director', dialogue: "I won't have my legacy tarnished by some spicy gossip!" },
+        'jenzi': { art: 'Character_FullArt_Jenzi', dialogue: "Square up, Intern! Let's see what you've got." },
+        'npc01': { art: 'Character_FullArt_NPC_Male', dialogue: "Commencing standard engagement protocol." },
+        'npc02': { art: 'Character_FullArt_NPC_Female', dialogue: "Bio-signature match confirmed. Initiating test." },
+        'npc03': { art: 'Character_FullArt_NPC_Male', dialogue: "Deploying tactical cells. Readiness check." }
+    };
+
+    let preBattleSequenceActive = false;
+    let preBattleCurrentStep = 0;
+
+    function startPreBattleSequence(opponentProfileId) {
+        preBattleSequenceActive = true;
+        preBattleCurrentStep = 0;
+
+        const opponent = gameState.profiles[opponentProfileId] || gameState.profiles.opponent;
+        const data = PRE_BATTLE_DATA[opponentProfileId] || PRE_BATTLE_DATA['opponent'];
+
+        // Set UI Content
+        const portraitImg = document.getElementById('pre-battle-portrait');
+        const content = document.getElementById('pre-battle-content');
+
+        if (content) content.classList.remove('anim-dissolve');
+        if (portraitImg) {
+            portraitImg.classList.remove('active');
+            portraitImg.src = `./assets/images/${data.art}.png`;
+
+            // Trigger slide-in after image is ready
+            portraitImg.onload = () => {
+                setTimeout(() => portraitImg.classList.add('active'), 50);
+            };
+        }
+
+        const nameEl = document.getElementById('pre-battle-name');
+        if (nameEl) nameEl.innerText = opponent.name;
+
+        // Initial Text
+        const textEl = document.getElementById('pre-battle-text');
+        if (textEl) textEl.innerText = `Engagement protocol requested by ${opponent.name}`;
+
+        showScreen('screen-pre-battle');
+        document.getElementById('pre-battle-dialogue-box')?.classList.remove('hidden');
+        document.getElementById('bio-scan-overlay')?.classList.add('hidden');
+
+        // Fallback if image already loaded or cached
+        setTimeout(() => {
+            if (portraitImg && !portraitImg.classList.contains('active')) {
+                portraitImg.classList.add('active');
+            }
+        }, 200);
+    }
+
+    function advancePreBattleSequence() {
+        if (!preBattleSequenceActive) return;
+
+        const opponentProfileId = catalystState.battleOpponentId || 'opponent';
+        const data = PRE_BATTLE_DATA[opponentProfileId] || PRE_BATTLE_DATA['opponent'];
+
+        preBattleCurrentStep++;
+
+        if (preBattleCurrentStep === 1) {
+            // Show Dialogue
+            const textEl = document.getElementById('pre-battle-text');
+            if (textEl) textEl.innerText = `"${data.dialogue}"`;
+        } else if (preBattleCurrentStep === 2) {
+            // Trigger Bio-Scan and Laser Wipe
+            triggerBioScanTransition();
+        }
+    }
+
+    function triggerBioScanTransition() {
+        const overlay = document.getElementById('bio-scan-overlay');
+        const content = document.getElementById('pre-battle-content');
+        const battleScreen = document.getElementById('screen-battle');
+        const preBattleScreen = document.getElementById('screen-pre-battle');
+
+        if (overlay) overlay.classList.remove('hidden');
+        if (preBattleScreen) preBattleScreen.classList.add('wiped'); // Wipe the entire screen
+        if (battleScreen) battleScreen.classList.add('battle-shine'); // Shine the battle scene
+
+        // Hide dialogue box immediately
+        document.getElementById('pre-battle-dialogue-box')?.classList.add('hidden');
+
+        // Begin preparing battle screen behind the scenes
         resetGame();
+        if (battleScreen) battleScreen.classList.remove('hidden');
+
+        setTimeout(() => {
+            // Officially switch screens once wipe is nearly complete
+            showScreen('screen-battle');
+
+            // Final cleanup after screen change
+            if (preBattleScreen) {
+                preBattleScreen.classList.add('hidden');
+                preBattleScreen.classList.remove('wiped');
+            }
+            document.getElementById('pre-battle-portrait')?.classList.remove('active');
+
+            setTimeout(() => {
+                if (overlay) overlay.classList.add('hidden');
+                if (battleScreen) battleScreen.classList.remove('battle-shine'); // Start 0.3s fade-out
+                preBattleSequenceActive = false;
+            }, 25);
+        }, 400);
+    }
+
+    // Global listeners for advancing pre-battle dialogue
+    document.addEventListener('keydown', (e) => {
+        if (preBattleSequenceActive && (e.key === 'f' || e.key === 'F' || e.key === 'Enter' || e.key === ' ')) {
+            advancePreBattleSequence();
+        }
+    });
+
+    document.addEventListener('mousedown', () => {
+        if (preBattleSequenceActive) {
+            advancePreBattleSequence();
+        }
     });
 
     document.getElementById('btn-restart')?.addEventListener('click', () => {
@@ -226,10 +350,22 @@ function setupEventListeners() {
         showScreen('screen-main-menu');
     });
 
-    document.getElementById('btn-battle-back')?.addEventListener('click', () => showScreen(previousScreen));
+    document.getElementById('btn-battle-back')?.addEventListener('click', () => {
+        // Reset pre-battle sequence if user backs out
+        preBattleSequenceActive = false;
+        document.getElementById('pre-battle-portrait')?.classList.remove('active');
+        showScreen('screen-main-menu'); // Always back to menu for now
+    });
     document.getElementById('btn-battle-rulebook')?.addEventListener('click', () => showScreen('screen-rulebook'));
     document.getElementById('btn-open-rulebook')?.addEventListener('click', () => showScreen('screen-rulebook'));
-    document.getElementById('btn-rulebook-back')?.addEventListener('click', () => showScreen(previousScreen));
+    document.getElementById('btn-rulebook-back')?.addEventListener('click', () => {
+        // If coming back from rules during battle, go to battle, not pre-battle
+        if (previousScreen === 'screen-pre-battle') {
+            showScreen('screen-main-menu');
+        } else {
+            showScreen(previousScreen);
+        }
+    });
 
     // Unified Management Hub Controls
     document.getElementById('btn-open-management')?.addEventListener('click', () => {
@@ -569,7 +705,7 @@ function updateBattleCard(monsterOrName) {
 
     if (!monster) return;
     const monsterName = monster.name;
-    const newSrc = `assets/images/Card_${monsterName}.png`;
+    const newSrc = `./assets/images/Card_${monsterName}.png`;
 
     // Calculate Modified Stats for display
     let currentLevel = 1;
@@ -587,10 +723,12 @@ function updateBattleCard(monsterOrName) {
 
     if (!isFlipped) {
         // Currently showing BACK (0deg) -> Prepare FRONT and flip to 180
+        frontImg.onerror = () => frontImg.src = './assets/images/Card_Placeholder.png';
         frontImg.src = newSrc;
         cardInner.classList.add('is-flipped');
     } else {
         // Currently showing FRONT (180deg) -> Prepare BACK and flip to 0
+        backImg.onerror = () => backImg.src = './assets/images/Card_Placeholder.png';
         backImg.src = newSrc;
         cardInner.classList.remove('is-flipped');
     }
@@ -662,7 +800,10 @@ function openMonsterCard(monsterId) {
         typeEl.style.setProperty('--type-color', typeColor);
     }
     if (loreEl) loreEl.innerText = monster.lore;
-    if (imgEl) imgEl.src = `assets/images/Card_${monster.name}.png`;
+    if (imgEl) {
+        imgEl.onerror = () => imgEl.src = './assets/images/Card_Placeholder.png';
+        imgEl.src = `./assets/images/Card_${monster.name}.png`;
+    }
 
     // Populate Stats
     const stats = {
@@ -888,7 +1029,10 @@ function updateUI() {
     const pNameRaw = gameState.player.name.toLowerCase();
     const pNameCased = pNameRaw.charAt(0).toUpperCase() + pNameRaw.slice(1);
     const hasBackSprite = ['Nitrophil', 'Cambihil', 'Lydrosome', 'Phagoburst'].includes(pNameCased);
-    if (pImg) pImg.src = hasBackSprite ? `assets/images/${pNameCased}_Back.png?v=22` : `assets/images/${pNameCased}.png?v=22`;
+    if (pImg) {
+        pImg.onerror = () => pImg.src = './assets/images/Card_Placeholder.png';
+        pImg.src = hasBackSprite ? `./assets/images/${pNameCased}_Back.png` : `./assets/images/${pNameCased}.png`;
+    }
     if (pLayer) pLayer.classList.toggle('anim-attacker-float', gameState.currentTurn === 'PLAYER');
 
     // Enemy PP
@@ -915,7 +1059,10 @@ function updateUI() {
     const eImg = document.querySelector('.enemy-display .monster-portrait');
     const eNameRaw = gameState.enemy.name.toLowerCase();
     const eNameCased = eNameRaw.charAt(0).toUpperCase() + eNameRaw.slice(1);
-    if (eImg) eImg.src = `assets/images/${eNameCased}.png?v=22`;
+    if (eImg) {
+        eImg.onerror = () => eImg.src = './assets/images/Card_Placeholder.png';
+        eImg.src = `./assets/images/${eNameCased}.png`;
+    }
     if (eLayer) eLayer.classList.toggle('anim-attacker-float', gameState.currentTurn === 'ENEMY');
 
     // Update Player Bench (Side Monsters)
@@ -930,7 +1077,7 @@ function updateUI() {
             const isPlayerChoosing = (gameState.phase === 'NODE_SELECTION' || gameState.phase === 'MOVE_SELECTION') && gameState.currentTurn === 'PLAYER';
             const mNameRaw = monster.name.toLowerCase();
             const mNameCased = mNameRaw.charAt(0).toUpperCase() + mNameRaw.slice(1);
-            slot.innerHTML = `<img src="assets/images/${mNameCased}.png?v=22" alt="${monster.name}">`;
+            slot.innerHTML = `<img src="./assets/images/${mNameCased}.png" alt="${monster.name}" onerror="this.src='./assets/images/Card_Placeholder.png'">`;
             slot.classList.toggle('dead', isDead);
             slot.draggable = !isDead && isPlayerChoosing;
 
@@ -972,7 +1119,7 @@ function updateUI() {
             const isDead = monster.hp <= 0;
             const mNameRaw = monster.name.toLowerCase();
             const mNameCased = mNameRaw.charAt(0).toUpperCase() + mNameRaw.slice(1);
-            slot.innerHTML = `<img src="assets/images/${mNameCased}.png?v=22" alt="${monster.name}">`;
+            slot.innerHTML = `<img src="./assets/images/${mNameCased}.png" alt="${monster.name}" onerror="this.src='./assets/images/Card_Placeholder.png'">`;
             slot.classList.toggle('dead', isDead);
             slot.draggable = false;
             slot.onclick = () => {
@@ -1127,7 +1274,10 @@ function renderInventory() {
         if (detailDesc) detailDesc.innerText = desc;
         const cardContainer = detailCard ? detailCard.closest('.detail-card-container') : null;
         if (imgSrc) {
-            if (detailCard) detailCard.src = imgSrc;
+            if (detailCard) {
+                detailCard.onerror = () => detailCard.src = './assets/images/Card_Placeholder.png';
+                detailCard.src = imgSrc.startsWith('assets') ? './' + imgSrc.split('?')[0] : imgSrc;
+            }
             if (cardContainer) cardContainer.style.display = '';
         } else {
             if (cardContainer) cardContainer.style.display = 'none';
@@ -1315,6 +1465,13 @@ async function resolvePhase() {
 
     if (results.isLysis) {
         addLog(`${defenderName} in [LYSIS STATE]: Structural failure detected!`, 'lysis');
+    }
+
+    if (results.hitResult.usedLeader3) {
+        addLog(`[PERK] Oxidative Energy Burst: x2 DMG!`, 'perk-active');
+    }
+    if (results.hitResult.usedLeader5) {
+        addLog(`[PERK] Molecular Dissolver: Defense Ignored!`, 'perk-active');
     }
 
     if (dMove && dMove.id !== 'quick_dodge') {
@@ -2253,7 +2410,7 @@ function renderCellStorage() {
         icon.className = 'monster-icon';
         icon.draggable = true;
         const imgName = name.charAt(0).toUpperCase() + name.slice(1);
-        icon.innerHTML = `<img src="assets/images/${imgName}.png" alt="${name}">`;
+        icon.innerHTML = `<img src="./assets/images/${imgName}.png" alt="${name}" onerror="this.src='./assets/images/Card_Placeholder.png'">`;
 
         icon.ondragstart = (e) => {
             e.dataTransfer.setData('monsterName', name);
@@ -2290,7 +2447,8 @@ function updateTeamSlots() {
         if (monster) {
             const imgName = monster.name.charAt(0).toUpperCase() + monster.name.slice(1);
             const img = document.createElement('img');
-            img.src = `assets/images/${imgName}.png`;
+            img.onerror = () => img.src = './assets/images/Card_Placeholder.png';
+            img.src = `./assets/images/${imgName}.png`;
             img.alt = monster.name;
             slot.appendChild(img);
 

@@ -84,7 +84,9 @@ export function calculateDamage(attacker, defender, move, dist) {
         isLysis: defender.pp < 0,
         typeMultiplier: typeEffect,
         gpm,
-        randomRoll
+        randomRoll,
+        usedLeader3: hasLeader3 && attacker.turnCount === 0,
+        usedLeader5: hasLeader5
     };
 }
 

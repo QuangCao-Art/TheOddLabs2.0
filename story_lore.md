@@ -136,6 +136,7 @@ Characters respond differently based on the number of DataLogs you have archived
 
 **Jenzi:** *"Choose well, bestie. This cell is your new personality. Ready to lock it in?"*
 - **After Pairing**: *"Sheesh, nice pick! Let's see if you can actually use it though. Bet you can't even touch me in a battle. Square up!"*
+- **Before Battle**: *"Square up, Intern! Let's see what you've got."*
 - **Post Test Battle**: *"Not bad, not bad. You actually have some skill. No cap. Oh look, someone's out here littering again. Pick up that Datapad next to the Atrium door. It's giving... 'lazy researcher' vibes."*
 - **After Picking up Log #001**: *"Aha! Another lost Datapad. People here would forget their own heads if they weren't attached. Collect 'em and bring 'em to me, okay? I'll 'officially' return them to the owners. Door to the Atrium is open now. Go explore, but don't get lost in the sauce."*
 - **Atrium Progression (5 Logs)**: *"You've been busy! 5 Datapads already? Lowkey impressive. Since you're actually doing work, I'll tell you the 'tea' about the Incident. Director says it was an 'Ionization Leak'. Major cap. But honestly, go ask Lana in the Botanic wing. She's the main character of that floor anyway. Door's open!"*
@@ -152,7 +153,7 @@ Characters respond differently based on the number of DataLogs you have archived
     - *"Why are you still standing here? Efficiency isn't a suggestion! ...But, I suppose you haven't completely failed yet. Keep it up. Not that I'm cheering for you."*
     - *"Why are you staring? I was just... checking if your partner Cell was properly hydrated! Not because I'm worried about you! It’s a valuable lab asset, unlike Some People!"*
 - **Boss (>= 5 Logs)**: *"Wait. You've been poking around the botanical archives, haven't you? Look, I love these cells, but the Director says we have to keep the research classified. If you want that Old Lab Key, you'll have to prove you can handle the truth in a duel!"*
-- **Before Battle**: *"Archiving logs now, are we? You interns are so nosy! If you want to keep poking around, you'll have to go through me first! Prepare for a lesson in botanical efficiency!"*
+- **Before Battle**: *"Prepare for a lesson in botanical efficiency!"*
 - **Defeated**: *"Fine! You win! *[Mutters]* Just like the Director during the Leak... always so stubborn. Here, take this Old Lab Room Key. It's for some old storage room. Just... don't believe everything you read in the logs. "*
 
 ### Dyzes (Human Cell Expert)
@@ -164,7 +165,7 @@ Characters respond differently based on the number of DataLogs you have archived
     - *"You ever wonder if we're just big cells in a giant lab called 'Earth'? Deep stuff, Intern. Real deep."*
     - *"Chill out. Stress increases cortisol, and cortisol ruins the data. Just let the flow take you."*
 - **Boss (>= 10 Logs)**: *"I've seen your log activity. You're piecing together 'The Incident', aren't you? Capsain is a good man, just... proud. I can't let you expose him without a proper test of your tactical skill. Prepare yourself!"*
-- **Before Battle**: *"You're looking for the 'Point Zero', aren't you? The flow of information is leading you to places Capsain wants kept in the dark. I'm chill, but I have to follow the chain of command. Let's see if your vibe is strong enough to break it."*
+- **Before Battle**: *"Let's see if your tactical vibe is strong enough."*
 - **Defeated**: *"Woah, okay. Your tactical flow is elite. I can't really hide the truth if you're this good. The Old Lab exists, man. It's not on the main maps. Here's the coordinates I found. Capsain is just... he's protective, you know? Good luck."*
 
 ### Director Capsain
@@ -176,8 +177,16 @@ Characters respond differently based on the number of DataLogs you have archived
     - *"The smell? It’s industrial ionization. If you can’t handle a little stinging in the nostrils, you shouldn’t be in a lab."*
     - *"Stop asking about the '82 logs. The archives were purged for security reasons. Unless you have a level 5 clearance, it's none of your business."*
 - **Boss (>= 15 Logs)**: *"So. You found the Noodle Review. You found the '82 security gap. You think a little chili sauce is enough to topple this Director? Fine. If you want the 'Origin', you'll have to go through me and my strongest Nitrophil first!"*
-- **Before Battle**: *"So, the little investigator has finally reached my door. You've collected the trails of my 'mistakes'? This lab is my legacy, and I won't have it tarnished by some spicy gossip! Prepare to see why I'm the Director!"*
+- **Before Battle**: *"I won't have my legacy tarnished by some spicy gossip!"*
 - **Defeated**: *"I... I failed? To an intern? *[Sighs deeply]* You've seen the logs. You have the sauce. You've basically already found out. Here, take this Rare Inferno Sauce... it's just a research sample! Nothing more! Now go away, I have... important papers to write."*
+
+### Rival (Mystery Scientist)
+- **Before Battle**: *"Analysis commencing. Do not disappoint."*
+
+### NPC Profiles (Generic Engagement Protocol)
+- **NPC01_M**: *"Commencing standard engagement protocol."*
+- **NPC02_F**: *"Bio-signature match confirmed. Initiating test."*
+- **NPC03_M**: *"Deploying tactical cells. Readiness check."*
 
 ### Background Scientist Dialogue (Random NPCs)
 

@@ -40,6 +40,13 @@ export const AI = {
         }
 
         // 2. ATTACK LOGIC (Attack Phase)
+        // LEADER PERK #3 AWARENESS: Strongest hit first!
+        const hasLeader3 = enemy.equippedCards && enemy.equippedCards.some(s => s.cardId === 'leader_3');
+        if (hasLeader3 && enemy.turnCount === 0) {
+            const highPower = [...moveset].filter(m => m.power !== undefined).sort((a, b) => b.power - a.power);
+            if (highPower.length > 0) return highPower[0];
+        }
+
         // Critical Spend: High chance to use expensive skills if at risk of Overload (PP >= 8)
         if (enemy.pp >= 8 && Math.random() < 0.9) {
             const highCost = moveset.filter(m => m.type === 'pellicle' && m.cost > 0)

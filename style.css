@@ -76,9 +76,7 @@ body {
 #game-container {
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('assets/images/BG_Battle.png?v=7');
-    background-size: cover;
-    background-position: center;
+    background-color: var(--bg-color);
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -119,7 +117,7 @@ body {
     width: 95%;
     height: 95%;
     top: -5px;
-    background-image: url('assets/images/PentagonPosition_Attack.png?v=7');
+    background-image: url('./assets/images/PentagonPosition_Attack.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -129,13 +127,13 @@ body {
 
 .pentagon-shape.attack {
     opacity: 0.5;
-    background-image: url('assets/images/PentagonPosition_Attack.png?v=7');
+    background-image: url('./assets/images/PentagonPosition_Attack.png');
     filter: drop-shadow(0 0 5px var(--color-attack));
 }
 
 .pentagon-shape.defense {
     opacity: 0.5;
-    background-image: url('assets/images/PentagonPosition_Defense.png?v=7');
+    background-image: url('./assets/images/PentagonPosition_Defense.png');
     filter: drop-shadow(0 0 5px var(--color-defense));
 }
 
@@ -949,8 +947,8 @@ body {
 
 .pp-label.lysis::after {
     background-color: var(--color-lysis);
-    mask-image: url('assets/images/shield_broken.png');
-    -webkit-mask-image: url('assets/images/shield_broken.png');
+    mask-image: url('./assets/images/shield_broken.png');
+    -webkit-mask-image: url('./assets/images/shield_broken.png');
     filter: drop-shadow(0 0 3px var(--color-lysis));
 }
 
@@ -1303,7 +1301,7 @@ body {
 }
 
 .draggable-core.attack::after {
-    background-image: url('assets/images/Sword.png?v=22');
+    background-image: url('./assets/images/Sword.png');
     filter: brightness(0) invert(1);
 }
 
@@ -1313,7 +1311,7 @@ body {
 }
 
 .draggable-core.defense::after {
-    background-image: url('assets/images/Shield.png?v=22');
+    background-image: url('./assets/images/Shield.png');
     filter: brightness(0) invert(1);
 }
 
@@ -1927,6 +1925,20 @@ body {
     z-index: 10;
 }
 
+#screen-battle {
+    background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url('./assets/images/BG_Battle.png');
+    background-size: cover;
+    background-position: center;
+    transition: filter 0.3s ease, opacity 0.5s ease, visibility 0.5s;
+    /* 0.3s Fade Out */
+}
+
+#screen-battle.battle-shine {
+    filter: brightness(2.5) contrast(1.2) saturate(1.2) !important;
+    transition: filter 0.1s ease !important;
+    /* snappy 0.1s Fade In */
+}
+
 .screen.hidden {
     opacity: 0;
     visibility: hidden;
@@ -1957,14 +1969,14 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('assets/images/BG_Main.png?v=7');
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('./assets/images/BG_Main.png');
     background-size: cover;
     background-position: center;
     z-index: 100;
 }
 
 /* --- DIALOGUE SYSTEM --- */
-#dialogue-box {
+.dialogue-box-style {
     position: absolute;
     bottom: 20px;
     left: 50%;
@@ -1984,8 +1996,13 @@ body {
     justify-content: flex-start;
 }
 
-#dialogue-box::before,
-#dialogue-box::after {
+#dialogue-box.hidden,
+#pre-battle-dialogue-box.hidden {
+    display: none;
+}
+
+.dialogue-box-style::before,
+.dialogue-box-style::after {
     content: '';
     position: absolute;
     width: 100%;
@@ -2036,15 +2053,15 @@ body {
     }
 }
 
-#dialogue-box::before {
+.dialogue-box-style::before {
     left: 15px;
 }
 
-#dialogue-box::after {
+.dialogue-box-style::after {
     right: 15px;
 }
 
-#dialogue-name {
+.dialogue-name-style {
     display: block;
     font-family: 'Orbitron', sans-serif;
     color: #5da1d1;
@@ -2055,7 +2072,7 @@ body {
     letter-spacing: 2px;
 }
 
-#dialogue-text {
+.dialogue-text-style {
     font-size: 1.4rem;
     line-height: 1.2;
     margin: 0;
@@ -2064,7 +2081,7 @@ body {
     letter-spacing: -1px;
 }
 
-#dialogue-indicator {
+.dialogue-indicator-style {
     position: absolute;
     bottom: 15px;
     right: 45px;
@@ -2440,7 +2457,7 @@ body {
 .key-item-sprite {
     width: 64px;
     height: 64px;
-    background-image: url('assets/images/Lab_TileSet_02.png?v=22');
+    background-image: url('./assets/images/Lab_TileSet_02.png');
     background-size: 512px 512px;
     filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.5));
     transform: scale(1.1);
@@ -2742,7 +2759,7 @@ body {
     z-index: 1000;
     background: radial-gradient(circle at center, rgba(0, 243, 255, 0.05), transparent),
         linear-gradient(rgba(5, 10, 20, 0.9), rgba(5, 10, 20, 0.95)),
-        url('assets/images/BG_Main.png?v=7');
+        url('./assets/images/BG_Main.png');
     background-size: cover;
     background-position: center;
     backdrop-filter: blur(10px);
@@ -3079,7 +3096,7 @@ body {
     width: 150%;
     height: 150%;
     transform: translate(-50%, -50%);
-    background-image: url('assets/images/padlock.png');
+    background-image: url('./assets/images/padlock.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -3582,7 +3599,7 @@ body {
     height: 64px;
     box-sizing: border-box;
     /* TILESYSTEM: Official Lab_TileSet_01 asset */
-    background-image: url('assets/images/Lab_TileSet_01.png?v=22');
+    background-image: url('./assets/images/Lab_TileSet_01.png');
     background-size: 512px 512px;
     /* Set a large size to accommodate the coords, we can adjust if needed */
     background-repeat: no-repeat;
@@ -3810,7 +3827,7 @@ body {
 }
 
 .incubator {
-    background: url('assets/images/T_AlphaContaner.png?v=7') no-repeat center;
+    background: url('./assets/images/T_AlphaContaner.png') no-repeat center;
     background-size: contain;
 }
 
@@ -3848,27 +3865,27 @@ body {
 }
 
 .npc.jenzi {
-    background-image: url('assets/images/T_Char_Sprite_Jenzi_01.png?v=7');
+    background-image: url('./assets/images/T_Char_Sprite_Jenzi_01.png');
 }
 
 .npc.lana {
-    background-image: url('assets/images/T_Char_Sprite_Lana_01.png?v=7');
+    background-image: url('./assets/images/T_Char_Sprite_Lana_01.png');
 }
 
 .npc.dyzes {
-    background-image: url('assets/images/T_Char_Sprite_Dyzes_01.png?v=7');
+    background-image: url('./assets/images/T_Char_Sprite_Dyzes_01.png');
 }
 
 .npc.capsain {
-    background-image: url('assets/images/T_Char_Sprite_Director_01.png?v=7');
+    background-image: url('./assets/images/T_Char_Sprite_Director_01.png');
 }
 
 .npc.npc_male {
-    background-image: url('assets/images/T_Char_Sprite_NPC_Male_01.png?v=7');
+    background-image: url('./assets/images/T_Char_Sprite_NPC_Male_01.png');
 }
 
 .npc.npc_female {
-    background-image: url('assets/images/T_Char_Sprite_NPC_Female_01.png?v=7');
+    background-image: url('./assets/images/T_Char_Sprite_NPC_Female_01.png');
 }
 
 .no-transition {
@@ -3886,7 +3903,7 @@ body {
 #overworld-map .tile {
     width: 64px;
     height: 64px;
-    background-image: url('assets/images/Lab_TileSet_01.png?v=22');
+    background-image: url('./assets/images/Lab_TileSet_01.png');
     background-size: 512px 512px;
     float: left;
 }
@@ -3894,7 +3911,7 @@ body {
 #overworld-map .world-object.prop,
 #overworld-map .world-object.trigger,
 #overworld-map .world-object.sign {
-    background-image: url('assets/images/Lab_TileSet_02.png?v=22');
+    background-image: url('./assets/images/Lab_TileSet_02.png');
     background-size: 512px 512px;
     transform: translateY(-10px) translateZ(0);
     backface-visibility: hidden;
@@ -4161,7 +4178,7 @@ body {
 #player-sprite {
     width: 90px;
     height: 90px;
-    background-image: url('assets/images/T_Char_Sprite_Player_01.png?v=7') !important;
+    background-image: url('./assets/images/T_Char_Sprite_Player_01.png') !important;
     background-repeat: no-repeat !important;
     background-size: 360px 360px !important;
     /* Exact 4x4 grid (90 * 4) */
@@ -5255,4 +5272,188 @@ body {
     letter-spacing: 1px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(5px);
+}
+
+/* --- PRE-BATTLE SEQUENCE --- */
+#screen-pre-battle {
+    z-index: 2000;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    /* Apply wipe to the entire screen container */
+    clip-path: inset(0 0 0 0);
+}
+
+#screen-pre-battle.wiped {
+    animation: laser-wipe-anim 0.4s ease-in-out forwards;
+}
+
+@keyframes laser-wipe-anim {
+    from {
+        clip-path: inset(0 0 0 0);
+    }
+
+    to {
+        clip-path: inset(100% 0 0 0);
+    }
+}
+
+#pre-battle-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background-image: url('./assets/images/BG_PreBattle.png');
+    background-size: 50% 100%;
+    /* Perfect 1:1 fit on half of 200vw */
+    background-position: left center;
+    background-repeat: repeat-x;
+    animation: bg-panning 0.5s linear infinite;
+    /* High-speed data blur effect */
+    z-index: 1;
+    opacity: 1;
+    /* Full opacity background */
+}
+
+@keyframes bg-panning {
+    from {
+        transform: translateX(-50%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+#pre-battle-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.anim-dissolve {
+    opacity: 0 !important;
+    filter: blur(20px) brightness(1.5);
+    pointer-events: none;
+}
+
+#pre-battle-portrait-container {
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 5;
+    /* Ensure above background */
+}
+
+#pre-battle-portrait {
+    max-height: 95%;
+    max-width: 90%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 50px rgba(0, 0, 0, 0.8));
+    transform: translateX(100vw);
+    opacity: 0;
+    transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+#pre-battle-portrait.active {
+    transform: translateX(0);
+    opacity: 1 !important;
+    /* Full opacity for the art */
+}
+
+#pre-battle-dialogue-box {
+    z-index: 10;
+}
+
+/* Bio-Scan Effect */
+#bio-scan-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+#bio-scan-overlay.hidden {
+    display: none !important;
+}
+
+#bio-scan-overlay .scan-line {
+    position: absolute;
+    top: -25%;
+    left: 0;
+    width: 100%;
+    height: 250px;
+    background: linear-gradient(to bottom, transparent, #fff, var(--color-defense), #fff, transparent);
+    /* Ultra-Strong Bloom */
+    box-shadow:
+        0 0 50px #fff,
+        0 0 100px var(--color-defense),
+        0 0 200px var(--color-defense),
+        0 0 300px var(--color-defense);
+    filter: brightness(2.5) blur(4px);
+    z-index: 3002;
+    opacity: 0;
+}
+
+#bio-scan-overlay .scan-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(var(--color-defense) 2px, transparent 2px),
+        linear-gradient(90deg, var(--color-defense) 2px, transparent 2px);
+    background-size: 80px 80px;
+    background-color: rgba(0, 255, 100, 0.2);
+    opacity: 0;
+    z-index: 3001;
+    transition: opacity 0.2s ease;
+}
+
+#bio-scan-overlay:not(.hidden) .scan-grid {
+    opacity: 0.5;
+}
+
+#bio-scan-overlay:not(.hidden) .scan-line {
+    animation: scan-quick 0.4s ease-in-out forwards;
+}
+
+@keyframes scan-quick {
+    0% {
+        top: -25%;
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        top: 125%;
+        opacity: 0;
+    }
 }

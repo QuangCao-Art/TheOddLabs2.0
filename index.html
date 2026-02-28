@@ -39,17 +39,35 @@
             </div>
 
             <!-- Dialogue System -->
-            <div id="dialogue-box" class="hidden">
+            <div id="dialogue-box" class="dialogue-box-style hidden">
                 <div id="dialogue-content">
-                    <span id="dialogue-name">NAME</span>
-                    <p id="dialogue-text">Text content goes here...</p>
+                    <span id="dialogue-name" class="dialogue-name-style">NAME</span>
+                    <p id="dialogue-text" class="dialogue-text-style">Text content goes here...</p>
                 </div>
-                <div id="dialogue-indicator">▼</div>
+                <div id="dialogue-indicator" class="dialogue-indicator-style">▼</div>
             </div>
 
             <!-- NPC Full Art Portrait Overlay -->
             <div id="npc-portrait-overlay" class="hidden">
                 <img id="npc-portrait-img" src="" alt="NPC Portrait">
+            </div>
+        </div>
+
+        <!-- Pre-Battle Sequence Screen -->
+        <div id="screen-pre-battle" class="screen hidden">
+            <div id="pre-battle-content">
+                <div id="pre-battle-bg"></div>
+                <div id="pre-battle-portrait-container">
+                    <img id="pre-battle-portrait" src="" alt="NPC Full Art">
+                </div>
+                <!-- Dialogue System (Reusing style) -->
+                <div id="pre-battle-dialogue-box" class="dialogue-box-style hidden">
+                    <div id="pre-battle-dialogue-content">
+                        <span id="pre-battle-name" class="dialogue-name-style">NPC NAME</span>
+                        <p id="pre-battle-text" class="dialogue-text-style">Pre-battle protocol initiated...</p>
+                    </div>
+                    <div id="pre-battle-indicator" class="dialogue-indicator-style">▼</div>
+                </div>
             </div>
         </div>
 
@@ -65,9 +83,9 @@
                         <button class="side-btn npc-btn" data-profile="dyzes">DYZES</button>
                         <button class="side-btn npc-btn" data-profile="capsain">CAPSAIN</button>
                         <button class="side-btn npc-btn" data-profile="jenzi">JENZI</button>
-                        <button class="side-btn npc-btn" data-profile="npc01">NPC-01</button>
-                        <button class="side-btn npc-btn" data-profile="npc02">NPC-02</button>
-                        <button class="side-btn npc-btn" data-profile="npc03">NPC-03</button>
+                        <button class="side-btn npc-btn" data-profile="npc01">NPC01_M</button>
+                        <button class="side-btn npc-btn" data-profile="npc02">NPC02_F</button>
+                        <button class="side-btn npc-btn" data-profile="npc03">NPC03_M</button>
                     </div>
                     <div id="rg-debug-panel" class="glass-panel">
                         <div class="debug-row" style="display: flex; align-items: center; gap: 15px;">
@@ -414,7 +432,8 @@
                     <!-- RIGHT COLUMN: Detailed Technical Readout -->
                     <div id="inventory-detail-panel" class="glass-panel">
                         <div class="detail-card-container">
-                            <img id="inventory-detail-card" src="assets/images/Card_Placeholder.png" alt="Detail Card">
+                            <img id="inventory-detail-card" src="./assets/images/Card_Placeholder.png"
+                                alt="Detail Card">
                         </div>
                         <div class="detail-text-content">
                             <h3 id="inventory-detail-title">SELECT DATA</h3>
@@ -448,10 +467,10 @@
                     <div class="card-wrapper">
                         <div class="card-inner">
                             <div class="card-back">
-                                <img id="battle-card-back-img" src="assets/images/Card_Back.png?v=4" alt="Card Back">
+                                <img id="battle-card-back-img" src="./assets/images/Card_Back.png" alt="Card Back">
                             </div>
                             <div class="card-front">
-                                <img id="battle-card-front-img" src="assets/images/Card_Nitrophil.png?v=4"
+                                <img id="battle-card-front-img" src="./assets/images/Card_Nitrophil.png"
                                     alt="Monster Card">
                             </div>
                         </div>
@@ -515,8 +534,8 @@
                         </div>
                         <div class="monster-portrait-container">
                             <div class="monster-float-layer">
-                                <img src="assets/images/Nitrophil.png?v=4" alt="Enemy"
-                                    class="monster-portrait enemy-img">
+                                <img src="./assets/images/Nitrophil.png" alt="Enemy" class="monster-portrait enemy-img"
+                                    onerror="this.src='./assets/images/Card_Placeholder.png'">
                             </div>
                         </div>
                         <div class="enemy-bench">
@@ -534,8 +553,9 @@
                         </div>
                         <div class="monster-portrait-container active-monster-dropzone">
                             <div class="monster-float-layer">
-                                <img src="assets/images/Nitrophil.png?v=4" alt="Player"
-                                    class="monster-portrait player-img">
+                                <img src="./assets/images/Nitrophil.png" alt="Player"
+                                    class="monster-portrait player-img"
+                                    onerror="this.src='./assets/images/Card_Placeholder.png'">
                             </div>
                         </div>
                         <div class="character-vitals">
@@ -643,13 +663,19 @@
         </div>
     </div>
 
+    <!-- Bio-Scan Overlay (Topmost Layer) -->
+    <div id="bio-scan-overlay" class="hidden">
+        <div class="scan-line"></div>
+        <div class="scan-grid"></div>
+    </div>
+
     <!-- Card Detail Modal -->
     <div id="card-detail-modal" class="modal-overlay">
         <div class="modal-content glass-panel card-detail-panel">
             <button class="modal-close" id="close-card-detail">&times;</button>
             <div class="card-detail-layout">
                 <div class="card-large-preview">
-                    <img id="detail-card-image" src="assets/images/Card_Placeholder.png" alt="Card Preview">
+                    <img id="detail-card-image" src="./assets/images/Card_Placeholder.png" alt="Card Preview">
                     <div id="detail-card-rarity" class="rarity-label"></div>
                     <div id="detail-card-tier" class="card-tier-label"></div>
                     <div id="detail-leader-tag" class="leader-type-tag"></div>

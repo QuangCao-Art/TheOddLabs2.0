@@ -307,3 +307,12 @@ A complete structural redesign of the Catalyst Hub, shifting from a horizontal l
     - **Centered Action**: The "RETURN TO BASE" button is centered for ergonomic interaction.
     - **Protocol Guide**: Integrated a tiny, left-aligned tactical hint that summarizes the core Catalyst rules (Slot limits, Unique IDs) without taking up precious screen real estate.
 - **UX Security**: Hardened the UI rendering by replacing all `innerHTML` calls with `textContent` or `createElement` to ensure safe, sanitized data injection for card names and stats.
+
+- **Leader Card Integration**:
+    - **Dynamic Slot Unlocking**: Implemented passive logic for "The Second Brain" and "The Third Brain," which dynamically enable the 1st and 2nd Pellicle skill slots as the player progresses through RG-5 and RG-9.
+    - **Tactical Battle Perks**: 
+        - **Neural Initiative**: Overrides speed checks to guarantee player-first priority on turn 1.
+        - **Oxidative Energy Burst**: Integrated x2 damage multiplier for the monster's first hit of the battle.
+        - **Molecular Dissolver**: Implemented "Ignore Defense" logic, reducing opponent's effective defense to 1.
+    - **Intelligent Adversaries**: Updated the AI's "Attack Logic" to be strategically aware of equipped perks, enabling smarter turn-1 openings when using "Oxidative Energy Burst."
+    - **Tactical Log Feedback**: Added specific battle log indicators (e.g., `[PERK] Perk Name: Effect!`) to provide clear visual feedback when Leader Card effects are triggered.
