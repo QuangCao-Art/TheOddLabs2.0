@@ -114,27 +114,35 @@ function syncCardsToLevel(profileId, level) {
     const profile = gameState.profiles[profileId];
     if (!profile) return;
 
-    // For NPCs, don't wipe. We additivey ensure they have their level rewards.
+    // For NPCs, don't wipe. We additively ensure they have their level rewards.
     // For Player/Opponent, we still wipe to ensure a clean reward pool (Sandbox behavior).
     if (profileId === 'player' || profileId === 'opponent') {
         profile.cardBox = [];
     }
 
-    const currentCards = new Set(profile.cardBox);
+    // 1. Identify what cards are already tied up in equipment across the entire party
+    const equippedInParty = [];
+    profile.party.forEach(monster => {
+        monster.equippedCards.forEach(ec => equippedInParty.push(ec.cardId));
+    });
 
+    // 2. Add rewards that are neither in the box nor equipped in the party
     for (let i = 1; i <= level; i++) {
         const rewards = LEVEL_REWARDS[i];
         if (rewards) {
             rewards.forEach(cardId => {
-                // For NPCs, we ensure they have at least 1 of each reward up to their level.
-                // Signature cards are handled separately in applyPreset.
-                if (!profile.cardBox.includes(cardId)) {
+                const countInBox = profile.cardBox.filter(id => id === cardId).length;
+                const countInEquips = equippedInParty.filter(id => id === cardId).length;
+
+                // If the sum of available (box) and in-use (equips) is less than the reward amount, add to box
+                // Usually rewards are 1 of each, so we check if total count < 1 (or count < required)
+                if ((countInBox + countInEquips) === 0) {
                     profile.cardBox.push(cardId);
                 }
             });
         }
     }
-    console.log(`[DEBUG] Syncing ${profile.name} Card Box for RG-${level}. Total Cards: ${profile.cardBox.length}`);
+    console.log(`[DEBUG] Syncing ${profile.name} Card Box for RG-${level}. Party Equips: ${equippedInParty.length}, New Box: ${profile.cardBox.length}`);
 }
 
 /**
@@ -2614,6 +2622,21 @@ function updateCatalystBox() {
     if (!grid) return;
     grid.innerHTML = '';
 
+    // Enable dropping on the grid (empty area) to unequip
+    grid.ondragover = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+    grid.ondrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const slotSource = catalystState.dragSourceSlot;
+        if (slotSource) {
+            unequipCard(slotSource.monsterIdx, slotSource.slotIdx);
+            addLog(`Module returned to inventory from slot ${slotSource.slotIdx}.`);
+        }
+    };
+
     const profile = gameState.profiles[catalystState.activeProfile];
     let box = [...profile.cardBox];
 
@@ -2692,6 +2715,43 @@ function updateCatalystBox() {
         `;
 
         item.onclick = () => openCardDetail(cardId);
+
+        // Swap Logic: Dropping a slot card here equips this box card into that slot
+        let dragCounter = 0; // Prevent flickering when moving over child elements
+        item.ondragover = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        };
+        item.ondragenter = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dragCounter++;
+            item.classList.add('drag-over');
+        };
+        item.ondragleave = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dragCounter--;
+            if (dragCounter <= 0) {
+                item.classList.remove('drag-over');
+                dragCounter = 0;
+            }
+        };
+        item.ondrop = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            item.classList.remove('drag-over');
+            dragCounter = 0;
+            const slotSource = catalystState.dragSourceSlot;
+            if (slotSource) {
+                // FIXED: Explicitly unequip the old card first to ensure it returns to the box
+                // before the new card (this box card) takes its place.
+                unequipCard(slotSource.monsterIdx, slotSource.slotIdx, true);
+                equipCard(slotSource.monsterIdx, slotSource.slotIdx, cardId);
+                addLog(`Tactical Swap: ${CARDS[cardId].name} deployed to slot ${slotSource.slotIdx}.`);
+            }
+        };
+
         item.ondragstart = (e) => {
             catalystState.draggedCardId = cardId;
             catalystState.dragSourceSide = catalystState.activeSide;
@@ -2702,6 +2762,9 @@ function updateCatalystBox() {
         };
         item.ondragend = () => {
             document.querySelectorAll('.catalyst-slot').forEach(s => s.classList.remove('highlight'));
+            catalystState.dragSourceSlot = null;
+            catalystState.draggedCardId = null;
+            catalystState.dragSourceProfile = null;
         };
         grid.appendChild(item);
     });
@@ -2807,8 +2870,18 @@ function updateCatalystCore() {
             cardEl.ondragstart = (e) => {
                 catalystState.draggedCardId = equippedCard.cardId;
                 catalystState.dragSourceSide = catalystState.activeSide;
+                catalystState.dragSourceProfile = catalystState.activeProfile;
                 catalystState.dragSourceSlot = { monsterIdx: catalystState.activeMonsterIdx, slotIdx: idx };
                 e.dataTransfer.setData('text/plain', equippedCard.cardId);
+                // Highlight empty slots
+                document.querySelectorAll('.catalyst-slot:not(.occupied)').forEach(s => s.classList.add('highlight'));
+            };
+
+            cardEl.ondragend = () => {
+                document.querySelectorAll('.catalyst-slot').forEach(s => s.classList.remove('highlight'));
+                catalystState.dragSourceSlot = null;
+                catalystState.draggedCardId = null;
+                catalystState.dragSourceProfile = null;
             };
 
             slotDiv.onclick = (e) => {
@@ -2956,6 +3029,11 @@ function executeQuickEquip(style) {
     const monsterIdx = catalystState.activeMonsterIdx;
     const monster = profile.party[monsterIdx];
     if (!profile || !monster) return;
+
+    // 0. RESET DRAG STATE (Prevent interference from previous manual moves)
+    catalystState.dragSourceSlot = null;
+    catalystState.draggedCardId = null;
+    catalystState.dragSourceProfile = null;
 
     // 1. CLEAR CURRENT EQUIPMENT (Must happen first)
     clearEquippedCards(true); // Call silent version

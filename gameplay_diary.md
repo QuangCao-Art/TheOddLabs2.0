@@ -341,3 +341,16 @@ Implemented a robust, atomic state management system for NPCs and the Player, tr
     - **Bug**: A minor string mangling in template literals (`./ assets / images /`) caused widespread 404 errors and broken CSS classes (e.g., `%20Nitrophil.png`). 
     - **Fix**: Hardened all HTML-generation strings to ensure zero whitespace in pathing and class attributes.
 - **Non-Destructive NPC Syncing**: Optimized `syncCardsToLevel` for NPCs to be additive rather than destructive, ensuring they maintain a stable reward pool across repeated preset applications.
+### 2.56 Quick Equip & UI Refinement (Tactical Calibration)
+A major overhaul of the equipment management system, focusing on automation, inventory integrity, and high-fidelity UX.
+
+- **Two-Row Header Layout**: Restructured the monster header into a two-row format (Primary: Name/RG/Reset | Secondary: Stats/Quick-Equip). This eliminates UI crowding on smaller viewports and balances informational readouts with tactical controls.
+- **Deep Refresh (Clear All)**: Enhanced the "Clear All" functionality to act as a full state recalibration. It now unequips all modules, resets preset IDs, and triggers a `syncCardsToLevel` pass to rebuild the inventory box from current RG rewards.
+- **Shared Pool Integrity**: Identified and resolved a critical "Duplication Bug" where the refresh logic was ignoring cards held by other squad members. The system is now **Squad-Aware**, ensuring a single, limited pool of high-tier modules is shared correctly across the entire team.
+- **Smart Prioritization**: Refined the recursive auto-equip algorithm to strictly prioritize **Tier-3 > Tier-2 > Tier-1** modules while explicitly excluding "Leader" cards from the automated pool to preserve unique identities.
+- **Enhanced Direct Manipulation (DND 2.0)**:
+    - **Return to Box**: Enabled dragging modules from monster slots back into the empty grid of the card box.
+    - **Tactical Swapping**: Implemented "Atomic Swapping," where dragging a slot card onto a box card replaces the equipped module and returns the old one to inventory in a single transaction.
+    - **UX Stabilization (Anti-Flicker)**: Solved visual highlight flickering during drag-over by implementing a `dragCounter` system and neutralizing child pointer events (`pointer-events: none`) during active drag states.
+- **Drag State Sanitization**: Fixed a subtle bug where Quick Equip would leave empty slots if triggered immediately after a manual drag. The fix involved mandatory state resets for `dragSourceSlot` in every `ondragend` and at the start of automated protocols.
+- **Tactical Narrative Logging**: Integrated detailed summaries into the Bio-Intelligence Feed (Diary), displaying protocol names and success counts for specific card tiers (e.g., `T3x2 T2x1`) to provide lore-friendly feedback for every calibration.
