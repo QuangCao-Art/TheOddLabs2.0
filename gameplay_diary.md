@@ -328,3 +328,16 @@ A post-mortem on the challenges faced in restoring and refining the node-scale v
         - **Molecular Dissolver**: Implemented "Ignore Defense" logic, reducing opponent's effective defense to 1.
     - **Intelligent Adversaries**: Updated the AI's "Attack Logic" to be strategically aware of equipped perks, enabling smarter turn-1 openings when using "Oxidative Energy Burst."
     - **Tactical Log Feedback**: Added specific battle log indicators (e.g., `[PERK] Perk Name: Effect!`) to provide clear visual feedback when Leader Card effects are triggered.
+
+### 2.55 Snapshot Preset System (The "Save File" Pivot)
+Implemented a robust, atomic state management system for NPCs and the Player, treating each configuration as a complete data snapshot rather than dynamic leveling rules.
+
+- **Atomic Transactions**: Refactored `applyPreset` to handle Level, Inventory, Squad, and Equipment as a single background transaction. This prevents character "flickering" or missing cards during profile switches.
+- **The "Invisible NPC" Struggle**: 
+    - **Discovery**: Found a critical conflict where the legacy `init()` function was manually populating NPC parties with "default" empty states, immediately overwriting the background snapshots applied during `resetGame()`.
+    - **Lesson**: Unified all initialization paths into a single source of truth (`resetGame()`). Any state-heavy system must have a clearly defined boot sequence to avoid race conditions between default data and dynamic presets.
+- **Background State Pivoting**: Implemented "Context Pivoting" where the engine silently switches the `activeProfile` to the target NPC, seeds their reward pool, equips their gear, and then restores context back to the player. This allows for seamless "Tactical Simulation" of opponents without disrupting the player's UI state.
+- **The Leading Space Incident**: 
+    - **Bug**: A minor string mangling in template literals (`./ assets / images /`) caused widespread 404 errors and broken CSS classes (e.g., `%20Nitrophil.png`). 
+    - **Fix**: Hardened all HTML-generation strings to ensure zero whitespace in pathing and class attributes.
+- **Non-Destructive NPC Syncing**: Optimized `syncCardsToLevel` for NPCs to be additive rather than destructive, ensuring they maintain a stable reward pool across repeated preset applications.

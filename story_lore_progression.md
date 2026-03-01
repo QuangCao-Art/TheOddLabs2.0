@@ -1,4 +1,4 @@
-# The Odd Labs: Story & Lore
+# The Odd Labs: Story & Lore Progression
 
 ## The Mission
 **The Odd Labs** was established to research the vast potential of cellular life. Scientists here dedicated their lives to engineering cells that could accelerate environmental healing and improve human health. For years, it was a place of hope and discovery.
@@ -30,6 +30,38 @@ To save the project and reveal the truth, the player must recover the **Origin N
 - **Director Capsain**: The authoritarian head of The Odd Labs. He is grumpy, defensive about the '82 Leak, and values "professionalism" above all else. He publicly despises the sentient Cells as "monstrous anomalies," but secretly cares for the Origin Nitrophil and is deeply embarrassed by his noodle-related mistake.
 - **Lana (Botanic Expert)**: A brilliant but impatient scientist. She is hardheaded and often snaps at the player for being inefficient. After being defeated, she seems to be holding something back, giving the player a key but warning them to mind their own business.
 - **Dyzes (Human Cell Expert)**: Chill, laid-back, and eccentric. He believes in "cellular harmony." After his battle, he acts suspicious/hiding something, but provides the data needed to find the Old Lab.
+
+## NPC Tactical Snapshots (Presets)
+
+Each major NPC has a "Tactical Snapshot" representing their research progress and battle state at a specific Research Grade (RG).
+
+| NPC | Preset Name | Active RG | Tactical Focus |
+|:---|:---|:---|:---|
+| **Jenzi (Early)** | Jenzi's Welcome | RG-0 | Standard starter squad with zero card bonuses. |
+| **Jenzi (Late)** | Jenzi's Final Form | RG-15 | Elite Senior setup with full Tier-3 stat cards. |
+| **Lana** | Lana's Fortress | RG-5 | Botanical defense with high HP and PP focus. |
+| **Dyzes** | Dyzes' Protocol | RG-9 | Twin Lydrosome snipers with SPD and ATK focus. |
+| **Capsain** | Director's Order | RG-15 | Triple Nitrophil offense with Elite Leader Perks. |
+
+## Card & Research Progression
+
+As you increase your **Research Grade (RG)**, you unlock more advanced tactical cards.
+
+### Tier 1: Core Adaptation (RG 1-5)
+Focus on basic stat boosts and initializing your first **Leader Card**.
+- **RG 1-3**: Core Stats (ATK, DEF, SPD, HP) +5/+10.
+- **RG 5**: Unlock **The Second Brain** (Enables 1st Pellicle move slot).
+
+### Tier 2: Utility Expansion (RG 6-10)
+Introduction of **Slot+1** cards and advanced analytical precision.
+- **RG 6-8**: Stat boosts (+20) and Weak-Point Analysis (Crit).
+- **RG 9**: Unlock **The Third Brain** (Enables 2nd Pellicle move slot).
+
+### Tier 3: Advanced Optimization (RG 11-15)
+Maximized stats, **Slot+2** cards, and heavy tactical perks.
+- **RG 11-14**: MAX Tier Stat cards (+40 ATK/DEF, +60 HP).
+- **RG 15**: Unlock **Elite Leader Perks** (e.g., Oxidative Energy Burst).
+
 ## The Origin Nitrophil
 The **Origin Nitrophil** is a secret known only to Director Capsain. Hidden in a dusty, unused corner of the lab, it is the Director's silent burden. It is significantly larger than its siblings, with a vibrant, glowing **Orange Chili Hue**. Surprisingly, it isn't aggressive; it's incredibly chill and hyperactive—a direct result of its high-potency capsicum origins.
 
@@ -43,6 +75,7 @@ The truth is hidden in the digital archives. Collecting DataLogs unlocks new sec
 5.  **Director's Suite (15 Logs)**: Collect 5 logs in Dyzes' Room (Total 15) -> Battle Dyzes -> Receive Old Lab info -> Talk to Jenzi -> Director's Room unlocks.
 6.  **The Climax (20 Logs)**: Find 5 logs in Director's Room (Total 20) -> Battle Director -> Receive Inferno Sauce -> Talk to Jenzi.
 7.  **Final Secret**: Find the **Old Lab Room** -> Read **Final Datalog** -> Take **Origin Nitrophil** to Director -> Game End.
+
 ## DataLogs (The Digital Archive)
 
 ### Group 1: The Main Atrium (Logs 1-5)

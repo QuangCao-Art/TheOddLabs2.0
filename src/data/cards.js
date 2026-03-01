@@ -73,92 +73,102 @@ export const LEVEL_REWARDS = {
 };
 
 export const NPC_PRESETS = {
-    jenzi: {
-        name: "Jenzi's Trickery",
-        description: "Focus on Speed and Precision to stay unreachable.",
-        team: ['nitrophil'],
-        minRG: 3,
-        slots: {
-            0: 'atk_5',
-            1: 'def_5',
-            2: 'spd_5'
+    jenzi_rg0: {
+        name: "Jenzi's Welcome",
+        description: "Standard lab-issued starter squad.",
+        owner: 'jenzi',
+        team: ['cambihil', 'lydrosome', 'nitrophil'],
+        level: 0,
+        squadSlots: {
+            0: {}, 1: {}, 2: {}
+        }
+    },
+    jenzi_rg15: {
+        name: "Jenzi's Final Form",
+        description: "The Senior's true tactical depth. Optimized for all three disciplines.",
+        owner: 'jenzi',
+        team: ['cambihil', 'lydrosome', 'nitrophil'],
+        level: 15,
+        squadSlots: {
+            0: { // Cambihil: The Shield
+                0: 'def_20_s2', 1: 'hp_30_s2', 2: 'def_40', 3: 'hp_60', 4: 'pp_5'
+            },
+            1: { // Lydrosome: The Sniper
+                0: 'atk_20_s2', 1: 'crit_3_s2', 2: 'atk_40', 3: 'crit_5', 4: 'spd_20'
+            },
+            2: { // Nitrophil: The Burst
+                0: 'spd_15_s2', 1: 'crit_3_s2', 2: 'pp_3_s2', 3: 'spd_15', 4: 'atk_10'
+            }
         }
     },
     lana: {
         name: "Lana's Fortress",
-        description: "Maximum biological durability and botanical defense.",
+        description: "Botanical defense with expansion utility.",
+        owner: 'lana',
         team: ['cambihil'],
-        minRG: 5,
-        slots: {
-            0: 'hp_10',
-            1: 'def_5',
-            2: 'crit_2_s1', // Creates Slot 3 (RG 4)
-            3: 'pp_2_s1',   // Creates Slot 4 (RG 5)
-            4: 'pp_1'
+        level: 5,
+        squadSlots: {
+            0: { 0: 'crit_2_s1', 1: 'hp_10', 2: 'def_5', 3: 'pp_1' }
         }
     },
     dyzes: {
         name: "Dyzes' Protocol",
-        description: "Optimized for energy efficiency and rapid execution.",
-        team: ['lydrosome', 'lydrosome', 'lydrosome'],
-        minRG: 9,
-        slots: {
-            0: 'spd_5',
-            1: 'pp_1',
-            2: 'atk_20_s2', // Creates Slot 3, 4 (RG 9)
-            3: 'spd_10_s1', // Creates Slot 5 (RG 7)
-            4: 'hp_30_s1',  // Creates Slot 6 (RG 8)
-            5: 'spd_15',
-            6: 'atk_10'
+        description: "Osmotic snipers with efficient utility sharing.",
+        owner: 'dyzes',
+        team: ['lydrosome', 'lydrosome'],
+        level: 9,
+        squadSlots: {
+            0: { // Primary Sniper
+                0: 'atk_20_s2', 1: 'crit_1', 2: 'atk_10', 3: 'spd_15', 4: 'spd_10_s1'
+            },
+            1: { // Secondary Support
+                0: 'hp_30_s1', 1: 'atk_10', 2: 'hp_20', 3: 'def_5', 4: 'pp_1'
+            }
         }
     },
     capsain: {
         name: "Director's Order",
-        description: "Authoritarian brute force. High power, high defense.",
-        team: ['nitrophil', 'cambihil', 'lydrosome'],
-        minRG: 11,
-        slots: {
-            0: 'atk_20_s2', // Creates slot 3, 4
-            1: 'hp_30_s1',  // Creates slot 5
-            2: 'spd_10_s1', // Creates slot 6
-            3: 'atk_40',
-            4: 'def_40',
-            5: 'hp_60',
-            6: 'crit_2_s1', // Creates slot 7
-            7: 'pp_1'
+        description: "Absolute authority with optimized high-tier distribution.",
+        owner: 'capsain',
+        team: ['nitrophil', 'nitrophil', 'nitrophil'],
+        level: 15,
+        squadSlots: {
+            0: { // The Lead
+                0: 'leader_3', 1: 'atk_40', 2: 'atk_20_s2', 3: 'crit_3_s2', 4: 'pp_3_s2'
+            },
+            1: { // The Wall
+                0: 'def_40', 1: 'hp_60', 2: 'def_20_s2', 3: 'hp_30_s2', 4: 'pp_3_s2'
+            },
+            2: { // The Flanker
+                0: 'spd_15_s2', 1: 'crit_3_s2', 2: 'spd_15', 3: 'atk_10', 4: 'hp_20'
+            }
         }
     },
     npc01: {
         name: "Balanced Readiness",
-        description: "Standard tactical spread for all-purpose combat.",
+        description: "Standard tactical spread.",
         team: ['nitrophil'],
-        minRG: 1,
-        slots: {
-            0: 'atk_5',
-            1: 'hp_10',
-            2: 'def_5'
+        level: 1,
+        squadSlots: {
+            0: { 0: 'atk_5' } // hp_10/def_5 not for RG 1
         }
     },
     npc02: {
         name: "Sturdy Bio-Signature",
-        description: "Focused on staying power and damage mitigation.",
+        description: "High early-grade defense.",
         team: ['cambihil'],
-        minRG: 1,
-        slots: {
-            0: 'hp_10',
-            1: 'def_5',
-            2: 'hp_20'
+        level: 1,
+        squadSlots: {
+            0: { 0: 'atk_5' } // hp_10/def_5 not for RG 1
         }
     },
     npc03: {
         name: "Aggressive Probe",
-        description: "Focused on speed and critical openings.",
+        description: "Focus on early critical openings.",
         team: ['lydrosome'],
-        minRG: 1,
-        slots: {
-            0: 'spd_5',
-            1: 'crit_1',
-            2: 'atk_10'
+        level: 1,
+        squadSlots: {
+            0: { 0: 'atk_5' } // spd_5/crit_1/atk_10 not for RG 1
         }
     }
 };

@@ -126,25 +126,51 @@
                 <!-- Center: The Catalyst Core (Slots & Branching) -->
                 <main id="catalyst-core" class="glass-panel">
                     <div id="selected-monster-header">
-                        <div id="catalyst-name-container">
-                            <h2 id="catalyst-monster-name" class="neon-text">SELECT CELL</h2>
-                            <div id="catalyst-header-meta">
-                                <span id="catalyst-monster-rg" class="rg-label">RG-30</span>
+                        <!-- Primary Row: Name, Level, Reset -->
+                        <div class="header-primary-row">
+                            <div id="catalyst-name-container">
+                                <h2 id="catalyst-monster-name" class="neon-text">SELECT CELL</h2>
+                                <div id="catalyst-header-meta">
+                                    <span id="catalyst-monster-rg" class="rg-label">RG-0</span>
+                                </div>
+                            </div>
+
+                            <div class="header-actions">
                                 <div id="preset-control" class="hidden">
                                     <label>PRESET:</label>
                                     <select id="preset-selector">
                                         <option value="">-- CUSTOM --</option>
                                     </select>
                                 </div>
+                                <button id="btn-quick-reset" class="btn-quick danger hidden"
+                                    title="Unequip all cards">CLEAR ALL</button>
                             </div>
                         </div>
-                        <div id="catalyst-monster-stats-peek">
-                            <span class="stat-mini">HP: <b id="peek-hp">--</b></span>
-                            <span class="stat-mini">PP: <b id="peek-pp">--</b></span>
-                            <span class="stat-mini">ATK: <b id="peek-atk">--</b></span>
-                            <span class="stat-mini">DEF: <b id="peek-def">--</b></span>
-                            <span class="stat-mini">SPD: <b id="peek-spd">--</b></span>
-                            <span class="stat-mini">CRT: <b id="peek-crt">--</b></span>
+
+                        <!-- Secondary Row: Stats (Left) & Quick Equip (Right) -->
+                        <div class="header-secondary-row">
+                            <div id="catalyst-monster-stats-peek">
+                                <span class="stat-mini">HP: <b id="peek-hp">--</b></span>
+                                <span class="stat-mini">PP: <b id="peek-pp">--</b></span>
+                                <span class="stat-mini">ATK: <b id="peek-atk">--</b></span>
+                                <span class="stat-mini">DEF: <b id="peek-def">--</b></span>
+                                <span class="stat-mini">SPD: <b id="peek-spd">--</b></span>
+                                <span class="stat-mini">CRT: <b id="peek-crt">--</b></span>
+                            </div>
+
+                            <div id="quick-equip-container" class="hidden">
+                                <span class="quick-label">QUICK EQUIP:</span>
+                                <div class="quick-btns">
+                                    <button class="btn-quick" data-style="aggressive"
+                                        title="Prioritize ATK & CRIT">AGGRESSIVE</button>
+                                    <button class="btn-quick" data-style="survival"
+                                        title="Prioritize HP & DEF">SURVIVAL</button>
+                                    <button class="btn-quick" data-style="utility"
+                                        title="Prioritize PP & SPD">UTILITY</button>
+                                    <button class="btn-quick" data-style="balanced"
+                                        title="Balanced Distribution">BALANCED</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
