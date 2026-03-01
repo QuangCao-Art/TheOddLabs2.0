@@ -114,11 +114,9 @@ function syncCardsToLevel(profileId, level) {
     const profile = gameState.profiles[profileId];
     if (!profile) return;
 
-    // For NPCs, don't wipe. We additively ensure they have their level rewards.
-    // For Player/Opponent, we still wipe to ensure a clean reward pool (Sandbox behavior).
-    if (profileId === 'player' || profileId === 'opponent') {
-        profile.cardBox = [];
-    }
+    // Standardized: Always clear the box for all profiles before re-syncing
+    // This prevents "ghost" cards from accumulating in NPCs or during recalibrations
+    profile.cardBox = [];
 
     // 1. Identify what cards are already tied up in equipment across the entire party
     const equippedInParty = [];
@@ -3035,9 +3033,8 @@ function executeQuickEquip(style) {
     catalystState.draggedCardId = null;
     catalystState.dragSourceProfile = null;
 
-    // 1. CLEAR CURRENT EQUIPMENT (Must happen first)
-    clearEquippedCards(true); // Call silent version
-    const availableCardsPool = [...profile.cardBox]; // Fresh pool for sorting
+    // 1. CLEAR NON-LEADER EQUIPMENT (Skip the Leader to preserve monster identity)
+    clearEquippedCards(true, true);
 
     // 2. DEFINE STYLE WEIGHTS
     const weights = {
@@ -3062,8 +3059,7 @@ function executeQuickEquip(style) {
     };
 
     // 3. SORT CARD BOX (Highest score first)
-    // We make a working copy so we don't mutate the real box during processing
-    // IMPORTANT: Quick Equip ONLY handles standard Enhancement cards, NOT Leader cards.
+    // Quick Equip ONLY handles standard Enhancement cards, NOT Leader cards.
     let availableCards = [...profile.cardBox]
         .filter(id => !CARDS[id]?.isLeader)
         .map(id => ({ id, card: CARDS[id], score: scoreCard(CARDS[id]) }));
@@ -3081,53 +3077,46 @@ function executeQuickEquip(style) {
 
     // 4. RECURSIVE FILLING
     const fillSlots = (slotIdx) => {
-        // Find best card that fits this slot type (if any constraints exist in future)
-        // For now, any card fits base slots or expansion slots.
+        // Check if slot is already occupied (e.g. by a preserved Leader card)
+        const isOccupied = monster.equippedCards.some(ec => ec.slotIndex === slotIdx);
+        if (isOccupied) return true;
 
-        // Find top card in sorted list
         for (let i = 0; i < availableCards.length; i++) {
             const candidate = availableCards[i];
 
             // Try to equip
             const success = equipCard(monsterIdx, slotIdx, candidate.id, true, true);
             if (success) {
-                // Remove from local available list
-                availableCards.splice(i, 1);
+                const cardIdToRemove = candidate.id;
+                // Optimization: Remove ALL copies of this cardId from the local list
+                // to prevent redundant "No Duplicates" failures in other slots.
+                availableCards = availableCards.filter(c => c.id !== cardIdToRemove);
 
-                // If this card added slots, we need to try filling those too
-                // We re-calculate layout to find the ACTUAL children of this slot
                 const currentLayout = calculateSlotLayout(monster);
                 const currentSlot = currentLayout[slotIdx];
 
                 if (currentSlot && currentSlot.children) {
                     currentSlot.children.forEach(child => {
-                        const childIdx = child.id;
-                        const isOccupied = monster.equippedCards.some(ec => ec.slotIndex === childIdx);
-                        if (!isOccupied) {
-                            fillSlots(childIdx);
-                        }
+                        fillSlots(child.id);
                     });
                 }
-                return true; // Successfully filled this slot and its subtree
+                return true;
             }
         }
         return false;
     };
 
     // Start with base slots
-    [0, 1, 2].forEach(slotIdx => {
-        const isOccupied = monster.equippedCards.some(ec => ec.slotIndex === slotIdx);
-        if (!isOccupied) fillSlots(slotIdx);
-    });
+    [0, 1, 2].forEach(slotIdx => fillSlots(slotIdx));
 
     // Summary for logging
     const tiers = monster.equippedCards.reduce((acc, ec) => {
         const card = CARDS[ec.cardId];
-        if (card) acc[card.tier] = (acc[card.tier] || 0) + 1;
+        if (card && !card.isLeader) acc[card.tier] = (acc[card.tier] || 0) + 1;
         return acc;
     }, {});
     const tierSummaries = Object.entries(tiers)
-        .sort((a, b) => b[0] - a[0]) // Sort Tier 3, 2, 1
+        .sort((a, b) => b[0] - a[0])
         .map(([t, count]) => `<span class="tier-label tier-${t}">T${t}</span>x${count}`)
         .join(' ');
 
@@ -3342,7 +3331,7 @@ function unequipCard(monsterIdx, slotIdx, silent = false) {
     return true;
 }
 
-function clearEquippedCards(silent = false) {
+function clearEquippedCards(silent = false, keepLeaders = false) {
     const profile = gameState.profiles[catalystState.activeProfile];
     const monsterIdx = catalystState.activeMonsterIdx;
     const monster = profile.party[monsterIdx];
@@ -3350,7 +3339,11 @@ function clearEquippedCards(silent = false) {
 
     // 1. Clear current equipment
     const currentlyEquipped = [...monster.equippedCards];
-    currentlyEquipped.forEach(ec => unequipCard(monsterIdx, ec.slotIndex, true));
+    currentlyEquipped.forEach(ec => {
+        const isLeader = CARDS[ec.cardId]?.isLeader;
+        if (keepLeaders && isLeader) return; // Preservation logic
+        unequipCard(monsterIdx, ec.slotIndex, true);
+    });
 
     // 2. Full State Refresh: Clear preset ID and Resync Box to current level
     monster.currentPresetId = "";
