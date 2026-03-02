@@ -73,14 +73,23 @@ export const LEVEL_REWARDS = {
 };
 
 export const NPC_PRESETS = {
-    jenzi_rg0: {
-        name: "Jenzi's Welcome",
-        description: "Standard lab-issued starter squad.",
-        owner: 'jenzi',
+    opponent: {
+        name: "Rival's Final Form",
+        description: "The rival at their peak. Optimized for high-tier tactical balance.",
+        owner: 'opponent',
         team: ['cambihil', 'lydrosome', 'nitrophil'],
-        level: 0,
+        level: 15,
         squadSlots: {
-            0: {}, 1: {}, 2: {}
+            0: { // The Tank (Greedy depth-first)
+                0: 'atk_20_s2', 1: 'hp_60', 2: 'hp_30_s1', 3: 'def_20_s2', 4: 'def_40',
+                5: 'pp_3_s2', 6: 'atk_40', 7: 'pp_3_s2', 8: 'crit_3_s2', 9: 'crit_3_s2'
+            },
+            1: { // Support
+                0: 'spd_10_s1', 1: 'hp_20', 2: 'spd_15', 3: 'pp_2_s1', 4: 'crit_2_s1'
+            },
+            2: { // Reserve
+                0: 'atk_10', 1: 'atk_10', 2: 'hp_10'
+            }
         }
     },
     jenzi_rg15: {
@@ -90,85 +99,102 @@ export const NPC_PRESETS = {
         team: ['cambihil', 'lydrosome', 'nitrophil'],
         level: 15,
         squadSlots: {
-            0: { // Cambihil: The Shield
-                0: 'def_20_s2', 1: 'hp_30_s2', 2: 'def_40', 3: 'hp_60', 4: 'pp_5'
+            0: { // Striker (Greedy depth-first)
+                0: 'atk_20_s2', 1: 'hp_60', 2: 'hp_30_s1', 3: 'def_20_s2', 4: 'def_40',
+                5: 'pp_3_s2', 6: 'atk_40', 7: 'pp_3_s2', 8: 'crit_3_s2', 9: 'crit_3_s2'
             },
-            1: { // Lydrosome: The Sniper
-                0: 'atk_20_s2', 1: 'crit_3_s2', 2: 'atk_40', 3: 'crit_5', 4: 'spd_20'
+            1: { // Balanced
+                0: 'spd_10_s1', 1: 'hp_20', 2: 'spd_15', 3: 'pp_2_s1', 4: 'crit_2_s1'
             },
-            2: { // Nitrophil: The Burst
-                0: 'spd_15_s2', 1: 'crit_3_s2', 2: 'pp_3_s2', 3: 'spd_15', 4: 'atk_10'
+            2: { // Reserve
+                0: 'atk_10', 1: 'atk_10', 2: 'hp_10'
             }
         }
     },
     lana: {
         name: "Lana's Fortress",
-        description: "Botanical defense with expansion utility.",
+        description: "Botanical defense focused on maximum survival and bio-ceramic integrity.",
         owner: 'lana',
         team: ['cambihil'],
         level: 5,
         squadSlots: {
-            0: { 0: 'crit_2_s1', 1: 'hp_10', 2: 'def_5', 3: 'pp_1' }
+            0: { // Survival (Greedy depth-first)
+                0: 'pp_2_s1', 1: 'def_5', 2: 'def_5', 3: 'crit_2_s1', 4: 'hp_10'
+            }
         }
     },
     dyzes: {
         name: "Dyzes' Protocol",
-        description: "Osmotic snipers with efficient utility sharing.",
+        description: "Osmotic snipers focused on synaptic speed and Pellicle point generation.",
         owner: 'dyzes',
         team: ['lydrosome', 'lydrosome'],
         level: 9,
         squadSlots: {
-            0: { // Primary Sniper
-                0: 'atk_20_s2', 1: 'crit_1', 2: 'atk_10', 3: 'spd_15', 4: 'spd_10_s1'
+            0: { // Utility (Greedy depth-first)
+                0: 'atk_20_s2', 1: 'hp_10', 2: 'atk_10', 3: 'hp_30_s1', 4: 'hp_20',
+                5: 'spd_10_s1', 6: 'pp_2_s1', 7: 'crit_2_s1', 8: 'spd_15'
             },
-            1: { // Secondary Support
-                0: 'hp_30_s1', 1: 'atk_10', 2: 'hp_20', 3: 'def_5', 4: 'pp_1'
+            1: { // Backup
+                0: 'atk_10', 1: 'def_5', 2: 'def_5'
             }
         }
     },
     capsain: {
         name: "Director's Order",
-        description: "Absolute authority with optimized high-tier distribution.",
+        description: "Absolute authority with a focus on overwhelming physical force and critical breaches.",
         owner: 'capsain',
         team: ['nitrophil', 'nitrophil', 'nitrophil'],
-        level: 15,
+        level: 13,
         squadSlots: {
-            0: { // The Lead
-                0: 'leader_3', 1: 'atk_40', 2: 'atk_20_s2', 3: 'crit_3_s2', 4: 'pp_3_s2'
+            0: { // The Heavy (Greedy depth-first)
+                0: 'atk_20_s2', 1: 'hp_20', 2: 'atk_10', 3: 'def_20_s2', 4: 'spd_15',
+                5: 'crit_3_s2', 6: 'hp_60', 7: 'pp_3_s2', 8: 'def_40', 9: 'atk_40'
             },
-            1: { // The Wall
-                0: 'def_40', 1: 'hp_60', 2: 'def_20_s2', 3: 'hp_30_s2', 4: 'pp_3_s2'
+            1: { // Tactical backup
+                0: 'hp_30_s1', 1: 'hp_10', 2: 'spd_5', 3: 'spd_10_s1', 4: 'pp_2_s1', 5: 'crit_2_s1', 6: 'atk_10'
             },
-            2: { // The Flanker
-                0: 'spd_15_s2', 1: 'crit_3_s2', 2: 'spd_15', 3: 'atk_10', 4: 'hp_20'
+            2: { // Maintenance
+                0: 'def_5', 1: 'def_5', 2: 'atk_5'
             }
         }
     },
     npc01: {
         name: "Balanced Readiness",
-        description: "Standard tactical spread.",
-        team: ['nitrophil'],
-        level: 1,
+        description: "Standard tactical spread for early-grade clearance.",
+        team: ['lydrosome', 'lydrosome'],
+        level: 2,
         squadSlots: {
-            0: { 0: 'atk_5' } // hp_10/def_5 not for RG 1
+            0: { 0: 'atk_5', 1: 'def_5' },
+            1: { 0: 'atk_5', 1: 'def_5' }
         }
     },
     npc02: {
         name: "Sturdy Bio-Signature",
-        description: "High early-grade defense.",
-        team: ['cambihil'],
-        level: 1,
+        description: "High early-grade defense and survival protocols.",
+        team: ['nitrophil', 'nitrophil'],
+        level: 6,
         squadSlots: {
-            0: { 0: 'atk_5' } // hp_10/def_5 not for RG 1
+            0: { // Survival/Utility
+                0: 'pp_2_s1', 1: 'def_5', 2: 'def_5', 3: 'crit_2_s1', 4: 'hp_10'
+            },
+            1: {
+                0: 'atk_10', 1: 'atk_10', 2: 'spd_5'
+            }
         }
     },
     npc03: {
         name: "Aggressive Probe",
-        description: "Focus on early critical openings.",
-        team: ['lydrosome'],
-        level: 1,
+        description: "Focus on early critical openings and speed.",
+        team: ['cambihil', 'cambihil'],
+        level: 10,
         squadSlots: {
-            0: { 0: 'atk_5' } // spd_5/crit_1/atk_10 not for RG 1
+            0: { // Aggressive Lead
+                0: 'atk_20_s2', 1: 'spd_15', 2: 'hp_20', 3: 'crit_3_s2', 4: 'atk_10',
+                5: 'hp_30_s1', 6: 'spd_10_s1', 7: 'atk_10'
+            },
+            1: { // Backup
+                0: 'crit_2_s1', 1: 'hp_10', 2: 'spd_5', 3: 'pp_2_s1'
+            }
         }
     }
 };

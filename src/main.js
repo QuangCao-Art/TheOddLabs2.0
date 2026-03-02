@@ -114,28 +114,32 @@ function syncCardsToLevel(profileId, level) {
     const profile = gameState.profiles[profileId];
     if (!profile) return;
 
-    // Standardized: Always clear the box for all profiles before re-syncing
-    // This prevents "ghost" cards from accumulating in NPCs or during recalibrations
     profile.cardBox = [];
 
-    // 1. Identify what cards are already tied up in equipment across the entire party
     const equippedInParty = [];
     profile.party.forEach(monster => {
         monster.equippedCards.forEach(ec => equippedInParty.push(ec.cardId));
     });
 
-    // 2. Add rewards that are neither in the box nor equipped in the party
     for (let i = 1; i <= level; i++) {
         const rewards = LEVEL_REWARDS[i];
         if (rewards) {
-            rewards.forEach(cardId => {
-                const countInBox = profile.cardBox.filter(id => id === cardId).length;
-                const countInEquips = equippedInParty.filter(id => id === cardId).length;
+            // Group rewards by ID to handle multiple copies correctly
+            const rewardCounts = rewards.reduce((acc, id) => {
+                acc[id] = (acc[id] || 0) + 1;
+                return acc;
+            }, {});
 
-                // If the sum of available (box) and in-use (equips) is less than the reward amount, add to box
-                // Usually rewards are 1 of each, so we check if total count < 1 (or count < required)
-                if ((countInBox + countInEquips) === 0) {
-                    profile.cardBox.push(cardId);
+            Object.entries(rewardCounts).forEach(([cardId, requiredTotal]) => {
+                const countInEquips = equippedInParty.filter(id => id === cardId).length;
+                const countInBox = profile.cardBox.filter(id => id === cardId).length;
+                const currentTotal = countInEquips + countInBox;
+
+                if (currentTotal < requiredTotal) {
+                    const diff = requiredTotal - currentTotal;
+                    for (let j = 0; j < diff; j++) {
+                        profile.cardBox.push(cardId);
+                    }
                 }
             });
         }
@@ -2295,9 +2299,7 @@ function resetGame() {
     const oProfile = gameState.profiles[opponentId];
 
     // Ensure the opponent has a party (fallback if not initialized)
-    if (oProfile.party.length === 0) {
-        oProfile.party = oProfile.team.map(id => createMonsterInstance(id));
-    }
+    oProfile.party = oProfile.team.map(id => createMonsterInstance(id));
 
     gameState.enemyParty = oProfile.party;
     gameState.enemyLevel = oProfile.level;
@@ -2307,11 +2309,12 @@ function resetGame() {
 
     // 2. Pre-apply Catalyst Bonuses to persistent max stats for the start of battle
     const applyBonuses = (party, level) => {
-        party.forEach(monster => {
+        // Only apply to first 3 (active team) for battle start efficiency
+        party.slice(0, 3).forEach(monster => {
             const mod = getModifiedStats(monster, level);
             monster.maxHp = mod.maxHp;
             monster.maxPp = mod.maxPp;
-            if (monster.hp > monster.maxHp) monster.hp = monster.maxHp; // Clamp if cards unequipped
+            if (monster.hp > monster.maxHp) monster.hp = monster.maxHp;
         });
     };
     applyBonuses(gameState.playerParty, gameState.playerLevel);
@@ -2493,28 +2496,98 @@ function renderCellStorage() {
     grid.innerHTML = '';
 
     const profileId = catalystState.activeProfile;
-    // If player, show cellDex. Otherwise (NPCs/Opponent), show all monsters for debug presets.
-    const monstersToShow = profileId === 'player'
-        ? gameState.cellDex
-        : Object.keys(MONSTERS);
+    const profile = gameState.profiles[profileId];
 
-    monstersToShow.forEach(name => {
+    // Show ONLY monsters in index 3-8 (The "Storage" part of the 9-monster debug)
+    const storageMonsters = profile.party.slice(3, 9);
+
+    storageMonsters.forEach((monster, sIdx) => {
+        const partyIdx = sIdx + 3; // Shift to actual party index
+        const name = monster.name;
+
         const icon = document.createElement('div');
         icon.className = 'monster-icon';
         icon.draggable = true;
+
         const imgName = name.charAt(0).toUpperCase() + name.slice(1);
         icon.innerHTML = `<img src="./assets/images/${imgName}.png" alt="${name}" onerror="this.src='./assets/images/Card_Placeholder.png'">`;
 
         icon.ondragstart = (e) => {
-            e.dataTransfer.setData('monsterName', name);
+            e.dataTransfer.setData('sourceStorageIdx', partyIdx);
             e.dataTransfer.setData('sourceSide', catalystState.activeSide);
         };
 
-        // Click to preview/open card
-        icon.onclick = () => openMonsterCard(name);
+        // Click to preview/open card (Switch active index to preview in Catalyst Core)
+        icon.onclick = () => {
+            catalystState.activeMonsterIdx = partyIdx;
+            renderManagementHub();
+        };
 
         grid.appendChild(icon);
     });
+
+    // Handle dropping a slot monster back into storage
+    grid.ondragover = (e) => e.preventDefault();
+    grid.ondrop = (e) => {
+        e.preventDefault();
+        const sourceSlot = e.dataTransfer.getData('sourceSlot');
+        const sourceSide = e.dataTransfer.getData('sourceSide');
+
+        if (sourceSide !== catalystState.activeSide) return;
+        if (sourceSlot === "") return;
+
+        const activeProfile = gameState.profiles[catalystState.activeProfile];
+        const targetParty = activeProfile.party;
+        const targetTeam = activeProfile.team;
+        const slotIdx = parseInt(sourceSlot);
+
+        // Find an empty-ish or logical spot in storage? 
+        // Actually, since we have 9 fixed slots in this debug mode, 
+        // dragging back to storage just needs to swap with SOMETHING in storage.
+        // For simplicity, let's swap with the first storage slot (index 3).
+
+        const storageIdx = 3;
+        const tempMonster = targetParty[slotIdx];
+        targetParty[slotIdx] = targetParty[storageIdx];
+        targetParty[storageIdx] = tempMonster;
+
+        const tempSpecies = targetTeam[slotIdx];
+        targetTeam[slotIdx] = targetTeam[storageIdx];
+        targetTeam[storageIdx] = tempSpecies;
+
+        // NEW: Unequip the monster that was just moved TO storage
+        stripMonsterEquipment(catalystState.activeProfile, storageIdx);
+
+        // Sync global state
+        if (catalystState.activeProfile === 'player') {
+            gameState.playerTeam = [...targetTeam.slice(0, 3)];
+            gameState.playerParty = [...targetParty.slice(0, 3)];
+        } else if (catalystState.battleOpponentId === catalystState.activeProfile) {
+            gameState.enemyTeam = [...targetTeam.slice(0, 3)];
+            gameState.enemyParty = [...targetParty.slice(0, 3)];
+        }
+
+        renderManagementHub();
+    };
+}
+
+/**
+ * Universal helper to strip all equipment from a specific monster in a profile
+ * and return those cards to the profile's box.
+ */
+function stripMonsterEquipment(profileId, monsterIdx) {
+    const profile = gameState.profiles[profileId];
+    if (!profile || !profile.party[monsterIdx]) return;
+
+    const monster = profile.party[monsterIdx];
+    const cardsToReturn = [...monster.equippedCards];
+
+    cardsToReturn.forEach(ec => {
+        profile.cardBox.push(ec.cardId);
+    });
+
+    monster.equippedCards = [];
+    monster.currentPresetId = "";
 }
 
 function updateTeamSlots() {
@@ -2562,7 +2635,7 @@ function updateTeamSlots() {
         slot.ondragover = (e) => e.preventDefault();
         slot.ondrop = (e) => {
             e.preventDefault();
-            const monsterName = e.dataTransfer.getData('monsterName');
+            const sourceStorageIdx = e.dataTransfer.getData('sourceStorageIdx');
             const sourceSlot = e.dataTransfer.getData('sourceSlot');
             const sourceSide = e.dataTransfer.getData('sourceSide');
 
@@ -2575,41 +2648,44 @@ function updateTeamSlots() {
             const targetParty = activeProfile.party;
             const targetTeam = activeProfile.team;
 
-            if (monsterName) {
-                // Assign new monster from Dex/Storage
-                const data = JSON.parse(JSON.stringify(MONSTERS[monsterName]));
-                targetParty[idx] = {
-                    ...data,
-                    id: Math.random().toString(36).substr(2, 9),
-                    currentNode: null,
-                    blockedNodes: [],
-                    equippedCards: [],
-                    hp: data.hp,
-                    pp: 1,
-                    selectedMove: data.moves[0].id
-                };
-                if (catalystState.activeSide === 'PLAYER') {
-                    gameState.playerTeam[idx] = monsterName;
-                } else {
-                    gameState.enemyTeam[idx] = monsterName;
-                }
-            } else if (sourceSlot !== "") {
-                // Swap slots
-                const sourceIdx = parseInt(sourceSlot);
-                const tempParty = targetParty[idx];
-                targetParty[idx] = targetParty[sourceIdx];
-                targetParty[sourceIdx] = tempParty;
+            if (sourceStorageIdx !== "") {
+                // Swap from Storage to Active Slot
+                const storageIdx = parseInt(sourceStorageIdx);
+                const tempMonster = targetParty[idx];
+                targetParty[idx] = targetParty[storageIdx];
+                targetParty[storageIdx] = tempMonster;
 
-                if (catalystState.activeSide === 'PLAYER') {
-                    const tempTeam = gameState.playerTeam[idx];
-                    gameState.playerTeam[idx] = gameState.playerTeam[sourceIdx];
-                    gameState.playerTeam[sourceIdx] = tempTeam;
-                } else {
-                    const tempTeam = gameState.enemyTeam[idx];
-                    gameState.enemyTeam[idx] = gameState.enemyTeam[sourceIdx];
-                    gameState.enemyTeam[sourceIdx] = tempTeam;
-                }
+                // Sync the species team array
+                const tempSpecies = targetTeam[idx];
+                targetTeam[idx] = targetTeam[storageIdx];
+                targetTeam[storageIdx] = tempSpecies;
+
+                // NEW: Unequip the monster that was just moved TO storage
+                stripMonsterEquipment(catalystState.activeProfile, storageIdx);
+
+                addLog(`Redeployed ${targetParty[idx].name} to active squad.`);
+            } else if (sourceSlot !== "") {
+                // Swap between active slots
+                const sourceIdx = parseInt(sourceSlot);
+                const tempMonster = targetParty[idx];
+                targetParty[idx] = targetParty[sourceIdx];
+                targetParty[sourceIdx] = tempMonster;
+
+                // Sync the species team array
+                const tempSpecies = targetTeam[idx];
+                targetTeam[idx] = targetTeam[sourceIdx];
+                targetTeam[sourceIdx] = tempSpecies;
             }
+
+            // Sync global gameState teams if it's player or currently active opponent
+            if (catalystState.activeProfile === 'player') {
+                gameState.playerTeam = [...targetTeam.slice(0, 3)];
+                gameState.playerParty = [...targetParty.slice(0, 3)];
+            } else if (catalystState.battleOpponentId === catalystState.activeProfile) {
+                gameState.enemyTeam = [...targetTeam.slice(0, 3)];
+                gameState.enemyParty = [...targetParty.slice(0, 3)];
+            }
+
             renderManagementHub();
         };
     });
@@ -2954,25 +3030,8 @@ function applyPreset(profileId, presetId, silent = false) {
     // 2. SYNC INVENTORY (Reward Pool)
     syncCardsToLevel(profileId, profile.level);
 
-    // 3. SEED SIGNATURE CARDS (Ensure required cards exist)
-    const requiredSignatures = [];
-    if (preset.squadSlots) {
-        Object.values(preset.squadSlots).forEach(monBuild => {
-            Object.values(monBuild).forEach(cardId => requiredSignatures.push(cardId));
-        });
-    } else if (preset.slots) {
-        (preset.team || profile.team).forEach(() => {
-            Object.values(preset.slots).forEach(cardId => requiredSignatures.push(cardId));
-        });
-    }
-
-    requiredSignatures.forEach(cardId => {
-        const countInBox = profile.cardBox.filter(id => id === cardId).length;
-        const countEquipped = profile.party.reduce((acc, mon) => acc + (mon.equippedCards?.filter(ec => ec.cardId === cardId).length || 0), 0);
-        if ((countInBox + countEquipped) < 1) {
-            profile.cardBox.push(cardId);
-        }
-    });
+    // 3. SEED SIGNATURE CARDS - REMOVED for Strict Fair Balance
+    // NPCs now rely entirely on syncCardsToLevel(profile.level)
 
     // 4. SYNC SQUAD COMPOSITION
     const needsPartyInit = profile.party.length === 0 || JSON.stringify(profile.team) !== JSON.stringify(preset.team);
