@@ -1,4 +1,29 @@
 export const MONSTERS = {
+    stemmy: {
+        id: 'stemmy',
+        name: 'Stemmy',
+        type: 'SOMATIC',
+        archetype: 'BASE_CELL',
+        lore: 'An undifferentiated stem cell brimming with potential. While it lacks specialized organelles, its raw adaptable cytoplasm allows it to mimic more advanced functions. It is the blank slate from which all cellular life emerges.',
+        hp: 100,
+        maxHp: 100,
+        pp: 1,
+        maxPp: 10,
+        atk: 15,
+        def: 10,
+        spd: 12,
+        crit: 5,
+        moves: [
+            { id: 'cell_bump', name: 'Cell Bump', type: 'basic', element: 'SOMATIC', power: 40, cost: 0, desc: 'A clumsy, unspecialized bump against the enemy membrane.' },
+            { id: 'mitosis_slap', name: 'Mitosis Slap', type: 'pellicle', element: 'SOMATIC', power: 55, cost: 3, matchFixed: 1, desc: 'Briefly divides a small portion of itself to slap the target twice. [RELIABLE HIT]: Forces a NEAR result.' },
+            { id: 'potency_surge', name: 'Potency Surge', type: 'pellicle', element: 'SOMATIC', power: 65, cost: 5, matchFixed: 1, desc: 'A raw surge of undifferentiated energy. [RELIABLE HIT]: Accuracy is stabilized via cytoplasmic flow, forcing a NEAR result.' }
+        ],
+        defenseMoves: [
+            { id: 'wobble', name: 'Wobble', type: 'basic', element: 'SOMATIC', cost: 0, desc: 'A pathetic wobble that barely counts as a dodge.' },
+            { id: 'cytoplasmic_wall', name: 'Cytoplasmic Wall', type: 'pellicle', element: 'SOMATIC', cost: 2, matchFixed: 1, desc: 'Hardens the raw cytoplasm into a jelly-like shield. [RELIABLE HIT]: Forces a NEAR result on enemy attacks.' },
+            { id: 'apopto_shield', name: 'Apopto-Shield', type: 'pellicle', element: 'SOMATIC', cost: 4, matchFixed: 1, desc: 'Sacrifices a small cluster of cells to stabilize the area. [RELIABLE HIT]: Forces a NEAR result on enemy attacks.' }
+        ]
+    },
     nitrophil: {
         id: 'nitrophil',
         name: 'Nitrophil',

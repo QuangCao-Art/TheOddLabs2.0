@@ -12,13 +12,18 @@
 | 6 | 2x Muscle Fiber Overdrive (+10), 1x Weak-Point Analysis (1%) | Attack/Crit | 1 (S+0) |
 | 7 | 1x Conductive Nerve Gel (+10) [S+1], 1x Spare Cytoplasm (+20) | Speed/HP | 2/1 |
 | 8 | 1x Organismal Cushion (+30) [S+1], 1x Conductive Slime Coating (+15) | HP/Speed | 2/1 |
-| 9 | 1x Carbon-Latice Claws (+20) [S+2], **Lead: The Third Brain** | Attack/Lead | 3/L |
-| 10 | 1x Weak-Point Analysis (3%) [S+2] | Crit | 3 (S+2) |
+| 9 | 1x Carbon-Latice Claws (+20) [S+2], 1x Weak-Point Analysis (3%) [S+2] | Atk/Crit | 3/3 |
+| 10 | 1x Bio-Ceramic Plating (+20) [S+2], **Lead: The Third Brain** | Def/Lead | 3/L |
 | 11 | 1x ATK MAX (+40), 1x DEF MAX (+40), 1x HP MAX (+60) | Multi | 1 (S+0) |
 | 12 | 1x ATP Enrichment (3) [S+2] | PP | 3 (S+2) |
-| 13 | 1x Bio-Ceramic Plating (+20) [S+2] | Defense | 3 (S+2) |
+| 13 | 1x Vascular Expansion (+30) [S+2], 1x Synaptic Processor (+15) [S+2]| HP/Spd | 3/3 |
 | 14 | 1x Weak-Point Analysis (3%) [S+2] | Crit | 3 (S+2) |
 | 15 | 1x ATP Enrichment (3) [S+2], **Lead: Oxidative Energy Burst** | PP/Lead | 3/L |
+| 16 | 1x Weak-Point Analysis MAX (5%), 1x ATP Enrichment MAX (5) | Crit/PP | 1/1 |
+| 17 | 1x Carbon-Latice Claws (+20) [S+2], 1x Bio-Ceramic Plating (+20) [S+2]| Atk/Def | 3/3 |
+| 18 | 1x Organismal Cushion (+30) [S+1], 1x Synaptic Rewiring MAX (+20) | HP/Spd | 2/1 |
+| 19 | 1x Muscle Fiber Overdrive MAX (+40), 1x Dermal Hardening MAX (+40) | Atk/Def | 1/1 |
+| 20 | **Lead: Molecular Dissolver** | Lead | L |
 
 ## Leader Card Effects
 

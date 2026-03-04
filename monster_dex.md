@@ -14,7 +14,17 @@ This document tracks the cellular entities discovered within The Odd Labs.
 | **Skills** | **• Membrane Pierce** [**SOMATIC**]: Basic enzymatic strike (Power 40).<br>**• Oxidative Purge** [**THERMOGENIC**]: Mid-range pressure (Power 55, 3 PP).<br>**• Nitric Burst** [**THERMOGENIC**]: Tactical explosion (Power 65, 6 PP). [**EASY TARGET**]: Wide blast area; adjacent nodes still count as a perfect MATCH (1.25x DMG). |
 | **Defense** | **• Thermo Dodge** [**THERMOGENIC**]: Standard evasion (0 PP).<br>**• Thermo Shell** [**THERMOGENIC**]: Heat buffer; forces [**RELIABLE HIT**] and reflects 20% damage (2 PP).<br>**• Magma Chitin** [**THERMOGENIC**]: Volcanic hardening; forces [**PUNY SLAP**] and reflects 20% damage (4 PP). |
 
----
+### 🦠 Stemmy (Cell00)
+| Property | Value |
+| :--- | :--- |
+| **Archetype** | BASE_CELL (Playable) |
+| **Type** | SOMATIC |
+| **Stats** | 100 HP / 15 ATK / 10 DEF / 10 MAX PP / 12 SPD / 5% CRIT |
+| **Lore** | An undifferentiated stem cell brimming with potential. While it lacks specialized organelles, its raw adaptable cytoplasm allows it to mimic more advanced functions. It is the blank slate from which all cellular life emerges. |
+| **Skills** | **• Cell Bump** [**SOMATIC**]: Clumsy unspecialized bump (Power 40).<br>**• Mitosis Slap** [**SOMATIC**]: Divides to slap twice (Power 55, 3 PP). [**RELIABLE HIT**]: Forces a NEAR result.<br>**• Potency Surge** [**SOMATIC**]: Raw undifferentiated energy (Power 60, 5 PP). [**RELIABLE HIT**]: Cytoplasmic stabilization forces a NEAR result. |
+| **Defense** | **• Wobble** [**SOMATIC**]: A pathetic wobble evasion (0 PP).<br>**• Cytoplasmic Wall** [**SOMATIC**]: Jelly-like shield (2 PP). [**RELIABLE HIT**]: Forces a NEAR result on enemy attacks.<br>**• Apopto-Shield** [**SOMATIC**]: Sacrificial layer (4 PP). [**RELIABLE HIT**]: Forces a NEAR result on enemy attacks. |
+
+---v
 
 ### 🍀 Cambihil (Cell01)
 | Property | Value |

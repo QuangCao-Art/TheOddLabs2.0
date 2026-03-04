@@ -50,6 +50,166 @@ let catalystState = {
     battleOpponentId: 'opponent'
 };
 
+/* --- CUSTOM PRESET SYSTEM --- */
+let CUSTOM_PRESETS = {};
+
+function loadCustomPresets() {
+    try {
+        const stored = localStorage.getItem('oddlabs_custom_presets');
+        if (stored) {
+            CUSTOM_PRESETS = JSON.parse(stored);
+        }
+    } catch (e) {
+        console.error("Failed to load custom presets", e);
+        CUSTOM_PRESETS = {};
+    }
+}
+
+function saveCustomPresetsToDisk() {
+    try {
+        localStorage.setItem('oddlabs_custom_presets', JSON.stringify(CUSTOM_PRESETS));
+    } catch (e) {
+        console.warn('Unable to save custom presets to disk. They will be kept in-memory for this session.', e);
+    }
+}
+
+function handleSavePreset() {
+    const profile = gameState.profiles[catalystState.activeProfile];
+    if (!profile) return;
+
+    const modal = document.getElementById('preset-name-modal');
+    const input = document.getElementById('preset-name-input');
+    const btnConfirm = document.getElementById('btn-preset-confirm');
+    const btnCancel = document.getElementById('btn-preset-cancel');
+    const title = document.getElementById('preset-modal-title');
+    const promptText = document.getElementById('preset-modal-prompt');
+
+    if (!modal || !input || !btnConfirm || !btnCancel) return;
+
+    title.innerText = "SAVE PRESET";
+    promptText.innerText = "Enter a name for this Custom Preset:";
+    input.value = "My Custom Build";
+    modal.classList.remove('hidden');
+    input.focus();
+    input.select();
+
+    const cleanup = () => {
+        modal.classList.add('hidden');
+        btnConfirm.onclick = null;
+        btnCancel.onclick = null;
+        input.onkeydown = null;
+    };
+
+    const confirmSave = () => {
+        let presetName = input.value.trim().substring(0, 30);
+        if (presetName.length === 0) return;
+        cleanup();
+
+        // Serialize
+        const newPreset = {
+            name: presetName,
+            description: "Custom user-created loadout.",
+            owner: 'player',
+            team: [...profile.team],
+            level: profile.level,
+            squadSlots: {}
+        };
+
+        profile.party.forEach((mon, mIdx) => {
+            newPreset.squadSlots[mIdx] = {};
+            if (mon) {
+                mon.equippedCards.forEach(card => {
+                    if (card) {
+                        newPreset.squadSlots[mIdx][card.slotIndex] = card.cardId;
+                    }
+                });
+            }
+        });
+
+        // FIXED: Create unique key based on timestamp to prevent overwriting renamed presets
+        const key = `custom_${Date.now()}`;
+        CUSTOM_PRESETS[key] = newPreset;
+        saveCustomPresetsToDisk();
+
+        // Refresh UI
+        const monster = profile.party[catalystState.activeMonsterIdx];
+        if (monster) monster.currentPresetId = key;
+        updateCatalystCore();
+    };
+
+    btnConfirm.onclick = confirmSave;
+    btnCancel.onclick = cleanup;
+    input.onkeydown = (e) => {
+        if (e.key === 'Enter') confirmSave();
+        if (e.key === 'Escape') cleanup();
+    };
+}
+
+function handleRenamePreset() {
+    const selector = document.getElementById('preset-selector');
+    const key = selector.value;
+    if (!key || !CUSTOM_PRESETS[key]) return;
+
+    const modal = document.getElementById('preset-name-modal');
+    const input = document.getElementById('preset-name-input');
+    const btnConfirm = document.getElementById('btn-preset-confirm');
+    const btnCancel = document.getElementById('btn-preset-cancel');
+    const title = document.getElementById('preset-modal-title');
+    const promptText = document.getElementById('preset-modal-prompt');
+
+    if (!modal || !input || !btnConfirm || !btnCancel) return;
+
+    title.innerText = "RENAME PRESET";
+    promptText.innerText = "Enter a new name:";
+    input.value = CUSTOM_PRESETS[key].name;
+    modal.classList.remove('hidden');
+    input.focus();
+    input.select();
+
+    const cleanup = () => {
+        modal.classList.add('hidden');
+        btnConfirm.onclick = null;
+        btnCancel.onclick = null;
+        input.onkeydown = null;
+    };
+
+    const confirmRename = () => {
+        let newName = input.value.trim().substring(0, 30);
+        if (newName.length === 0) return;
+        cleanup();
+
+        // We can just rename the display name, keep the same key for simplicity
+        CUSTOM_PRESETS[key].name = newName;
+        saveCustomPresetsToDisk();
+        updateCatalystCore();
+    };
+
+    btnConfirm.onclick = confirmRename;
+    btnCancel.onclick = cleanup;
+    input.onkeydown = (e) => {
+        if (e.key === 'Enter') confirmRename();
+        if (e.key === 'Escape') cleanup();
+    };
+}
+
+function handleDeletePreset() {
+    const selector = document.getElementById('preset-selector');
+    const key = selector.value;
+    if (!key || !CUSTOM_PRESETS[key]) return;
+
+    if (confirm(`Are you sure you want to delete the custom preset "${CUSTOM_PRESETS[key].name}"?`)) {
+        delete CUSTOM_PRESETS[key];
+        saveCustomPresetsToDisk();
+
+        // Reset the current active to nothing
+        const profile = gameState.profiles[catalystState.activeProfile];
+        if (profile && profile.party[catalystState.activeMonsterIdx]) {
+            profile.party[catalystState.activeMonsterIdx].currentPresetId = "";
+        }
+        updateCatalystCore();
+    }
+}
+
 const updateInvNav = (isKeyboardAction = false) => {
     const tabs = ['logs', 'items', 'status'];
     const currentTabId = tabs[invNav.tabIndex];
@@ -92,6 +252,7 @@ function init() {
         console.log("Odd Labs 2.0 Initializing...");
 
         // Setup mandatory engine components
+        loadCustomPresets();
         setupNodePositions();
         setupEventListeners();
 
@@ -114,37 +275,31 @@ function syncCardsToLevel(profileId, level) {
     const profile = gameState.profiles[profileId];
     if (!profile) return;
 
-    profile.cardBox = [];
-
-    const equippedInParty = [];
-    profile.party.forEach(monster => {
-        monster.equippedCards.forEach(ec => equippedInParty.push(ec.cardId));
-    });
-
+    // Reset Box to match Level Rewards snapshot
+    let rewardPool = [];
     for (let i = 1; i <= level; i++) {
-        const rewards = LEVEL_REWARDS[i];
-        if (rewards) {
-            // Group rewards by ID to handle multiple copies correctly
-            const rewardCounts = rewards.reduce((acc, id) => {
-                acc[id] = (acc[id] || 0) + 1;
-                return acc;
-            }, {});
-
-            Object.entries(rewardCounts).forEach(([cardId, requiredTotal]) => {
-                const countInEquips = equippedInParty.filter(id => id === cardId).length;
-                const countInBox = profile.cardBox.filter(id => id === cardId).length;
-                const currentTotal = countInEquips + countInBox;
-
-                if (currentTotal < requiredTotal) {
-                    const diff = requiredTotal - currentTotal;
-                    for (let j = 0; j < diff; j++) {
-                        profile.cardBox.push(cardId);
-                    }
-                }
-            });
+        if (LEVEL_REWARDS[i]) {
+            rewardPool = rewardPool.concat(LEVEL_REWARDS[i]);
         }
     }
-    console.log(`[DEBUG] Syncing ${profile.name} Card Box for RG-${level}. Party Equips: ${equippedInParty.length}, New Box: ${profile.cardBox.length}`);
+
+    // Account for what is already equipped
+    const equipped = [];
+    profile.party.forEach(mon => {
+        if (mon && mon.equippedCards) {
+            mon.equippedCards.forEach(ec => equipped.push(ec.cardId));
+        }
+    });
+
+    // Final card box = Reward Pool - Equipped
+    const finalBox = [...rewardPool];
+    equipped.forEach(cardId => {
+        const index = finalBox.indexOf(cardId);
+        if (index > -1) finalBox.splice(index, 1);
+    });
+
+    profile.cardBox = finalBox;
+    console.log(`[DEBUG] Syncing ${profile.name} Card Box for RG-${level}. Party Equips: ${equipped.length}, New Box: ${profile.cardBox.length}`);
 }
 
 /**
@@ -161,7 +316,7 @@ function hasLeaderCard(profileId, cardId) {
     // 2. Check Equipped Cards on ALL monsters in party
     if (profile.party) {
         for (const monster of profile.party) {
-            if (monster.equippedCards && monster.equippedCards.some(ec => ec.cardId === cardId)) {
+            if (monster && monster.equippedCards && monster.equippedCards.some(ec => ec.cardId === cardId)) {
                 return true;
             }
         }
@@ -189,6 +344,11 @@ function setupNodePositions() {
 }
 
 function setupEventListeners() {
+    // PRESET MANAGEMENT
+    document.getElementById('btn-preset-save')?.addEventListener('click', handleSavePreset);
+    document.getElementById('btn-preset-rename')?.addEventListener('click', handleRenamePreset);
+    document.getElementById('btn-preset-delete')?.addEventListener('click', handleDeletePreset);
+
     // DRAG AND DROP LOGIC
     selectionCore.addEventListener('mousedown', startDrag);
     selectionCore.addEventListener('touchstart', startDrag, { passive: false });
@@ -219,11 +379,72 @@ function setupEventListeners() {
         showScreen('screen-overworld');
         resetGame(); // Ensure parties/stats are initialized for inventory
         Overworld.init();
+        updateOverworldEXPBar();
     });
 
     document.getElementById('btn-start-battle')?.addEventListener('click', () => {
+        const pProfile = gameState.profiles.player;
+        const activeCount = pProfile.party.slice(0, 3).filter(m => m !== null).length;
+        if (activeCount === 0) {
+            addLog("ERROR: Cannot commence battle. Active squad is empty.");
+            return;
+        }
+
         const opponentId = catalystState.battleOpponentId || 'opponent';
         startPreBattleSequence(opponentId);
+    });
+
+    window.addEventListener('start-wild-encounter', (e) => {
+        const profileId = 'stemmy_wild';
+        const rg = gameState.profiles.player.level || 0;
+        const scale = 1.0 + (rg * 0.2);
+
+        // Deep copy stemmy base stats
+        const baseStats = JSON.parse(JSON.stringify(MONSTERS.stemmy));
+
+        const wildStemmy = {
+            id: `stemmy_${Date.now()}`,
+            baseId: 'stemmy',
+            name: `Stemmy Lvl ${rg}`,
+            hp: Math.floor(baseStats.hp * scale),
+            maxHp: Math.floor(baseStats.maxHp * scale),
+            atk: Math.floor(baseStats.atk * scale),
+            def: Math.floor(baseStats.def * scale),
+            spd: Math.floor(baseStats.spd * scale),
+            crit: baseStats.crit,     // Do not scale Crit
+            pp: baseStats.maxPp,      // Do not scale PP
+            maxPp: baseStats.maxPp,
+            moves: baseStats.moves,
+            defenseMoves: baseStats.defenseMoves,
+            type: baseStats.type,
+            equippedCards: []
+        };
+
+        gameState.profiles['stemmy_wild'] = {
+            name: `WILD STEMMY (RG-${rg})`,
+            level: rg,
+            cardBox: [],
+            team: ['stemmy', null, null],
+            party: [wildStemmy]
+        };
+
+        catalystState.battleOpponentId = profileId;
+        startPreBattleSequence(profileId);
+    });
+
+    window.addEventListener('start-npc-encounter', (e) => {
+        const npcId = e.detail.id;
+
+        // Map dynamic overworld IDs to fixed combat profiles
+        let profileId = npcId;
+        if (npcId.startsWith('npc_male')) profileId = 'npc01';
+        else if (npcId.startsWith('npc_female')) profileId = 'npc02';
+
+        // Fallback safety
+        if (!gameState.profiles[profileId]) profileId = 'npc01';
+
+        catalystState.battleOpponentId = profileId;
+        startPreBattleSequence(profileId);
     });
 
     /* --- PRE-BATTLE SEQUENCE LOGIC --- */
@@ -236,7 +457,8 @@ function setupEventListeners() {
         'jenzi': { art: 'Character_FullArt_Jenzi', dialogue: "Square up, Intern! Let's see what you've got." },
         'npc01': { art: 'Character_FullArt_NPC_Male', dialogue: "Commencing standard engagement protocol." },
         'npc02': { art: 'Character_FullArt_NPC_Female', dialogue: "Bio-signature match confirmed. Initiating test." },
-        'npc03': { art: 'Character_FullArt_NPC_Male', dialogue: "Deploying tactical cells. Readiness check." }
+        'npc03': { art: 'Character_FullArt_NPC_Male', dialogue: "Deploying tactical cells. Readiness check." },
+        'stemmy_wild': { art: '../sprites/Combat_Stemmy', dialogue: "*A wild cell aggressively bumps into you!*" }
     };
 
     let preBattleSequenceActive = false;
@@ -245,6 +467,16 @@ function setupEventListeners() {
     function startPreBattleSequence(opponentProfileId) {
         preBattleSequenceActive = true;
         preBattleCurrentStep = 0;
+
+        // Auto-Equip Boss Tactics if available
+        if (NPC_PRESETS[opponentProfileId]) {
+            applyPreset(opponentProfileId, opponentProfileId, true);
+        } else if (opponentProfileId === 'jenzi') {
+            const logs = gameState.logs ? gameState.logs.length : 0;
+            if (logs >= 5) {
+                applyPreset('jenzi', 'jenzi_mid', true);
+            }
+        }
 
         const opponent = gameState.profiles[opponentProfileId] || gameState.profiles.opponent;
         const data = PRE_BATTLE_DATA[opponentProfileId] || PRE_BATTLE_DATA['opponent'];
@@ -424,11 +656,11 @@ function setupEventListeners() {
     });
 
     // RG Debug Listener (Active Profile)
-    document.getElementById('debug-active-rg')?.addEventListener('change', (e) => {
+    document.getElementById('debug-active-rg')?.addEventListener('input', (e) => {
         const val = parseInt(e.target.value);
         if (!isNaN(val)) {
             const profileId = catalystState.activeProfile;
-            gameState.profiles[profileId].level = Math.max(0, Math.min(15, val));
+            gameState.profiles[profileId].level = Math.max(0, Math.min(20, val));
             syncCardsToLevel(profileId, gameState.profiles[profileId].level);
             renderManagementHub();
         }
@@ -1049,7 +1281,7 @@ function updateUI() {
     const pImg = document.querySelector('.player-display .monster-portrait');
     const pNameRaw = gameState.player.name.toLowerCase();
     const pNameCased = pNameRaw.charAt(0).toUpperCase() + pNameRaw.slice(1);
-    const hasBackSprite = ['Nitrophil', 'Cambihil', 'Lydrosome', 'Phagoburst'].includes(pNameCased);
+    const hasBackSprite = ['Nitrophil', 'Cambihil', 'Lydrosome', 'Phagoburst', 'Stemmy'].includes(pNameCased);
     if (pImg) {
         pImg.onerror = () => pImg.src = './assets/images/Card_Placeholder.png';
         pImg.src = hasBackSprite ? `./assets/images/${pNameCased}_Back.png` : `./assets/images/${pNameCased}.png`;
@@ -1372,9 +1604,10 @@ function renderInventory() {
     // 2. Populate Key Items
     itemGrid.innerHTML = '';
     const keyItems = [
-        { id: 'datapad', name: 'KeyItem-DataPad', desc: 'Mostly contains encrypted logs, but some files are just high-score records for \'Snake\'.', icon: 'data-pad' },
-        { id: 'room_key', name: 'KeyItem-RoomKey', desc: 'A magnetic keycard. Smells like the Director\'s expensive cologne.', icon: 'room-key' },
-        { id: 'sauce_bottle', name: 'KeyItem-SauceBottle', desc: 'Label: \'SUPERNOVA SAUCE\'. Scoville rating: YES. Lab-certified to burn through metal.', icon: 'sauce-bottle' }
+        { id: 'datapad', name: 'KeyItem-DataPad', desc: 'Mostly contains encrypted logs, but some files are just high-score records for \'Snake\'.', icon: 'data-pad', img: 'Card_Placeholder.png' },
+        { id: 'room_key', name: 'KeyItem-RoomKey', desc: 'A magnetic keycard. Smells like the Director\'s expensive cologne.', icon: 'room-key', img: 'Card_Placeholder.png' },
+        { id: 'sauce_bottle', name: 'KeyItem-SauceBottle', desc: 'Label: \'SUPERNOVA SAUCE\'. Scoville rating: YES. Lab-certified to burn through metal.', icon: 'sauce-bottle', img: 'Card_Placeholder.png' },
+        { id: 'card_stemmy', name: 'MONSTER CARD: STEMMY', desc: 'Tactical analysis of the undifferentiated stem cell. Essential for field research.', icon: 'card-stemmy', img: 'Card_Stemmy.png' }
     ];
 
     // For debug/testing: give these items to the player if not found
@@ -1395,7 +1628,7 @@ function renderInventory() {
                 // Visual active state
                 document.querySelectorAll('.key-item-slot').forEach(s => s.classList.remove('active'));
                 slot.classList.add('active');
-                updateDetail(item.name.toUpperCase(), item.desc, 'assets/images/Card_Placeholder.png');
+                updateDetail(item.name.toUpperCase(), item.desc, `assets/images/${item.img}`);
             };
         } else {
             slot.classList.add('locked');
@@ -2225,6 +2458,43 @@ function checkGameOver() {
     return false;
 }
 
+// Formula: Total EXP Required for Next RG = Math.floor(30 * (Current RG + 1)^1.5)
+const getExpReqForLevel = (level) => {
+    let total = 0;
+    for (let i = 0; i < level; i++) {
+        total += Math.floor(30 * Math.pow(i + 1, 1.5));
+    }
+    return total;
+};
+
+function updateOverworldEXPBar() {
+    const currentRg = gameState.profiles.player.level || 0;
+    const currentTotalExp = gameState.exp || 0;
+
+    let expFloor = getExpReqForLevel(currentRg);
+    let expCap = getExpReqForLevel(currentRg + 1);
+
+    let expInLevel = currentTotalExp - expFloor;
+    let expNeededForLevel = expCap - expFloor;
+
+    // Cap visual at 100% just in case
+    expInLevel = Math.max(0, Math.min(expInLevel, expNeededForLevel));
+    let widthPct = (expInLevel / expNeededForLevel) * 100;
+    if (currentRg >= 20) {
+        widthPct = 100; // Max Level
+        expInLevel = "MAX";
+        expNeededForLevel = "MAX";
+    }
+
+    const elFill = document.getElementById('exp-bar-fill');
+    const elCurrent = document.getElementById('exp-current');
+    const elMax = document.getElementById('exp-max');
+
+    if (elFill) elFill.style.width = `${widthPct}%`;
+    if (elCurrent) elCurrent.innerText = expInLevel;
+    if (elMax) elMax.innerText = expNeededForLevel;
+}
+
 function showGameOver(isFailure) {
     const overlay = document.getElementById('game-over-overlay');
     const title = document.getElementById('game-over-title');
@@ -2236,7 +2506,54 @@ function showGameOver(isFailure) {
             msg.innerText = `All cellular entities have been neutralized. Lab integrity compromised.`;
         } else {
             title.innerHTML = `MISSION <span class="neon-text">SUCCESS</span>`;
-            msg.innerText = `All target entities have been purged. Objective secured.`;
+
+            // --- GRINDING & PROGRESSION REWARD LOGIC ---
+            const opponentId = catalystState.battleOpponentId;
+            let expEarned = 0;
+            let creditsEarned = 0;
+            const currentRg = gameState.profiles.player.level || 0;
+
+            if (opponentId === 'stemmy_wild') {
+                // Dynamic Scaling Rewards
+                expEarned = Math.round(10 * (1.0 + (currentRg * 0.5)));
+                creditsEarned = Math.round(10 * (1.0 + (currentRg * 0.5)));
+            } else if (opponentId === 'lana' || opponentId === 'dyzes' || opponentId === 'capsain') {
+                // Sector Boss
+                expEarned = 250;
+                creditsEarned = 250;
+            } else if (opponentId === 'jenzi' || opponentId.startsWith('npc')) {
+                // Tutorial / Standard Generic NPC
+                expEarned = 50;
+                creditsEarned = 50;
+            } else {
+                // Fallback Opponent profile
+                expEarned = 50;
+                creditsEarned = 50;
+            }
+
+            gameState.exp += expEarned;
+            gameState.credits += creditsEarned;
+
+            // Check Level Up!
+            let targetLevel = currentRg;
+            let levelUpText = "";
+
+            while (targetLevel < 20 && gameState.exp >= getExpReqForLevel(targetLevel + 1)) {
+                targetLevel++;
+                levelUpText += `<br><span class="neon-text">RG LEVEL UP! [RG-${targetLevel}]</span> - New C-Cards Synced!`;
+            }
+
+            if (targetLevel > currentRg) {
+                gameState.profiles.player.level = targetLevel;
+                gameState.playerLevel = targetLevel;
+                syncCardsToLevel('player', targetLevel); // Apply new level rewards
+            }
+
+            msg.innerHTML = `All target entities have been purged. Objective secured.<br><br>
+            +${expEarned} EXP<br>
+            +${creditsEarned} LAB CREDITS
+            ${levelUpText}`;
+            updateOverworldEXPBar();
         }
         overlay.classList.remove('hidden');
     }
@@ -2259,25 +2576,14 @@ function showScreen(screenId) {
 }
 
 function resetGame() {
-    // 1. Initialize all NPC profiles using the Snapshot model
-    Object.keys(gameState.profiles).forEach(profileId => {
-        if (profileId === 'player' || profileId === 'opponent') return;
+    // 1. NPC Profile initialization (Character tabs)
+    const npcIds = ['lana', 'dyzes', 'capsain', 'jenzi', 'npc01', 'npc02', 'npc03'];
+    npcIds.forEach(profileId => {
+        const profile = gameState.profiles[profileId];
+        if (!profile) return;
 
-        // Auto-apply their signature preset silently
-        // If a direct ID match isn't found (e.g., 'jenzi'), find the first preset they own
-        let targetPresetId = profileId;
-        if (!NPC_PRESETS[targetPresetId]) {
-            targetPresetId = Object.keys(NPC_PRESETS).find(key => NPC_PRESETS[key].owner === profileId);
-        }
-
-        if (targetPresetId && NPC_PRESETS[targetPresetId]) {
-            applyPreset(profileId, targetPresetId, true);
-        } else {
-            // Fallback: Manually initialize party if no preset found at all
-            const profile = gameState.profiles[profileId];
-            if (profile.party.length === 0) {
-                profile.party = profile.team.map(id => createMonsterInstance(id));
-            }
+        if (profile.party.length === 0) {
+            profile.party = profile.team.map(id => createMonsterInstance(id));
         }
     });
 
@@ -2285,26 +2591,25 @@ function resetGame() {
     catalystState.activeProfile = 'player';
     catalystState.activeMonsterIdx = 0;
 
-    // 2. Player and Opponent initialization (Standard flow)
+    // 3. Player and Opponent initialization
     const pProfile = gameState.profiles.player;
-    pProfile.party = pProfile.team.map(id => createMonsterInstance(id));
-    gameState.playerParty = pProfile.party;
-    gameState.playerLevel = pProfile.level; // Use the level from the profile (syncs with debug slider)
-
-    // Dynamic Inventory Sync based on level
+    if (pProfile.party.length === 0) {
+        pProfile.party = pProfile.team.map(id => createMonsterInstance(id));
+    }
+    // Filter active squad slice (0,3) to remove nulls left by empty slots
+    gameState.playerParty = pProfile.party.slice(0, 3).filter(m => m !== null);
+    gameState.playerLevel = pProfile.level;
     syncCardsToLevel('player', gameState.playerLevel);
 
-    // Opponent initialization
     const opponentId = catalystState.battleOpponentId || 'opponent';
     const oProfile = gameState.profiles[opponentId];
 
-    // Ensure the opponent has a party (fallback if not initialized)
-    oProfile.party = oProfile.team.map(id => createMonsterInstance(id));
+    if (oProfile.party.length === 0) {
+        oProfile.party = oProfile.team.map(id => createMonsterInstance(id));
+    }
 
-    gameState.enemyParty = oProfile.party;
+    gameState.enemyParty = oProfile.party.slice(0, 3).filter(m => m !== null);
     gameState.enemyLevel = oProfile.level;
-
-    // Dynamic Inventory Sync for opponent
     syncCardsToLevel(opponentId, gameState.enemyLevel);
 
     // 2. Pre-apply Catalyst Bonuses to persistent max stats for the start of battle
@@ -2314,7 +2619,12 @@ function resetGame() {
             const mod = getModifiedStats(monster, level);
             monster.maxHp = mod.maxHp;
             monster.maxPp = mod.maxPp;
-            if (monster.hp > monster.maxHp) monster.hp = monster.maxHp;
+
+            // Full heal at the start of each battle
+            monster.hp = monster.maxHp;
+
+            // PP is not auto-filled, it must be generated, but ensure it's not over max
+            if (monster.pp > monster.maxPp) monster.pp = monster.maxPp;
         });
     };
     applyBonuses(gameState.playerParty, gameState.playerLevel);
@@ -2498,8 +2808,8 @@ function renderCellStorage() {
     const profileId = catalystState.activeProfile;
     const profile = gameState.profiles[profileId];
 
-    // Show ONLY monsters in index 3-8 (The "Storage" part of the 9-monster debug)
-    const storageMonsters = profile.party.slice(3, 9);
+    // Show ONLY monsters in index 3 onwards (The "Storage" part)
+    const storageMonsters = profile.party.slice(3);
 
     storageMonsters.forEach((monster, sIdx) => {
         const partyIdx = sIdx + 3; // Shift to actual party index
@@ -2536,38 +2846,8 @@ function renderCellStorage() {
         if (sourceSide !== catalystState.activeSide) return;
         if (sourceSlot === "") return;
 
-        const activeProfile = gameState.profiles[catalystState.activeProfile];
-        const targetParty = activeProfile.party;
-        const targetTeam = activeProfile.team;
         const slotIdx = parseInt(sourceSlot);
-
-        // Find an empty-ish or logical spot in storage? 
-        // Actually, since we have 9 fixed slots in this debug mode, 
-        // dragging back to storage just needs to swap with SOMETHING in storage.
-        // For simplicity, let's swap with the first storage slot (index 3).
-
-        const storageIdx = 3;
-        const tempMonster = targetParty[slotIdx];
-        targetParty[slotIdx] = targetParty[storageIdx];
-        targetParty[storageIdx] = tempMonster;
-
-        const tempSpecies = targetTeam[slotIdx];
-        targetTeam[slotIdx] = targetTeam[storageIdx];
-        targetTeam[storageIdx] = tempSpecies;
-
-        // NEW: Unequip the monster that was just moved TO storage
-        stripMonsterEquipment(catalystState.activeProfile, storageIdx);
-
-        // Sync global state
-        if (catalystState.activeProfile === 'player') {
-            gameState.playerTeam = [...targetTeam.slice(0, 3)];
-            gameState.playerParty = [...targetParty.slice(0, 3)];
-        } else if (catalystState.battleOpponentId === catalystState.activeProfile) {
-            gameState.enemyTeam = [...targetTeam.slice(0, 3)];
-            gameState.enemyParty = [...targetParty.slice(0, 3)];
-        }
-
-        renderManagementHub();
+        removeMonsterFromSquad(slotIdx);
     };
 }
 
@@ -2575,11 +2855,12 @@ function renderCellStorage() {
  * Universal helper to strip all equipment from a specific monster in a profile
  * and return those cards to the profile's box.
  */
-function stripMonsterEquipment(profileId, monsterIdx) {
+function stripMonsterEquipment(profileId, partyIdx) {
     const profile = gameState.profiles[profileId];
-    if (!profile || !profile.party[monsterIdx]) return;
+    if (!profile) return;
+    const monster = profile.party[partyIdx];
+    if (!monster) return;
 
-    const monster = profile.party[monsterIdx];
     const cardsToReturn = [...monster.equippedCards];
 
     cardsToReturn.forEach(ec => {
@@ -2589,6 +2870,30 @@ function stripMonsterEquipment(profileId, monsterIdx) {
     monster.equippedCards = [];
     monster.currentPresetId = "";
 }
+
+window.removeMonsterFromSquad = (slotIdx) => {
+    const profile = gameState.profiles[catalystState.activeProfile];
+    const monster = profile.party[slotIdx];
+    if (!monster) return;
+
+    // Remove all equipment before banishing to cell storage
+    stripMonsterEquipment(catalystState.activeProfile, slotIdx);
+
+    // Push to the end of storage
+    profile.party.push(monster);
+    profile.team.push(profile.team[slotIdx]);
+
+    // Nullify active slot
+    profile.party[slotIdx] = null;
+    profile.team[slotIdx] = null;
+
+    // Shift view if we deleted the currently viewed monster
+    if (catalystState.activeMonsterIdx === slotIdx) {
+        const nextValidIdx = profile.party.findIndex((m, idx) => m !== null && idx < 3);
+        catalystState.activeMonsterIdx = nextValidIdx !== -1 ? nextValidIdx : 0;
+    }
+    renderManagementHub();
+};
 
 function updateTeamSlots() {
     const slots = document.querySelectorAll('.slot');
@@ -2617,6 +2922,16 @@ function updateTeamSlots() {
             img.src = `./assets/images/${imgName}.png`;
             img.alt = monster.name;
             slot.appendChild(img);
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'btn-remove-monster btn-icon danger';
+            removeBtn.innerHTML = '✖';
+            removeBtn.title = 'Remove from Squad';
+            removeBtn.onclick = (e) => {
+                e.stopPropagation(); // Prevent selecting the slot as active
+                removeMonsterFromSquad(idx);
+            };
+            slot.appendChild(removeBtn);
 
             slot.draggable = true;
             slot.ondragstart = (e) => {
@@ -2652,16 +2967,22 @@ function updateTeamSlots() {
                 // Swap from Storage to Active Slot
                 const storageIdx = parseInt(sourceStorageIdx);
                 const tempMonster = targetParty[idx];
-                targetParty[idx] = targetParty[storageIdx];
-                targetParty[storageIdx] = tempMonster;
-
-                // Sync the species team array
                 const tempSpecies = targetTeam[idx];
-                targetTeam[idx] = targetTeam[storageIdx];
-                targetTeam[storageIdx] = tempSpecies;
 
-                // NEW: Unequip the monster that was just moved TO storage
-                stripMonsterEquipment(catalystState.activeProfile, storageIdx);
+                targetParty[idx] = targetParty[storageIdx];
+                targetTeam[idx] = targetTeam[storageIdx];
+
+                if (tempMonster) {
+                    // Standard swap
+                    targetParty[storageIdx] = tempMonster;
+                    targetTeam[storageIdx] = tempSpecies;
+                    // Unequip the monster that was just moved TO storage
+                    stripMonsterEquipment(catalystState.activeProfile, storageIdx);
+                } else {
+                    // Target was empty slot, slice out the source entirely so storage shrinks naturally
+                    targetParty.splice(storageIdx, 1);
+                    targetTeam.splice(storageIdx, 1);
+                }
 
                 addLog(`Redeployed ${targetParty[idx].name} to active squad.`);
             } else if (sourceSlot !== "") {
@@ -2846,37 +3167,67 @@ function updateCatalystBox() {
 
 function updateCatalystCore() {
     const anchor = document.getElementById('slots-anchor');
+    if (!anchor) return;
+
     const profile = gameState.profiles[catalystState.activeProfile];
     const party = profile.party;
     const monster = party[catalystState.activeMonsterIdx];
     const nameEl = document.getElementById('catalyst-monster-name');
     const presetCtrl = document.getElementById('preset-control');
     const presetSelector = document.getElementById('preset-selector');
-    if (!anchor || !monster) return;
 
-    const resetBtn = document.getElementById('btn-quick-reset');
-
-    if (catalystState.activeProfile === 'player') {
-        presetCtrl.classList.add('hidden');
-        document.getElementById('quick-equip-container').classList.remove('hidden');
-        if (resetBtn) resetBtn.classList.remove('hidden');
-    } else {
-        presetCtrl.classList.remove('hidden');
-        document.getElementById('quick-equip-container').classList.add('hidden');
-        if (resetBtn) resetBtn.classList.add('hidden');
-        populatePresets(catalystState.activeProfile, monster.currentPresetId);
-    }
-
-    nameEl.textContent = monster.name;
     const level = profile.level;
     setSafe('#catalyst-monster-rg', 'textContent', `RG-${level}`);
-    const stats = getModifiedStats(monster, level);
+
     const hpPeek = document.getElementById('peek-hp');
     const ppPeek = document.getElementById('peek-pp');
     const atkPeek = document.getElementById('peek-atk');
     const defPeek = document.getElementById('peek-def');
     const spdPeek = document.getElementById('peek-spd');
     const crtPeek = document.getElementById('peek-crt');
+
+    if (!monster) {
+        if (nameEl) nameEl.textContent = 'SQUAD EMPTY';
+        if (presetCtrl) presetCtrl.classList.add('hidden');
+        document.getElementById('quick-equip-container')?.classList.add('hidden');
+        document.getElementById('btn-quick-reset')?.classList.add('hidden');
+
+        if (hpPeek) hpPeek.textContent = '--';
+        if (ppPeek) ppPeek.textContent = '--';
+        if (atkPeek) atkPeek.textContent = '--';
+        if (defPeek) defPeek.textContent = '--';
+        if (spdPeek) spdPeek.textContent = '--';
+        if (crtPeek) crtPeek.textContent = '--';
+
+        anchor.innerHTML = '';
+        return;
+    }
+
+    const resetBtn = document.getElementById('btn-quick-reset');
+
+    // Always show Quick Equip tools for all profiles
+    document.getElementById('quick-equip-container').classList.remove('hidden');
+    if (resetBtn) resetBtn.classList.remove('hidden');
+
+    presetCtrl.classList.remove('hidden');
+    populatePresets(catalystState.activeProfile, monster.currentPresetId);
+
+    // Toggle Custom Preset Actions
+    const renameBtn = document.getElementById('btn-preset-rename');
+    const deleteBtn = document.getElementById('btn-preset-delete');
+    if (renameBtn && deleteBtn) {
+        if (monster.currentPresetId && CUSTOM_PRESETS[monster.currentPresetId]) {
+            renameBtn.classList.remove('hidden');
+            deleteBtn.classList.remove('hidden');
+        } else {
+            renameBtn.classList.add('hidden');
+            deleteBtn.classList.add('hidden');
+        }
+    }
+
+    nameEl.textContent = monster.name;
+
+    const stats = getModifiedStats(monster, level);
 
     const bonuses = { hp: 0, pp: 0, atk: 0, def: 0, spd: 0, crt: 0 };
     monster.equippedCards.forEach(ec => {
@@ -2990,18 +3341,39 @@ function populatePresets(profileId, currentPresetId = "") {
     // Always ensure it's visible for NPCs (including RG 0)
     selector.parentElement.classList.remove('hidden');
 
+    // 1. Load Custom Presets
+    const optGroupCustom = document.createElement('optgroup');
+    optGroupCustom.label = "Custom Presets";
+
+    Object.keys(CUSTOM_PRESETS).forEach(key => {
+        const preset = CUSTOM_PRESETS[key];
+        // Custom presets currently don't use owner/level locking, they belong to the player
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = `[C] ${preset.name} (RG-${preset.level})`;
+        if (key === currentPresetId) opt.selected = true;
+        optGroupCustom.appendChild(opt);
+    });
+
+    if (optGroupCustom.children.length > 0) {
+        selector.appendChild(optGroupCustom);
+    }
+
+    // 2. Load Default / NPC Presets
+    const optGroupNPC = document.createElement('optgroup');
+    optGroupNPC.label = "Story Presets";
+
     Object.keys(NPC_PRESETS).forEach(key => {
         const preset = NPC_PRESETS[key];
 
         // FILTER: Only show character-specific presets to their owner, or generic ones to everyone
-        if (preset.owner && preset.owner !== profileId) return;
+        if (preset.owner && !profileId.startsWith(preset.owner)) return;
 
         const opt = document.createElement('option');
         opt.value = key;
         opt.textContent = `${preset.name} (RG-${preset.level})`;
 
         // Disable if preset level is higher than current NPC RG (Player/Opponent restriction)
-        // For NPCs, we'll allow jumping to any level defined in a preset
         if (profileId === 'player' || profileId === 'opponent') {
             if (preset.level > profile.level) {
                 opt.disabled = true;
@@ -3009,59 +3381,73 @@ function populatePresets(profileId, currentPresetId = "") {
             }
         }
 
-        // Use the monster's currentPresetId, or fall back to profileId if none set
         const autoSelected = currentPresetId || profileId;
         if (key === autoSelected) opt.selected = true;
-        selector.appendChild(opt);
+        optGroupNPC.appendChild(opt);
     });
+
+    if (optGroupNPC.children.length > 0) {
+        selector.appendChild(optGroupNPC);
+    }
 }
 
 function applyPreset(profileId, presetId, silent = false) {
     const profile = gameState.profiles[profileId];
-    const preset = NPC_PRESETS[presetId];
+    const preset = CUSTOM_PRESETS[presetId] || NPC_PRESETS[presetId];
     if (!profile || !preset) return;
 
-    // 1. UPDATE PROFILE LEVEL (THE SNAPSHOT LEVEL)
-    // Only update level if it's an NPC (Player/Opponent level managed by slider)
-    if (profileId !== 'player' && profileId !== 'opponent') {
-        profile.level = preset.level;
-    }
+    // 1. UPDATE PROFILE LEVEL
+    profile.level = preset.level;
 
-    // 2. SYNC INVENTORY (Reward Pool)
+    // 2. SET ABSOLUTE FAIRNESS MODE (Allows duplicate equipment for NPCs)
+    profile.absoluteFairness = (profileId !== 'player');
+
+    // 3. SYNC INVENTORY
     syncCardsToLevel(profileId, profile.level);
-
-    // 3. SEED SIGNATURE CARDS - REMOVED for Strict Fair Balance
-    // NPCs now rely entirely on syncCardsToLevel(profile.level)
 
     // 4. SYNC SQUAD COMPOSITION
     const needsPartyInit = profile.party.length === 0 || JSON.stringify(profile.team) !== JSON.stringify(preset.team);
     if (preset.team && needsPartyInit) {
         profile.team = [...preset.team];
-        profile.party = profile.team.map(id => createMonsterInstance(id));
+        profile.party = profile.team.map(id => id ? createMonsterInstance(id) : null);
         if (catalystState.activeMonsterIdx >= profile.party.length) {
             catalystState.activeMonsterIdx = 0;
         }
     }
 
     // 5. CLEAR & EQUIP
-    // Pivot context so unequip/equip work on the correct box
     const oldActiveProfile = catalystState.activeProfile;
     catalystState.activeProfile = profileId;
-
     profile.party.forEach((mon, mIdx) => {
-        // Clear Existing
-        const currentlyEquipped = [...mon.equippedCards];
-        currentlyEquipped.forEach(ec => unequipCard(mIdx, ec.slotIndex, true));
+        if (!mon) return;
+
+        // Clear Existing (force full wipe for NPCs, Player already wipes via syncCardsToLevel implicitly mapping free inventory)
+        mon.equippedCards = [];
 
         // Slot New
-        const slotConfig = (preset.squadSlots && preset.squadSlots[mIdx]) ? preset.squadSlots[mIdx] : (preset.slots || {});
+        const slotConfig = (preset.squadSlots && preset.squadSlots[mIdx]) ? preset.squadSlots[mIdx] : {};
         Object.entries(slotConfig).forEach(([slotIdx, cardId]) => {
             const idx = parseInt(slotIdx);
-            const boxIndex = profile.cardBox.indexOf(cardId);
-            if (boxIndex > -1) {
+
+            // Check if card exists
+            if (CARDS[cardId]) {
                 const prevIdx = catalystState.activeMonsterIdx;
                 catalystState.activeMonsterIdx = mIdx;
-                equipCard(mIdx, idx, cardId, true, true);
+
+                // For the PLAYER profile, removing from physical inventory is required!
+                if (profileId === 'player') {
+                    const boxIndex = profile.cardBox.indexOf(cardId);
+                    if (boxIndex > -1) {
+                        profile.cardBox.splice(boxIndex, 1);
+                        mon.equippedCards.push({ slotIndex: idx, cardId: cardId });
+                    } else {
+                        console.warn(`[PRESET LOAD] Missing card ${cardId} in inventory, skipping equip.`);
+                    }
+                } else {
+                    // NPCs have infinite inventory for their specific static setups
+                    mon.equippedCards.push({ slotIndex: idx, cardId: cardId });
+                }
+
                 catalystState.activeMonsterIdx = prevIdx;
             }
         });
@@ -3070,12 +3456,10 @@ function applyPreset(profileId, presetId, silent = false) {
 
     catalystState.activeProfile = oldActiveProfile;
     if (!silent) {
-        // Sync the Debug UI if it's the active profile being modified
         if (profileId === catalystState.activeProfile) {
             const activeRGInput = document.getElementById('debug-active-rg');
             if (activeRGInput) activeRGInput.value = profile.level;
         }
-
         addLog(`Protocol Loaded: Preset "${preset.name}" applied @RG-${preset.level}.`);
         renderManagementHub();
     }
@@ -3335,7 +3719,8 @@ function equipCard(monsterIdx, slotIdx, cardId, silent = false, fromPreset = fal
         catalystState.dragSourceSlot.monsterIdx === monsterIdx &&
         catalystState.dragSourceProfile === catalystState.activeProfile;
 
-    if (!isInternalMove && monster.equippedCards.some(ec => ec.cardId === cardId)) {
+    const hasDuplicate = monster.equippedCards.some(ec => ec.cardId === cardId);
+    if (!isInternalMove && hasDuplicate && !profile.absoluteFairness) {
         if (!silent) addLog("Cannot equip duplicate cards on same Cell.");
         return;
     }
@@ -3436,9 +3821,9 @@ function processRecursiveRemoval(monster, parentSlotIdx) {
 
 function createMonsterInstance(id, existing = null) {
     const data = JSON.parse(JSON.stringify(MONSTERS[id]));
-    const defaultPresetId = NPC_PRESETS[id] ? id : "";
 
-    // Determine initial preset
+    // NPCs should always default to their ID as the preset if it exists
+    const defaultPresetId = NPC_PRESETS[id] ? id : "";
     const currentPresetId = existing ? existing.currentPresetId : defaultPresetId;
 
     const monster = {

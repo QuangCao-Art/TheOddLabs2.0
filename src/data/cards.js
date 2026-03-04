@@ -63,138 +63,62 @@ export const LEVEL_REWARDS = {
     6: ['atk_10', 'atk_10', 'crit_1'],
     7: ['spd_10_s1', 'hp_20'],
     8: ['hp_30_s1', 'spd_15'],
-    9: ['atk_20_s2', 'leader_2'],
-    10: ['crit_3_s2'],
+    9: ['atk_20_s2', 'crit_3_s2'],
+    10: ['def_20_s2', 'leader_2'],
     11: ['atk_40', 'def_40', 'hp_60'],
     12: ['pp_3_s2'],
-    13: ['def_20_s2'],
+    13: ['hp_30_s2', 'spd_15_s2'],
     14: ['crit_3_s2'],
-    15: ['pp_3_s2', 'leader_3']
+    15: ['pp_3_s2', 'leader_3'],
+    16: ['crit_5', 'pp_5'],
+    17: ['atk_20_s2', 'def_20_s2'],
+    18: ['hp_30_s1', 'spd_20'],
+    19: ['atk_40', 'def_40'],
+    20: ['leader_5']
 };
 
 export const NPC_PRESETS = {
-    opponent: {
-        name: "Rival's Final Form",
-        description: "The rival at their peak. Optimized for high-tier tactical balance.",
-        owner: 'opponent',
-        team: ['cambihil', 'lydrosome', 'nitrophil'],
-        level: 15,
-        squadSlots: {
-            0: { // The Tank (Greedy depth-first)
-                0: 'atk_20_s2', 1: 'hp_60', 2: 'hp_30_s1', 3: 'def_20_s2', 4: 'def_40',
-                5: 'pp_3_s2', 6: 'atk_40', 7: 'pp_3_s2', 8: 'crit_3_s2', 9: 'crit_3_s2'
-            },
-            1: { // Support
-                0: 'spd_10_s1', 1: 'hp_20', 2: 'spd_15', 3: 'pp_2_s1', 4: 'crit_2_s1'
-            },
-            2: { // Reserve
-                0: 'atk_10', 1: 'atk_10', 2: 'hp_10'
-            }
-        }
-    },
-    jenzi_rg15: {
-        name: "Jenzi's Final Form",
-        description: "The Senior's true tactical depth. Optimized for all three disciplines.",
-        owner: 'jenzi',
-        team: ['cambihil', 'lydrosome', 'nitrophil'],
-        level: 15,
-        squadSlots: {
-            0: { // Striker (Greedy depth-first)
-                0: 'atk_20_s2', 1: 'hp_60', 2: 'hp_30_s1', 3: 'def_20_s2', 4: 'def_40',
-                5: 'pp_3_s2', 6: 'atk_40', 7: 'pp_3_s2', 8: 'crit_3_s2', 9: 'crit_3_s2'
-            },
-            1: { // Balanced
-                0: 'spd_10_s1', 1: 'hp_20', 2: 'spd_15', 3: 'pp_2_s1', 4: 'crit_2_s1'
-            },
-            2: { // Reserve
-                0: 'atk_10', 1: 'atk_10', 2: 'hp_10'
-            }
-        }
-    },
-    lana: {
-        name: "Lana's Fortress",
-        description: "Botanical defense focused on maximum survival and bio-ceramic integrity.",
+    'lana': {
+        name: 'Lana\'s Fortress',
         owner: 'lana',
-        team: ['cambihil'],
-        level: 5,
-        squadSlots: {
-            0: { // Survival (Greedy depth-first)
-                0: 'pp_2_s1', 1: 'def_5', 2: 'def_5', 3: 'crit_2_s1', 4: 'hp_10'
-            }
-        }
-    },
-    dyzes: {
-        name: "Dyzes' Protocol",
-        description: "Osmotic snipers focused on synaptic speed and Pellicle point generation.",
-        owner: 'dyzes',
-        team: ['lydrosome', 'lydrosome'],
-        level: 9,
-        squadSlots: {
-            0: { // Utility (Greedy depth-first)
-                0: 'atk_20_s2', 1: 'hp_10', 2: 'atk_10', 3: 'hp_30_s1', 4: 'hp_20',
-                5: 'spd_10_s1', 6: 'pp_2_s1', 7: 'crit_2_s1', 8: 'spd_15'
-            },
-            1: { // Backup
-                0: 'atk_10', 1: 'def_5', 2: 'def_5'
-            }
-        }
-    },
-    capsain: {
-        name: "Director's Order",
-        description: "Absolute authority with a focus on overwhelming physical force and critical breaches.",
-        owner: 'capsain',
-        team: ['nitrophil', 'nitrophil', 'nitrophil'],
-        level: 13,
-        squadSlots: {
-            0: { // The Heavy (Greedy depth-first)
-                0: 'atk_20_s2', 1: 'hp_20', 2: 'atk_10', 3: 'def_20_s2', 4: 'spd_15',
-                5: 'crit_3_s2', 6: 'hp_60', 7: 'pp_3_s2', 8: 'def_40', 9: 'atk_40'
-            },
-            1: { // Tactical backup
-                0: 'hp_30_s1', 1: 'hp_10', 2: 'spd_5', 3: 'spd_10_s1', 4: 'pp_2_s1', 5: 'crit_2_s1', 6: 'atk_10'
-            },
-            2: { // Maintenance
-                0: 'def_5', 1: 'def_5', 2: 'atk_5'
-            }
-        }
-    },
-    npc01: {
-        name: "Balanced Readiness",
-        description: "Standard tactical spread for early-grade clearance.",
-        team: ['lydrosome', 'lydrosome'],
-        level: 2,
-        squadSlots: {
-            0: { 0: 'atk_5', 1: 'def_5' },
-            1: { 0: 'atk_5', 1: 'def_5' }
-        }
-    },
-    npc02: {
-        name: "Sturdy Bio-Signature",
-        description: "High early-grade defense and survival protocols.",
-        team: ['nitrophil', 'nitrophil'],
-        level: 6,
-        squadSlots: {
-            0: { // Survival/Utility
-                0: 'pp_2_s1', 1: 'def_5', 2: 'def_5', 3: 'crit_2_s1', 4: 'hp_10'
-            },
-            1: {
-                0: 'atk_10', 1: 'atk_10', 2: 'spd_5'
-            }
-        }
-    },
-    npc03: {
-        name: "Aggressive Probe",
-        description: "Focus on early critical openings and speed.",
-        team: ['cambihil', 'cambihil'],
         level: 10,
-        squadSlots: {
-            0: { // Aggressive Lead
-                0: 'atk_20_s2', 1: 'spd_15', 2: 'hp_20', 3: 'crit_3_s2', 4: 'atk_10',
-                5: 'hp_30_s1', 6: 'spd_10_s1', 7: 'atk_10'
-            },
-            1: { // Backup
-                0: 'crit_2_s1', 1: 'hp_10', 2: 'spd_5', 3: 'pp_2_s1'
-            }
-        }
+        team: ['cambihil', 'cambihil', 'cambihil'],
+        squadSlots: [
+            { 0: 'hp_30_s1', 1: 'def_20_s2', 2: 'leader_2' },
+            { 0: 'hp_20', 1: 'atk_10', 2: 'pp_2_s1' },
+            { 0: 'def_10', 1: 'hp_10', 2: 'spd_10_s1' }
+        ]
+    },
+    'dyzes': {
+        name: 'Dyzes\' Protocol',
+        owner: 'dyzes',
+        level: 15,
+        team: ['lydrosome', 'lydrosome', null],
+        squadSlots: [
+            { 0: 'spd_15_s2', 1: 'atk_40', 2: 'crit_3_s2' },
+            { 0: 'spd_10_s1', 1: 'atk_20_s2', 2: 'pp_3_s2' }
+        ]
+    },
+    'capsain': {
+        name: 'Director\'s Order',
+        owner: 'capsain',
+        level: 20,
+        team: ['nitrophil', 'nitrophil', 'nitrophil'],
+        squadSlots: [
+            { 0: 'leader_5', 1: 'atk_40', 2: 'spd_20' },
+            { 0: 'atk_20_s2', 1: 'crit_5', 2: 'pp_5' },
+            { 0: 'atk_20_s2', 1: 'crit_5', 2: 'pp_5' }
+        ]
+    },
+    'jenzi_mid': {
+        name: 'Jenzi\'s Test',
+        owner: 'jenzi',
+        level: 5,
+        team: ['cambihil', 'lydrosome', 'nitrophil'],
+        squadSlots: [
+            { 0: 'leader_1', 1: 'hp_10', 2: 'atk_5' },
+            { 0: 'spd_5', 1: 'atk_5', 2: 'pp_1' },
+            { 0: 'atk_5', 1: 'crit_1', 2: 'spd_5' }
+        ]
     }
 };

@@ -29,6 +29,12 @@
         <!-- Overworld Screen -->
         <div id="screen-overworld" class="screen hidden">
             <div id="overworld-ui">
+                <div id="exp-tracker-display">
+                    <div class="exp-label">EXP: <span id="exp-current">0</span>/<span id="exp-max">30</span></div>
+                    <div class="exp-bar-bg">
+                        <div id="exp-bar-fill" class="exp-bar-fill"></div>
+                    </div>
+                </div>
                 <div id="log-count-display">DATA LOGS: <span id="log-count">0</span></div>
                 <div id="location-display">LOCATION: <span id="location-name">LAB LOBBY</span></div>
             </div>
@@ -91,7 +97,7 @@
                         <div class="debug-row" style="display: flex; align-items: center; gap: 15px;">
                             <div style="display: flex; align-items: center; gap: 5px;">
                                 <label id="debug-rg-label" style="margin:0;">ACTIVE RG:</label>
-                                <input type="number" id="debug-active-rg" min="0" max="15" value="15"
+                                <input type="number" id="debug-active-rg" min="0" max="20" value="15"
                                     style="margin:0; width: 45px;">
                             </div>
                             <div id="enable-battle-container" style="display: none; align-items: center; gap: 8px;">
@@ -141,6 +147,12 @@
                                     <select id="preset-selector">
                                         <option value="">-- CUSTOM --</option>
                                     </select>
+                                    <button id="btn-preset-save" class="btn-icon"
+                                        title="Save Current as Preset">💾</button>
+                                    <button id="btn-preset-rename" class="btn-icon hidden"
+                                        title="Rename Selected Preset">✏️</button>
+                                    <button id="btn-preset-delete" class="btn-icon danger hidden"
+                                        title="Delete Selected Preset">🗑️</button>
                                 </div>
                                 <button id="btn-quick-reset" class="btn-quick danger hidden"
                                     title="Unequip all cards">CLEAR ALL</button>
@@ -722,6 +734,20 @@
                         <!-- Stats injected here -->
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Preset Naming Modal -->
+    <div id="preset-name-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel preset-modal-panel">
+            <h3 id="preset-modal-title" class="neon-text">SAVE PRESET</h3>
+            <p id="preset-modal-prompt">Enter a name for this Custom Preset:</p>
+            <input type="text" id="preset-name-input" class="preset-name-input" placeholder="My Custom Build"
+                maxlength="30" autocomplete="off">
+            <div class="preset-modal-actions">
+                <button id="btn-preset-confirm" class="btn-action confirm">CONFIRM</button>
+                <button id="btn-preset-cancel" class="btn-action cancel">CANCEL</button>
             </div>
         </div>
     </div>

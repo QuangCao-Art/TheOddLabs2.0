@@ -285,3 +285,22 @@ Every monster requires two dedicated visual assets located in `assets/images/`:
 
 ### A.3 Tactical Law Compliance
 Ensure new monsters leverage the **Official Tactical MAP Suite** whenever possible. Avoid generic damage buffs; prioritize positional manipulation (forced NEAR/FAR) and impact-based utility.
+
+---
+
+## 12. Development Backlog (Upcoming Features)
+
+The following systems are planned for future integration to build the core RPG loop around the established tactical combat engine:
+
+### 12.1 Random Overworld Encounters (The "Stemmy" System)
+*   **The Monster**: "Stemmy" (CELL00). A pure Stem Cell. It is the most basic cellular entity in the game, featuring a straightforward moveset with no complex tactical tricks. Designed specifically as the primary "grinding" opponent.
+*   **The Mechanic**: Instead of invisible random battles, Stemmy will physically spawn in the Overworld near the player's current location while they are exploring the lab.
+*   **Trigger Logic**: Spawns can be triggered by either a step-counter threshold or a random time interval. 
+*   **Despawn Logic**: Stemmy encounters are transient. If the player chooses not to interact with the spawned Stemmy entity within a set timeframe (e.g., 30-60 seconds), the entity will despawn and disappear from the map.
+
+### 12.2 Economic Loop & Consumables
+*   **Currency**: Introduce a resource dropped by Stemmy upon defeat (e.g., "Biomass" or "Lab Credits").
+*   **The Shop**: A vendor terminal in the Lobby where players can spend currency on consumable items (healing injectors) or permanent tactical upgrades (C-Cards).
+
+### 12.3 Master Save System
+*   **Implementation**: A global save architecture that serializes the overarching `gameState` object (including Overworld X/Y coordinates, unlocked doors, DataLog inventory, current RG Level, and active C-Card Presets) to `localStorage` for cross-session persistence.

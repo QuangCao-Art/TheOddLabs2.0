@@ -29,8 +29,134 @@ export const Overworld = {
     isTransitioning: false,
     isPaused: false,
     logsCollected: [], // Array of log IDs found
-    lastTurnTime: 0,
     gameLoopActive: false,
+
+    // --- Entity Spawner System (Wild Encounters) ---
+    spawner: {
+        activeSpawn: null,
+        spawnTimer: null,
+        cooldownTimer: null,
+        allowedZones: ['atrium', 'botanic', 'human', 'executive'],
+        cooldownMs: 8000, // 8 seconds cooldown between spawns
+
+        start() {
+            if (!this.allowedZones.includes(Overworld.currentZone)) return;
+            if (this.activeSpawn || this.cooldownTimer || this.spawnTimer) return;
+            this.scheduleSpawn();
+        },
+
+        stop() {
+            if (this.spawnTimer) clearTimeout(this.spawnTimer);
+            if (this.cooldownTimer) clearTimeout(this.cooldownTimer);
+            this.spawnTimer = null;
+            this.cooldownTimer = null;
+        },
+
+        resetForZoneChange() {
+            this.stop();
+            this.despawnCurrent();
+            this.start(); // Will abort if zone not allowed
+        },
+
+        scheduleSpawn() {
+            // Random time between 10s and 25s for next spawn
+            const delay = Math.floor(Math.random() * 15000) + 10000;
+            this.spawnTimer = setTimeout(() => this.spawnStemmy(), delay);
+        },
+
+        spawnStemmy() {
+            const zone = Overworld.zones[Overworld.currentZone];
+            if (!zone) return;
+
+            // Define target radius: Spawn ~2-4 tiles away from player
+            const radius = 3;
+            let validSpots = [];
+
+            for (let y = 0; y < zone.height; y++) {
+                for (let x = 0; x < zone.width; x++) {
+                    const dist = Math.abs(x - Overworld.player.x) + Math.abs(y - Overworld.player.y);
+                    if (dist >= 2 && dist <= 5) {
+                        const tileID = zone.layout[y][x];
+                        const isGenericWall = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 32].includes(tileID);
+                        const isClosedDoor = [20, 22, 24, 25, 28, 29, 30, 31].includes(tileID);
+
+                        if (!isGenericWall && !isClosedDoor) {
+                            // Check objects collision
+                            const isOccupied = zone.objects.some(obj => {
+                                const meta = Overworld.getFurnitureMeta(obj.id);
+                                if (meta && meta.hasCollision === false) return false;
+                                const w = obj.width || 1;
+                                const h = obj.height || 1;
+                                return x >= obj.x && x < obj.x + w && y >= obj.y && y < obj.y + h;
+                            });
+
+                            if (!isOccupied) {
+                                validSpots.push({ x, y });
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (validSpots.length > 0) {
+                const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+
+                const stemmyObj = {
+                    id: 'stemmy_wild_' + Date.now(),
+                    x: spot.x,
+                    y: spot.y,
+                    type: 'npc',
+                    name: 'Wild Stemmy',
+                    direction: 'down',
+                    temp: true
+                };
+
+                zone.objects.push(stemmyObj);
+                this.activeSpawn = stemmyObj;
+
+                // Render it instantly
+                const mapEl = document.getElementById('overworld-map');
+                const el = document.createElement('div');
+                el.id = `npc-${stemmyObj.id}`;
+                el.className = `world-object npc face-down stemmy wild-stemmy jump-spawn`;
+                el.style.width = `${Overworld.tileSize}px`;
+                el.style.height = `${Overworld.tileSize}px`;
+                el.style.left = `${spot.x * Overworld.tileSize}px`;
+                el.style.top = `${spot.y * Overworld.tileSize}px`;
+                el.style.zIndex = spot.y + 11;
+                el.style.backgroundImage = "url('assets/sprites/Combat_Stemmy.png')";
+                el.style.backgroundSize = "contain";
+                el.style.backgroundRepeat = "no-repeat";
+                mapEl.appendChild(el);
+
+                // Stemmy stays for ~15 to 30 seconds before despawning
+                const lifespan = Math.floor(Math.random() * 15000) + 15000;
+                this.spawnTimer = setTimeout(() => this.despawnCurrent(), lifespan);
+            } else {
+                // Try again later if blocked
+                this.scheduleSpawn();
+            }
+        },
+
+        despawnCurrent() {
+            if (!this.activeSpawn) return;
+            const zone = Overworld.zones[Overworld.currentZone];
+            const idx = zone.objects.findIndex(o => o.id === this.activeSpawn.id);
+            if (idx > -1) zone.objects.splice(idx, 1);
+
+            const el = document.getElementById(`npc-${this.activeSpawn.id}`);
+            if (el) el.remove();
+
+            this.activeSpawn = null;
+            if (this.spawnTimer) clearTimeout(this.spawnTimer);
+
+            // Start Cooldown for next spawn
+            this.cooldownTimer = setTimeout(() => {
+                this.cooldownTimer = null;
+                this.scheduleSpawn();
+            }, this.cooldownMs);
+        }
+    },
 
     zones: {
         lobby: {
@@ -858,11 +984,13 @@ export const Overworld = {
     startLoop() {
         if (this.gameLoopActive) return;
         this.gameLoopActive = true;
+        this.spawner.start();
         this.gameLoop();
     },
 
     stopLoop() {
         this.gameLoopActive = false;
+        this.spawner.stop();
     },
 
     gameLoop() {
@@ -1038,6 +1166,7 @@ export const Overworld = {
             if (playerEl) playerEl.classList.remove('no-transition');
             if (mapEl) mapEl.classList.remove('no-transition');
             this.isTransitioning = false;
+            this.spawner.resetForZoneChange();
         }, 200); // "Landing" delay
     },
 
@@ -1109,9 +1238,15 @@ export const Overworld = {
         if (this.player.direction === 'left') targetX--;
         if (this.player.direction === 'right') targetX++;
 
-        // 1. Check for NPCs
+        // 1. Check for NPCs and Wild Stemmy
         const npc = zone.objects.find(o => o.type === 'npc' && o.x === targetX && o.y === targetY);
         if (npc) {
+            if (npc.id.startsWith('stemmy_wild')) {
+                // Trigger Battle System
+                this.spawner.stop();
+                window.dispatchEvent(new CustomEvent('start-wild-encounter', { detail: { id: 'stemmy' } }));
+                return;
+            }
             this.startNPCInteraction(npc);
             return;
         }
@@ -1190,102 +1325,84 @@ export const Overworld = {
             npcEl.classList.add(`face-${npc.direction}`);
         }
 
-        // Dialogue sequences from story_lore.md
-        const dialogueDb = {
-            'jenzi': [
-                "Yo, Intern! Welcome to the Lab. I'm Jenzi.",
-                "Don't let the 'Senior' title fool you, I'm just here for the vibes and the chaos.",
-                "But fr, you need a Companion Cell if you're gonna survive the Director's mood swings.",
-                "Go pick your starter from the Incubation Chamber, bestie! vibes are immaculate today."
-            ],
-            'lana': [
-                "Wait. You've been poking around the botanical archives, haven't you?",
-                "Look, I love these cells, but the Director says we have to keep the research classified.",
-                "If you want that Old Lab Key, you'll have to prove you can handle the truth in a duel!"
-            ],
-            'dyzes': [
-                "Lydrosome is a marvel of tactical evolution.",
-                "But your presence here is... unscheduled.",
-                "Let us see if your mind is as sharp as your cell's membrane."
-            ],
-            // Basic NPC archetypes (can be used as fallbacks)
-            'npc_female': [
-                "Working under Director Capsain is... intense. He's a visionary, but those vision quests take a toll.",
-                "Have you checked the data logs? We've lost track of so many entries lately."
-            ],
-            'npc_male': [
-                "Stay sharp, Intern. The cells in this ward are more reactive than usual today.",
-                "If you see Jenzi, tell him the bio-sampler is ready. He's probably slacking in the lounge again."
-            ]
-        };
+        const logs = this.logsCollected.length;
+        let lines = ["..."];
+        this.pendingBattleEncounter = null; // Clean slate
 
-        // Random Dialogue Pools categorized by zone (from story_lore.md + new entries)
-        const randomPools = {
-            atrium: [
-                ["Have you seen the latest readings on the Nitrophils?// They seem to have a higher metabolic rate whenever it's Noodle Tuesday.// Strange correlation."],
-                ["The Director was shouting in the cafeteria again.// He called the Nitrophils 'bio-hazardous junk'// and threatened to incinerate any dish with a red stain.// I've never seen someone so angry at a cell."],
-                ["I remember the Leak of '82... supposedly.// The Director still uses it as an excuse to ignore the Cells.// He calls them 'failed remnants of a dark day' whenever he's in a bad mood."],
-                ["The Cells are so helpful! One of them helped me reorganize my entire filing cabinet.// Although, it did categorize everything by 'color' instead of 'alphabetical'."],
-                ["Why is the vending machine always out of Spicy Peanuts?// I suspect the Director is buying the entire stock for his late-night shifts."],
-                ["Did you hear? A junior intern claims to have seen a 'giant' cell in the old storage wing.// Probably just lack of sleep and too many energy drinks."],
-                ["The new bio-blue interface is much easier on the eyes, don't you think?// It makes the whole lab feel more tactical and professional."],
-                ["I tried to pet a Nitrophil today.// It was remarkably soft, and it just stared at my lunch with such intense, spicy curiosity.// They're almost... cute."],
-                ["Did you know Lydrosomes can use their osmotic pressure to precisely target debris?// I saw one pressure-cleaning a set of microscopes in the breakroom yesterday.// Not a speck of dust left."],
-                ["The Osmotic types are fascinating.// They can filter an entire liter of lab-grade water in under ten seconds.// We haven't had a clogged sink since they arrived."],
-                ["Thermogenic cells like Nitrophil have a resting body temperature that could boil an egg.// The Director calls them 'walking fire hazards' and banned them from the executive floor."],
-                ["I heard rumors from the Alpha-Beta Sector.// They're working on a 'Dual Combatant' pair called Dip-Alpha and Dip-Beta.// Apparently, they're inseparable.// If one goes down, it's a disaster for everyone's energy levels."],
-                ["I saw a senior researcher trying to 'authenticate' a Bikini Card// using a high-powered electron microscope.// He claimed he was checking for 'tactical watermarks,//'but he hasn't blinked in three hours.// Curious dedication to the craft, really."],
-                ["Why is everyone suddenly trading 'Swimsuit Variants' of the Cell cards?// I heard the holographic foil is made of 'distilled summer vibes'// and makes your Pellicle look 10% more fabulous.// I need one for... thermal testing."],
-                ["I tried to explain my research to a Lydrosome,// but it just went right over its head.// I guess I shouldn't have expected it to absorb information that quickly.// It has zero osmotic interest in my career."],
-                ["What if we synthesized a cell that only eats student loans?// We'd have to give it a very high affinity for 'depleted wallets' and 'unpaid interest'.// I think it's a Nobel Prize waiting to happen."],
-                ["Did you know that some cells in the Botanic Sector can actually hear you scream?// Well, not 'hear' in the traditional sense, but they respond to high-frequency vibrations.// So if you're having a bad day, please scream quietly.// You're stressing the ferns."],
-                ["I asked the Nitrophils if they knew any jokes about thermal dynamics.// They acts like they're too 'hot' to handle.// I really need to stop talking to the thermogenic specimens."],
-                ["I've been calculating the trajectory of a Nitrophil launched from a high-pressure bio-chute.// If we get the angle right, we could technically deliver spicy noodles across the entire lab in 0.8 seconds.// The Director's office is right in the flight path, though."],
-                ["Did you know the 'anti-slip' coating on the stairs is actually a layer of modified adhesive cells that 'lick' your shoes to keep them in place?// It works wonders, but the feeling of a thousand tiny tongues tasting your sneakers is... technically questionable.// And remarkably loud on quiet shifts."]
-            ],
-            lobby: [
-                ["Welcome to Odd Labs!// Please keep your badge visible at all times and avoid the bio-hazard chutes."],
-                ["The Incubation Chamber is just ahead.// Have you picked your signature cell yet? Career paths depend on it!"],
-                ["Don't mind the security guards.// They're mostly here for... aesthetic compliance and to keep the cells in check."],
-                ["If you're looking for the Director, he's usually in the Executive Suite.// Or hiding in the cafeteria during 'Noodle Tuesday'."],
-                ["Stay sharp, Intern.// This lobby might look peaceful, but the research floors are quite the tactical maze."],
-                ["I'm heading to the breakroom.// Apparently, the coffee machine finally stopped dispensing blue sludge."]
-            ],
-            botanic: [
-                ["Lana is brilliant with those Cambihils, but she has to hide them when the Director walks by.// He calls them 'invasive weeds' and says they're a disgrace to the department."],
-                ["Fun fact: Cambihils actually photosynthetic at a 15% higher efficiency rate// when they're near a window.// They're basically high-speed solar panels with leaves."],
-                ["Watch out for the 'Canobolus' project in the Fungal Ward.// It’s a Ballistospore with a catapult mechanism.// They say it roots itself into the floor// and just starts peppering its target with high-pressure spores like a machine gun."],
-                ["The humidity in here is great for the ferns, but it's murder on my paperwork."],
-                ["Did you see the glowing hedge move?// Lana says it's just 'bio-active curiosity', but I'm not so sure."],
-                ["Lana spends more time talking to the plants than most of us.// Can't blame her, really. At least the plants don't complain about data entry."],
-                ["Lana claims her 'Bikini Collection' is purely for 'UV radiation benchmarks'.// Right... and I'm sure that floral-pattern one is for 'camouflaging with the hydrangeas'.// She's not fooling anyone."]
-            ],
-            human: [
-                ["Working in Human Cell Research with Dyzes is great,// but the Lydrosomes keep trying to 'clean' my coffee mug with high-pressure jets. It's quite a messy way to start the morning."],
-                ["Viral-type cells don't actually 'infect'—they just share data at a molecular level.// The Director hates them the most;// he says they're 'biological parasites' that should have been deleted years ago."],
-                ["Sector 7 is trying to fix a 'buggy' mitochondria they're calling Mitonegy.// It’s supposed to act like a transformer, patching up colleagues' membranes automatically.// Sounds like a maintenance nightmare."],
-                ["Have you seen the blueprints for the 'Kerashell'?// It's a Keratinocyte with an armor plates made of skin protein.// They say it can take a beating with almost zero energy cost.// I wish my lab coat was that durable."],
-                ["I heard the Scavenger team in the basement is working on 'Chlarob'.// It's based on Chlamydia, but instead of making you sick, it's programmed to thieve energy from enemy cells. Tactical, but a bit creepy."],
-                ["Micro-tactical data is coming in fast today.// Dyzes is going to be pleased with the latest Lydrosome stats."],
-                ["I asked Dyzes for a Band-Aid after a papercut.// He tried to give me a 'Lydrosome-infused regenerating patch' that cost more than my monthly salary.// I just used a napkin instead."],
-                ["Dyzes says the human-cell interface is 98% stable.// I'm just wondering about what happens with that last 2%."]
-            ]
-        };
-
-        const key = npc.id.split('_')[0];
-        let lines = dialogueDb[key] || ["..."];
-
-        // Apply randomization to generic staff types based on location
-        if (npc.id.startsWith('npc_male') || npc.id.startsWith('npc_female')) {
-            // Determine pool based on zone
-            let activePool = randomPools.atrium; // default
+        if (npc.id === 'jenzi') {
+            if (logs < 5) {
+                lines = [
+                    "Yo, Intern! Keep looking for Datapads.",
+                    "The doors are locked until you prove you can do basic research."
+                ];
+            } else if (logs >= 5 && logs < 10) {
+                lines = [
+                    "5 Datapads already? Lowkey impressive.",
+                    "I'll tell you the 'tea' about the Incident... wait, actually...",
+                    "If you want the tea, you gotta prove you're not a scrub. Square up!"
+                ];
+                // Only fight if they haven't beaten her at RG-5 yet. Since we don't have a rigid defeated flag, triggering is fine, they can re-battle.
+                this.pendingBattleEncounter = 'jenzi';
+            } else {
+                lines = ["You've already proven yourself, Intern. Go bother Lana in the Botanic Sector."];
+            }
+        } else if (npc.id === 'lana') {
+            if (logs < 10) {
+                lines = [
+                    "You're 14 seconds late for this conversation. Make it quick!",
+                    "Actually, don't. Collect 10 logs before you waste my time."
+                ];
+            } else if (logs >= 10 && logs < 15) {
+                lines = [
+                    "Wait. You've been poking around the botanical archives...",
+                    "If you want that Old Lab Key, you'll have to prove you can handle the truth in a duel!"
+                ];
+                this.pendingBattleEncounter = 'lana';
+            } else {
+                lines = ["You have the key. The Human Research Ward is open. Leave my plants alone."];
+            }
+        } else if (npc.id === 'dyzes') {
+            if (logs < 15) {
+                lines = [
+                    "Chill out. Stress increases cortisol, and cortisol ruins the data.",
+                    "Just let the flow take you until you find 15 logs."
+                ];
+            } else if (logs >= 15 && logs < 20) {
+                lines = [
+                    "I've seen your log activity. You're piecing together 'The Incident'.",
+                    "Let's see if your tactical vibe is strong enough to handle it."
+                ];
+                this.pendingBattleEncounter = 'dyzes';
+            } else {
+                lines = ["Your flow is undeniable. Go face the Director."];
+            }
+        } else if (npc.id === 'capsain') {
+            if (logs < 20) {
+                lines = [
+                    "What are you doing here? These labs aren't for sightseeing!",
+                    "You need absolute clearance (20 Logs) to speak with me."
+                ];
+            } else {
+                lines = [
+                    "You found the Noodle Review. You found the '82 security gap.",
+                    "You think a little chili sauce is enough to topple this Director?",
+                    "If you want the 'Origin', you'll have to go through me first!"
+                ];
+                this.pendingBattleEncounter = 'capsain';
+            }
+        } else {
+            // Generic Staff Randomizer
+            let activePool = randomPools.atrium;
             if (this.currentZone === 'lobby') activePool = randomPools.lobby;
             if (this.currentZone === 'botanic') activePool = randomPools.botanic;
             if (this.currentZone === 'human') activePool = randomPools.human;
-            if (this.currentZone === 'kitchen') activePool = randomPools.atrium;
 
             const randomIndex = Math.floor(Math.random() * activePool.length);
             lines = activePool[randomIndex];
+            // Optionally allow generic NPCs to trigger battles purely for testing? Let's leave them as purely lore for pacing, unless specifically starting with npc_
+            if (npc.id.startsWith('npc_')) {
+                this.pendingBattleEncounter = npc.id;
+            }
         }
 
         this.showDialogue(npc.name, lines, npc.id);
@@ -1392,6 +1509,17 @@ export const Overworld = {
         this.isDialogueActive = false;
         document.getElementById('dialogue-box')?.classList.add('hidden');
         document.getElementById('npc-portrait-overlay')?.classList.add('hidden');
+
+        const partner = this.currentDialoguePartner;
         this.currentDialoguePartner = null;
+
+        // If the dialogue was with a valid NPC and we hit the log threshold, trigger the encounter
+        if (this.pendingBattleEncounter) {
+            const encounterId = this.pendingBattleEncounter;
+            this.pendingBattleEncounter = null; // Clean up
+            setTimeout(() => {
+                window.dispatchEvent(new CustomEvent('start-npc-encounter', { detail: { id: encounterId } }));
+            }, 200);
+        }
     }
 };

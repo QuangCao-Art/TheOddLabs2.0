@@ -38,10 +38,10 @@ Each major NPC has a "Tactical Snapshot" representing their research progress an
 | NPC | Preset Name | Active RG | Tactical Focus |
 |:---|:---|:---|:---|
 | **Jenzi (Early)** | Jenzi's Welcome | RG-0 | Standard starter squad with zero card bonuses. |
-| **Jenzi (Late)** | Jenzi's Final Form | RG-15 | Elite Senior setup with full Tier-3 stat cards. |
-| **Lana** | Lana's Fortress | RG-5 | Botanical defense with high HP and PP focus. |
-| **Dyzes** | Dyzes' Protocol | RG-9 | Twin Lydrosome snipers with SPD and ATK focus. |
-| **Capsain** | Director's Order | RG-15 | Triple Nitrophil offense with Elite Leader Perks. |
+| **Jenzi (Mid)** | Jenzi's Test | RG-5 | General stat check and Tier-1 Leader gateway. |
+| **Lana** | Lana's Fortress | RG-10 | Botanical defense with high HP and PP focus. |
+| **Dyzes** | Dyzes' Protocol | RG-15 | Twin Lydrosome snipers with SPD and ATK focus. |
+| **Capsain** | Director's Order | RG-20 | Triple Nitrophil offense with Elite Leader Perks. |
 
 ## Card & Research Progression
 
@@ -54,13 +54,19 @@ Focus on basic stat boosts and initializing your first **Leader Card**.
 
 ### Tier 2: Utility Expansion (RG 6-10)
 Introduction of **Slot+1** cards and advanced analytical precision.
-- **RG 6-8**: Stat boosts (+20) and Weak-Point Analysis (Crit).
-- **RG 9**: Unlock **The Third Brain** (Enables 2nd Pellicle move slot).
+- **RG 6-8**: Stat boosts (+15/+30) and Weak-Point Analysis (Crit).
+- **RG 10**: Unlock **The Third Brain** (Enables 2nd Pellicle move slot).
 
 ### Tier 3: Advanced Optimization (RG 11-15)
-Maximized stats, **Slot+2** cards, and heavy tactical perks.
-- **RG 11-14**: MAX Tier Stat cards (+40 ATK/DEF, +60 HP).
-- **RG 15**: Unlock **Elite Leader Perks** (e.g., Oxidative Energy Burst).
+Maximized Tier 1 stat cards, introduction of **Slot+2** cards, and heavy tactical perks.
+- **RG 11**: MAX Tier Stat cards (+40 ATK/DEF, +60 HP).
+- **RG 12-14**: Advanced PP generation and vascular scaling.
+- **RG 15**: Unlock **Oxidative Energy Burst** (Elite Leader Perk).
+
+### Tier 4: Pinnacle Engineering (RG 16-20)
+The absolute peak of cellular enhancement. Maximum efficiency.
+- **RG 16-19**: The final MAX upgrades (+5 PP, +5% Crit, +20 SPD).
+- **RG 20**: Unlock **Molecular Dissolver** (Attacks ignore ALL defense).
 
 ## The Origin Nitrophil
 The **Origin Nitrophil** is a secret known only to Director Capsain. Hidden in a dusty, unused corner of the lab, it is the Director's silent burden. It is significantly larger than its siblings, with a vibrant, glowing **Orange Chili Hue**. Surprisingly, it isn't aggressive; it's incredibly chill and hyperactive—a direct result of its high-potency capsicum origins.
@@ -68,13 +74,13 @@ The **Origin Nitrophil** is a secret known only to Director Capsain. Hidden in a
 ## Progression: The DataLog System
 The truth is hidden in the digital archives. Collecting DataLogs unlocks new sectors and reveals the real history of the Lab.
 
-1.  **Lobby Start**: Talk to Jenzi -> Choose Cell -> **Test Battle** (Win or Lose) -> **Log #001** drops near Atrium door.
-2.  **Atrium Unlock**: Collect Log #001 -> Talk to Jenzi -> Atrium door unlocks.
-3.  **Lana's Sector (5 Logs)**: Collect 4 more logs in Atrium (Total 5) -> Talk to Jenzi (She tells the False Incident) -> Lana's Room unlocks.
-4.  **Dyzes' Sector (10 Logs)**: Collect 5 logs in Lana's Room (Total 10) -> Battle Lana -> Receive Key -> Talk to Jenzi -> Dyzes' Room unlocks.
-5.  **Director's Suite (15 Logs)**: Collect 5 logs in Dyzes' Room (Total 15) -> Battle Dyzes -> Receive Old Lab info -> Talk to Jenzi -> Director's Room unlocks.
-6.  **The Climax (20 Logs)**: Find 5 logs in Director's Room (Total 20) -> Battle Director -> Receive Inferno Sauce -> Talk to Jenzi.
-7.  **Final Secret**: Find the **Old Lab Room** -> Read **Final Datalog** -> Take **Origin Nitrophil** to Director -> Game End.
+**Lobby Start**: Talk to Jenzi -> Choose Cell -> **Test Battle** (Win or Lose) -> **Log #001** drops near Atrium door. 
+**Atrium Unlock**: Collect Log #001 -> Talk to Jenzi -> Atrium door unlocks. 
+**Atrium's Quest**: Collect enough 5 datalog will trigger battle with Jenzi (RG-5), if win her, (She tells the False Incident) -> Lana's Room unlocks. 
+**Lana's Sector**: Collect 5 logs in Lana's Room (Total 10) -> Battle Lana(RG-10) -> Receive Key -> Talk to Jenzi -> Dyzes' Room unlocks.
+**Dyzes' Sector**: Collect 5 logs in Dyzes' Room (Total 15) -> Battle Dyzes(RG-15) -> Receive Old Lab info -> Talk to Jenzi -> Director's Room unlocks.
+**Director's Suite**: Find 5 logs in Director's Room (Total 20) -> Battle Director(RG-20) -> Receive Inferno Sauce -> Talk to Jenzi.
+**Final Secret**: Find the **Old Lab Room** -> Read **Final Datalog** -> Take **Origin Nitrophil** to Director -> Game End.
 
 ## DataLogs (The Digital Archive)
 
