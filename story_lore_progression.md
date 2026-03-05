@@ -74,7 +74,7 @@ The **Origin Nitrophil** is a secret known only to Director Capsain. Hidden in a
 ## Progression: The DataLog System
 The truth is hidden in the digital archives. Collecting DataLogs unlocks new sectors and reveals the real history of the Lab.
 
-**Lobby Start**: Talk to Jenzi -> Choose Cell -> **Test Battle** (Win or Lose) -> **Log #001** drops near Atrium door. 
+**Lobby Start**: Talk to Jenzi -> Choose Cell -> **Test Battle** (Win or Lose is both ok) -> **Log #001** drops near Atrium door. (block the door) (use | **F50** | KeyItem-RoomKey | image)
 **Atrium Unlock**: Collect Log #001 -> Talk to Jenzi -> Atrium door unlocks. 
 **Atrium's Quest**: Collect enough 5 datalog will trigger battle with Jenzi (RG-5), if win her, (She tells the False Incident) -> Lana's Room unlocks. 
 **Lana's Sector**: Collect 5 logs in Lana's Room (Total 10) -> Battle Lana(RG-10) -> Receive Key -> Talk to Jenzi -> Dyzes' Room unlocks.
@@ -162,7 +162,7 @@ The truth is hidden in the digital archives. Collecting DataLogs unlocks new sec
 Characters respond differently based on the number of DataLogs you have archived.
 
 ### Jenzi (Senior / Gatekeeper)
-### Jenzi: The Induction
+### Jenzi: The Introduction
 **Jenzi:** *"Welcome to the trenches, Intern! I'm Jenzi, and I'll be your guide through this corporate fever dream. We're supposedly 'healing the world,' but mostly we're just trying not to get fired by Capsain."*
 
 **Jenzi:** *"Since you're the new main character, you need a Companion Cell. It's like a smart pet, but way more... liquid. It'll help you access the lab's tactical subnet and, you know, not die. Pick your favorite vibe."*
@@ -173,11 +173,11 @@ Characters respond differently based on the number of DataLogs you have archived
 - **Lydrosome**: *"High IQ and precise. It uses water pressure to snipe things. Very 'surgical' if you're into that."*
 - **Nitrophil**: *"Pure chaos and fire. It's the 'hold my juice' of the lab. Aggressive af."*
 
-**Jenzi:** *"Choose well, bestie. This cell is your new personality. Ready to lock it in?"*
+**Jenzi confirmation:** *"Choose well, bestie. This cell is your new personality. Ready to lock it in?"*
 - **After Pairing**: *"Sheesh, nice pick! Let's see if you can actually use it though. Bet you can't even touch me in a battle. Square up!"*
 - **Before Battle**: *"Square up, Intern! Let's see what you've got."*
 - **Post Test Battle**: *"Not bad, not bad. You actually have some skill. No cap. Oh look, someone's out here littering again. Pick up that Datapad next to the Atrium door. It's giving... 'lazy researcher' vibes."*
-- **After Picking up Log #001**: *"Aha! Another lost Datapad. People here would forget their own heads if they weren't attached. Collect 'em and bring 'em to me, okay? I'll 'officially' return them to the owners. Door to the Atrium is open now. Go explore, but don't get lost in the sauce."*
+- **After Picking up Log #001**: *"Aha! A lost Datapad. People here would forget their own heads if they weren't attached. Collect 'em and bring 'em to me, okay? I'll 'officially' return them to the owners. Door to the Atrium is open now. Go explore, but don't get lost in the sauce."*
 - **Atrium Progression (5 Logs)**: *"You've been busy! 5 Datapads already? Lowkey impressive. Since you're actually doing work, I'll tell you the 'tea' about the Incident. Director says it was an 'Ionization Leak'. Major cap. But honestly, go ask Lana in the Botanic wing. She's the main character of that floor anyway. Door's open!"*
 - **Lana Progression (10 Logs)**: *"Wait, Lana gave you a key? And she was acting sus? Sus-picious! That's weird af. Maybe things aren't as simple as 'spicy ozone'. You should totally go bother Dyzes in Human Research. He's chill, but he definitely knows things he's not saying."*
 - **Dyzes Progression (15 Logs)**: *"Dyzes gave you info on an 'Old Lab'? Okay, now this is getting serious. No more jokes. You need to confront the final boss himself. Director Capsain. His room is open. Go get the truth, Intern."*

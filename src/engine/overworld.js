@@ -28,8 +28,21 @@ export const Overworld = {
     typingInterval: null,
     isTransitioning: false,
     isPaused: false,
-    logsCollected: [], // Array of log IDs found
+    logsCollected: [], // Local cache, synced from gameState.logs in renderMap
     gameLoopActive: false,
+
+    resetStates() {
+        this.isDialogueActive = false;
+        this.isTyping = false;
+        this.isTransitioning = false;
+        this.isPaused = false;
+        this.player.isMoving = false;
+        this.keysPressed.clear();
+        if (this.typingInterval) clearInterval(this.typingInterval);
+        document.getElementById('dialogue-box')?.classList.add('hidden');
+        // Kill the loop so startLoop() can restart it cleanly
+        this.gameLoopActive = false;
+    },
 
     // --- Entity Spawner System (Wild Encounters) ---
     spawner: {
@@ -198,14 +211,14 @@ export const Overworld = {
                 // Storage & Decor
                 // PotPlants instead of cylinder tables
                 { id: 'potPlantB-T_lob1', x: 4, y: 2, type: 'prop', name: 'Decorative Fern' },
-                { id: 'potPlantB-B_lob1', x: 4, y: 3, type: 'prop', name: 'Decorative Fern', hiddenLogId: '001' },
+                { id: 'potPlantB-B_lob1', x: 4, y: 3, type: 'prop', name: 'Decorative Fern' },
                 { id: 'potPlantB-T_lob2', x: 6, y: 2, type: 'prop', name: 'Decorative Fern' },
                 { id: 'potPlantB-B_lob2', x: 6, y: 3, type: 'prop', name: 'Decorative Fern' },
                 { id: 'wallHangingA_lob1', x: 3, y: 2, type: 'prop', name: 'Lab Protocol' },
                 { id: 'npc_male_lob1', x: 7, y: 5, type: 'npc', name: 'Researcher Mark' }
             ],
             doors: [
-                { x: 5, y: 2, targetZone: 'atrium', targetX: 9, targetY: 9 }
+                { x: 5, y: 2, targetZone: 'atrium', targetX: 9, targetY: 9, requiredFlag: 'jenziAtriumUnlocked' }
             ]
         },
         atrium: {
@@ -896,6 +909,18 @@ export const Overworld = {
             }
         }
 
+        // Sync logs from gameState
+        this.logsCollected = window.gameState.logs || [];
+
+        // --- INJECT DYNAMIC DROPS (Story progression items) ---
+        if (this.currentZone === 'lobby' && window.gameState.storyFlags.jenziFirstBattleDone && !this.logsCollected.includes('001')) {
+            const hasLog = zone.objects.some(o => o.id === 'log_001');
+            if (!hasLog) {
+                // F49 is KeyItem-DataPad per MapBuilder.md
+                zone.objects.push({ id: 'log_001', x: 5, y: 3, type: 'prop', name: 'Log #001', hiddenLogId: '001', customSprite: 'KeyItem-DataPad' });
+            }
+        }
+
         // DRAW OBJECT VISUALS
         zone.objects.forEach(obj => {
             // Include NPCs, props, signs, etc.
@@ -904,8 +929,15 @@ export const Overworld = {
 
                 // Class hierarchy: .world-object .[type] .[specific-id]
                 el.id = `npc-${obj.id}`;
-                const specificClass = obj.id.startsWith('npc_') ? obj.id.split('_').slice(0, 2).join('_') : obj.id.split('_')[0];
-                el.className = `world-object ${obj.type} ${specificClass}`;
+                el.classList.add('world-object', obj.type);
+
+                if (obj.customSprite) {
+                    // Use custom sprite class if provided
+                    el.classList.add(obj.customSprite);
+                } else {
+                    const specificClass = obj.id.startsWith('npc_') ? obj.id.split('_').slice(0, 2).join('_') : obj.id.split('_')[0];
+                    el.classList.add(specificClass);
+                }
 
                 // Add direction class if it's an NPC
                 if (obj.type === 'npc') {
@@ -1122,6 +1154,15 @@ export const Overworld = {
             // CHECK FOR ZONE TRANSITION
             const door = zone.doors && zone.doors.find(d => d.x === nextX && d.y === nextY);
             if (door) {
+                // Check for required story flag
+                if (door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag]) {
+                    this.showDialogue("Security Gate", [
+                        "This door is locked.",
+                        "Access remains restricted until your credentials are bio-authenticated."
+                    ]);
+                    this.updatePlayerPosition();
+                    return;
+                }
                 this.changeZone(door.targetZone, door.targetX, door.targetY);
                 return; // Stop processing further movement if switching zones
             }
@@ -1330,7 +1371,37 @@ export const Overworld = {
         this.pendingBattleEncounter = null; // Clean slate
 
         if (npc.id === 'jenzi') {
-            if (logs < 5) {
+            if (!window.gameState.storyFlags.starterChosen) {
+                // Starter selection flow
+                lines = [
+                    "Welcome to the trenches, Intern! I'm Jenzi.",
+                    "Since you're the new main character, you need a Companion Cell.",
+                    "I've got three in the incubator. Don't overthink it, unless you're a Tryhard.",
+                    "Choose well, bestie. This cell is your new personality. Ready to lock it in?"
+                ];
+                // Trigger the modal after dialogue closes.
+                this.pendingBattleEncounter = 'starter_selection';
+            } else if (!window.gameState.storyFlags.jenziFirstBattleDone) {
+                lines = [
+                    "Sheesh, nice pick! Let's see if you can actually use it though.",
+                    "Bet you can't even touch me in a battle. Square up!"
+                ];
+                this.pendingBattleEncounter = 'jenzi_tutorial';
+            } else if (!this.logsCollected.includes('001')) {
+                lines = [
+                    "Not bad, not bad. You actually have some skill. No cap.",
+                    "Oh look, someone's out here littering again.",
+                    "Pick up that Datapad next to the Atrium door.",
+                    "It's giving... 'lazy researcher' vibes."
+                ];
+            } else if (!window.gameState.storyFlags.jenziAtriumUnlocked) {
+                lines = [
+                    "Aha! A lost Datapad. People here would forget their own heads if they weren't attached.",
+                    "Collect 'em and bring 'em to me, okay? I'll 'officially' return them to the owners.",
+                    "Door to the Atrium is open now. Go explore, but don't get lost in the sauce."
+                ];
+                window.gameState.storyFlags.jenziAtriumUnlocked = true;
+            } else if (logs < 5) {
                 lines = [
                     "Yo, Intern! Keep looking for Datapads.",
                     "The doors are locked until you prove you can do basic research."
@@ -1341,7 +1412,6 @@ export const Overworld = {
                     "I'll tell you the 'tea' about the Incident... wait, actually...",
                     "If you want the tea, you gotta prove you're not a scrub. Square up!"
                 ];
-                // Only fight if they haven't beaten her at RG-5 yet. Since we don't have a rigid defeated flag, triggering is fine, they can re-battle.
                 this.pendingBattleEncounter = 'jenzi';
             } else {
                 lines = ["You've already proven yourself, Intern. Go bother Lana in the Botanic Sector."];
@@ -1410,13 +1480,26 @@ export const Overworld = {
 
     collectLog(logId) {
         console.log(`Found DataLog: ${logId}`);
-        this.logsCollected.push(logId);
+        if (!this.logsCollected.includes(logId)) {
+            this.logsCollected.push(logId);
+            if (window.gameState) window.gameState.logs = [...this.logsCollected];
+        }
 
         // Display the "Found" message
         this.showDialogue("Discovery", [`YOU FOUND A DATAPAD! [DataLog ${logId} archived for review]`]);
 
         // Dispatch event for UI/Inventory updates
         window.dispatchEvent(new CustomEvent('datalog-found', { detail: { id: logId } }));
+
+        // Remove from current zone if it was a world object drop
+        const zone = this.zones[this.currentZone];
+        const objIdx = zone.objects.findIndex(o => o.hiddenLogId === logId && o.id.startsWith('log_'));
+        if (objIdx > -1) {
+            const obj = zone.objects[objIdx];
+            zone.objects.splice(objIdx, 1);
+            const el = document.getElementById(`npc-${obj.id}`);
+            if (el) el.remove();
+        }
     },
 
     showDialogue(name, lines, npcId = null) {
@@ -1517,9 +1600,16 @@ export const Overworld = {
         if (this.pendingBattleEncounter) {
             const encounterId = this.pendingBattleEncounter;
             this.pendingBattleEncounter = null; // Clean up
-            setTimeout(() => {
-                window.dispatchEvent(new CustomEvent('start-npc-encounter', { detail: { id: encounterId } }));
-            }, 200);
+
+            if (encounterId === 'starter_selection') {
+                setTimeout(() => {
+                    if (window.openStarterSelection) window.openStarterSelection();
+                }, 200);
+            } else {
+                setTimeout(() => {
+                    window.dispatchEvent(new CustomEvent('start-npc-encounter', { detail: { id: encounterId } }));
+                }, 200);
+            }
         }
     }
 };

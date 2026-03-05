@@ -19,11 +19,35 @@
             <div class="menu-options">
                 <button id="btn-start-overworld" class="btn-neon">START GAME</button>
                 <button id="btn-start-battle" class="btn-neon">DEBUG BATTLE</button>
-                <button id="btn-open-management" class="btn-neon">SQUAD MANAGEMENT</button>
+                <button id="btn-open-inventory" class="btn-neon">PLAYER INVENTORY</button>
                 <button id="btn-open-rulebook" class="btn-neon">RULEBOOK</button>
-                <button class="btn-neon disabled">SETTINGS</button>
+                <button id="btn-open-settings" class="btn-neon">SETTINGS</button>
             </div>
             <div class="version">Experimental v2.0</div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="screen-settings" class="screen hidden">
+            <div id="settings-panel" class="glass-panel"
+                style="width: 500px; padding: 40px; margin: 10% auto; position: relative; border: 2px solid var(--neon-cyan);">
+                <h2 class="neon-text" style="text-align: center; margin-bottom: 30px;">SYSTEM <span
+                        class="white-text">SETTINGS</span></h2>
+
+                <div class="setting-row"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-family: 'Orbitron', sans-serif; color: #fff;">
+                    <label for="toggle-debug-mode" style="cursor: pointer;">ENABLE DEBUG MODE</label>
+                    <input type="checkbox" id="toggle-debug-mode" style="transform: scale(1.5); cursor: pointer;">
+                </div>
+                <div
+                    style="font-family: 'Rajdhani', sans-serif; font-size: 0.95rem; color: rgba(255,255,255,0.6); margin-bottom: 40px; font-style: italic; line-height: 1.4;">
+                    Checking this skips the intro tutorial and gives you a full team of advanced Cells for testing
+                    battles and UI. Warning: Toggling this will reset your current progress.
+                </div>
+
+                <div style="text-align: center;">
+                    <button id="btn-settings-back" class="btn-neon">RETURN TO BASE [ESC]</button>
+                </div>
+            </div>
         </div>
 
         <!-- Overworld Screen -->
@@ -77,146 +101,8 @@
             </div>
         </div>
 
-        <!-- Unified Management Hub (SQUAD & CATALYST) -->
-        <div id="screen-management-hub" class="screen hidden">
-            <div id="hub-header">
-                <h2 class="neon-text">MANAGEMENT <span class="white-text">HUB</span></h2>
-                <div id="profile-selector-container">
-                    <div id="side-toggle-container">
-                        <button id="btn-side-player" class="side-btn active" data-profile="player">PLAYER</button>
-                        <button id="btn-side-opponent" class="side-btn" data-profile="opponent">RIVAL</button>
-                        <button class="side-btn npc-btn" data-profile="lana">LANA</button>
-                        <button class="side-btn npc-btn" data-profile="dyzes">DYZES</button>
-                        <button class="side-btn npc-btn" data-profile="capsain">CAPSAIN</button>
-                        <button class="side-btn npc-btn" data-profile="jenzi">JENZI</button>
-                        <button class="side-btn npc-btn" data-profile="npc01">NPC01_M</button>
-                        <button class="side-btn npc-btn" data-profile="npc02">NPC02_F</button>
-                        <button class="side-btn npc-btn" data-profile="npc03">NPC03_M</button>
-                    </div>
-                    <div id="rg-debug-panel" class="glass-panel">
-                        <div class="debug-row" style="display: flex; align-items: center; gap: 15px;">
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <label id="debug-rg-label" style="margin:0;">ACTIVE RG:</label>
-                                <input type="number" id="debug-active-rg" min="0" max="20" value="15"
-                                    style="margin:0; width: 45px;">
-                            </div>
-                            <div id="enable-battle-container" style="display: none; align-items: center; gap: 8px;">
-                                <label for="debug-enable-battle"
-                                    style="font-size: 0.8rem; color: #fff; margin:0; line-height: 1;">ENABLE
-                                    BATTLE:</label>
-                                <input type="checkbox" id="debug-enable-battle" style="cursor: pointer; margin:0;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Unified Management Hub Removed and Relocated to Player Inventory -->
 
-            <div id="management-layout">
-                <aside id="squad-management" class="glass-panel">
-                    <h3 class="panel-title squad-title">ACTIVE <span class="neon-text">SQUAD</span></h3>
-                    <div class="team-slots">
-                        <div class="slot" data-slot="0"></div>
-                        <div class="slot" data-slot="1"></div>
-                        <div class="slot" data-slot="2"></div>
-                    </div>
-                    <div class="setup-hint">DRAG TO ASSIGN | CLICK TO UPGRADE</div>
-
-                    <div class="panel-divider"></div>
-
-                    <h3 class="panel-title">CELL <span class="neon-text">STORAGE</span></h3>
-                    <div class="grid-container">
-                        <!-- Populated by JS -->
-                    </div>
-                </aside>
-
-                <!-- Center: The Catalyst Core (Slots & Branching) -->
-                <main id="catalyst-core" class="glass-panel">
-                    <div id="selected-monster-header">
-                        <!-- Primary Row: Name, Level, Reset -->
-                        <div class="header-primary-row">
-                            <div id="catalyst-name-container">
-                                <h2 id="catalyst-monster-name" class="neon-text">SELECT CELL</h2>
-                                <div id="catalyst-header-meta">
-                                    <span id="catalyst-monster-rg" class="rg-label">RG-0</span>
-                                </div>
-                            </div>
-
-                            <div class="header-actions">
-                                <div id="preset-control" class="hidden">
-                                    <label>PRESET:</label>
-                                    <select id="preset-selector">
-                                        <option value="">-- CUSTOM --</option>
-                                    </select>
-                                    <button id="btn-preset-save" class="btn-icon"
-                                        title="Save Current as Preset">💾</button>
-                                    <button id="btn-preset-rename" class="btn-icon hidden"
-                                        title="Rename Selected Preset">✏️</button>
-                                    <button id="btn-preset-delete" class="btn-icon danger hidden"
-                                        title="Delete Selected Preset">🗑️</button>
-                                </div>
-                                <button id="btn-quick-reset" class="btn-quick danger hidden"
-                                    title="Unequip all cards">CLEAR ALL</button>
-                            </div>
-                        </div>
-
-                        <!-- Secondary Row: Stats (Left) & Quick Equip (Right) -->
-                        <div class="header-secondary-row">
-                            <div id="catalyst-monster-stats-peek">
-                                <span class="stat-mini">HP: <b id="peek-hp">--</b></span>
-                                <span class="stat-mini">PP: <b id="peek-pp">--</b></span>
-                                <span class="stat-mini">ATK: <b id="peek-atk">--</b></span>
-                                <span class="stat-mini">DEF: <b id="peek-def">--</b></span>
-                                <span class="stat-mini">SPD: <b id="peek-spd">--</b></span>
-                                <span class="stat-mini">CRT: <b id="peek-crt">--</b></span>
-                            </div>
-
-                            <div id="quick-equip-container" class="hidden">
-                                <span class="quick-label">QUICK EQUIP:</span>
-                                <div class="quick-btns">
-                                    <button class="btn-quick" data-style="aggressive"
-                                        title="Prioritize ATK & CRIT">AGGRESSIVE</button>
-                                    <button class="btn-quick" data-style="survival"
-                                        title="Prioritize HP & DEF">SURVIVAL</button>
-                                    <button class="btn-quick" data-style="utility"
-                                        title="Prioritize PP & SPD">UTILITY</button>
-                                    <button class="btn-quick" data-style="balanced"
-                                        title="Balanced Distribution">BALANCED</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="slot-canvas-container">
-                        <canvas id="slot-connections"></canvas>
-                        <div id="slots-anchor">
-                            <!-- Base 3 Slots and expanded slots will be injected here -->
-                        </div>
-                    </div>
-                </main>
-
-                <!-- Right: C-Card Box -->
-                <aside id="catalyst-box" class="glass-panel">
-                    <div class="box-header">
-                        <h3 class="panel-title">C-CARD <span class="neon-text">BOX</span></h3>
-                        <div class="sort-tabs">
-                            <button class="sort-tab active" data-sort="tier">TIER</button>
-                            <button class="sort-tab" data-sort="type">TYPE</button>
-                            <button class="sort-tab" data-sort="rarity">RARITY</button>
-                        </div>
-                    </div>
-                    <div id="card-box-grid">
-                        <!-- Populated by JS -->
-                    </div>
-                </aside>
-            </div>
-
-            <div class="container-footer">
-                <div id="protocol-hint">
-                    <i class="fas fa-microscope"></i> PROTOCOL: MAX 10 SLOTS • UNIQUE IDS • RECURSIVE BRANCH REMOVAL
-                </div>
-                <button id="btn-hub-back" class="btn-neon">RETURN TO BASE [ESC]</button>
-            </div>
-        </div>
 
         <!-- Monster Card Modal -->
         <div id="monster-card-modal" class="overlay hidden">
@@ -447,6 +333,7 @@
                         <button class="tab-btn active" data-tab="logs">DATA LOGS</button>
                         <button class="tab-btn" data-tab="items">KEY ITEMS</button>
                         <button class="tab-btn" data-tab="status">CELL STATUS</button>
+                        <button class="tab-btn" data-tab="catalyst">CELL STORAGE</button>
                     </div>
                 </div>
 
@@ -486,6 +373,107 @@
                             <div class="header-line"></div>
                             <p id="inventory-detail-desc">Initial tactical readout standby...</p>
                         </div>
+                    </div>
+                </div>
+
+                <div id="tab-catalyst" class="inventory-tab hidden">
+                    <div id="management-layout">
+                        <aside id="squad-management" class="glass-panel">
+                            <h3 class="panel-title squad-title">ACTIVE <span class="neon-text">SQUAD</span></h3>
+                            <div class="team-slots">
+                                <div class="slot" data-slot="0"></div>
+                                <div class="slot" data-slot="1"></div>
+                                <div class="slot" data-slot="2"></div>
+                            </div>
+                            <div class="setup-hint">DRAG TO ASSIGN | CLICK TO UPGRADE</div>
+
+                            <div class="panel-divider"></div>
+
+                            <h3 class="panel-title">ALL <span class="neon-text">CELLS</span></h3>
+                            <div class="grid-container">
+                                <!-- Populated by JS -->
+                            </div>
+                        </aside>
+
+                        <!-- Center: The Catalyst Core (Slots & Branching) -->
+                        <main id="catalyst-core" class="glass-panel">
+                            <div id="selected-monster-header">
+                                <!-- Primary Row: Name, Level, Reset -->
+                                <div class="header-primary-row">
+                                    <div id="catalyst-name-container">
+                                        <h2 id="catalyst-monster-name" class="neon-text">SELECT CELL</h2>
+                                        <div id="catalyst-header-meta">
+                                            <span id="catalyst-monster-rg" class="rg-label">RG-0</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="header-actions">
+                                        <div id="preset-control" class="hidden" style="display: none !important;">
+                                            <label>PRESET:</label>
+                                            <select id="preset-selector">
+                                                <option value="">-- CUSTOM --</option>
+                                            </select>
+                                            <button id="btn-preset-save" class="btn-icon"
+                                                title="Save Current as Preset">💾</button>
+                                            <button id="btn-preset-rename" class="btn-icon hidden"
+                                                title="Rename Selected Preset">✏️</button>
+                                            <button id="btn-preset-delete" class="btn-icon danger hidden"
+                                                title="Delete Selected Preset">🗑️</button>
+                                        </div>
+                                        <button id="btn-quick-reset" class="btn-quick danger hidden"
+                                            title="Unequip all cards">CLEAR ALL</button>
+                                    </div>
+                                </div>
+
+                                <!-- Secondary Row: Stats (Left) & Quick Equip (Right) -->
+                                <div class="header-secondary-row">
+                                    <div id="catalyst-monster-stats-peek">
+                                        <span class="stat-mini">HP: <b id="peek-hp">--</b></span>
+                                        <span class="stat-mini">PP: <b id="peek-pp">--</b></span>
+                                        <span class="stat-mini">ATK: <b id="peek-atk">--</b></span>
+                                        <span class="stat-mini">DEF: <b id="peek-def">--</b></span>
+                                        <span class="stat-mini">SPD: <b id="peek-spd">--</b></span>
+                                        <span class="stat-mini">CRT: <b id="peek-crt">--</b></span>
+                                    </div>
+
+                                    <div id="quick-equip-container" class="hidden">
+                                        <span class="quick-label">QUICK EQUIP:</span>
+                                        <div class="quick-btns">
+                                            <button class="btn-quick" data-style="aggressive"
+                                                title="Prioritize ATK & CRIT">AGGRESSIVE</button>
+                                            <button class="btn-quick" data-style="survival"
+                                                title="Prioritize HP & DEF">SURVIVAL</button>
+                                            <button class="btn-quick" data-style="utility"
+                                                title="Prioritize PP & SPD">UTILITY</button>
+                                            <button class="btn-quick" data-style="balanced"
+                                                title="Balanced Distribution">BALANCED</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="slot-canvas-container">
+                                <canvas id="slot-connections"></canvas>
+                                <div id="slots-anchor">
+                                    <!-- Base 3 Slots and expanded slots will be injected here -->
+                                </div>
+                            </div>
+                        </main>
+
+                        <!-- Right: C-Card Box -->
+                        <aside id="catalyst-box" class="glass-panel">
+                            <div class="box-header">
+                                <h3 class="panel-title">C-CARD <span class="neon-text">BOX</span></h3>
+                                <div class="sort-tabs">
+                                    <button class="sort-tab active" data-sort="tier">TIER</button>
+                                    <button class="sort-tab" data-sort="type">TYPE</button>
+                                    <button class="sort-tab" data-sort="rarity">RARITY</button>
+                                </div>
+                            </div>
+                            <div id="card-box-grid">
+                                <!-- Populated by JS -->
+                            </div>
+                        </aside>
                     </div>
                 </div>
 
@@ -693,9 +681,24 @@
             <div class="modal glass-panel">
                 <h2 id="game-over-title">SYSTEM <span class="neon-text">FAILURE</span></h2>
                 <p id="game-over-message">NITROPHIL has been neutralized.</p>
-                <div class="modal-buttons">
+
+                <div id="battle-result-exp-container" class="hidden" style="margin: 20px 0; text-align: left;">
+                    <div
+                        style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px; color: var(--color-bio);">
+                        <span style="font-family: 'Orbitron', sans-serif;">EXPERIENCE</span>
+                        <span id="battle-result-exp-text"
+                            style="font-family: 'Rajdhani', sans-serif; font-weight: bold;">0/30</span>
+                    </div>
+                    <div class="exp-bar-bg" style="height: 12px;">
+                        <div id="battle-result-exp-fill" class="exp-bar-fill"
+                            style="width: 0%; transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);"></div>
+                    </div>
+                </div>
+
+                <div class="modal-buttons" id="game-over-buttons">
                     <button id="btn-restart" class="btn-neon">REINITIALIZE</button>
                     <button id="btn-return-menu" class="btn-neon">MAIN MENU</button>
+                    <button id="btn-continue-overworld" class="btn-neon hidden">CONTINUE TO GAME</button>
                 </div>
             </div>
         </div>
@@ -749,6 +752,54 @@
                 <button id="btn-preset-confirm" class="btn-action confirm">CONFIRM</button>
                 <button id="btn-preset-cancel" class="btn-action cancel">CANCEL</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Starter Selection Modal -->
+    <div id="starter-selection-modal" class="overlay hidden">
+        <div class="starter-modal glass-panel">
+            <h2 class="neon-text" style="text-align: center; margin-bottom: 20px;">CHOOSE YOUR <span
+                    class="white-text">CELL</span></h2>
+            <div class="starter-cards-container">
+                <div class="starter-card" data-monster="cambihil">
+                    <img src="./assets/images/Cambihil.png" alt="Cambihil"
+                        onerror="this.src='./assets/images/Card_Placeholder.png'">
+                    <h3>CAMBIHIL</h3>
+                    <p class="starter-desc">"Tanky and green. Good for people who like to play safe and hide behind a
+                        shield of salad."</p>
+                </div>
+                <div class="starter-card" data-monster="lydrosome">
+                    <img src="./assets/images/Lydrosome.png" alt="Lydrosome"
+                        onerror="this.src='./assets/images/Card_Placeholder.png'">
+                    <h3>LYDROSOME</h3>
+                    <p class="starter-desc">"High IQ and precise. It uses water pressure to snipe things. Very
+                        'surgical' if you're into that."</p>
+                </div>
+                <div class="starter-card" data-monster="nitrophil">
+                    <img src="./assets/images/Nitrophil.png" alt="Nitrophil"
+                        onerror="this.src='./assets/images/Card_Placeholder.png'">
+                    <h3>NITROPHIL</h3>
+                    <p class="starter-desc">"Pure chaos and fire. It's the 'hold my juice' of the lab. Aggressive af."
+                    </p>
+                </div>
+            </div>
+            <p style="text-align:center; color: rgba(255,255,255,0.3); font-size: 0.85rem; margin-top: 20px;">← A / D →
+                to navigate &nbsp;|&nbsp; F to select</p>
+        </div>
+    </div>
+
+    <!-- Starter Confirm Dialog -->
+    <div id="starter-confirm-dialog" class="overlay hidden">
+        <div class="scd-wrapper">
+            <div class="scd-art">
+                <img id="scd-img" src="" alt="">
+            </div>
+            <p class="scd-question">Lock in this Cell?</p>
+            <div class="scd-btns">
+                <button id="btn-starter-yes" class="scd-btn scd-btn-yes focused">YES</button>
+                <button id="btn-starter-no" class="scd-btn scd-btn-no">NO</button>
+            </div>
+            <div class="scd-hint">← / → to switch &nbsp;|&nbsp; F = YES &nbsp;|&nbsp; ESC = NO</div>
         </div>
     </div>
 

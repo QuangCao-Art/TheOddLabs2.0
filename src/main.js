@@ -1,9 +1,12 @@
-﻿import { gameState } from './engine/state.js';
+﻿import { gameState, applyDebugMode, DEBUG_MODE } from './engine/state.js';
 import { resolveTurn, getDistance, checkOverload, getModifiedStats } from './engine/combat.js';
 import { AI } from './engine/ai.js';
 import { MONSTERS } from './data/monsters.js';
 import { Overworld } from './engine/overworld.js';
 import { CARDS, LEVEL_REWARDS, NPC_PRESETS } from './data/cards.js';
+
+// Expose gameState globally for overworld.js
+window.gameState = gameState;
 
 // DOM References
 const interactivePentagon = document.getElementById('interactive-pentagon');
@@ -211,7 +214,7 @@ function handleDeletePreset() {
 }
 
 const updateInvNav = (isKeyboardAction = false) => {
-    const tabs = ['logs', 'items', 'status'];
+    const tabs = ['logs', 'items', 'status', 'catalyst'];
     const currentTabId = tabs[invNav.tabIndex];
 
     // 1. Update Tab Visuals
@@ -225,8 +228,20 @@ const updateInvNav = (isKeyboardAction = false) => {
     const activeTab = document.getElementById(`tab-${currentTabId}`);
     if (activeTab) activeTab.classList.remove('hidden');
 
+    // Toggle Inventory Layout visibility depending on tab
+    const invLayout = document.getElementById('inventory-layout');
+    if (invLayout) {
+        if (currentTabId === 'catalyst') {
+            invLayout.style.display = 'none'; // Use display none to hide flex/grid
+            catalystState.activeProfile = 'player';
+            renderManagementHub();
+        } else {
+            invLayout.style.display = ''; // Revert to stylesheet default
+        }
+    }
+
     // 3. Highlight selected item
-    if (!activeTab) return;
+    if (!activeTab || currentTabId === 'catalyst') return; // Skip item highlight logic for catalyst tab
     const items = activeTab.querySelectorAll('.log-item, .key-item-slot, .status-item');
     if (items.length === 0) return;
 
@@ -245,6 +260,135 @@ const updateInvNav = (isKeyboardAction = false) => {
     }
 };
 
+// --- STARTER SELECTION LOGIC ---
+let selectedStarterId = null;
+
+window.openStarterSelection = () => {
+    selectedStarterId = null;
+    // Pause overworld while starter modal is open
+    if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
+    document.querySelectorAll('.starter-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('starter-confirm-dialog').classList.add('hidden');
+    document.getElementById('starter-selection-modal').classList.remove('hidden');
+    // Pre-select first card
+    starterNavIndex = 0;
+    document.querySelectorAll('.starter-card')[0]?.classList.add('selected');
+    selectedStarterId = document.querySelectorAll('.starter-card')[0]?.dataset.monster || null;
+};
+
+let starterNavIndex = 0;
+
+function initStarterSelectionEvents() {
+    const cards = document.querySelectorAll('.starter-card');
+    const dialog = document.getElementById('starter-confirm-dialog');
+    const dialogName = document.getElementById('starter-confirm-name');
+    const btnYes = document.getElementById('btn-starter-yes');
+    const btnNo = document.getElementById('btn-starter-no');
+
+    function selectCard(index) {
+        starterNavIndex = ((index % cards.length) + cards.length) % cards.length;
+        cards.forEach(c => c.classList.remove('selected'));
+        const card = cards[starterNavIndex];
+        card.classList.add('selected');
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        selectedStarterId = card.dataset.monster;
+    }
+
+    // Monster card images map
+    const CARD_IMAGES = {
+        cambihil: './assets/images/Card_Cambihil.png',
+        lydrosome: './assets/images/Card_Lydrosome.png',
+        nitrophil: './assets/images/Card_Nitrophil.png'
+    };
+
+    // YES has focus by default (0 = YES, 1 = NO)
+    let confirmFocus = 0;
+
+    function setConfirmFocus(idx) {
+        confirmFocus = idx;
+        btnYes.classList.toggle('focused', idx === 0);
+        btnNo.classList.toggle('focused', idx === 1);
+    }
+
+    function openConfirmDialog() {
+        if (!selectedStarterId) return;
+        const img = document.getElementById('scd-img');
+        img.src = CARD_IMAGES[selectedStarterId] || './assets/images/Card_Placeholder.png';
+        img.alt = selectedStarterId;
+        setConfirmFocus(0);
+        dialog.classList.remove('hidden');
+    }
+
+    function closeConfirmDialog() {
+        dialog.classList.add('hidden');
+    }
+
+    function commitStarter() {
+        if (!selectedStarterId) return;
+
+        gameState.storyFlags.starterChosen = true;
+        gameState.profiles.player.team = [selectedStarterId];
+        gameState.playerTeam = [selectedStarterId];
+        gameState.cellDex = [selectedStarterId];
+        gameState.profiles.player.cardBox = [`card_${selectedStarterId}`, 'atk_1', 'def_1'];
+        resetGame();
+
+        // Close both dialogs and resume overworld
+        dialog.classList.add('hidden');
+        document.getElementById('starter-selection-modal').classList.add('hidden');
+        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
+
+        addLog(`Acquired [${selectedStarterId.toUpperCase()}] as initial Cell.`);
+    }
+
+    // Click a card to select + open confirm dialog
+    cards.forEach((card, i) => {
+        card.addEventListener('click', () => {
+            selectCard(i);
+            openConfirmDialog();
+        });
+    });
+
+    // YES / NO buttons
+    btnYes.addEventListener('click', commitStarter);
+    btnNo.addEventListener('click', closeConfirmDialog);
+
+    // Keyboard
+    window.addEventListener('keydown', (e) => {
+        const starterOpen = !document.getElementById('starter-selection-modal').classList.contains('hidden');
+        const dialogOpen = !dialog.classList.contains('hidden');
+
+        if (!starterOpen) return;
+
+        if (dialogOpen) {
+            // Arrow keys toggle YES/NO focus
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'a' || e.key === 'A' || e.key === 'd' || e.key === 'D') {
+                e.preventDefault();
+                setConfirmFocus(confirmFocus === 0 ? 1 : 0);
+            } else if (e.key === 'f' || e.key === 'F' || e.key === 'Enter') {
+                e.preventDefault(); e.stopPropagation();
+                if (confirmFocus === 0) commitStarter();
+                else closeConfirmDialog();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                closeConfirmDialog();
+            }
+        } else {
+            // Card selection: arrows to navigate, F/Enter to confirm selected
+            if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+                e.preventDefault();
+                selectCard(starterNavIndex - 1);
+            } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+                e.preventDefault();
+                selectCard(starterNavIndex + 1);
+            } else if (e.key === 'f' || e.key === 'F' || e.key === 'Enter') {
+                e.preventDefault(); e.stopPropagation();
+                openConfirmDialog();
+            }
+        }
+    });
+}
+
 // Initialization
 function init() {
     try {
@@ -254,6 +398,7 @@ function init() {
         // Setup mandatory engine components
         loadCustomPresets();
         setupNodePositions();
+        initStarterSelectionEvents();
         setupEventListeners();
 
         // Centralized Reset handles all Profile/Preset/State initialization
@@ -344,6 +489,22 @@ function setupNodePositions() {
 }
 
 function setupEventListeners() {
+    // MAIN MENU & SETTINGS
+    document.getElementById('btn-open-settings')?.addEventListener('click', () => {
+        document.getElementById('toggle-debug-mode').checked = DEBUG_MODE;
+        showScreen('screen-settings');
+    });
+
+    document.getElementById('btn-settings-back')?.addEventListener('click', () => {
+        showScreen('screen-main-menu');
+    });
+
+    document.getElementById('toggle-debug-mode')?.addEventListener('change', (e) => {
+        applyDebugMode(e.target.checked);
+        // Force an immediate reset based on new settings to populate variables properly
+        resetGame();
+    });
+
     // PRESET MANAGEMENT
     document.getElementById('btn-preset-save')?.addEventListener('click', handleSavePreset);
     document.getElementById('btn-preset-rename')?.addEventListener('click', handleRenamePreset);
@@ -429,26 +590,49 @@ function setupEventListeners() {
         };
 
         catalystState.battleOpponentId = profileId;
+        if (typeof Overworld !== 'undefined') Overworld.stopLoop();
         startPreBattleSequence(profileId);
     });
 
     window.addEventListener('start-npc-encounter', (e) => {
         const npcId = e.detail.id;
 
-        // Map dynamic overworld IDs to fixed combat profiles
         let profileId = npcId;
-        if (npcId.startsWith('npc_male')) profileId = 'npc01';
-        else if (npcId.startsWith('npc_female')) profileId = 'npc02';
+        if (npcId === 'jenzi_tutorial') {
+            const typeAdvantages = {
+                'cambihil': 'lydrosome',
+                'nitrophil': 'cambihil',
+                'lydrosome': 'nitrophil'
+            };
+            // Use window.gameState to be safe, though gameState is exported above
+            const playerStarter = gameState.playerTeam[0] || 'nitrophil';
+            const weakerType = typeAdvantages[playerStarter] || 'cambihil';
+
+            gameState.profiles['jenzi_tutorial'] = {
+                name: 'JENZI (TEST)',
+                level: 0,
+                cardBox: [],
+                team: [weakerType, null, null],
+                party: [createMonsterInstance(weakerType)]
+            };
+            profileId = 'jenzi_tutorial';
+        } else if (npcId.startsWith('npc_male')) {
+            profileId = 'npc01';
+        } else if (npcId.startsWith('npc_female')) {
+            profileId = 'npc02';
+        }
 
         // Fallback safety
         if (!gameState.profiles[profileId]) profileId = 'npc01';
 
         catalystState.battleOpponentId = profileId;
+        if (typeof Overworld !== 'undefined') Overworld.stopLoop();
         startPreBattleSequence(profileId);
     });
 
     /* --- PRE-BATTLE SEQUENCE LOGIC --- */
     const PRE_BATTLE_DATA = {
+        'jenzi_tutorial': { art: 'Character_FullArt_Jenzi', dialogue: "Sheesh, nice pick! Let's see if you can actually use it though. Square up!" },
         'player': { art: 'Character_FullArt_Rival', dialogue: "Analysis commencing. Do not disappoint." },
         'opponent': { art: 'Character_FullArt_Rival', dialogue: "Analysis commencing. Do not disappoint." },
         'lana': { art: 'Character_FullArt_Lana', dialogue: "Prepare for a lesson in botanical efficiency!" },
@@ -592,6 +776,50 @@ function setupEventListeners() {
         showScreen('screen-main-menu');
     });
 
+    document.getElementById('btn-continue-overworld')?.addEventListener('click', () => {
+        document.getElementById('game-over-overlay').classList.add('hidden');
+        showScreen('screen-overworld');
+
+        if (typeof Overworld !== 'undefined') {
+            // Reset any stuck flags (movement, dialogue) before resuming
+            Overworld.resetStates();
+            Overworld.startLoop();
+
+            // --- STORY HOOK: Jenzi post-battle dialogue ---
+            // Don't re-render map here — it breaks the player sprite.
+            // Instead inject the Log item directly into zone objects if not yet present.
+            if (window.gameState.storyFlags.jenziFirstBattleDone && !window.gameState.logs.includes('001')) {
+                const lobbyZone = Overworld.zones['lobby'];
+                const hasLog = lobbyZone.objects.some(o => o.id === 'log_001');
+                if (!hasLog) {
+                    lobbyZone.objects.push({ id: 'log_001', x: 5, y: 3, type: 'prop', name: 'Log #001', hiddenLogId: '001', customSprite: 'KeyItem-DataPad' });
+                    // Inject only the new item element (no full map re-render)
+                    const mapEl = document.getElementById('overworld-map');
+                    if (mapEl) {
+                        const el = document.createElement('div');
+                        el.id = 'npc-log_001';
+                        el.classList.add('world-object', 'prop', 'KeyItem-DataPad');
+                        el.style.width = `${Overworld.tileSize}px`;
+                        el.style.height = `${Overworld.tileSize}px`;
+                        el.style.left = `${5 * Overworld.tileSize}px`;
+                        el.style.top = `${3 * Overworld.tileSize}px`;
+                        el.style.zIndex = 13;
+                        el.style.position = 'absolute';
+                        mapEl.appendChild(el);
+                    }
+                }
+
+                // Trigger Jenzi's post-battle dialogue
+                const jenzi = Overworld.zones['lobby'].objects.find(o => o.id === 'jenzi');
+                if (jenzi) {
+                    setTimeout(() => {
+                        Overworld.startNPCInteraction(jenzi);
+                    }, 300);
+                }
+            }
+        }
+    });
+
     document.getElementById('btn-battle-back')?.addEventListener('click', () => {
         // Reset pre-battle sequence if user backs out
         preBattleSequenceActive = false;
@@ -609,12 +837,15 @@ function setupEventListeners() {
         }
     });
 
-    // Unified Management Hub Controls
-    document.getElementById('btn-open-management')?.addEventListener('click', () => {
-        showScreen('screen-management-hub');
-        renderManagementHub();
+    // Unified Management Hub Controls -> Now Player Inventory
+    document.getElementById('btn-open-inventory')?.addEventListener('click', () => {
+        renderInventory();
+        invNav.active = true;
+        invNav.tabIndex = 3; // Default to Catalyst Storage
+        invNav.itemIndex = 0;
+        updateInvNav();
+        showScreen('screen-inventory');
     });
-    document.getElementById('btn-hub-back')?.addEventListener('click', () => showScreen('screen-main-menu'));
 
     document.getElementById('btn-close-card')?.addEventListener('click', () => {
         document.getElementById('monster-card-modal').classList.add('hidden');
@@ -748,7 +979,6 @@ function setupEventListeners() {
 
             const rulebookScreen = document.getElementById('screen-rulebook');
             const inventoryOverlay = document.getElementById('screen-inventory');
-            const managementHub = document.getElementById('screen-management-hub');
             const battleScreen = document.getElementById('screen-battle');
 
             if (rulebookScreen && !rulebookScreen.classList.contains('hidden')) {
@@ -759,10 +989,6 @@ function setupEventListeners() {
                 inventoryOverlay.classList.add('hidden');
                 invNav.active = false;
                 Overworld.isPaused = false;
-                return;
-            }
-            if (managementHub && !managementHub.classList.contains('hidden')) {
-                showScreen('screen-main-menu');
                 return;
             }
             if (battleScreen && !battleScreen.classList.contains('hidden')) {
@@ -793,9 +1019,14 @@ function setupEventListeners() {
 
         // Inventory Specific Navigation
         if (invNav.active && isInvOpen) {
-            const tabs = ['logs', 'items', 'status'];
+            const tabs = ['logs', 'items', 'status', 'catalyst'];
             const activeTab = document.getElementById(`tab-${tabs[invNav.tabIndex]}`);
-            const items = activeTab.querySelectorAll('.log-item, .key-item-slot, .status-item');
+
+            // Re-fetch items if not catalyst, otherwise items is null which is fine since catalyst handles its own clicks
+            let items = null;
+            if (tabs[invNav.tabIndex] !== 'catalyst') {
+                items = activeTab.querySelectorAll('.log-item, .key-item-slot, .status-item');
+            }
 
             if (key === 'q') { // Tab Left
                 invNav.tabIndex = (invNav.tabIndex - 1 + tabs.length) % tabs.length;
@@ -806,14 +1037,20 @@ function setupEventListeners() {
                 invNav.itemIndex = 0;
                 updateInvNav(true);
             } else if (key === 'w' || key === 'arrowup' || key === 'a' || key === 'arrowleft') {
-                invNav.itemIndex = (invNav.itemIndex - 1 + items.length) % items.length;
-                updateInvNav(true);
+                if (items && items.length > 0) {
+                    invNav.itemIndex = (invNav.itemIndex - 1 + items.length) % items.length;
+                    updateInvNav(true);
+                }
             } else if (key === 's' || key === 'arrowdown' || key === 'd' || key === 'arrowright') {
-                invNav.itemIndex = (invNav.itemIndex + 1) % items.length;
-                updateInvNav(true);
+                if (items && items.length > 0) {
+                    invNav.itemIndex = (invNav.itemIndex + 1) % items.length;
+                    updateInvNav(true);
+                }
             } else if (key === 'f' || key === 'enter') {
-                const selectedItem = items[invNav.itemIndex];
-                if (selectedItem) selectedItem.click();
+                if (items && items.length > 0) {
+                    const selectedItem = items[invNav.itemIndex];
+                    if (selectedItem) selectedItem.click();
+                }
             }
         }
     });
@@ -1571,37 +1808,43 @@ function renderInventory() {
         { id: '999', tag: 'SECRET', title: 'The Burden of Pride', text: "I spent an hour today just talking to Origin. I have to shout and complain about 'monstrous anomalies' so the board doesn't suspect. But here... I wish I could just tell everyone. I'm so sorry, little buddy.", secret: true }
     ];
 
-    // 1. Populate Logs (21 total, including the secret)
+    // 1. Populate Logs (Conditional display)
     logList.innerHTML = '';
 
-    // Debug: mark all logs as found
-    dataLogs.forEach(log => {
-        if (!Overworld.logsCollected.includes(log.id)) {
-            Overworld.logsCollected.push(log.id);
-        }
-    });
+    // Filter logs: In DEBUG_MODE, show all. In Normal, show only collected.
+    const displayLogs = DEBUG_MODE
+        ? dataLogs
+        : dataLogs.filter(log => Overworld.logsCollected.includes(log.id));
 
-    dataLogs.forEach((log, i) => {
-        const isFound = Overworld.logsCollected.includes(log.id);
-        const item = document.createElement('div');
-        item.className = `log-item ${isFound ? '' : 'locked'} ${log.secret ? 'secret' : ''}`;
-        item.innerHTML = `
-            <span class="log-id">#${log.id}</span>
-            <span class="log-status">${isFound ? `[${log.tag}] ${log.title}` : 'ENCRYPTED DATA'}</span>
-        `;
-        item.onclick = () => {
-            invNav.itemIndex = i;
-            updateInvNav(false);
-            if (isFound) {
-                updateDetail(`[${log.tag}] LOG #${log.id}: ${log.title}`, log.text, null);
-            } else {
-                updateDetail(`LOCKED LOG #${log.id}`, "DATA IS CURRENTLY ENCRYPTED. \n\nExplore furniture in the overworld to initialize decryption sequence for this memory fragment.", null);
-            }
-        };
-        logList.appendChild(item);
-    });
+    if (displayLogs.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'log-item locked';
+        emptyMsg.style.justifyContent = 'center';
+        emptyMsg.innerHTML = '<span class="log-status" style="opacity: 0.5;">THERE IS NOTHING HERE</span>';
+        logList.appendChild(emptyMsg);
+    } else {
+        displayLogs.forEach((log, i) => {
+            const isFound = Overworld.logsCollected.includes(log.id);
+            const item = document.createElement('div');
+            item.className = `log-item ${isFound ? '' : 'locked'} ${log.secret ? 'secret' : ''}`;
+            item.innerHTML = `
+                <span class="log-id">#${log.id}</span>
+                <span class="log-status">${isFound ? `[${log.tag}] ${log.title}` : 'ENCRYPTED DATA'}</span>
+            `;
+            item.onclick = () => {
+                invNav.itemIndex = i;
+                updateInvNav(false);
+                if (isFound) {
+                    updateDetail(`[${log.tag}] LOG #${log.id}: ${log.title}`, log.text, null);
+                } else {
+                    updateDetail(`LOCKED LOG #${log.id}`, "DATA IS CURRENTLY ENCRYPTED. \n\nExplore furniture in the overworld to initialize decryption sequence for this memory fragment.", null);
+                }
+            };
+            logList.appendChild(item);
+        });
+    }
 
-    // 2. Populate Key Items
+    // 2. Populate Key Items (Conditional display)
     itemGrid.innerHTML = '';
     const keyItems = [
         { id: 'datapad', name: 'KeyItem-DataPad', desc: 'Mostly contains encrypted logs, but some files are just high-score records for \'Snake\'.', icon: 'data-pad', img: 'Card_Placeholder.png' },
@@ -1610,68 +1853,114 @@ function renderInventory() {
         { id: 'card_stemmy', name: 'MONSTER CARD: STEMMY', desc: 'Tactical analysis of the undifferentiated stem cell. Essential for field research.', icon: 'card-stemmy', img: 'Card_Stemmy.png' }
     ];
 
-    // For debug/testing: give these items to the player if not found
-    keyItems.forEach(k => {
-        if (!gameState.items.includes(k.id)) gameState.items.push(k.id);
-    });
+    // Debug auto-populate
+    if (DEBUG_MODE) {
+        keyItems.forEach(k => {
+            if (!gameState.items.includes(k.id)) gameState.items.push(k.id);
+        });
+    }
 
-    keyItems.forEach((item, index) => {
+    // Determine what to show in the grid
+    // Determine what to show: In DEBUG show all key items. In Normal show only found ones + 1 extra placeholder.
+    const foundItems = keyItems.filter(item => gameState.items.includes(item.id));
+    let itemsToShow = DEBUG_MODE ? [...keyItems] : [...foundItems];
+
+    // Add exactly one placeholder if not everything is found (Normal Mode)
+    if (!DEBUG_MODE && itemsToShow.length < keyItems.length) {
+        itemsToShow.push({ isPlaceholder: true });
+    }
+
+
+    // Fill slots
+    itemsToShow.forEach((item, i) => {
         const slot = document.createElement('div');
         slot.className = 'key-item-slot';
-        const hasItem = gameState.items && gameState.items.includes(item.id);
 
-        if (hasItem) {
-            slot.innerHTML = `<div class="key-item-sprite ${item.icon}"></div>`;
-            slot.onclick = () => {
-                invNav.itemIndex = index;
-                updateInvNav(false);
-                // Visual active state
-                document.querySelectorAll('.key-item-slot').forEach(s => s.classList.remove('active'));
-                slot.classList.add('active');
-                updateDetail(item.name.toUpperCase(), item.desc, `assets/images/${item.img}`);
-            };
+
+
+        if (item.isPlaceholder) {
+            slot.classList.add('empty-slot');
+            // Explicitly fixed size for internal circle to ensure it stays round
+            slot.innerHTML = `<div style="width: 25px; height: 25px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 50%; display: block; box-sizing: border-box;"></div>`;
+            slot.onclick = () => updateDetail("VACANT SLOT", "Maintain field operations to secure additional laboratory assets.", 'assets/images/Card_Placeholder.png');
         } else {
-            slot.classList.add('locked');
-            slot.innerHTML = `<span class="icon" style="font-size: 2rem; opacity: 0.2">🔒</span>`;
-            slot.onclick = () => updateDetail("UNKNOWN OBJECT", "ITEM NOT ACQUIRED. Continue your research to discover critical mission equipment.", 'assets/images/Card_Placeholder.png');
+            const hasItem = gameState.items.includes(item.id);
+            if (hasItem) {
+                slot.innerHTML = `<div class="key-item-sprite ${item.icon}"></div>`;
+                slot.onclick = () => {
+                    invNav.itemIndex = i;
+                    updateInvNav(false);
+                    document.querySelectorAll('.key-item-slot').forEach(s => s.classList.remove('active'));
+                    slot.classList.add('active');
+                    updateDetail(item.name.toUpperCase(), item.desc, `assets/images/${item.img}`);
+                };
+            }
         }
         itemGrid.appendChild(slot);
     });
 
     // 3. Populate Cell Status
     statusList.innerHTML = '';
-    gameState.playerParty.forEach((cell, index) => {
-        const item = document.createElement('div');
-        item.className = 'status-item glass-panel';
 
-        // Calculate HP percent for the bar
-        const hpPercent = (cell.hp / cell.maxHp) * 100;
+    // Only show the active squad (first 3 members of the party)
+    const playerParty = gameState.profiles.player.party.slice(0, 3).filter(Boolean);
+    const playerLevel = gameState.profiles.player.level;
 
-        const iconName = cell.name.charAt(0).toUpperCase() + cell.name.slice(1);
-        item.innerHTML = `
-            <div class="status-cell-icon">
-                <img src="assets/images/${iconName}.png" alt="${cell.name}">
+    if (playerParty.length === 0) {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'status-item glass-panel locked';
+        placeholder.style.cursor = 'default';
+        placeholder.innerHTML = `
+            <div class="status-cell-icon" style="opacity: 0.2">
+                <div style="width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%;"></div>
             </div>
             <div class="status-info">
-                <div class="status-name">${cell.name.toUpperCase()} <span style="font-size: 0.7rem; color: #fff; opacity: 0.8;">[RG ${cell.level || 1}]</span></div>
-                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">HEALTH VITALITY: ${cell.hp}/${cell.maxHp}</div>
-                <div class="status-hp-bar">
-                    <div class="hp-fill" style="width: ${hpPercent}%"></div>
+                <div class="status-name" style="opacity: 0.5;">0% BIOLOGICAL OCCUPANCY</div>
+                <div style="font-size: 0.85rem; color: rgba(255,255,255,0.4); line-height: 1.4;">
+                    This place is so sterile, even the cells are too afraid to move in. Maintain field operations to secure active specimens.
                 </div>
             </div>
         `;
-        item.onclick = () => {
-            invNav.itemIndex = index;
-            updateInvNav(false);
-            // Add visual active state
-            document.querySelectorAll('.status-item').forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
+        statusList.appendChild(placeholder);
+    } else {
+        playerParty.forEach((cell, index) => {
+            const item = document.createElement('div');
+            item.className = 'status-item glass-panel';
 
-            const cardImg = `assets/images/Card_${iconName}.png`;
-            updateDetail(cell.name.toUpperCase(), cell.lore, cardImg);
-        };
-        statusList.appendChild(item);
-    });
+            // Dynamically compute stats including any C-Cards equipped
+            const stats = getModifiedStats(cell, playerLevel);
+            const maxHp = stats.maxHp;
+
+            // Avoid NaN if maxHp is 0 somehow
+            const hpPercent = maxHp > 0 ? (cell.hp / maxHp) * 100 : 0;
+
+            const iconName = cell.name.charAt(0).toUpperCase() + cell.name.slice(1);
+            item.innerHTML = `
+                <div class="status-cell-icon">
+                    <img src="assets/images/${iconName}.png" alt="${cell.name}">
+                </div>
+                <div class="status-info">
+                    <div class="status-name">${cell.name.toUpperCase()} <span style="font-size: 0.7rem; color: #fff; opacity: 0.8;">[RG ${cell.level || 1}]</span></div>
+                    <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); text-align: left;">HEALTH VITALITY: ${cell.hp}/${maxHp}</div>
+                    <div class="status-hp-bar">
+                        <div class="hp-fill" style="width: ${hpPercent}%"></div>
+                    </div>
+                </div>
+            `;
+            item.onclick = () => {
+                invNav.itemIndex = index;
+                updateInvNav(false);
+                // Add visual active state
+                document.querySelectorAll('.status-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                const iconNameClick = cell.name.charAt(0).toUpperCase() + cell.name.slice(1);
+                const cardImg = `assets/images/Card_${iconNameClick}.png`;
+                updateDetail(cell.name.toUpperCase(), cell.lore, cardImg);
+            };
+            statusList.appendChild(item);
+        });
+    }
 }
 
 async function resolvePhase() {
@@ -2499,19 +2788,48 @@ function showGameOver(isFailure) {
     const overlay = document.getElementById('game-over-overlay');
     const title = document.getElementById('game-over-title');
     const msg = document.getElementById('game-over-message');
+    const btnRestart = document.getElementById('btn-restart');
+    const btnMainMenu = document.getElementById('btn-return-menu');
+    const btnContinue = document.getElementById('btn-continue-overworld');
+    const expContainer = document.getElementById('battle-result-exp-container');
+    const expText = document.getElementById('battle-result-exp-text');
+    const expFill = document.getElementById('battle-result-exp-fill');
+
+    const opponentId = catalystState.battleOpponentId;
+    const isTutorialLoss = isFailure && opponentId === 'jenzi_tutorial';
 
     if (overlay && title && msg) {
-        if (isFailure) {
-            title.innerHTML = `SYSTEM <span class="neon-text">FAILURE</span>`;
-            msg.innerText = `All cellular entities have been neutralized. Lab integrity compromised.`;
+        if (isFailure && !isTutorialLoss) {
+            title.innerHTML = `EXPERIMENT <span class="neon-text" style="color: #ff3333; text-shadow: 0 0 10px #ff3333;">FAILED</span>`;
+            msg.innerText = `Cellular entities neutralized. Re-evaluation required.`;
+            if (btnRestart) btnRestart.classList.remove('hidden');
+            if (btnMainMenu) btnMainMenu.classList.remove('hidden');
+            if (btnContinue) btnContinue.classList.add('hidden');
+            if (expContainer) expContainer.classList.add('hidden');
         } else {
-            title.innerHTML = `MISSION <span class="neon-text">SUCCESS</span>`;
+            if (isTutorialLoss) {
+                title.innerHTML = `TEST <span class="neon-text" style="color: #ffcc00; text-shadow: 0 0 10px #ffcc00;">CONCLUDED</span>`;
+                gameState.storyFlags.jenziFirstBattleDone = true;
+            } else {
+                title.innerHTML = `EXPERIMENT <span class="neon-text">SUCCESSFUL</span>`;
+            }
+
+            if (btnRestart) btnRestart.classList.add('hidden');
+            if (btnMainMenu) btnMainMenu.classList.add('hidden');
+            if (btnContinue) btnContinue.classList.remove('hidden');
+            if (expContainer) expContainer.classList.remove('hidden');
 
             // --- GRINDING & PROGRESSION REWARD LOGIC ---
             const opponentId = catalystState.battleOpponentId;
             let expEarned = 0;
             let creditsEarned = 0;
             const currentRg = gameState.profiles.player.level || 0;
+            const expBefore = gameState.exp || 0;
+            const expFloor = getExpReqForLevel(currentRg);
+            const expCap = getExpReqForLevel(currentRg + 1);
+            const initialExpRelative = Math.max(0, expBefore - expFloor);
+            const expNeededForLevel = expCap - expFloor;
+            const initialPercent = Math.max(0, Math.min((initialExpRelative / expNeededForLevel) * 100, 100));
 
             if (opponentId === 'stemmy_wild') {
                 // Dynamic Scaling Rewards
@@ -2525,6 +2843,10 @@ function showGameOver(isFailure) {
                 // Tutorial / Standard Generic NPC
                 expEarned = 50;
                 creditsEarned = 50;
+            } else if (opponentId === 'jenzi_tutorial') {
+                expEarned = 50;
+                creditsEarned = 50;
+                gameState.storyFlags.jenziFirstBattleDone = true;
             } else {
                 // Fallback Opponent profile
                 expEarned = 50;
@@ -2550,9 +2872,76 @@ function showGameOver(isFailure) {
             }
 
             msg.innerHTML = `All target entities have been purged. Objective secured.<br><br>
-            +${expEarned} EXP<br>
-            +${creditsEarned} LAB CREDITS
+            <span style="color: #00ff66;">+${expEarned} EXP</span><br>
+            <span style="color: #00f3ff;">+${creditsEarned} LAB CREDITS</span>
             ${levelUpText}`;
+
+            // Initialize EXP Bar visually
+            if (expFill && expText) {
+                expFill.style.transition = 'none';
+                expFill.style.width = `${initialPercent}%`;
+
+                if (isTutorialLoss) {
+                    msg.innerHTML = `"Oof. That was rough, Intern. But hey, it's just a test. You definitely have... potential."<br><br>
+                    <span style="color: #ffaa00;">+0 EXP (TEST FAILED)</span><br>
+                    <span style="color: #ffaa00;">+0 LAB CREDITS</span>`;
+                    if (expContainer) expContainer.classList.add('hidden');
+                } else {
+                    msg.innerHTML = `Variables controlled. Desired outcome achieved.<br><br>
+                    <span style="color: #00ff66;">+${expEarned} EXP</span><br>
+                    <span style="color: #00f3ff;">+${creditsEarned} LAB CREDITS</span>
+                    ${levelUpText}`;
+                    if (expContainer) expContainer.classList.remove('hidden');
+                }
+
+                expText.innerText = `${initialExpRelative} / ${expNeededForLevel}`;
+                void expFill.offsetWidth; // Force Reflow
+                expFill.style.transition = 'width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+            } else {
+                if (isTutorialLoss) {
+                    msg.innerHTML = `"Oof. That was rough, Intern. But hey, it's just a test. You definitely have... potential."<br><br>
+                    <span style="color: #ffaa00;">+0 EXP (TEST FAILED)</span><br>
+                    <span style="color: #ffaa00;">+0 LAB CREDITS</span>`;
+                } else {
+                    msg.innerHTML = `Variables controlled. Desired outcome achieved.<br><br>
+                    <span style="color: #00ff66;">+${expEarned} EXP</span><br>
+                    <span style="color: #00f3ff;">+${creditsEarned} LAB CREDITS</span>
+                    ${levelUpText}`;
+                }
+            }
+
+            if (!isTutorialLoss && expFill && expText) {
+                setTimeout(() => {
+                    if (targetLevel > currentRg) {
+                        // Leveled Up - Fill to 100%
+                        if (expFill) expFill.style.width = `100%`;
+                        if (expText) expText.innerHTML = `${expCap - expFloor} / ${expNeededForLevel} <span style="color: #00ff66;">[LEVEL UP!]</span>`;
+
+                        // After the 1.5s fill, animate the remainder
+                        setTimeout(() => {
+                            const newFloor = getExpReqForLevel(targetLevel);
+                            const newCap = getExpReqForLevel(targetLevel + 1);
+                            const newNeeded = newCap - newFloor;
+                            const remainder = gameState.exp - newFloor;
+
+                            if (expFill) {
+                                expFill.style.transition = 'none';
+                                expFill.style.width = `0%`;
+                                void expFill.offsetWidth; // Reflow
+                                expFill.style.transition = 'width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                                expFill.style.width = `${(remainder / newNeeded) * 100}%`;
+                            }
+                            if (expText) expText.innerText = `${remainder} / ${newNeeded}`;
+                        }, 1600);
+                    } else {
+                        // Normal calculation
+                        const currentExpRelative = gameState.exp - expFloor;
+                        if (expFill) expFill.style.width = `${(currentExpRelative / expNeededForLevel) * 100}%`;
+                        if (expText) expText.innerText = `${currentExpRelative} / ${expNeededForLevel}`;
+                    }
+                }, 500);
+            }
+
             updateOverworldEXPBar();
         }
         overlay.classList.remove('hidden');
@@ -2629,6 +3018,11 @@ function resetGame() {
     };
     applyBonuses(gameState.playerParty, gameState.playerLevel);
     applyBonuses(gameState.enemyParty, gameState.enemyLevel);
+
+    // If player hasn't chosen a starter yet, skip battle setup
+    if (gameState.playerParty.length === 0 || gameState.enemyParty.length === 0) {
+        return;
+    }
 
     // Set Active Combatants
     gameState.player = gameState.playerParty[0];
@@ -2827,10 +3221,9 @@ function renderCellStorage() {
             e.dataTransfer.setData('sourceSide', catalystState.activeSide);
         };
 
-        // Click to preview/open card (Switch active index to preview in Catalyst Core)
+        // Click to preview/open card info
         icon.onclick = () => {
-            catalystState.activeMonsterIdx = partyIdx;
-            renderManagementHub();
+            openMonsterCard(monster.baseId || monster.name.toLowerCase());
         };
 
         grid.appendChild(icon);
