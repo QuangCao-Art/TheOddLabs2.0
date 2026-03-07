@@ -28,20 +28,144 @@
 
         <!-- Settings Screen -->
         <div id="screen-settings" class="screen hidden">
-            <div id="settings-panel" class="glass-panel"
-                style="width: 500px; padding: 40px; margin: 10% auto; position: relative; border: 2px solid var(--neon-cyan);">
+            <div id="settings-panel" class="glass-panel">
                 <h2 class="neon-text" style="text-align: center; margin-bottom: 30px;">SYSTEM <span
                         class="white-text">SETTINGS</span></h2>
 
-                <div class="setting-row"
-                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-family: 'Orbitron', sans-serif; color: #fff;">
-                    <label for="toggle-debug-mode" style="cursor: pointer;">ENABLE DEBUG MODE</label>
-                    <input type="checkbox" id="toggle-debug-mode" style="transform: scale(1.5); cursor: pointer;">
-                </div>
-                <div
-                    style="font-family: 'Rajdhani', sans-serif; font-size: 0.95rem; color: rgba(255,255,255,0.6); margin-bottom: 40px; font-style: italic; line-height: 1.4;">
-                    Checking this skips the intro tutorial and gives you a full team of advanced Cells for testing
-                    battles and UI. Warning: Toggling this will reset your current progress.
+                <div id="debug-console-panel"
+                    style="margin-bottom: 30px; padding: 25px; background: rgba(0, 243, 255, 0.05); border: 2px solid rgba(0, 243, 255, 0.2); border-radius: 12px;">
+                    <h3 class="neon-text"
+                        style="font-size: 0.9rem; margin-bottom: 20px; text-align: center; color: var(--neon-cyan); letter-spacing: 2px;">
+                        DEVELOPER CONSOLE</h3>
+
+                    <div class="setting-row"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-family: 'Orbitron', sans-serif; color: #fff;">
+                        <label for="toggle-debug-mode" style="cursor: pointer; font-size: 0.85rem;">Skip Tutorial and
+                            Add full Cells</label>
+                        <input type="checkbox" id="toggle-debug-mode" style="transform: scale(1.3); cursor: pointer;">
+                    </div>
+                    <div
+                        style="font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 25px; font-style: italic; line-height: 1.3;">
+                        Skips intro and grants advanced Cells for testing. Warning: Resets progress.
+                    </div>
+
+                    <div class="setting-row"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-family: 'Orbitron', sans-serif; color: #fff;">
+                        <label for="toggle-debug-datalog-x" style="cursor: pointer; font-size: 0.85rem;">SHOW HIDDEN
+                            DATALOGS</label>
+                        <input type="checkbox" id="toggle-debug-datalog-x"
+                            style="transform: scale(1.3); cursor: pointer;">
+                    </div>
+
+                    <div class="setting-row"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; font-family: 'Orbitron', sans-serif; color: #fff;">
+                        <label for="toggle-debug-unlock-doors" style="cursor: pointer; font-size: 0.85rem;">UNLOCK ALL
+                            DOORS</label>
+                        <input type="checkbox" id="toggle-debug-unlock-doors"
+                            style="transform: scale(1.3); cursor: pointer;">
+                    </div>
+
+                    <div style="height: 1px; background: rgba(0, 243, 255, 0.15); margin: 20px 0;"></div>
+
+                    <h4 class="neon-text"
+                        style="font-size: 0.8rem; margin-bottom: 12px; color: rgba(0, 243, 255, 0.8); text-align: center; letter-spacing: 1px;">
+                        DATALOG QUICK TOOLS</h4>
+                    <div class="debug-btns" style="display: flex; gap: 12px; justify-content: center;">
+                        <button id="btn-debug-collect-all" class="btn-neon small"
+                            style="padding: 6px 12px; font-size: 0.7rem;">COLLECT ALL</button>
+                        <button id="btn-debug-clear-all" class="btn-neon small"
+                            style="padding: 6px 12px; font-size: 0.7rem;">CLEAR ALL</button>
+                    </div>
+
+                    <div style="height: 1px; background: rgba(0, 243, 255, 0.15); margin: 20px 0;"></div>
+
+                    <h4 class="neon-text"
+                        style="font-size: 0.8rem; margin-bottom: 12px; color: rgba(0, 243, 255, 0.8); text-align: center; letter-spacing: 1px;">
+                        ENCOUNTER BUILDER</h4>
+
+                    <div class="debug-builder-form" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="debug-row">
+                            <label>BOSS:</label>
+                            <select id="debug-boss-name">
+                                <option value="debug_boss">Debug Boss</option>
+                                <option value="lana">Lana</option>
+                                <option value="dyzes">Dyzes</option>
+                                <option value="capsain">Capsain</option>
+                                <option value="jenzi">Jenzi</option>
+                                <option value="npc01">NPC Male</option>
+                                <option value="npc02">NPC Female</option>
+                                <option value="npc03">NPC Male 2</option>
+                            </select>
+                        </div>
+                        <div class="debug-row">
+                            <label>RG LEVEL:</label>
+                            <div
+                                style="display: flex; align-items: center; gap: 10px; flex: 1; justify-content: flex-end;">
+                                <input type="range" id="debug-boss-rg-slider" value="10" min="1" max="20"
+                                    style="flex: 1; height: 4px; cursor: pointer;">
+                                <input type="number" id="debug-boss-rg" value="10" min="1" max="20"
+                                    style="width: 40px; text-align: center;">
+                            </div>
+                        </div>
+                        <div class="debug-row-roster">
+                            <label>ROSTER:</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
+                                <select class="debug-mon-select" data-idx="0"></select>
+                                <select class="debug-mon-select" data-idx="1"></select>
+                                <select class="debug-mon-select" data-idx="2"></select>
+                            </div>
+                        </div>
+                        <div class="debug-row">
+                            <label>STYLE:</label>
+                            <select id="debug-boss-style">
+                                <option value="balanced">Balanced</option>
+                                <option value="aggressive">Aggressive</option>
+                                <option value="survival">Survival</option>
+                                <option value="utility">Utility</option>
+                            </select>
+                        </div>
+                        <button id="btn-debug-generate-fight" class="btn-neon" style="margin-top: 5px; padding: 10px;">⚡
+                            GENERATE & FIGHT</button>
+                    </div>
+
+                    <div style="height: 1px; background: rgba(0, 243, 255, 0.15); margin: 20px 0;"></div>
+
+                    <h4 class="neon-text"
+                        style="font-size: 0.8rem; margin-bottom: 12px; color: #00ff66; text-align: center; letter-spacing: 1px;">
+                        PLAYER BUILDER</h4>
+
+                    <div class="debug-builder-form" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="debug-row">
+                            <label>RG LEVEL:</label>
+                            <div
+                                style="display: flex; align-items: center; gap: 10px; flex: 1; justify-content: flex-end;">
+                                <input type="range" id="debug-player-rg-slider" value="1" min="1" max="20"
+                                    style="flex: 1; height: 4px; cursor: pointer;">
+                                <input type="number" id="debug-player-rg" value="1" min="1" max="20"
+                                    style="width: 40px; text-align: center;">
+                            </div>
+                        </div>
+                        <div class="debug-row-roster">
+                            <label>ROSTER:</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
+                                <select class="debug-player-mon-select" data-idx="0"></select>
+                                <select class="debug-player-mon-select" data-idx="1"></select>
+                                <select class="debug-player-mon-select" data-idx="2"></select>
+                            </div>
+                        </div>
+                        <div class="debug-row">
+                            <label>STYLE:</label>
+                            <select id="debug-player-style">
+                                <option value="balanced">Balanced</option>
+                                <option value="aggressive">Aggressive</option>
+                                <option value="survival">Survival</option>
+                                <option value="utility">Utility</option>
+                            </select>
+                        </div>
+                        <button id="btn-debug-set-player" class="btn-neon"
+                            style="margin-top: 5px; padding: 10px; --glow-color: #00ff66; border-color: #00ff66;">🛠️
+                            SET PLAYER</button>
+                    </div>
                 </div>
 
                 <div style="text-align: center;">
@@ -800,6 +924,20 @@
                 <button id="btn-starter-no" class="scd-btn scd-btn-no">NO</button>
             </div>
             <div class="scd-hint">← / → to switch &nbsp;|&nbsp; F = YES &nbsp;|&nbsp; ESC = NO</div>
+        </div>
+    </div>
+
+    <!-- Item Pickup Modal -->
+    <div id="item-pickup-modal" class="overlay hidden">
+        <div class="pickup-panel glass-panel">
+            <div class="pickup-label">ITEM ACQUIRED</div>
+            <div class="pickup-img-wrap">
+                <div id="pickup-sprite" class="key-item-sprite data-pad"></div>
+            </div>
+            <h3 class="pickup-name" id="pickup-name">DATAPAD</h3>
+            <p class="pickup-desc" id="pickup-desc">A portable data log. Contains encrypted research notes.</p>
+            <button id="btn-pickup-continue" class="btn-neon pickup-continue-btn">CONTINUE</button>
+            <div class="pickup-hint">[ F ] or click to close</div>
         </div>
     </div>
 

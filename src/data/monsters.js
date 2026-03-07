@@ -4,6 +4,7 @@ export const MONSTERS = {
         name: 'Stemmy',
         type: 'SOMATIC',
         archetype: 'BASE_CELL',
+        defaultStyle: 'balanced',
         lore: 'An undifferentiated stem cell brimming with potential. While it lacks specialized organelles, its raw adaptable cytoplasm allows it to mimic more advanced functions. It is the blank slate from which all cellular life emerges.',
         hp: 100,
         maxHp: 100,
@@ -13,6 +14,7 @@ export const MONSTERS = {
         def: 10,
         spd: 12,
         crit: 5,
+        defaultStyle: 'balanced',
         moves: [
             { id: 'cell_bump', name: 'Cell Bump', type: 'basic', element: 'SOMATIC', power: 40, cost: 0, desc: 'A clumsy, unspecialized bump against the enemy membrane.' },
             { id: 'mitosis_slap', name: 'Mitosis Slap', type: 'pellicle', element: 'SOMATIC', power: 55, cost: 3, matchFixed: 1, desc: 'Briefly divides a small portion of itself to slap the target twice. [RELIABLE HIT]: Forces a NEAR result.' },
@@ -29,6 +31,7 @@ export const MONSTERS = {
         name: 'Nitrophil',
         type: 'THERMOGENIC',
         archetype: 'LYTIC',
+        defaultStyle: 'aggressive',
         lore: 'A mutated neutrophil immune cell with explosive properties. It maybe has too much fun throwing its burst pods everywhere.',
         hp: 100,
         maxHp: 100,
@@ -38,6 +41,7 @@ export const MONSTERS = {
         def: 10,
         spd: 12,
         crit: 5,
+        defaultStyle: 'aggressive',
         moves: [
             { id: 'membrane_pierce', name: 'Membrane Pierce', type: 'basic', element: 'SOMATIC', power: 40, cost: 0, desc: 'A sharp enzymatic strike that pierces enemy defenses. Reliable and cost-free.' },
             { id: 'oxidative_purge', name: 'Oxidative Purge', type: 'pellicle', element: 'THERMOGENIC', power: 55, cost: 3, desc: 'Floods the target with reactive oxygen. A mid-power tactical choice.' },
@@ -54,6 +58,7 @@ export const MONSTERS = {
         name: 'Cambihil',
         type: 'BOTANIC',
         archetype: 'SOMATIC',
+        defaultStyle: 'survival',
         lore: 'A resilient entity derived from specialized plant cambium tissue. Its dense cellulose shielding and rapid regenerative capacity make it a formidable tank in the cellular arena.',
         hp: 110,
         maxHp: 110,
@@ -63,6 +68,7 @@ export const MONSTERS = {
         def: 13,
         spd: 10,
         crit: 4,
+        defaultStyle: 'survival',
         moves: [
             { id: 'chloro_strike', name: 'Chloro-Strike', type: 'basic', element: 'SOMATIC', power: 45, cost: 0, desc: 'A standard botanical strike. Fast and enzymatic.' },
             { id: 'cambium_root', name: 'Cambium Root', type: 'pellicle', element: 'BOTANIC', power: 50, cost: 3, heal: 0.1, desc: 'Siphons life force from the target to repair physical damage. [HEAL]: Restores 10% HP.' },
@@ -79,6 +85,7 @@ export const MONSTERS = {
         name: 'Lydrosome',
         type: 'OSMOTIC',
         archetype: 'TACTICIAN',
+        defaultStyle: 'aggressive',
         lore: 'A high-enzyme lysosome modified for long-range secretion. It uses chemical lances to dissolve enemy membranes from a safe tactical distance.',
         hp: 95,
         maxHp: 95,
@@ -88,6 +95,7 @@ export const MONSTERS = {
         def: 8,
         spd: 14,
         crit: 6,
+        defaultStyle: 'aggressive',
         moves: [
             { id: 'enzyme_lance', name: 'Enzyme Lance', type: 'basic', element: 'SOMATIC', power: 40, cost: 0, desc: 'A concentrated enzymatic jet. Pierces defenses with surgical precision.' },
             { id: 'osmotic_surge', name: 'Osmotic Surge', type: 'pellicle', element: 'OSMOTIC', power: 65, cost: 4, hasChoiceBlock: true, desc: 'A sudden surge of osmotic pressure. [CHOICEBLOCK]: Locks your movement options for the next turn.' },

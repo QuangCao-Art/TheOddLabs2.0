@@ -39,12 +39,17 @@ export const gameState = {
     storyFlags: {
         starterChosen: DEBUG_MODE,
         jenziFirstBattleDone: DEBUG_MODE,
-        jenziAtriumUnlocked: DEBUG_MODE
+        jenziAtriumUnlocked: DEBUG_MODE,
+        botanicSectorUnlocked: DEBUG_MODE,
+        humanWardUnlocked: DEBUG_MODE,
+        executiveSuiteUnlocked: DEBUG_MODE,
+        oldLabUnlocked: DEBUG_MODE
     },
 
     isProcessing: false,
     items: DEBUG_MODE ? ['datapad', 'card_stemmy'] : [], // Logs/Key items collected
-    logs: []   // Redundant copy check if needed
+    logs: [],   // Redundant copy check if needed
+    showHiddenLogs: false // DEBUG: Show red X on hidden logs
 };
 
 export function applyDebugMode(isDebug) {
@@ -64,8 +69,13 @@ export function applyDebugMode(isDebug) {
     gameState.profiles.player.cardBox = [];
     gameState.profiles.player.party = [];
 
-    gameState.storyFlags.starterChosen = DEBUG_MODE;
-    gameState.storyFlags.jenziFirstBattleDone = DEBUG_MODE;
+    gameState.storyFlags.starterChosen = isDebug;
+    gameState.storyFlags.jenziFirstBattleDone = isDebug;
+    gameState.storyFlags.jenziAtriumUnlocked = isDebug;
+    gameState.storyFlags.botanicSectorUnlocked = isDebug;
+    gameState.storyFlags.humanWardUnlocked = isDebug;
+    gameState.storyFlags.executiveSuiteUnlocked = isDebug;
+    gameState.storyFlags.oldLabUnlocked = isDebug;
 
     gameState.items = DEBUG_MODE ? ['datapad', 'card_stemmy'] : [];
     gameState.logs = [];

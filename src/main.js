@@ -3,7 +3,7 @@ import { resolveTurn, getDistance, checkOverload, getModifiedStats } from './eng
 import { AI } from './engine/ai.js';
 import { MONSTERS } from './data/monsters.js';
 import { Overworld } from './engine/overworld.js';
-import { CARDS, LEVEL_REWARDS, NPC_PRESETS } from './data/cards.js';
+import { CARDS, LEVEL_REWARDS, NPC_PRESETS, NPC_ENCOUNTERS } from './data/cards.js';
 
 // Expose gameState globally for overworld.js
 window.gameState = gameState;
@@ -260,6 +260,50 @@ const updateInvNav = (isKeyboardAction = false) => {
     }
 };
 
+// --- ITEM PICKUP MODAL ---
+const ITEM_PICKUP_DATA = {
+    '001': { name: 'DATAPAD', desc: 'A researcher\'s data pad. Contains Log #001: Mission Statement.', spriteClass: 'data-pad' },
+    '002': { name: 'DATAPAD', desc: 'A discarded data pad. Contains Log #002: The Coffee Incident.', spriteClass: 'data-pad' },
+    '010': { name: 'ROOM KEY', desc: 'Lana\'s private storage key. Or something more secret?', spriteClass: 'room-key' },
+    'SAUCE': { name: 'INFERNO SAUCE', desc: 'Rare Inferno Brand chili sauce. Extreme potency.', spriteClass: 'sauce-bottle' },
+    'SECRET_CARD': { name: 'SECRET CARD', desc: 'A glowing card with experimental data.', spriteClass: 'secret-card' },
+    // Add more as needed by story_lore_progression.md
+};
+
+window.showDatapadPickupModal = (logId, onClose) => {
+    const modal = document.getElementById('item-pickup-modal');
+    const data = ITEM_PICKUP_DATA[logId] || { name: 'ITEM', desc: 'An unknown item.', spriteClass: 'data-pad' };
+
+    document.getElementById('pickup-name').textContent = data.name;
+    document.getElementById('pickup-desc').textContent = data.desc;
+
+    // Swap sprite class
+    const sprite = document.getElementById('pickup-sprite');
+    sprite.className = `key-item-sprite ${data.spriteClass}`;
+
+    modal.classList.remove('hidden');
+
+    let inputReady = false;
+    setTimeout(() => { inputReady = true; }, 250);
+
+    function close() {
+        modal.classList.add('hidden');
+        window.removeEventListener('keydown', keyHandler);
+        if (onClose) onClose();
+    }
+
+    function keyHandler(e) {
+        if (!inputReady) return;
+        if (e.key === 'f' || e.key === 'F' || e.key === 'Enter') {
+            e.preventDefault(); e.stopPropagation();
+            close();
+        }
+    }
+
+    document.getElementById('btn-pickup-continue').onclick = close;
+    window.addEventListener('keydown', keyHandler);
+};
+
 // --- STARTER SELECTION LOGIC ---
 let selectedStarterId = null;
 
@@ -274,9 +318,13 @@ window.openStarterSelection = () => {
     starterNavIndex = 0;
     document.querySelectorAll('.starter-card')[0]?.classList.add('selected');
     selectedStarterId = document.querySelectorAll('.starter-card')[0]?.dataset.monster || null;
+    // Block input until modal animation completes
+    starterInputReady = false;
+    setTimeout(() => { starterInputReady = true; }, 250);
 };
 
 let starterNavIndex = 0;
+let starterInputReady = false;
 
 function initStarterSelectionEvents() {
     const cards = document.querySelectorAll('.starter-card');
@@ -317,10 +365,16 @@ function initStarterSelectionEvents() {
         img.alt = selectedStarterId;
         setConfirmFocus(0);
         dialog.classList.remove('hidden');
+        // Block input until dialog animation completes
+        starterInputReady = false;
+        setTimeout(() => { starterInputReady = true; }, 250);
     }
 
     function closeConfirmDialog() {
         dialog.classList.add('hidden');
+        // Block input briefly so a spam-press doesn't fire on the card screen
+        starterInputReady = false;
+        setTimeout(() => { starterInputReady = true; }, 250);
     }
 
     function commitStarter() {
@@ -339,6 +393,16 @@ function initStarterSelectionEvents() {
         if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
 
         addLog(`Acquired [${selectedStarterId.toUpperCase()}] as initial Cell.`);
+
+        // Auto-trigger Jenzi's battle dialogue (same as pressing F on her)
+        setTimeout(() => {
+            if (typeof Overworld !== 'undefined') {
+                const jenzi = Overworld.zones[Overworld.currentZone]?.objects?.find(o => o.id === 'jenzi');
+                if (jenzi) {
+                    Overworld.startNPCInteraction(jenzi);
+                }
+            }
+        }, 200);
     }
 
     // Click a card to select + open confirm dialog
@@ -359,6 +423,7 @@ function initStarterSelectionEvents() {
         const dialogOpen = !dialog.classList.contains('hidden');
 
         if (!starterOpen) return;
+        if (!starterInputReady) return; // wait for modal animation
 
         if (dialogOpen) {
             // Arrow keys toggle YES/NO focus
@@ -401,12 +466,11 @@ function init() {
         initStarterSelectionEvents();
         setupEventListeners();
 
+        // Populate Debug UI
+        populateDebugRosters();
+
         // Centralized Reset handles all Profile/Preset/State initialization
         resetGame();
-
-        // Initialize Debug UI with starting profile (Player)
-        const activeRGInput = document.getElementById('debug-active-rg');
-        if (activeRGInput) activeRGInput.value = gameState.profiles[catalystState.activeProfile].level;
 
         showScreen('screen-main-menu');
         console.log("Initialization Complete.");
@@ -558,22 +622,21 @@ function setupEventListeners() {
     window.addEventListener('start-wild-encounter', (e) => {
         const profileId = 'stemmy_wild';
         const rg = gameState.profiles.player.level || 0;
-        const scale = 1.0 + (rg * 0.2);
 
-        // Deep copy stemmy base stats
-        const baseStats = JSON.parse(JSON.stringify(MONSTERS.stemmy));
+        // Use base stats from MONSTERS (getModifiedStats will handle scaling)
+        const baseStats = MONSTERS.stemmy;
 
         const wildStemmy = {
             id: `stemmy_${Date.now()}`,
             baseId: 'stemmy',
-            name: `Stemmy Lvl ${rg}`,
-            hp: Math.floor(baseStats.hp * scale),
-            maxHp: Math.floor(baseStats.maxHp * scale),
-            atk: Math.floor(baseStats.atk * scale),
-            def: Math.floor(baseStats.def * scale),
-            spd: Math.floor(baseStats.spd * scale),
-            crit: baseStats.crit,     // Do not scale Crit
-            pp: baseStats.maxPp,      // Do not scale PP
+            name: 'Stemmy',
+            hp: baseStats.hp,
+            maxHp: baseStats.maxHp,
+            atk: baseStats.atk,
+            def: baseStats.def,
+            spd: baseStats.spd,
+            crit: baseStats.crit,
+            pp: baseStats.maxPp,
             maxPp: baseStats.maxPp,
             moves: baseStats.moves,
             defenseMoves: baseStats.defenseMoves,
@@ -609,7 +672,7 @@ function setupEventListeners() {
             const weakerType = typeAdvantages[playerStarter] || 'cambihil';
 
             gameState.profiles['jenzi_tutorial'] = {
-                name: 'JENZI (TEST)',
+                name: 'JENZI',
                 level: 0,
                 cardBox: [],
                 team: [weakerType, null, null],
@@ -632,7 +695,7 @@ function setupEventListeners() {
 
     /* --- PRE-BATTLE SEQUENCE LOGIC --- */
     const PRE_BATTLE_DATA = {
-        'jenzi_tutorial': { art: 'Character_FullArt_Jenzi', dialogue: "Sheesh, nice pick! Let's see if you can actually use it though. Square up!" },
+        'jenzi_tutorial': { art: 'Character_FullArt_Jenzi', dialogue: "Square up, Intern! Let's see what you've got." },
         'player': { art: 'Character_FullArt_Rival', dialogue: "Analysis commencing. Do not disappoint." },
         'opponent': { art: 'Character_FullArt_Rival', dialogue: "Analysis commencing. Do not disappoint." },
         'lana': { art: 'Character_FullArt_Lana', dialogue: "Prepare for a lesson in botanical efficiency!" },
@@ -642,7 +705,7 @@ function setupEventListeners() {
         'npc01': { art: 'Character_FullArt_NPC_Male', dialogue: "Commencing standard engagement protocol." },
         'npc02': { art: 'Character_FullArt_NPC_Female', dialogue: "Bio-signature match confirmed. Initiating test." },
         'npc03': { art: 'Character_FullArt_NPC_Male', dialogue: "Deploying tactical cells. Readiness check." },
-        'stemmy_wild': { art: '../sprites/Combat_Stemmy', dialogue: "*A wild cell aggressively bumps into you!*" }
+        'stemmy_wild': { art: 'Cell_FullArt_Stemmy', dialogue: "*A wild cell aggressively bumps into you!*" }
     };
 
     let preBattleSequenceActive = false;
@@ -663,7 +726,8 @@ function setupEventListeners() {
         }
 
         const opponent = gameState.profiles[opponentProfileId] || gameState.profiles.opponent;
-        const data = PRE_BATTLE_DATA[opponentProfileId] || PRE_BATTLE_DATA['opponent'];
+        const lookupId = opponent.bossId || opponentProfileId;
+        const data = PRE_BATTLE_DATA[lookupId] || PRE_BATTLE_DATA['opponent'];
 
         // Set UI Content
         const portraitImg = document.getElementById('pre-battle-portrait');
@@ -703,7 +767,9 @@ function setupEventListeners() {
         if (!preBattleSequenceActive) return;
 
         const opponentProfileId = catalystState.battleOpponentId || 'opponent';
-        const data = PRE_BATTLE_DATA[opponentProfileId] || PRE_BATTLE_DATA['opponent'];
+        const opponent = gameState.profiles[opponentProfileId] || gameState.profiles.opponent;
+        const lookupId = opponent.bossId || opponentProfileId;
+        const data = PRE_BATTLE_DATA[lookupId] || PRE_BATTLE_DATA['opponent'];
 
         preBattleCurrentStep++;
 
@@ -893,6 +959,7 @@ function setupEventListeners() {
             const profileId = catalystState.activeProfile;
             gameState.profiles[profileId].level = Math.max(0, Math.min(20, val));
             syncCardsToLevel(profileId, gameState.profiles[profileId].level);
+            applyBonuses(gameState.profiles[profileId].party, gameState.profiles[profileId].level);
             renderManagementHub();
         }
     });
@@ -1154,6 +1221,17 @@ function setupEventListeners() {
         }
     });
 
+    // Main Debug Mode Toggle
+    document.getElementById('toggle-debug-mode')?.addEventListener('change', (e) => {
+        applyDebugMode(e.target.checked);
+        // Refresh UI state
+        renderInventory();
+        if (!document.getElementById('screen-overworld').classList.contains('hidden')) {
+            Overworld.renderMap();
+        }
+        addLog(`DEBUG MODE: ${e.target.checked ? 'ENABLED' : 'DISABLED'}.`);
+    });
+
     // RG Debug Listeners
     document.getElementById('debug-player-rg')?.addEventListener('change', (e) => {
         const val = parseInt(e.target.value);
@@ -1171,6 +1249,119 @@ function setupEventListeners() {
             syncCardsToLevel('OPPONENT', gameState.enemyLevel);
             renderManagementHub();
         }
+    });
+
+    // DataLog Debug Listeners
+    document.getElementById('toggle-debug-datalog-x')?.addEventListener('change', (e) => {
+        gameState.showHiddenLogs = e.target.checked;
+        if (!document.getElementById('screen-overworld').classList.contains('hidden')) {
+            Overworld.renderMap();
+        }
+    });
+
+    document.getElementById('btn-debug-collect-all')?.addEventListener('click', () => {
+        const allLogIds = [
+            '001', '002', '003', '004', '005', '006', '007', '008', '009', '010',
+            '011', '012', '013', '014', '015', '016', '017', '018', '019', '020', '999'
+        ];
+        allLogIds.forEach(id => {
+            if (!Overworld.logsCollected.includes(id)) {
+                Overworld.logsCollected.push(id);
+            }
+        });
+        renderInventory();
+        const countEl = document.getElementById('log-count');
+        if (countEl) countEl.innerText = Overworld.logsCollected.length;
+        addLog("DEBUG: All DataLogs collected.");
+    });
+
+    document.getElementById('btn-debug-clear-all')?.addEventListener('click', () => {
+        Overworld.logsCollected = [];
+        renderInventory();
+        const countEl = document.getElementById('log-count');
+        if (countEl) countEl.innerText = 0;
+        addLog("DEBUG: DataLog collection cleared.");
+    });
+
+    document.getElementById('toggle-debug-unlock-doors')?.addEventListener('change', (e) => {
+        const isUnlocked = e.target.checked;
+        gameState.storyFlags.jenziAtriumUnlocked = isUnlocked;
+        gameState.storyFlags.botanicSectorUnlocked = isUnlocked;
+        gameState.storyFlags.humanWardUnlocked = isUnlocked;
+        gameState.storyFlags.executiveSuiteUnlocked = isUnlocked;
+        gameState.storyFlags.oldLabUnlocked = isUnlocked;
+
+        if (!document.getElementById('screen-overworld').classList.contains('hidden')) {
+            Overworld.renderMap();
+            addLog(`DEBUG: All doors ${isUnlocked ? 'UNLOCKED' : 'RESET to progress'}.`);
+        }
+    });
+
+    // --- ENCOUNTER BUILDER LOGIC ---
+    syncSliderToNumber('debug-boss-rg-slider', 'debug-boss-rg');
+
+    document.getElementById('btn-debug-generate-fight')?.addEventListener('click', () => {
+        const bossId = document.getElementById('debug-boss-name').value;
+        const rg = parseInt(document.getElementById('debug-boss-rg').value);
+        const style = document.getElementById('debug-boss-style').value;
+
+        const roster = [];
+        document.querySelectorAll('.debug-mon-select').forEach(sel => {
+            if (sel.value) roster.push(sel.value);
+        });
+
+        if (roster.length === 0) {
+            addLog("ERROR: Boss roster is empty.");
+            return;
+        }
+
+        const profileId = generateNPCProfile(bossId, rg, roster, style);
+        catalystState.battleOpponentId = profileId;
+        startPreBattleSequence(profileId);
+    });
+
+    // --- PLAYER BUILDER LOGIC ---
+    syncSliderToNumber('debug-player-rg-slider', 'debug-player-rg');
+
+    document.getElementById('btn-debug-set-player')?.addEventListener('click', () => {
+        const rg = parseInt(document.getElementById('debug-player-rg').value);
+        const style = document.getElementById('debug-player-style').value;
+        const roster = [];
+        document.querySelectorAll('.debug-player-mon-select').forEach(sel => {
+            if (sel.value) roster.push(sel.value);
+        });
+        if (roster.length === 0) {
+            addLog("ERROR: Player roster is empty.");
+            return;
+        }
+
+        // Update Player Profile
+        gameState.profiles.player.level = rg;
+        gameState.playerLevel = rg;
+        gameState.playerStyle = style;
+        gameState.profiles.player.style = style; // Ensure it's in the profile too
+
+        gameState.playerTeam = [null, null, null];
+        roster.forEach((id, i) => { gameState.playerTeam[i] = id; });
+
+        // Regenerate Party Objects
+        gameState.profiles.player.party = roster.map(id => createMonsterInstance(id));
+        gameState.playerParty = gameState.profiles.player.party;
+        gameState.player = gameState.playerParty[0];
+
+        // Sync Cards for the new Level
+        syncCardsToLevel('player', rg);
+
+        // APPLY STYLE TO ALL MONSTERS
+        gameState.profiles.player.party.forEach((mon, idx) => {
+            if (mon) executeQuickEquip(style, 'player', idx);
+        });
+
+        // Initialize HP/PP for new squad
+        applyBonuses(gameState.profiles.player.party, rg);
+
+        addLog(`[DEBUG] Player synchronized to RG-${rg} with ${style.toUpperCase()} focus.`);
+        renderManagementHub(); // Refresh UI
     });
 }
 
@@ -1344,6 +1535,71 @@ function openMonsterCard(monsterId) {
     renderSkills(monster.defenseMoves, 'detail-defense-skills');
 
     modal.classList.remove('hidden');
+}
+
+/**
+ * --- DEBUG UI ENHANCEMENTS ---
+ * Logic for Encounter Builder and Player Builder
+ */
+
+function populateDebugRosters() {
+    const monOptions = Object.keys(MONSTERS).sort().map(id =>
+        `<option value="${id}">${MONSTERS[id].name}</option>`
+    ).join('');
+
+    // Boss Roster Selects
+    document.querySelectorAll('.debug-mon-select').forEach(sel => {
+        sel.innerHTML = '<option value="">-- NONE --</option>' + monOptions;
+    });
+
+    // Player Roster Selects
+    document.querySelectorAll('.debug-player-mon-select').forEach(sel => {
+        sel.innerHTML = '<option value="">-- NONE --</option>' + monOptions;
+    });
+}
+
+function syncSliderToNumber(sliderId, numberId) {
+    const slider = document.getElementById(sliderId);
+    const number = document.getElementById(numberId);
+    if (!slider || !number) return;
+
+    slider.addEventListener('input', () => { number.value = slider.value; });
+    number.addEventListener('input', () => { slider.value = number.value; });
+}
+
+function generateNPCProfile(bossId, rgLevel, roster, style) {
+    const profileId = 'debug_boss_battle';
+    const profileName = (NPC_ENCOUNTERS[bossId]?.name || bossId).toUpperCase();
+
+    // Create monsters and ensure they know their level for stats calculation
+    const party = roster.filter(id => id && MONSTERS[id]).map(id => {
+        const mon = createMonsterInstance(id);
+        mon.rg = rgLevel; // Explicitly set RG for stats logic
+        return mon;
+    });
+
+    gameState.profiles[profileId] = {
+        name: profileName,
+        level: rgLevel,
+        cardBox: [],
+        team: roster,
+        party: party,
+        style: style,
+        bossId: bossId
+    };
+
+    // Sync cards for the NPC
+    syncCardsToLevel(profileId, rgLevel);
+
+    // Apply style to all monsters
+    party.forEach((mon, idx) => {
+        if (mon) executeQuickEquip(style, profileId, idx);
+    });
+
+    // Initialize HP/PP for NPC
+    applyBonuses(party, rgLevel);
+
+    return profileId;
 }
 
 function addLog(msg) {
@@ -1820,8 +2076,13 @@ function renderInventory() {
         const emptyMsg = document.createElement('div');
         emptyMsg.className = 'log-item locked';
         emptyMsg.style.justifyContent = 'center';
-        emptyMsg.innerHTML = '<span class="log-status" style="opacity: 0.5;">THERE IS NOTHING HERE</span>';
+        emptyMsg.innerHTML = '<span class="log-status" style="opacity: 0.5;">No logs. Either you just started,<br>or you\'re actively avoiding knowledge.</span>';
         logList.appendChild(emptyMsg);
+        // Empty state detail panel
+        if (detailTitle) detailTitle.innerText = 'NO DATA FOUND';
+        if (detailDesc) detailDesc.innerText = 'This unit has zero logs on record.\n\nProbably because someone forgot to save them. Or dropped them somewhere messy. Or both.';
+        const cardContainer = detailCard ? detailCard.closest('.detail-card-container') : null;
+        if (cardContainer) cardContainer.style.display = 'none';
     } else {
         displayLogs.forEach((log, i) => {
             const isFound = Overworld.logsCollected.includes(log.id);
@@ -1842,6 +2103,16 @@ function renderInventory() {
             };
             logList.appendChild(item);
         });
+
+        // Auto-select the newest (last) collected log
+        const newestLog = displayLogs[displayLogs.length - 1];
+        if (newestLog) {
+            invNav.itemIndex = displayLogs.length - 1;
+            updateDetail(`[${newestLog.tag}] LOG #${newestLog.id}: ${newestLog.title}`, newestLog.text, null);
+            // Highlight the last item visually
+            const lastItem = logList.lastElementChild;
+            if (lastItem) lastItem.classList.add('nav-selected');
+        }
     }
 
     // 2. Populate Key Items (Conditional display)
@@ -3001,21 +3272,7 @@ function resetGame() {
     gameState.enemyLevel = oProfile.level;
     syncCardsToLevel(opponentId, gameState.enemyLevel);
 
-    // 2. Pre-apply Catalyst Bonuses to persistent max stats for the start of battle
-    const applyBonuses = (party, level) => {
-        // Only apply to first 3 (active team) for battle start efficiency
-        party.slice(0, 3).forEach(monster => {
-            const mod = getModifiedStats(monster, level);
-            monster.maxHp = mod.maxHp;
-            monster.maxPp = mod.maxPp;
-
-            // Full heal at the start of each battle
-            monster.hp = monster.maxHp;
-
-            // PP is not auto-filled, it must be generated, but ensure it's not over max
-            if (monster.pp > monster.maxPp) monster.pp = monster.maxPp;
-        });
-    };
+    // 2. Full heal at the start of each battle
     applyBonuses(gameState.playerParty, gameState.playerLevel);
     applyBonuses(gameState.enemyParty, gameState.enemyLevel);
 
@@ -3635,16 +3892,19 @@ function updateCatalystCore() {
         }
     });
 
-    const fmt = (base, bonus) => bonus > 0 ? `${base + bonus} (${base} + ${bonus})` : base;
+    const fmt = (base, modified) => {
+        const bonus = modified - base;
+        return bonus > 0 ? `${modified} (${base} + ${bonus})` : modified;
+    };
 
-    if (hpPeek) hpPeek.textContent = fmt(monster.maxHp, bonuses.hp);
-    if (ppPeek) ppPeek.textContent = fmt(monster.maxPp, bonuses.pp);
-    if (atkPeek) atkPeek.textContent = fmt(monster.atk, bonuses.atk);
-    if (defPeek) defPeek.textContent = fmt(monster.def, bonuses.def);
-    if (spdPeek) spdPeek.textContent = fmt(monster.spd, bonuses.spd);
+    if (hpPeek) hpPeek.textContent = fmt(monster.maxHp, stats.maxHp);
+    if (ppPeek) ppPeek.textContent = fmt(monster.maxPp, stats.maxPp);
+    if (atkPeek) atkPeek.textContent = fmt(monster.atk, stats.atk);
+    if (defPeek) defPeek.textContent = fmt(monster.def, stats.def);
+    if (spdPeek) spdPeek.textContent = fmt(monster.spd, stats.spd);
     if (crtPeek) {
-        const total = monster.crit + bonuses.crt;
-        crtPeek.textContent = bonuses.crt > 0 ? `${total}% (${monster.crit}% + ${bonuses.crt}%)` : `${monster.crit}%`;
+        const bonus = stats.crit - (monster.crit || 5);
+        crtPeek.textContent = bonus > 0 ? `${stats.crit}% (${(monster.crit || 5)}% + ${bonus}%)` : `${stats.crit}%`;
     }
 
     anchor.innerHTML = '';
@@ -3858,18 +4118,27 @@ function applyPreset(profileId, presetId, silent = false) {
     }
 }
 
-function executeQuickEquip(style) {
-    const profile = gameState.profiles[catalystState.activeProfile];
-    const monsterIdx = catalystState.activeMonsterIdx;
+function executeQuickEquip(style, profileId = null, targetMonsterIdx = null) {
+    const pId = profileId || catalystState.activeProfile;
+    const profile = gameState.profiles[pId];
+    const monsterIdx = targetMonsterIdx !== null ? targetMonsterIdx : catalystState.activeMonsterIdx;
     const monster = profile.party[monsterIdx];
     if (!profile || !monster) return;
 
-    // 0. RESET DRAG STATE (Prevent interference from previous manual moves)
+    // Save old active state to restore later
+    const oldActiveProfile = catalystState.activeProfile;
+    const oldActiveMonsterIdx = catalystState.activeMonsterIdx;
+
+    // Temporarily switch context for clearEquippedCards and equipCard
+    catalystState.activeProfile = pId;
+    catalystState.activeMonsterIdx = monsterIdx;
+
+    // 0. RESET DRAG STATE
     catalystState.dragSourceSlot = null;
     catalystState.draggedCardId = null;
     catalystState.dragSourceProfile = null;
 
-    // 1. CLEAR NON-LEADER EQUIPMENT (Skip the Leader to preserve monster identity)
+    // 1. CLEAR NON-LEADER EQUIPMENT
     clearEquippedCards(true, true);
 
     // 2. DEFINE STYLE WEIGHTS
@@ -3889,48 +4158,36 @@ function executeQuickEquip(style) {
         Object.entries(card.stats).forEach(([stat, val]) => {
             score += (val * (styleWeight[stat] || 1));
         });
-        // Bonus for expansion slots (priority to grow the tree)
         if (card.slots > 0) score += (card.slots * 50);
         return score;
     };
 
-    // 3. SORT CARD BOX (Highest score first)
-    // Quick Equip ONLY handles standard Enhancement cards, NOT Leader cards.
+    // 3. SORT CARD BOX
     let availableCards = [...profile.cardBox]
         .filter(id => !CARDS[id]?.isLeader)
         .map(id => ({ id, card: CARDS[id], score: scoreCard(CARDS[id]) }));
 
     availableCards.sort((a, b) => {
-        // Primary: Tier (3 > 2 > 1)
         const tierMap = { '3': 3, '2': 2, '1': 1 };
         const tierA = tierMap[a.card.tier] || 0;
         const tierB = tierMap[b.card.tier] || 0;
         if (tierA !== tierB) return tierB - tierA;
-
-        // Secondary: Weighted Score
         return b.score - a.score;
     });
 
     // 4. RECURSIVE FILLING
     const fillSlots = (slotIdx) => {
-        // Check if slot is already occupied (e.g. by a preserved Leader card)
         const isOccupied = monster.equippedCards.some(ec => ec.slotIndex === slotIdx);
         if (isOccupied) return true;
 
         for (let i = 0; i < availableCards.length; i++) {
             const candidate = availableCards[i];
-
-            // Try to equip
             const success = equipCard(monsterIdx, slotIdx, candidate.id, true, true);
             if (success) {
                 const cardIdToRemove = candidate.id;
-                // Optimization: Remove ALL copies of this cardId from the local list
-                // to prevent redundant "No Duplicates" failures in other slots.
                 availableCards = availableCards.filter(c => c.id !== cardIdToRemove);
-
                 const currentLayout = calculateSlotLayout(monster);
                 const currentSlot = currentLayout[slotIdx];
-
                 if (currentSlot && currentSlot.children) {
                     currentSlot.children.forEach(child => {
                         fillSlots(child.id);
@@ -3942,22 +4199,26 @@ function executeQuickEquip(style) {
         return false;
     };
 
-    // Start with base slots
     [0, 1, 2].forEach(slotIdx => fillSlots(slotIdx));
 
-    // Summary for logging
-    const tiers = monster.equippedCards.reduce((acc, ec) => {
-        const card = CARDS[ec.cardId];
-        if (card && !card.isLeader) acc[card.tier] = (acc[card.tier] || 0) + 1;
-        return acc;
-    }, {});
-    const tierSummaries = Object.entries(tiers)
-        .sort((a, b) => b[0] - a[0])
-        .map(([t, count]) => `<span class="tier-label tier-${t}">T${t}</span>x${count}`)
-        .join(' ');
+    // Restore state
+    catalystState.activeProfile = oldActiveProfile;
+    catalystState.activeMonsterIdx = oldActiveMonsterIdx;
 
-    addLog(`Neural Calibration Complete: <span class="tactical">${style.toUpperCase()}</span> protocol applied to ${monster.name}. Allocation: ${tierSummaries || 'None'}`);
-    renderManagementHub();
+    if (profileId === null || profileId === catalystState.activeProfile) {
+        const tiers = monster.equippedCards.reduce((acc, ec) => {
+            const card = CARDS[ec.cardId];
+            if (card && !card.isLeader) acc[card.tier] = (acc[card.tier] || 0) + 1;
+            return acc;
+        }, {});
+        const tierSummaries = Object.entries(tiers)
+            .sort((a, b) => b[0] - a[0])
+            .map(([t, count]) => `<span class="tier-label tier-${t}">T${t}</span>x${count}`)
+            .join(' ');
+
+        addLog(`Neural Calibration Complete: <span class="tactical">${style.toUpperCase()}</span> protocol applied to ${monster.name}. Allocation: ${tierSummaries || 'None'}`);
+        renderManagementHub();
+    }
 }
 
 function calculateSlotLayout(monster) {
@@ -4296,6 +4557,26 @@ document.getElementById('card-detail-modal')?.addEventListener('click', (e) => {
         e.target.classList.remove('active');
     }
 });
+
+/**
+ * Pre-applies Catalyst Bonuses and heals monsters to their modified max health.
+ * Used during battle start and roster initialization.
+ */
+function applyBonuses(party, level) {
+    if (!party) return;
+    // Only apply to first 3 (active team) for efficiency if needed, 
+    // but usually safe for the whole party.
+    party.forEach(monster => {
+        if (!monster) return;
+        const mod = getModifiedStats(monster, level);
+
+        // Full heal based on modified max HP
+        monster.hp = mod.maxHp;
+
+        // PP is not auto-filled, it must be generated, but ensure it's not over max
+        if (monster.pp > mod.maxPp) monster.pp = mod.maxPp;
+    });
+}
 
 // Final Initialization
 window.addEventListener('load', init);

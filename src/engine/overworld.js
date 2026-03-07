@@ -4,6 +4,57 @@
  */
 
 export const Overworld = {
+    randomPools: {
+        lobby: [
+            ["Welcome to Odd Labs!", "Please keep your badge visible at all times and avoid the bio-hazard chutes."],
+            ["The Incubation Chamber is just ahead.", "Have you picked your signature cell yet? Career paths depend on it!"],
+            ["Don't mind the security guards.", "They're mostly here for... aesthetic compliance and to keep the cells in check."],
+            ["If you're looking for the Director, he's usually in the Executive Suite.", "Or hiding in the cafeteria during 'Noodle Tuesday'."],
+            ["Stay sharp, Intern.", "This lobby might look peaceful, but the research floors are quite the tactical maze."],
+            ["I'm heading to the breakroom.", "Apparently, the coffee machine finally stopped dispensing blue sludge."]
+        ],
+        atrium: [
+            ["Have you seen the latest readings on the Nitrophils?", "They seem to have a higher metabolic rate whenever it's Noodle Tuesday.", "Strange correlation."],
+            ["The Director was shouting in the cafeteria again.", "He called the Nitrophils 'bio-hazardous junk' and threatened to incinerate any dish with a red stain.", "I've never seen someone so angry at a cell."],
+            ["I remember the Leak of '82... supposedly.", "The Director still uses it as an excuse to ignore the Cells.", "He calls them 'failed remnants of a dark day' whenever he's in a bad mood."],
+            ["The Cells are so helpful! One of them helped me reorganize my entire filing cabinet.", "Although, it did categorize everything by 'color' instead of 'alphabetical'."],
+            ["Why is the vending machine always out of Spicy Peanuts?", "I suspect the Director is buying the entire stock for his late-night shifts."],
+            ["Did you hear? A junior intern claims to have seen a 'giant' cell in the old storage wing.", "Probably just lack of sleep and too many energy drinks."],
+            ["The new bio-blue interface is much easier on the eyes, don't you think?", "It makes the whole lab feel more tactical and professional."],
+            ["I tried to pet a Nitrophil today.", "It was remarkably soft, and it just stared at my lunch with such intense, spicy curiosity.", "They're almost... cute."],
+            ["Did you know Lydrosomes can use their osmotic pressure to precisely target debris?", "I saw one pressure-cleaning a set of microscopes in the breakroom yesterday. Not a speck of dust left."],
+            ["The Osmotic types are fascinating.", "They can filter an entire liter of lab-grade water in under ten seconds.", "We haven't had a clogged sink since they arrived."],
+            ["Thermogenic cells like Nitrophil have a resting body temperature that could boil an egg.", "The Director calls them 'walking fire hazards' and banned them from the executive floor."],
+            ["I heard rumors from the Alpha-Beta Sector.", "They're working on a 'Dual Combatant' pair called Dip-Alpha and Dip-Beta.", "Apparently, they're inseparable. If one goes down, it's a disaster for everyone's energy levels."],
+            ["I saw a senior researcher trying to 'authenticate' a Bikini Card using a high-powered electron microscope.", "He claimed he was checking for 'tactical watermarks,' but he hasn't blinked in three hours.", "Curious dedication to the craft, really."],
+            ["Why is everyone suddenly trading 'Swimsuit Variants' of the Cell cards?", "I heard the holographic foil is made of 'distilled summer vibes' and makes your Pellicle look 10% more fabulous.", "I need one for... thermal testing."],
+            ["I tried to explain my research to a Lydrosome,", "but it just went right over its head.", "I guess I shouldn't have expected it to absorb information that quickly.", "It has zero osmotic interest in my career."],
+            ["What if we synthesized a cell that only eats student loans?", "We'd have to give it a very high affinity for 'depleted wallets' and 'unpaid interest'.", "I think it's a Nobel Prize waiting to happen."],
+            ["Did you know that some cells in the Botanic Sector can actually hear you scream?", "Well, not 'hear' in the traditional sense, but they respond to high-frequency vibrations.", "So if you're having a bad day, please scream quietly. You're stressing the ferns."],
+            ["I asked the Nitrophils if they knew any jokes about thermal dynamics.", "They acts like they're too 'hot' to handle.", "I really need to stop talking to the thermogenic specimens."],
+            ["I've been calculating the trajectory of a Nitrophil launched from a high-pressure bio-chute.", "If we get the angle right, we could technically deliver spicy noodles across the entire lab in 0.8 seconds.", "The Director's office is right in the flight path, though."],
+            ["Did you know the 'anti-slip' coating on the stairs is actually a layer of modified adhesive cells that 'lick' your shoes to keep them in place?", "It works wonders, but the feeling of a thousand tiny tongues tasting your sneakers is... technically questionable.", "And remarkably loud on quiet shifts."]
+        ],
+        botanic: [
+            ["Lana is brilliant with those Cambihils, but she has to hide them when the Director walks by.", "He calls them 'invasive weeds' and says they're a disgrace to the department."],
+            ["Fun fact: Cambihils actually photosynthetic at a 15% higher efficiency rate when they're near a window.", "They're basically high-speed solar panels with leaves."],
+            ["Watch out for the 'Canobolus' project in the Fungal Ward.", "It’s a Ballistospore with a catapult mechanism.", "They say it roots itself into the floor and just starts peppering its target with high-pressure spores like a machine gun."],
+            ["The humidity in here is great for the ferns, but it's murder on my paperwork."],
+            ["Did you see the glowing hedge move?", "Lana says it's just 'bio-active curiosity', but I'm not so sure."],
+            ["Lana spends more time talking to the plants than most of us.", "Can't blame her, really. At least the plants don't complain about data entry."],
+            ["Lana claims her 'Bikini Collection' is purely for 'UV radiation benchmarks'.", "Right... and I'm sure that floral-pattern one is for 'camouflaging with the hydrangeas'.", "She's not fooling anyone."]
+        ],
+        human: [
+            ["Working in Human Cell Research with Dyzes is great,", "but the Lydrosomes keep trying to 'clean' my coffee mug with high-pressure jets. It's quite a messy way to start the morning."],
+            ["Viral-type cells don't actually 'infect'—they just share data at a molecular level.", "The Director hates them the most;", "he says they're 'biological parasites' that should have been deleted years ago."],
+            ["Sector 7 is trying to fix a 'buggy' mitochondria they're calling Mitonegy.", "It’s supposed to act like a transformer, patching up colleagues' membranes automatically.", "Sounds like a maintenance nightmare."],
+            ["Have you seen the blueprints for the 'Kerashell'?", "It's a Keratinocyte with an armor plates made of skin protein.", "They say it can take a beating with almost zero energy cost.", "I wish my lab coat was that durable."],
+            ["I heard the Scavenger team in the basement is working on Chlarob.", "It's based on Chlamydia, but instead of making you sick, it's programmed to thieve energy from enemy cells.", "Tactical, but a bit creepy."],
+            ["Micro-tactical data is coming in fast today.", "Dyzes is going to be pleased with the latest Lydrosome stats."],
+            ["I asked Dyzes for a Band-Aid after a papercut.", "He tried to give me a 'Lydrosome-infused regenerating patch' that cost more than my monthly salary.", "I just used a napkin instead."],
+            ["Dyzes says the human-cell interface is 98% stable.", "I'm just wondering about what happens with that last 2%."]
+        ]
+    },
     tileSize: 64,
     player: {
         x: 10,
@@ -17,7 +68,7 @@ export const Overworld = {
         currentFrame: 0 // 0-3 for manual frame control
     },
     keysPressed: new Set(),
-    currentZone: 'lobby',
+    currentZone: null,
     mapData: null,
     controlsInitialized: false,
     isDialogueActive: false,
@@ -96,7 +147,7 @@ export const Overworld = {
                         if (!isGenericWall && !isClosedDoor) {
                             // Check objects collision
                             const isOccupied = zone.objects.some(obj => {
-                                const meta = Overworld.getFurnitureMeta(obj.id);
+                                const meta = Overworld.getFurnitureMeta(obj.id, obj.customSprite);
                                 if (meta && meta.hasCollision === false) return false;
                                 const w = obj.width || 1;
                                 const h = obj.height || 1;
@@ -137,7 +188,7 @@ export const Overworld = {
                 el.style.left = `${spot.x * Overworld.tileSize}px`;
                 el.style.top = `${spot.y * Overworld.tileSize}px`;
                 el.style.zIndex = spot.y + 11;
-                el.style.backgroundImage = "url('assets/sprites/Combat_Stemmy.png')";
+                el.style.backgroundImage = "url('assets/images/Encounter_Stemmy.png')";
                 el.style.backgroundSize = "contain";
                 el.style.backgroundRepeat = "no-repeat";
                 mapEl.appendChild(el);
@@ -205,7 +256,7 @@ export const Overworld = {
                 { id: 'chairA-R_lobby_wait1', x: 1, y: 5, type: 'prop', name: 'Lab Chair' },
                 { id: 'chairA-R_lobby_wait2', x: 1, y: 6, type: 'prop', name: 'Lab Chair' },
                 // Reception Desk
-                { id: 'TableLeaderB-Top_reception', x: 8, y: 5, type: 'prop', name: 'Leader Desk', hiddenLogId: '002' },
+                { id: 'TableLeaderB-Top_reception', x: 8, y: 5, type: 'prop', name: 'Leader Desk' },
                 { id: 'TableLeaderB-Bottom_reception', x: 8, y: 6, type: 'prop', name: 'Leader Desk' },
                 { id: 'chairA-L_reception_desk', x: 9, y: 5, type: 'prop', name: 'Lab Chair' },
                 // Storage & Decor
@@ -257,7 +308,7 @@ export const Overworld = {
                 // Large Cabinets in the North Stations
                 { id: 'Cabinet-Big-TopLeft_at1', x: 5, y: 2, type: 'prop', name: 'Storage Cabinet' },
                 { id: 'Cabinet-Big-TopRight_at1', x: 6, y: 2, type: 'prop', name: 'Storage Cabinet' },
-                { id: 'Cabinet-Big-BottomLeft_at1', x: 5, y: 3, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'Cabinet-Big-BottomLeft_at1', x: 5, y: 3, type: 'prop', name: 'Storage Cabinet', hiddenLogId: '002' },
                 { id: 'Cabinet-Big-BottomRight_at1', x: 6, y: 3, type: 'prop', name: 'Storage Cabinet' },
 
                 { id: 'Cabinet-Big-TopLeft_at2', x: 12, y: 2, type: 'prop', name: 'Storage Cabinet' },
@@ -273,9 +324,9 @@ export const Overworld = {
 
                 // Shifted from bottom to Northern Stations
                 { id: 'labTankB-T_at_n1', x: 4, y: 2, type: 'prop', name: 'Station Tank' },
-                { id: 'labTankB-B_at_n1', x: 4, y: 3, type: 'prop', name: 'Station Tank' },
+                { id: 'labTankB-B_at_n1', x: 4, y: 3, type: 'prop', name: 'Station Tank', hiddenLogId: '004' },
                 { id: 'labTankB-T_at_n2', x: 14, y: 2, type: 'prop', name: 'Station Tank' },
-                { id: 'labTankB-B_at_n2', x: 14, y: 3, type: 'prop', name: 'Station Tank' },
+                { id: 'labTankB-B_at_n2', x: 14, y: 3, type: 'prop', name: 'Station Tank', hiddenLogId: '003' },
                 // Cluster A (West)
                 { id: 'tableC-T_at_nw', x: 3, y: 5, type: 'prop', name: 'Atrium Core Table' },
                 { id: 'tableC-B_at_nw', x: 3, y: 6, type: 'prop', name: 'Atrium Core Table' },
@@ -287,7 +338,7 @@ export const Overworld = {
                 { id: 'tableC-B_at1', x: 6, y: 6, type: 'prop', name: 'Atrium Core Table' },
                 { id: 'chairA-R_at3', x: 5, y: 5, type: 'prop', name: 'Lab Chair' },
                 { id: 'chairA-R_at4', x: 5, y: 6, type: 'prop', name: 'Lab Chair' },
-                { id: 'tableD-L_at1_s', x: 5, y: 7, type: 'prop', name: 'Analysis Table' },
+                { id: 'tableD-L_at1_s', x: 5, y: 7, type: 'prop', name: 'Analysis Table', hiddenLogId: '014' },
                 { id: 'tableD-R_at1_s', x: 6, y: 7, type: 'prop', name: 'Analysis Table' },
                 // Cluster B (East) - Cleared per user request
                 { id: 'tableD-L_atB1', x: 12, y: 5, type: 'prop', name: 'Executive Desk' },
@@ -321,13 +372,13 @@ export const Overworld = {
             ],
             doors: [
                 { x: 9, y: 10, targetZone: 'lobby', targetX: 5, targetY: 3 },
-                { x: 0, y: 6, targetZone: 'kitchen', targetX: 9, targetY: 6 },
+                { x: 0, y: 6, targetZone: 'kitchen', targetX: 9, targetY: 6, requiredFlag: 'botanicSectorUnlocked' },
                 { x: 0, y: 8, targetZone: 'entertainment', targetX: 6, targetY: 6 },
                 { x: 18, y: 8, targetZone: 'storage', targetX: 1, targetY: 6 },
-                { x: 0, y: 4, targetZone: 'botanic', targetX: 13, targetY: 13 },
-                { x: 18, y: 4, targetZone: 'human', targetX: 1, targetY: 13 },
-                { x: 18, y: 6, targetZone: 'specimenStorage', targetX: 1, targetY: 4 },
-                { x: 9, y: 2, targetZone: 'executive', targetX: 7, targetY: 7 }
+                { x: 0, y: 4, targetZone: 'botanic', targetX: 13, targetY: 13, requiredFlag: 'botanicSectorUnlocked' },
+                { x: 18, y: 4, targetZone: 'human', targetX: 1, targetY: 13, requiredFlag: 'humanWardUnlocked' },
+                { x: 18, y: 6, targetZone: 'specimenStorage', targetX: 1, targetY: 4, requiredFlag: 'humanWardUnlocked' },
+                { x: 9, y: 2, targetZone: 'executive', targetX: 7, targetY: 7, requiredFlag: 'executiveSuiteUnlocked' }
             ]
         },
         specimenStorage: {
@@ -415,32 +466,32 @@ export const Overworld = {
             ],
             doors: [
                 { x: 0, y: 4, targetZone: 'atrium', targetX: 17, targetY: 6 },
-                { x: 6, y: 6, targetZone: 'storage', targetX: 5, targetY: 3 },
-                { x: 6, y: 2, targetZone: 'human', targetX: 7, targetY: 14 }
+                { x: 6, y: 6, targetZone: 'storage', targetX: 5, targetY: 3, requiredFlag: 'humanWardUnlocked' },
+                { x: 6, y: 2, targetZone: 'human', targetX: 7, targetY: 14 },
+                { x: 19, y: 4, targetZone: 'old_lab', targetX: 1, targetY: 4, requiredFlag: 'oldLabUnlocked' }
             ]
         },
         old_lab: {
             name: 'THE OLD LAB (SECRET)',
             width: 11,
-            height: 9,
-            spawn: { x: 5, y: 7 },
+            height: 8,
+            spawn: { x: 1, y: 4 },
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
                 [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [26, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Exit to Atrium (Closed)
                 [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [
-                { id: 'incubator_origin', x: 5, y: 2, width: 2, height: 2, type: 'trigger', name: 'ORIGIN INCUBATOR' },
+                { id: 'incubator_origin', x: 5, y: 2, width: 2, height: 2, type: 'prop', name: 'ORIGIN INCUBATOR' },
                 { id: 'log_999', x: 8, y: 6, type: 'log', name: 'DataLog #999' }
             ],
             doors: [
-                { x: 0, y: 7, targetZone: 'atrium', targetX: 16, targetY: 7 }
+                { x: 0, y: 4, targetZone: 'specimenStorage', targetX: 18, targetY: 4 }
             ]
         },
         botanic: {
@@ -468,11 +519,10 @@ export const Overworld = {
             ],
             objects: [
                 { id: 'lana', x: 7, y: 3, type: 'npc', name: 'Lana' },
-                { id: 'log_089', x: 13, y: 13, type: 'log', name: 'DataLog #089' },
                 // North Storage Row (y=3 with y=2 tops)
                 { id: 'Cabinet-Big-TopLeft_bot1', x: 1, y: 2, type: 'prop', name: 'Storage Unit' },
                 { id: 'Cabinet-Big-TopRight_bot1', x: 2, y: 2, type: 'prop', name: 'Storage Unit' },
-                { id: 'Cabinet-Big-BottomLeft_bot1', x: 1, y: 3, type: 'prop', name: 'Storage Unit' },
+                { id: 'Cabinet-Big-BottomLeft_bot1', x: 1, y: 3, type: 'prop', name: 'Storage Unit', hiddenLogId: '007' },
                 { id: 'Cabinet-Big-BottomRight_bot1', x: 2, y: 3, type: 'prop', name: 'Storage Unit' },
                 { id: 'Cabinet-Small_bot1', x: 3, y: 3, type: 'prop', name: 'Supply Cabinet' },
                 { id: 'Cabinet-Small_bot2', x: 11, y: 3, type: 'prop', name: 'Supply Cabinet' },
@@ -481,14 +531,14 @@ export const Overworld = {
                 { id: 'Cabinet-Big-BottomLeft_bot2', x: 12, y: 3, type: 'prop', name: 'Storage Unit' },
                 { id: 'Cabinet-Big-BottomRight_bot2', x: 13, y: 3, type: 'prop', name: 'Storage Unit' },
                 // Upper Garden Cluster (y=4,5,6,7) - STACK at x=4
-                { id: 'potPlantC-T_bot1', x: 2, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot1', x: 2, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'potPlantC-T_bot1', x: 2, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot1', x: 2, y: 5, type: 'prop', name: 'Bioluminescent Bush', hiddenLogId: '008' },
                 { id: 'potPlantC-T_bot2', x: 3, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot2', x: 3, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
                 { id: 'potPlantC-T_bot3a', x: 4, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot3a', x: 4, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
                 { id: 'potPlantC-T_bot3b', x: 4, y: 5, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot3b', x: 4, y: 6, type: 'prop', name: 'Bioluminescent Bush' },
                 { id: 'potPlantC-T_bot3c', x: 4, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot3c', x: 4, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
                 { id: 'potPlantC-T_bot4', x: 5, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot4', x: 5, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
                 { id: 'potPlantC-T_bot5', x: 6, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot5', x: 6, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'labTankA-T_bot1', x: 8, y: 4, type: 'prop', name: 'Research Tank' }, { id: 'labTankA-B_bot1', x: 8, y: 5, type: 'prop', name: 'Research Tank' },
+                { id: 'labTankA-T_bot1', x: 8, y: 4, type: 'prop', name: 'Research Tank' }, { id: 'labTankA-B_bot1', x: 8, y: 5, type: 'prop', name: 'Research Tank', hiddenLogId: '006' },
                 { id: 'labTankA-T_bot2', x: 9, y: 4, type: 'prop', name: 'Research Tank' }, { id: 'labTankA-B_bot2', x: 9, y: 5, type: 'prop', name: 'Research Tank' },
                 { id: 'incubatorA-TL_bot1', x: 10, y: 4, type: 'prop', name: 'Incubation Chamber' }, { id: 'incubatorA-TR_bot1', x: 11, y: 4, type: 'prop', name: 'Incubation Chamber' },
                 { id: 'incubatorA-BL_bot1', x: 10, y: 5, type: 'prop', name: 'Incubation Chamber' }, { id: 'incubatorA-BR_bot1', x: 11, y: 5, type: 'prop', name: 'Incubation Chamber' },
@@ -500,9 +550,9 @@ export const Overworld = {
                 { id: 'potPlantC-T_bot9', x: 5, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot9', x: 5, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
                 { id: 'potPlantC-T_bot10', x: 6, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot10', x: 6, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
                 { id: 'Cartonbox-Small_bot1', x: 8, y: 7, type: 'prop', name: 'Archived Samples' },
-                { id: 'tableLeaderA-L_bot1', x: 9, y: 7, type: 'prop', name: 'Lead Analysis Desk' },
+                { id: 'tableLeaderA-L_bot1', x: 9, y: 7, type: 'prop', name: 'Lead Analysis Desk', hiddenLogId: '010' },
                 { id: 'tableLeaderA-R_bot1', x: 10, y: 7, type: 'prop', name: 'Lead Analysis Desk' },
-                { id: 'Cartonbox-Pile-Top_bot1', x: 11, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'Cartonbox-Pile-Bottom_bot1', x: 11, y: 7, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'Cartonbox-Pile-Top_bot1', x: 11, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'Cartonbox-Pile-Bottom_bot1', x: 11, y: 7, type: 'prop', name: 'Stacked Boxes', hiddenLogId: '009' },
                 { id: 'KeyItem-SecretCard_bot1', x: 12, y: 7, type: 'prop', name: 'Access Key' },
                 { id: 'Cartonbox-Pile-Top_bot2', x: 13, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'Cartonbox-Pile-Bottom_bot2', x: 13, y: 7, type: 'prop', name: 'Stacked Boxes' },
                 // Refined Hedge Row (y=8) with Column 7 Path
@@ -591,16 +641,15 @@ export const Overworld = {
             ],
             objects: [
                 { id: 'dyzes', x: 7, y: 3, type: 'npc', name: 'Dyzes' },
-                { id: 'log_212', x: 7, y: 14, type: 'log', name: 'DataLog #212' },
 
                 // Row 3 (Cabinets, Boxes, NPCs)
                 { id: 'Cabinet-Big-TopLeft_hum1', x: 1, y: 2, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-TopRight_hum1', x: 2, y: 2, type: 'prop', name: 'Human Archive' },
-                { id: 'Cabinet-Big-BottomLeft_hum1', x: 1, y: 3, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-BottomRight_hum1', x: 2, y: 3, type: 'prop', name: 'Human Archive' },
+                { id: 'Cabinet-Big-BottomLeft_hum1', x: 1, y: 3, type: 'prop', name: 'Human Archive', hiddenLogId: '011' }, { id: 'Cabinet-Big-BottomRight_hum1', x: 2, y: 3, type: 'prop', name: 'Human Archive' },
 
                 { id: 'Cabinet-Big-TopLeft_hum2', x: 3, y: 2, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-TopRight_hum2', x: 4, y: 2, type: 'prop', name: 'Human Archive' },
                 { id: 'Cabinet-Big-BottomLeft_hum2', x: 3, y: 3, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-BottomRight_hum2', x: 4, y: 3, type: 'prop', name: 'Human Archive' },
 
-                { id: 'boxHandA_hum1', x: 5, y: 3, type: 'prop', name: 'Hand Samples' },
+                { id: 'boxHandA_hum1', x: 5, y: 3, type: 'prop', name: 'Hand Samples', hiddenLogId: '015' },
                 { id: 'boxHandA_hum2', x: 9, y: 3, type: 'prop', name: 'Hand Samples' },
 
                 { id: 'Cabinet-Big-TopLeft_hum3', x: 10, y: 2, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-TopRight_hum3', x: 11, y: 2, type: 'prop', name: 'Human Archive' },
@@ -625,7 +674,7 @@ export const Overworld = {
                 { id: 'labTankC-T_hum_r1l', x: 13, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1l', x: 13, y: 5, type: 'prop', name: 'Stasis Tank' },
 
                 // Row 7 (Medical Row)
-                { id: 'bedA-L_hum7a', x: 2, y: 7, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum7a', x: 3, y: 7, type: 'prop', name: 'Medical Pod' },
+                { id: 'bedA-L_hum7a', x: 2, y: 7, type: 'prop', name: 'Medical Pod', hiddenLogId: '013' }, { id: 'bedA-R_hum7a', x: 3, y: 7, type: 'prop', name: 'Medical Pod' },
                 { id: 'skeletonA-T_hum7', x: 4, y: 6, type: 'prop', name: 'Anatomical Model' }, { id: 'skeletonA-B_hum7', x: 4, y: 7, type: 'prop', name: 'Anatomical Model' },
                 { id: 'bedA-L_hum7b', x: 5, y: 7, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum7b', x: 6, y: 7, type: 'prop', name: 'Medical Pod' },
                 { id: 'bedA-L_hum7c', x: 8, y: 7, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum7c', x: 9, y: 7, type: 'prop', name: 'Medical Pod' },
@@ -648,7 +697,7 @@ export const Overworld = {
                 { id: 'bedA-L_hum11d', x: 11, y: 11, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum11d', x: 12, y: 11, type: 'prop', name: 'Medical Pod' },
 
                 // Row 14 (Desks & Devices)
-                { id: 'tableDeviceA_hum14a', x: 1, y: 14, type: 'prop', name: 'Bio-Sampler' },
+                { id: 'tableDeviceA_hum14a', x: 1, y: 14, type: 'prop', name: 'Bio-Sampler', hiddenLogId: '012' },
                 { id: 'tableLabCylindersA_hum14a', x: 2, y: 14, type: 'prop', name: 'Cylinder Array' },
                 { id: 'tableDeviceA_hum14b', x: 3, y: 14, type: 'prop', name: 'Bio-Sampler' },
                 { id: 'tableDeviceA_hum14c', x: 4, y: 14, type: 'prop', name: 'Bio-Sampler' },
@@ -683,7 +732,14 @@ export const Overworld = {
                 [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [
-                { id: 'capsain', x: 7, y: 3, type: 'npc', name: 'Director Capsain' }
+                { id: 'capsain', x: 7, y: 3, type: 'npc', name: 'Director Capsain' },
+                { id: 'tableDirectorA-L_exec', x: 6, y: 3, type: 'prop', name: 'Director Desk', hiddenLogId: '016' },
+                { id: 'tableDirectorA-R_exec', x: 7, y: 3, type: 'prop', name: 'Director Desk', hiddenLogId: '019' },
+                { id: 'Cabinet-Big-TopLeft_exec', x: 1, y: 2, type: 'prop', name: 'Archives' },
+                { id: 'Cabinet-Big-TopRight_exec', x: 2, y: 2, type: 'prop', name: 'Archives' },
+                { id: 'Cabinet-Big-BottomLeft_exec', x: 1, y: 3, type: 'prop', name: 'Archives', hiddenLogId: '017' },
+                { id: 'Cabinet-Big-BottomRight_exec', x: 2, y: 3, type: 'prop', name: 'Archives', hiddenLogId: '018' },
+                { id: 'tableComputerA_exec', x: 13, y: 3, type: 'prop', name: 'Security Terminal', hiddenLogId: '020' }
             ],
             doors: [
                 { x: 7, y: 8, targetZone: 'atrium', targetX: 9, targetY: 3 }
@@ -709,13 +765,12 @@ export const Overworld = {
                 { id: 'tableB-R_kit', x: 6, y: 4, type: 'prop', name: 'Dining Table' },
                 { id: 'chairA-F_kit1', x: 5, y: 5, type: 'prop', name: 'Kitchen Chair' },
                 { id: 'chairA-F_kit2', x: 6, y: 5, type: 'prop', name: 'Kitchen Chair' },
-                { id: 'tableComputerA_kit', x: 9, y: 4, type: 'prop', name: 'Staff PC' },
-                { id: 'log_042', x: 9, y: 3, type: 'log', name: 'DataLog #042' }
+                { id: 'tableComputerA_kit', x: 9, y: 4, type: 'prop', name: 'Staff PC', hiddenLogId: '005' }
             ],
             doors: [
                 { x: 10, y: 6, targetZone: 'atrium', targetX: 1, targetY: 6 },
                 { x: 7, y: 2, targetZone: 'botanic', targetX: 7, targetY: 14 },
-                { x: 7, y: 7, targetZone: 'entertainment', targetX: 4, targetY: 3 }
+                { x: 7, y: 7, targetZone: 'entertainment', targetX: 4, targetY: 3, requiredFlag: 'botanicSectorUnlocked' }
             ]
         },
         storage: {
@@ -733,9 +788,7 @@ export const Overworld = {
                 [24, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Exit to Atrium (On the left wall)
                 [2, 9, 9, 9, 9, 9, 9, 9, 9, 3]
             ],
-            objects: [
-                { id: 'log_012', x: 3, y: 3, type: 'log', name: 'DataLog #012' }
-            ],
+            objects: [],
             doors: [
                 { x: 0, y: 6, targetZone: 'atrium', targetX: 17, targetY: 8 },
                 { x: 5, y: 2, targetZone: 'specimenStorage', targetX: 6, targetY: 6 }
@@ -760,8 +813,7 @@ export const Overworld = {
                 { id: 'tableA_ent', x: 3, y: 4, type: 'prop', name: 'Gaming Table' },
                 { id: 'chairA-R_ent', x: 2, y: 4, type: 'prop', name: 'Lounge Chair' },
                 { id: 'chairA-L_ent', x: 4, y: 4, type: 'prop', name: 'Lounge Chair' },
-                { id: 'wallHangingA_ent', x: 3, y: 2, type: 'prop', name: 'Art Display' },
-                { id: 'log_077', x: 5, y: 5, type: 'log', name: 'DataLog #077' }
+                { id: 'wallHangingA_ent', x: 3, y: 2, type: 'prop', name: 'Art Display' }
             ],
             doors: [
                 { x: 7, y: 6, targetZone: 'atrium', targetX: 1, targetY: 8 },
@@ -822,6 +874,7 @@ export const Overworld = {
         'Cabinet-Small': { hasCollision: true, info: "I can see the little cockcroach's crawing out!" },
         'boxHandA': { hasCollision: true, info: "Labeled: 'FRAGILE - BIOLOGICAL SAMPLES - DO NOT SHAKE'. It just made a sneeze sound." },
         'keyItem-DataPad': { hasCollision: true, info: "Mostly contains encrypted logs, but some files are just high-score records for 'Snake'." },
+        'KeyItem-DataPad': { hasCollision: true, info: "Mostly contains encrypted logs, but some files are just high-score records for 'Snake'." },
         'keyItem-RoomKey': { hasCollision: true, info: "A magnetic keycard. Smells like the Director's expensive cologne." },
         'keyItem-SauceBottle': { hasCollision: true, info: "Label: 'SUPERNOVA SAUCE'. Scoville rating: YES. Lab-certified to burn through metal." },
         'chairC': { hasCollision: true, info: "A high-back executive chair that squeaks in a way that sounds suspiciously like judging your life choices." },
@@ -833,117 +886,107 @@ export const Overworld = {
         'log': { hasCollision: false, info: "A data pad containing potentially sensitive research notes. Better give it a read." }
     },
 
-    getFurnitureMeta(objId) {
+    getFurnitureMeta(objId, customSprite) {
         if (!objId) return null;
+        // customSprite takes priority over the generic id-prefix lookup
+        if (customSprite && this.furnitureMetadata[customSprite]) {
+            return this.furnitureMetadata[customSprite];
+        }
         const prefix = objId.split('_')[0];
         return this.furnitureMetadata[prefix] || null;
     },
 
     init() {
         console.log("Overworld Engine Starting...");
-        // Use setTimeout to ensure the DOM has updated dimensions after showScreen
         setTimeout(() => {
-            this.renderMap('lobby');
+            this.renderMap('lobby', true); // Fresh spawn for game start
             this.setupControls();
-            this.updatePlayerPosition();
-
-            // Re-enable transitions after initial placement
-            const playerEl = document.getElementById('player-sprite');
-            const mapEl = document.getElementById('overworld-map');
-            setTimeout(() => {
-                if (playerEl) playerEl.classList.remove('no-transition');
-                if (mapEl) mapEl.classList.remove('no-transition');
-                this.startLoop();
-            }, 100);
+            this.startLoop();
         }, 50);
     },
 
-    renderMap(zoneId) {
-        const zone = this.zones[zoneId];
-        this.currentZone = zoneId;
-        const viewport = document.getElementById('overworld-viewport');
+    /**
+     * Renders the map and initializes zone state.
+     * @param {string} zoneId - ID of the zone to render.
+     * @param {boolean} forceSpawn - Force player to zone's spawn point.
+     * @param {number} targetX - Optional specific X coordinate.
+     * @param {number} targetY - Optional specific Y coordinate.
+     */
+    renderMap(zoneId, forceSpawn = false, targetX = null, targetY = null) {
+        const id = zoneId || this.currentZone || 'lobby';
+        const zone = this.zones[id];
+        const isNewZone = id !== this.currentZone || forceSpawn;
+
         const mapEl = document.getElementById('overworld-map');
-
-        mapEl.style.gridTemplateColumns = `repeat(${zone.width}, ${this.tileSize}px)`;
-        mapEl.style.gridTemplateRows = `repeat(${zone.height}, ${this.tileSize}px)`;
-
-        // Remove player sprite temporarily so it doesn't get purged by innerHTML = ''
         const playerSprite = document.getElementById('player-sprite');
+
+        // 1. LOCK VISUALS (Prevent jerky movement during redraw)
+        if (mapEl) mapEl.classList.add('no-transition');
+        if (playerSprite) playerSprite.classList.add('no-transition');
+
+        // 2. DETACH PLAYER (Temporarily)
         if (playerSprite && playerSprite.parentElement === mapEl) {
             mapEl.removeChild(playerSprite);
         }
 
+        // 3. DRAW TILES
+        mapEl.style.gridTemplateColumns = `repeat(${zone.width}, ${this.tileSize}px)`;
+        mapEl.style.gridTemplateRows = `repeat(${zone.height}, ${this.tileSize}px)`;
         mapEl.innerHTML = '';
 
-        // Build floor and walls based on layout array
         for (let y = 0; y < zone.height; y++) {
             for (let x = 0; x < zone.width; x++) {
-                const tileID = zone.layout[y][x];
-                const tile = document.createElement('div');
-                tile.classList.add('tile');
-                tile.classList.add(`t-${tileID}`); // Class for the specific tile texture
+                let tileID = zone.layout[y][x];
 
-                // Logic-based classes for collisions/interactions
-                // CLOSED DOORS are walls, OPEN DOORS are floors
+                // --- Story-Locked Door Visual Swap ---
+                const door = zone.doors && zone.doors.find(d => d.x === x && d.y === y);
+                if (door && door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag]) {
+                    const lockedMap = {
+                        20: 29, 21: 29, // Edge-Bottom
+                        22: 28, 23: 28, // Basic
+                        24: 30, 26: 30, // Edge-Left
+                        25: 31, 27: 31  // Edge-Right
+                    };
+                    if (lockedMap[tileID]) tileID = lockedMap[tileID];
+                }
+
+                const tile = document.createElement('div');
+                tile.classList.add('tile', `t-${tileID}`);
+
                 const isClosedDoor = [20, 22, 24, 25, 28, 29, 30, 31].includes(tileID);
                 const isOpenDoor = [21, 23, 26, 27].includes(tileID);
                 const isGenericWall = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 32].includes(tileID);
 
-                if (isGenericWall || isClosedDoor) {
-                    tile.classList.add('wall');
-                } else {
-                    tile.classList.add('floor');
-                }
+                if (isGenericWall || isClosedDoor) tile.classList.add('wall');
+                else tile.classList.add('floor');
 
-                if (isClosedDoor || isOpenDoor) {
-                    tile.classList.add('door-tile');
-                }
-
-                // Add objects
-                const obj = zone.objects.find(o => o.x === x && o.y === y);
-                if (obj) {
-                    // Hidden interactive markers removed as requested
-                }
+                if (isClosedDoor || isOpenDoor) tile.classList.add('door-tile');
 
                 mapEl.appendChild(tile);
             }
         }
 
-        // Sync logs from gameState
+        // 4. DRAW OBJECTS
         this.logsCollected = window.gameState.logs || [];
-
-        // --- INJECT DYNAMIC DROPS (Story progression items) ---
-        if (this.currentZone === 'lobby' && window.gameState.storyFlags.jenziFirstBattleDone && !this.logsCollected.includes('001')) {
-            const hasLog = zone.objects.some(o => o.id === 'log_001');
-            if (!hasLog) {
-                // F49 is KeyItem-DataPad per MapBuilder.md
+        if (id === 'lobby' && window.gameState.storyFlags.jenziFirstBattleDone && !this.logsCollected.includes('001')) {
+            if (!zone.objects.some(o => o.id === 'log_001')) {
                 zone.objects.push({ id: 'log_001', x: 5, y: 3, type: 'prop', name: 'Log #001', hiddenLogId: '001', customSprite: 'KeyItem-DataPad' });
             }
         }
 
-        // DRAW OBJECT VISUALS
         zone.objects.forEach(obj => {
-            // Include NPCs, props, signs, etc.
-            if (obj.type === 'npc' || obj.type === 'prop' || obj.type === 'sign' || obj.id === 'incubator') {
+            if (['npc', 'prop', 'sign', 'atrium_statue'].includes(obj.type) || obj.id === 'incubator') {
                 const el = document.createElement('div');
-
-                // Class hierarchy: .world-object .[type] .[specific-id]
                 el.id = `npc-${obj.id}`;
                 el.classList.add('world-object', obj.type);
-
                 if (obj.customSprite) {
-                    // Use custom sprite class if provided
                     el.classList.add(obj.customSprite);
                 } else {
                     const specificClass = obj.id.startsWith('npc_') ? obj.id.split('_').slice(0, 2).join('_') : obj.id.split('_')[0];
                     el.classList.add(specificClass);
                 }
 
-                // Add direction class if it's an NPC
-                if (obj.type === 'npc') {
-                    const dir = obj.direction || 'down';
-                    el.classList.add(`face-${dir}`);
-                }
+                if (obj.type === 'npc') el.classList.add(`face-${obj.direction || 'down'}`);
 
                 el.style.width = `${(obj.width || 1) * this.tileSize}px`;
                 el.style.height = `${(obj.height || 1) * this.tileSize}px`;
@@ -951,36 +994,51 @@ export const Overworld = {
                 el.style.top = `${obj.y * this.tileSize}px`;
                 el.style.zIndex = obj.y + (obj.height || 1) + 10;
 
-                // RPG Layering: If object has no collision, it should render over the player
-                const meta = this.getFurnitureMeta(obj.id);
-                if (meta && meta.hasCollision === false) {
-                    el.classList.add('render-top');
-                }
+                const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
+                if (meta && meta.hasCollision === false) el.classList.add('render-top');
 
                 mapEl.appendChild(el);
+
+                // DEBUG: Show red X on hidden DataLogs
+                if (window.gameState.showHiddenLogs && obj.hiddenLogId && !this.logsCollected.includes(obj.hiddenLogId)) {
+                    const debugIndicator = document.createElement('div');
+                    debugIndicator.className = 'debug-log-indicator';
+                    // Center the X on the object
+                    debugIndicator.style.left = `${obj.x * this.tileSize + ((obj.width || 1) * this.tileSize / 2) - 16}px`;
+                    debugIndicator.style.top = `${obj.y * this.tileSize + ((obj.height || 1) * this.tileSize / 2) - 16}px`;
+                    mapEl.appendChild(debugIndicator);
+                }
             }
         });
 
-        // ENSURE PLAYER SPRITE EXISTS (persistent)
+        // 5. RE-ATTACH & COORDINATE SYNC
         if (!playerSprite) {
             const newSprite = document.createElement('div');
             newSprite.id = 'player-sprite';
             mapEl.appendChild(newSprite);
-        } else if (playerSprite.parentElement !== mapEl) {
-            // Re-attach to new map if Parent hierarchy changed
+        } else {
             mapEl.appendChild(playerSprite);
         }
 
-        // Set player to spawn position
-        this.player.x = zone.spawn.x;
-        this.player.y = zone.spawn.y;
+        if (targetX !== null && targetY !== null) {
+            this.player.x = targetX;
+            this.player.y = targetY;
+        } else if (isNewZone) {
+            this.player.x = zone.spawn.x;
+            this.player.y = zone.spawn.y;
+        }
 
-        // Ensure teleport is instant
-        playerSprite.classList.add('no-transition');
-        mapEl.classList.add('no-transition');
+        this.currentZone = id;
+        document.getElementById('location-name').textContent = zone.name;
         this.updatePlayerPosition();
 
-        document.getElementById('location-name').textContent = zone.name;
+        // 6. UNLOCK VISUALS (Clean up transition locks after render)
+        setTimeout(() => {
+            const p = document.getElementById('player-sprite');
+            const m = document.getElementById('overworld-map');
+            if (p) p.classList.remove('no-transition');
+            if (m) m.classList.remove('no-transition');
+        }, 100);
     },
 
     setupControls() {
@@ -1100,9 +1158,22 @@ export const Overworld = {
                 const doorMap = { 20: 21, 22: 23, 24: 26, 25: 27 };
                 const isLocked = [28, 29, 30, 31].includes(tileID);
 
-                if (doorMap[tileID] && !isLocked) {
-                    targetTile.classList.remove('wall', `t-${tileID}`);
-                    targetTile.classList.add('floor', `t-${doorMap[tileID]}`);
+                if (doorMap[tileID]) {
+                    // check if this tile has a transition with a flag
+                    const door = zone.doors && zone.doors.find(d => d.x === nextX && d.y === nextY);
+                    const isStoryLocked = door && door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag];
+
+                    if (!isLocked && !isStoryLocked) {
+                        // Clear all potential door visual classes (original and potentially swapped locked versions)
+                        const lockedMap = { 20: 29, 22: 28, 24: 30, 25: 31 };
+                        targetTile.classList.remove('wall', `t-${tileID}`, `t-${lockedMap[tileID]}`);
+                        targetTile.classList.add('floor', `t-${doorMap[tileID]}`);
+                    } else {
+                        // Trigger the dialogue if it's a story lock or a hard lock
+                        this.interact(); // Use interact to show the locked message
+                        this.updatePlayerPosition();
+                        return;
+                    }
                 } else {
                     this.updatePlayerPosition();
                     return;
@@ -1116,7 +1187,7 @@ export const Overworld = {
         // Object Collision Check
         const isOccupied = zone.objects.some(obj => {
             // Check metadata override for collision
-            const meta = this.getFurnitureMeta(obj.id);
+            const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
             if (meta && meta.hasCollision === false) return false;
 
             const w = obj.width || 1;
@@ -1183,32 +1254,13 @@ export const Overworld = {
         this.isTransitioning = true;
         this.keysPressed.clear(); // Prevent immediate move in new zone
 
-        const playerEl = document.getElementById('player-sprite');
-        const mapEl = document.getElementById('overworld-map');
+        this.renderMap(zoneId, false, x, y);
 
-        // Disable transitions for instant teleport
-        if (playerEl) {
-            playerEl.classList.add('no-transition');
-            playerEl.classList.remove('walking'); // Stop animation during teleport
-        }
-        if (mapEl) mapEl.classList.add('no-transition');
-
-        // FORCE REFLOW
-        if (playerEl) void playerEl.offsetHeight;
-        if (mapEl) void mapEl.offsetHeight;
-
-        this.renderMap(zoneId);
-        this.player.x = x;
-        this.player.y = y;
-        this.updatePlayerPosition();
-
-        // Release transition lock after a delay
+        // Release transition lock after a delay to allow "landing"
         setTimeout(() => {
-            if (playerEl) playerEl.classList.remove('no-transition');
-            if (mapEl) mapEl.classList.remove('no-transition');
             this.isTransitioning = false;
             this.spawner.resetForZoneChange();
-        }, 200); // "Landing" delay
+        }, 200);
     },
 
     updatePlayerPosition() {
@@ -1293,16 +1345,16 @@ export const Overworld = {
         }
 
         // 2. Check for Furniture / Props (Discovery vs. Lore)
-        const obj = zone.objects.find(o => (o.type === 'prop' || o.id === 'incubator') &&
+        const obj = zone.objects.find(o => (['prop', 'sign', 'atrium_statue'].includes(o.type) || o.id === 'incubator') &&
             targetX >= o.x && targetX < o.x + (o.width || 1) &&
             targetY >= o.y && targetY < o.y + (o.height || 1));
 
         if (obj) {
-            const meta = this.getFurnitureMeta(obj.id);
+            const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
             const hasCollision = meta ? meta.hasCollision : false;
 
-            // Hidden Log Logic (Collision items only)
-            if (hasCollision && obj.hiddenLogId && !this.logsCollected.includes(obj.hiddenLogId)) {
+            // Hidden Log Logic — collectible regardless of furniture metadata
+            if (obj.hiddenLogId && !this.logsCollected.includes(obj.hiddenLogId)) {
                 this.collectLog(obj.hiddenLogId);
                 return;
             }
@@ -1325,7 +1377,8 @@ export const Overworld = {
         // 3. Tile Interaction (Special Locked Messages)
         if (targetX >= 0 && targetX < zone.width && targetY >= 0 && targetY < zone.height) {
             const tileID = zone.layout[targetY][targetX];
-            const lockedTiles = [28, 29, 30, 31];
+            // Expanded to include standard closed door IDs for interaction
+            const lockedTiles = [20, 22, 24, 25, 28, 29, 30, 31];
 
             if (lockedTiles.includes(tileID)) {
                 // Check if it's the Atrium WC (coordinates 13,10 or 14,10 in Atrium)
@@ -1336,17 +1389,45 @@ export const Overworld = {
                         "A stray Nitrophyl broke the pipes again.",
                         "Staff are 'regrettably' skipping sanitation protocols until it's fixed."
                     ]);
+                } else if (this.currentZone === 'lobby' && targetX === 5 && targetY === 2) {
+                    this.showDialogue("Security Gate", [
+                        "Bio-Signature match required.",
+                        "Access to the Main Atrium is restricted to verified research staff.",
+                        "Please consult Senior Administrator Jenzi for clearance."
+                    ]);
                 } else if (this.currentZone === 'lobby' && targetX === 5 && targetY === 7) {
                     this.showDialogue("Security Gate", [
                         "This door is locked.",
                         "Where are you going, anyway?",
                         "My logs suggest there's nothing but empty arrays beyond this sector."
                     ]);
-                } else {
-                    this.showDialogue("Security Gate", [
-                        "This door is locked.",
-                        "Probably for saving the electric bill..."
+                } else if (this.currentZone === 'atrium' && targetX === 0 && targetY === 4) {
+                    this.showDialogue("Botanic Sector Gate", [
+                        "Someone is shouting at a fern inside.",
+                        "The voice is bossy but somehow... cute."
                     ]);
+                } else if (this.currentZone === 'atrium' && targetX === 18 && targetY === 4) {
+                    this.showDialogue("Human Ward Gate", [
+                        "A rhythmic snoring vibrates the door.",
+                        "It smells like sea salt and deep-cycle naps."
+                    ]);
+                } else if (this.currentZone === 'atrium' && targetX === 9 && targetY === 2) {
+                    this.showDialogue("Executive Suite Gate", [
+                        "An intimidatingly professional silence.",
+                        "Smells like antacids and expensive noodles."
+                    ]);
+                } else {
+                    const isSecondary = this.currentZone === 'atrium' && ((targetX === 0 && (targetY === 6 || targetY === 8)) || (targetX === 18 && (targetY === 6 || targetY === 8)));
+                    if (isSecondary) {
+                        this.showDialogue("Security Gate", [
+                            "The door is locked tight, probably to save on the electricity bill."
+                        ]);
+                    } else {
+                        this.showDialogue("Security Gate", [
+                            "This door is locked.",
+                            "Probably to save on the electricity bill."
+                        ]);
+                    }
                 }
             }
         }
@@ -1401,6 +1482,7 @@ export const Overworld = {
                     "Door to the Atrium is open now. Go explore, but don't get lost in the sauce."
                 ];
                 window.gameState.storyFlags.jenziAtriumUnlocked = true;
+                this.renderMap();
             } else if (logs < 5) {
                 lines = [
                     "Yo, Intern! Keep looking for Datapads.",
@@ -1462,17 +1544,13 @@ export const Overworld = {
             }
         } else {
             // Generic Staff Randomizer
-            let activePool = randomPools.atrium;
-            if (this.currentZone === 'lobby') activePool = randomPools.lobby;
-            if (this.currentZone === 'botanic') activePool = randomPools.botanic;
-            if (this.currentZone === 'human') activePool = randomPools.human;
+            let activePool = this.randomPools.atrium;
+            if (this.currentZone === 'lobby') activePool = this.randomPools.lobby;
+            if (this.currentZone === 'botanic') activePool = this.randomPools.botanic;
+            if (this.currentZone === 'human') activePool = this.randomPools.human;
 
             const randomIndex = Math.floor(Math.random() * activePool.length);
             lines = activePool[randomIndex];
-            // Optionally allow generic NPCs to trigger battles purely for testing? Let's leave them as purely lore for pacing, unless specifically starting with npc_
-            if (npc.id.startsWith('npc_')) {
-                this.pendingBattleEncounter = npc.id;
-            }
         }
 
         this.showDialogue(npc.name, lines, npc.id);
@@ -1485,12 +1563,6 @@ export const Overworld = {
             if (window.gameState) window.gameState.logs = [...this.logsCollected];
         }
 
-        // Display the "Found" message
-        this.showDialogue("Discovery", [`YOU FOUND A DATAPAD! [DataLog ${logId} archived for review]`]);
-
-        // Dispatch event for UI/Inventory updates
-        window.dispatchEvent(new CustomEvent('datalog-found', { detail: { id: logId } }));
-
         // Remove from current zone if it was a world object drop
         const zone = this.zones[this.currentZone];
         const objIdx = zone.objects.findIndex(o => o.hiddenLogId === logId && o.id.startsWith('log_'));
@@ -1499,6 +1571,20 @@ export const Overworld = {
             zone.objects.splice(objIdx, 1);
             const el = document.getElementById(`npc-${obj.id}`);
             if (el) el.remove();
+        }
+
+        // Show pickup modal instead of dialogue
+        this.isPaused = true;
+        if (window.showDatapadPickupModal) {
+            window.showDatapadPickupModal(logId, () => {
+                this.isPaused = false;
+                window.dispatchEvent(new CustomEvent('datalog-found', { detail: { id: logId } }));
+            });
+        } else {
+            // Fallback
+            this.isPaused = false;
+            this.showDialogue('Discovery', [`Datapad [Log ${logId}] archived.`]);
+            window.dispatchEvent(new CustomEvent('datalog-found', { detail: { id: logId } }));
         }
     },
 

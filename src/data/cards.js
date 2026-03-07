@@ -122,3 +122,13 @@ export const NPC_PRESETS = {
         ]
     }
 };
+
+export const NPC_ENCOUNTERS = {
+    'jenzi': { name: "Jenzi (Atrium Quest)", rg: 5, team: ['stemmy'], style: 'balanced' },
+    'lana': { name: "Lana (Botanic Quest)", rg: 10, team: ['cambihil'], style: 'survival' },
+    'dyzes': { name: "Dyzes (Human Quest)", rg: 15, team: ['lydrosome', 'lydrosome'], style: 'utility' },
+    'capsain': { name: "Capsain (Director Quest)", rg: 20, team: ['nitrophil', 'nitrophil', 'nitrophil'], style: 'aggressive' },
+    'npc01': { name: "NPC Male", rg: 5, team: ['stemmy'], style: 'balanced' },
+    'npc02': { name: "NPC Female", rg: 5, team: ['stemmy'], style: 'balanced' },
+    'stemmy_wild': { name: "Wild Stemmy", rg: 'auto', team: ['stemmy'], style: 'balanced' }
+};
