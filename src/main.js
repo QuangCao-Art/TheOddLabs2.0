@@ -626,23 +626,9 @@ function setupEventListeners() {
         // Use base stats from MONSTERS (getModifiedStats will handle scaling)
         const baseStats = MONSTERS.stemmy;
 
-        const wildStemmy = {
-            id: `stemmy_${Date.now()}`,
-            baseId: 'stemmy',
-            name: 'Stemmy',
-            hp: baseStats.hp,
-            maxHp: baseStats.maxHp,
-            atk: baseStats.atk,
-            def: baseStats.def,
-            spd: baseStats.spd,
-            crit: baseStats.crit,
-            pp: baseStats.maxPp,
-            maxPp: baseStats.maxPp,
-            moves: baseStats.moves,
-            defenseMoves: baseStats.defenseMoves,
-            type: baseStats.type,
-            equippedCards: []
-        };
+        const wildStemmy = createMonsterInstance('stemmy');
+        wildStemmy.id = `stemmy_${Date.now()}`;
+        wildStemmy.pp = wildStemmy.maxPp; // Start wild encounters at max PP for challenge
 
         gameState.profiles['stemmy_wild'] = {
             name: `WILD STEMMY (RG-${rg})`,
@@ -2246,7 +2232,13 @@ async function resolvePhase() {
 
     // 1. AI Choice
     const isEnemyAttacking = gameState.currentTurn === 'ENEMY';
-    const selectedMove = AI.selectMove(gameState.enemy, isEnemyAttacking, gameState.player);
+    const opponentProfileId = catalystState.battleOpponentId || 'opponent';
+
+    const unlocked = [true];
+    unlocked[1] = hasLeaderCard(opponentProfileId, 'leader_1');
+    unlocked[2] = hasLeaderCard(opponentProfileId, 'leader_2');
+
+    const selectedMove = AI.selectMove(gameState.enemy, isEnemyAttacking, gameState.player, unlocked);
     gameState.enemy.selectedMove = selectedMove.id;
     gameState.enemy.currentNode = AI.selectNode(gameState.enemy, gameState.player);
 

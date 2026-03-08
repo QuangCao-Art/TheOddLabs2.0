@@ -7,8 +7,11 @@ export const AI = {
     /**
      * Selects the best move for the enemy based on fuzzy logic and "Neural Noise".
      */
-    selectMove(enemy, isAttacking, player = null) {
-        const moveset = isAttacking ? enemy.moves : enemy.defenseMoves;
+    selectMove(enemy, isAttacking, player = null, unlockedIndices = [true, true, true]) {
+        let moveset = isAttacking ? enemy.moves : enemy.defenseMoves;
+
+        // Filter moves by unlock status (Leader Cards)
+        moveset = moveset.filter((m, idx) => unlockedIndices[idx] !== false);
         const hpPercent = (enemy.hp / enemy.maxHp) * 100;
         const isLysis = enemy.pp < 0;
         const minPp = enemy.maxPp * -1;
