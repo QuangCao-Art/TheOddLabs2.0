@@ -32,6 +32,38 @@ function resetSelectorCore(instant = false) {
     selectionCore.style.transform = `translate(-50%, -50%)`;
 }
 
+function triggerRandomPlayerNodeSelection() {
+    if (gameState.isProcessing) return;
+    // Don't set isProcessing here, let resolvePhase handle the lock
+
+    // Pick a random node that ISN'T in the blocked list
+    const available = [0, 1, 2, 3, 4].filter(n => !gameState.player.blockedNodes.some(b => b.index === n));
+    if (available.length > 0) {
+        const targetIndex = available[Math.floor(Math.random() * available.length)];
+        gameState.player.currentNode = targetIndex;
+
+        // Visual Feedback (Snap core to node + Highlight)
+        const angleDeg = targetIndex * 72;
+        const angleRad = (angleDeg - 90) * (Math.PI / 180);
+        const x = Math.cos(angleRad) * RADIUS;
+        const y = Math.sin(angleRad) * RADIUS;
+
+        // Briefly highlight the node
+        interactiveNodes.forEach((node, idx) => {
+            node.classList.toggle('highlight', idx === targetIndex);
+        });
+
+        selectionCore.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        selectionCore.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+
+        // Small delay for visual impact before resolution
+        setTimeout(() => {
+            interactiveNodes[targetIndex]?.classList.remove('highlight');
+            resolvePhase();
+        }, 300);
+    }
+}
+
 // Battle Log State
 let battleLogHistory = [];
 let previousScreen = 'screen-main-menu';
@@ -1105,8 +1137,19 @@ function setupEventListeners() {
                     if (selectedItem) selectedItem.click();
                 }
             }
+        } else {
+            // Battle Quick Actions (F key for Random Selection)
+            const battleScreen = document.getElementById('screen-battle');
+            const isBattleOpen = battleScreen && !battleScreen.classList.contains('hidden');
+
+            if (key === 'f' && isBattleOpen && !gameState.isProcessing) {
+                if (gameState.phase === 'NODE_SELECTION' || gameState.phase === 'MOVE_SELECTION') {
+                    triggerRandomPlayerNodeSelection();
+                }
+            }
         }
     });
+
 
     // Start Screen
     addLog("Experimental Lab Environment Online.");
@@ -1698,9 +1741,19 @@ function endDrag(e) {
 
         resolvePhase();
     } else {
-        // Reset core position
-        selectionCore.style.transition = 'all 0.3s ease-out';
-        selectionCore.style.transform = `translate(-50%, -50%)`;
+        // Distinguish between a simple click (random selection) and a failed drag (reset)
+        const dx = clientX - startX;
+        const dy = clientY - startY;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 10) {
+            // Quick Selection: click and release
+            triggerRandomPlayerNodeSelection();
+        } else {
+            // Drag to void: Reset core position
+            selectionCore.style.transition = 'all 0.3s ease-out';
+            selectionCore.style.transform = `translate(-50%, -50%)`;
+        }
     }
 }
 
@@ -3048,6 +3101,7 @@ function updateOverworldEXPBar() {
 }
 
 function showGameOver(isFailure) {
+    resetPositions(); // Clear state immediately when battle ends
     const overlay = document.getElementById('game-over-overlay');
     const title = document.getElementById('game-over-title');
     const msg = document.getElementById('game-over-message');
@@ -3297,13 +3351,29 @@ function resetGame() {
     }
 
     gameState.phase = 'NODE_SELECTION';
+    gameState.isProcessing = true; // Lock interactions during deployment
+
+    // Fail-safe: Unlock processing if entry sequence gets stuck
+    setTimeout(() => {
+        if (gameState.isProcessing && gameState.phase === 'NODE_SELECTION') {
+            console.warn("Battle entry sequence fail-safe triggered. Releasing lock.");
+            gameState.isProcessing = false;
+            updateUI();
+        }
+    }, 4000);
 
     // Clear death visuals
     document.querySelectorAll('.dead-cell-container').forEach(c => c.remove());
     document.querySelectorAll('.monster-portrait').forEach(p => p.classList.remove('death-fade'));
 
-    // Reset selection core to center
+    // Reset selection core to center and clear node states
+    resetPositions();
     resetSelectorCore(true);
+
+    // Force style reset for core in case of phase-specific CSS
+    if (selectionCore) {
+        selectionCore.style.transform = "translate(-50%, -50%)";
+    }
 
     // Clear all node highlights/selections
     interactiveNodes.forEach(n => n.classList.remove('selected', 'highlight'));
@@ -3328,11 +3398,21 @@ function resetGame() {
     updateUI();
 
     // Trigger Battle Entry Sequence
+    let entriesFinished = 0;
+    const checkFinish = () => {
+        entriesFinished++;
+        if (entriesFinished === 2) {
+            gameState.isProcessing = false; // Release lock after both are deployed
+            updateUI();
+        }
+    };
+
     triggerBattleEntry('.player-display', () => {
         // Auto-flip monster card to show player monster after deployment
         updateBattleCard(gameState.player);
+        checkFinish();
     });
-    triggerBattleEntry('.enemy-display');
+    triggerBattleEntry('.enemy-display', checkFinish);
 }
 
 function triggerBenchFeedback(slot) {
