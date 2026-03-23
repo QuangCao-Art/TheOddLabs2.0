@@ -28,6 +28,11 @@ export const BioExtract = {
     },
 
     open() {
+        if (window.setBioExtractInputReady) {
+            window.setBioExtractInputReady(false);
+            setTimeout(() => window.setBioExtractInputReady(true), 250);
+        }
+
         document.getElementById('screen-bio-extract').classList.remove('hidden');
         this.renderAll();
         this.updateBalances();
@@ -95,7 +100,7 @@ export const BioExtract = {
             const imgName = monster.name.charAt(0).toUpperCase() + monster.name.slice(1);
             icon.innerHTML = `
                 <img src="./assets/images/${imgName}.png" alt="${monster.name}" onerror="this.src='./assets/images/Card_Placeholder.png'">
-                <div class="efficiency-badge">${monster.extractEfficiency || 1}</div>
+                <div class="efficiency-badge">${monster.extractEfficiency ?? 0}</div>
             `;
 
             icon.ondragstart = (e) => {
@@ -218,20 +223,23 @@ export const BioExtract = {
         if (this.sourceType === 'storage') {
             if (!targetSlot) {
                 // Place new monster
-                const level = this.draggedMonster.extractEfficiency || 1;
+                const level = this.draggedMonster.extractEfficiency || 0;
                 window.gameState.bioExtractGrid[targetIdx] = {
                     monster: this.draggedMonster,
                     biomassStored: 0,
-                    cycleRemaining: (2 * level - 1) * 60,
+                    cycleRemaining: (2 * level + 1) * 60, // Adjusted formula
                     isReady: false,
                     lastTick: Date.now()
                 };
             } else if (targetSlot.monster.name === this.draggedMonster.name) {
-                // Merge into target
-                this.mergeMonsters(targetIdx, this.draggedMonster);
+                const targetLevel = targetSlot.monster.extractEfficiency || 0;
+                const sourceLevel = this.draggedMonster.extractEfficiency || 0;
+                if (targetLevel === sourceLevel) {
+                    this.mergeMonsters(targetIdx, this.draggedMonster);
+                } else {
+                    console.log("Merge restricted: Efficiency Levels must be identical.");
+                }
             } else {
-                // Swap or just ignore? Let's say ignore for now or swap if same source.
-                // From storage to grid: only if empty or mergeable.
                 console.log("Slot occupied by different species.");
             }
         } else if (this.sourceType === 'grid') {
@@ -245,9 +253,14 @@ export const BioExtract = {
                 window.gameState.bioExtractGrid[targetIdx] = sourceSlot;
                 window.gameState.bioExtractGrid[sourceIdx] = null;
             } else if (targetSlot.monster.name === sourceSlot.monster.name) {
-                // Merge in grid
-                this.mergeMonsters(targetIdx, sourceSlot.monster);
-                window.gameState.bioExtractGrid[sourceIdx] = null;
+                const targetLevel = targetSlot.monster.extractEfficiency || 0;
+                const sourceLevel = sourceSlot.monster.extractEfficiency || 0;
+                if (targetLevel === sourceLevel) {
+                    this.mergeMonsters(targetIdx, sourceSlot.monster);
+                    window.gameState.bioExtractGrid[sourceIdx] = null;
+                } else {
+                    console.log("Merge restricted: Efficiency Levels must be identical.");
+                }
             } else {
                 // Swap in grid
                 const temp = window.gameState.bioExtractGrid[targetIdx];
@@ -290,13 +303,7 @@ export const BioExtract = {
         // Upgrade level
         targetMonster.extractEfficiency++;
         
-        // Apply 5% stat boost to ATK, DEF, SPD
-        // Assuming base stats are in the monster object.
-        // If they are modified by cards, we need to be careful.
-        // But here we are modifying the instance's "base" for the merge bonus.
-        targetMonster.baseAtk = Math.floor(targetMonster.baseAtk * 1.05);
-        targetMonster.baseDef = Math.floor(targetMonster.baseDef * 1.05);
-        targetMonster.baseSpd = Math.floor(targetMonster.baseSpd * 1.05);
+        // Stats are now applied dynamically in combat.js based on level.
         
         // If the source was in the party, remove it from the party
         const party = window.gameState.profiles.player.party;
@@ -349,8 +356,8 @@ export const BioExtract = {
             if (imgContainer) imgContainer.style.display = 'flex';
             
             if (bonusEl) {
-                const bonusPercent = (monster.extractEfficiency - 1) * 4 + 5;
-                bonusEl.textContent = `+${bonusPercent}% TO ATK, DEF, SPD`;
+                const bonusPercent = monster.extractEfficiency * 3;
+                bonusEl.textContent = `+${bonusPercent}% TO ATK, DEF`;
                 bonusEl.style.display = 'block';
             }
 
@@ -408,9 +415,8 @@ export const BioExtract = {
     },
 
     getMaxBiomass(monster) {
-        // Baseline: 3. Higher level = higher cap? 
-        // Let's say Cap = 3 * efficiency Level
-        return 3 * (monster.extractEfficiency || 1);
+        const level = monster.extractEfficiency || 0;
+        return (level + 1) * 30; // Increased cap to accommodate balanced rewards
     },
 
     getBiomassRate(monster) {
@@ -429,10 +435,10 @@ export const BioExtract = {
         window.gameState.biomass += amount;
         
         // Reset cycle
-        const level = slot.monster.extractEfficiency || 1;
+        const level = slot.monster.extractEfficiency || 0;
         slot.biomassStored = 0;
         slot.isReady = false;
-        slot.cycleRemaining = (2 * level - 1) * 60; 
+        slot.cycleRemaining = (2 * level + 1) * 60; 
         slot.lastTick = Date.now();
 
         this.updateBalances();
@@ -456,13 +462,13 @@ export const BioExtract = {
                     slot.lastTick = now;
 
                     if (!slot.isReady) {
-                        const level = slot.monster.extractEfficiency || 1;
-                        const totalCycleTime = (2 * level - 1) * 60;
+                        const level = slot.monster.extractEfficiency || 0;
+                        const totalCycleTime = (2 * level + 1) * 60;
                         slot.cycleRemaining = Math.max(0, (slot.cycleRemaining || totalCycleTime) - elapsed);
                         if (slot.cycleRemaining <= 0) {
                             slot.isReady = true;
-                            // Formula: 14(level-1) + 5 (Lv1=5, Lv2=19, Lv3=33)
-                            slot.biomassStored = 14 * (level - 1) + 5;
+                            // Balanced Formula: 10 * level + 5
+                            slot.biomassStored = 10 * level + 5;
                         }
                         updated = true;
                     }

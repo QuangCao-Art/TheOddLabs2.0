@@ -58,6 +58,14 @@ const pentagonRect = interactivePentagon?.getBoundingClientRect();
 // Constants for positioning
 const RADIUS = 130; // Calibrated for pixel-perfect alignment with background asset
 
+let shopInputReady = true;
+let synthInputReady = true;
+let incubatorInputReady = true;
+let inventoryInputReady = true;
+let bioExtractInputReady = true;
+
+window.setBioExtractInputReady = (val) => { bioExtractInputReady = val; };
+
 function resetSelectorCore(instant = false) {
     if (!selectionCore) return;
     selectionCore.style.transition = instant ? 'none' : 'all 0.4s ease-in-out';
@@ -301,7 +309,7 @@ const updateInvNav = (isKeyboardAction = false) => {
             renderManagementHub();
         } else if (currentTabId === 'status') {
             renderInventory();
-            invLayout.style.display = ''; 
+            invLayout.style.display = '';
         } else {
             invLayout.style.display = ''; // Revert to stylesheet default
         }
@@ -400,6 +408,8 @@ window.showItemPickupModal = (itemId, onClose) => {
         label.textContent = (itemId === 'Quest04' || data.type === 'monster') ? 'CELL ACQUIRED' : 'ITEM ACQUIRED';
     }
 
+    if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
+
     document.getElementById('pickup-name').textContent = data.name;
     document.getElementById('pickup-desc').textContent = data.desc;
 
@@ -419,6 +429,7 @@ window.showItemPickupModal = (itemId, onClose) => {
     function close() {
         modal.classList.add('hidden');
         window.removeEventListener('keydown', keyHandler);
+        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
         if (onClose) onClose();
     }
 
@@ -751,6 +762,13 @@ function setupEventListeners() {
     });
 
     window.addEventListener('start-wild-encounter', (e) => {
+        const pProfile = gameState.profiles.player;
+        const activeCount = pProfile.party.slice(0, 3).filter(m => m !== null).length;
+        if (activeCount === 0) {
+            console.warn("WILD ENCOUNTER ABORTED: Active squad is empty.");
+            return;
+        }
+
         const monsterId = e.detail.id || 'stemmy';
         const profileId = `${monsterId}_wild`;
         const playerRg = gameState.profiles.player.level || 0;
@@ -788,8 +806,17 @@ function setupEventListeners() {
 
     window.addEventListener('start-npc-encounter', (e) => {
         const npcId = e.detail.id;
+        let profileId = e.detail.battleEncounterId || npcId;
 
-        let profileId = npcId;
+        if (profileId !== 'starter_selection') {
+            const pProfile = gameState.profiles.player;
+            const activeCount = pProfile.party.slice(0, 3).filter(m => m !== null).length;
+            if (activeCount === 0) {
+                console.warn("NPC ENCOUNTER ABORTED: Active squad is empty.");
+                return;
+            }
+        }
+
         if (npcId === 'jenzi_tutorial') {
             const typeAdvantages = {
                 'cambihil': 'lydrosome',
@@ -855,14 +882,17 @@ function setupEventListeners() {
             syncCardsToLevel('capsain_boss', 20);
             executeQuickEquip('balanced', 'capsain_boss', 0);
             profileId = 'capsain_boss';
-        } else if (npcId.startsWith('npc_male')) {
-            profileId = 'npc01';
-        } else if (npcId.startsWith('npc_female')) {
-            profileId = 'npc02';
+        } else if (!e.detail.battleEncounterId) {
+            // Fallback for generic NPCs without custom encounters
+            if (npcId.startsWith('npc_male')) {
+                profileId = 'npc01';
+            } else if (npcId.startsWith('npc_female')) {
+                profileId = 'npc02';
+            }
         }
 
         // Fallback safety
-        if (!gameState.profiles[profileId]) profileId = 'npc01';
+        if (!gameState.profiles[profileId] && !NPC_ENCOUNTERS[profileId]) profileId = 'npc01';
 
         catalystState.battleOpponentId = profileId;
         if (typeof Overworld !== 'undefined') Overworld.stopLoop();
@@ -885,6 +915,7 @@ function setupEventListeners() {
         'npc01': { art: 'Character_FullArt_NPC_Male', dialogue: "Commencing standard engagement protocol." },
         'npc02': { art: 'Character_FullArt_NPC_Female', dialogue: "Bio-signature match confirmed. Initiating test." },
         'npc03': { art: 'Character_FullArt_NPC_Male', dialogue: "Deploying tactical cells. Readiness check." },
+        'julia': { art: 'Character_FullArt_NPC_Female', dialogue: "Let's see what you got!" },
         'stemmy_wild': { art: 'Cell_FullArt_Stemmy', dialogue: "*A wild Stemmy aggressively bumps into you!*" },
         'nitrophil_wild': { art: 'Cell_FullArt_Nitrophil', dialogue: "*A wild Nitrophil aggressively bumps into you!*" },
         'cambihil_wild': { art: 'Cell_FullArt_Cambihil', dialogue: "*A wild Cambihil aggressively bumps into you!*" },
@@ -906,6 +937,27 @@ function setupEventListeners() {
         // Auto-Equip Boss Tactics if available
         if (NPC_PRESETS[opponentProfileId]) {
             applyPreset(opponentProfileId, opponentProfileId, true);
+        } else if (NPC_ENCOUNTERS[opponentProfileId]) {
+            // If it's in ENCOUNTERS but not PRESETS, we still need to initialize the opponent profile
+            // based on the encounter data (RG, team, etc.)
+            const enc = NPC_ENCOUNTERS[opponentProfileId];
+            gameState.profiles[opponentProfileId] = {
+                id: opponentProfileId,
+                name: enc.name,
+                level: enc.rg === 'auto' ? (gameState.profiles.player.level || 1) : enc.rg,
+                party: enc.team.map(id => {
+                    if (!id || !MONSTERS[id]) return null;
+                    const mon = createMonsterInstance(id);
+                    mon.owner = opponentProfileId;
+                    return mon;
+                })
+            };
+            // Full heal and apply stat scaling
+            applyBonuses(gameState.profiles[opponentProfileId].party, gameState.profiles[opponentProfileId].level, true);
+
+            // Use official Boss Encounter system: Sync cards to level then auto-equip based on style
+            syncCardsToLevel(opponentProfileId, gameState.profiles[opponentProfileId].level);
+            executeQuickEquip(enc.style || 'balanced', opponentProfileId, 0);
         } else if (opponentProfileId === 'jenzi') {
             const logs = gameState.logs ? gameState.logs.length : 0;
             if (logs >= 5) {
@@ -1078,31 +1130,20 @@ function setupEventListeners() {
             }
 
             Overworld.startLoop();
-            
+
 
             // --- STORY HOOK: Jenzi post-battle dialogue ---
             const opponentId = catalystState.battleOpponentId;
             if ((window.gameState.storyFlags.jenziFirstBattleDone || opponentId === 'jenzi_tutorial') && !window.gameState.logs.includes('Log001')) {
                 // Hide Log #001 in the Red Specimen Tank instead of spawning on floor
                 const lobbyZone = Overworld.zones['lobby'];
-                
+
                 // DEFENSIVE: Ensure the old floor-log object is removed if it persisted from a previous render
                 lobbyZone.objects = lobbyZone.objects.filter(obj => obj.id !== 'log_001');
 
                 const redTank = lobbyZone.objects.find(o => o.id === 'f23_lob_br');
                 if (redTank && !redTank.hiddenLogId) {
                     redTank.hiddenLogId = 'Log001';
-                }
-
-                // Trigger Jenzi's post-battle dialogue
-                const jenzi = Overworld.zones['lobby'].objects.find(o => o.id === 'jenzi');
-                if (jenzi) {
-                    setTimeout(() => {
-                        // Check if dialogue is already somehow active before triggering again
-                        if (typeof Overworld !== 'undefined' && !Overworld.isDialogueActive) {
-                            Overworld.startNPCInteraction(jenzi);
-                        }
-                    }, 300);
                 }
             }
         }
@@ -1127,6 +1168,8 @@ function setupEventListeners() {
 
     // Unified Management Hub Controls -> Now Player Inventory
     document.getElementById('btn-open-inventory')?.addEventListener('click', () => {
+        inventoryInputReady = false;
+        setTimeout(() => { inventoryInputReady = true; }, 250);
         renderInventory();
         invNav.active = true;
         invNav.tabIndex = 3; // Default to Catalyst Storage
@@ -1137,6 +1180,7 @@ function setupEventListeners() {
 
     document.getElementById('btn-close-card')?.addEventListener('click', () => {
         document.getElementById('monster-card-modal').classList.add('hidden');
+        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
     });
 
     // Side Toggle Logic
@@ -1273,7 +1317,7 @@ function setupEventListeners() {
         const incubatorOverlay = document.getElementById('screen-incubator-menu');
         const isIncubatorOpen = incubatorOverlay && !incubatorOverlay.classList.contains('hidden');
 
-        if (isIncubatorOpen) {
+        if (isIncubatorOpen && incubatorInputReady) {
             const buttons = incubatorOverlay.querySelectorAll('.btn-neon');
             if (key === 'w') {
                 e.preventDefault();
@@ -1297,6 +1341,155 @@ function setupEventListeners() {
             }
         }
 
+        // Shop Navigation
+        const shopScreen = document.getElementById('screen-shop');
+        const isShopOpen = shopScreen && !shopScreen.classList.contains('hidden');
+        if (isShopOpen && shopInputReady) {
+            const quantityModal = document.getElementById('shop-quantity-modal');
+            const isQtyOpen = quantityModal && !quantityModal.classList.contains('hidden');
+
+            if (isQtyOpen) {
+                if (key === 'a' || key === 'arrowleft') {
+                    e.preventDefault();
+                    document.getElementById('btn-qty-minus')?.click();
+                    return;
+                }
+                if (key === 'd' || key === 'arrowright') {
+                    e.preventDefault();
+                    document.getElementById('btn-qty-plus')?.click();
+                    return;
+                }
+                if (key === 'f' || key === 'enter') {
+                    e.preventDefault();
+                    document.getElementById('btn-qmodal-confirm')?.click();
+                    return;
+                }
+                if (key === 'escape') {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    closeQuantityModal();
+                    return;
+                }
+            } else {
+                if (key === 'escape') {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    document.getElementById('btn-shop-close')?.click();
+                    return;
+                }
+                const items = Array.from(document.querySelectorAll('.shop-item-card'));
+                const currentIndex = items.findIndex(item => item.dataset.id === shopState.selectedItemId);
+
+                if (key === 'w' || key === 'arrowup') {
+                    e.preventDefault();
+                    const nextIdx = (currentIndex - 1 + items.length) % items.length;
+                    if (items[nextIdx]) selectShopItem(items[nextIdx].dataset.id);
+                    return;
+                }
+                if (key === 's' || key === 'arrowdown') {
+                    e.preventDefault();
+                    const nextIdx = (currentIndex + 1) % items.length;
+                    if (items[nextIdx]) selectShopItem(items[nextIdx].dataset.id);
+                    return;
+                }
+                if (key === 'q' || key === 'e') {
+                    e.preventDefault();
+                    shopState.activeTab = shopState.activeTab === 'buy' ? 'sell' : 'buy';
+                    shopState.selectedItemId = null;
+                    updateShopUI();
+                    return;
+                }
+                if (key === 'f' || key === 'enter') {
+                    e.preventDefault();
+                    const selectedCard = items[currentIndex];
+                    if (selectedCard) {
+                        const buyBtn = selectedCard.querySelector('.shop-item-price-btn');
+                        buyBtn?.click();
+                    }
+                    return;
+                }
+            }
+        }
+
+        const synthScreen = document.getElementById('screen-synthesis');
+        const isSynthOpen = synthScreen && !synthScreen.classList.contains('hidden');
+        if (isSynthOpen && synthInputReady) {
+            const confirmModal = document.getElementById('synthesis-confirm-modal');
+            const isConfirmOpen = confirmModal && !confirmModal.classList.contains('hidden');
+
+            if (isConfirmOpen) {
+                if (key === 'f' || key === 'enter') {
+                    e.preventDefault();
+                    document.getElementById('btn-synthesis-confirm')?.click();
+                    return;
+                }
+                if (key === 'escape') {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    document.getElementById('btn-synthesis-cancel')?.click();
+                    return;
+                }
+            } else {
+                if (key === 'escape') {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    document.getElementById('btn-synthesis-close')?.click();
+                    return;
+                }
+                const items = Array.from(document.querySelectorAll('#synthesis-item-list .shop-item-card'));
+                const currentIndex = items.findIndex(item => item.classList.contains('selected'));
+
+                if (key === 'w' || key === 'arrowup') {
+                    e.preventDefault();
+                    const nextIdx = (currentIndex - 1 + items.length) % items.length;
+                    items[nextIdx]?.click();
+                    return;
+                }
+                if (key === 's' || key === 'arrowdown') {
+                    e.preventDefault();
+                    const nextIdx = (currentIndex + 1) % items.length;
+                    items[nextIdx]?.click();
+                    return;
+                }
+                if (key === 'f' || key === 'enter') {
+                    e.preventDefault();
+                    document.getElementById('btn-synthesis-action')?.click();
+                    return;
+                }
+            }
+        }
+
+        // Bio Extraction Navigation
+        const bioScreen = document.getElementById('screen-bio-extract');
+        const isBioOpen = bioScreen && !bioScreen.classList.contains('hidden');
+        if (isBioOpen && bioExtractInputReady) {
+            if (key === 'f' || key === 'enter') {
+                e.preventDefault();
+                if (window.BioExtract && window.BioExtract.collectCurrentSlot) {
+                    window.BioExtract.collectCurrentSlot();
+                }
+                return;
+            }
+            if (key === 'escape') {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                if (window.BioExtract && window.BioExtract.close) {
+                    window.BioExtract.close();
+                }
+                return;
+            }
+        }
+
+        // Monster Card Modal
+        const cardModal = document.getElementById('monster-card-modal');
+        const isCardOpen = cardModal && !cardModal.classList.contains('hidden');
+        if (isCardOpen && (key === 'f' || key === 'escape' || key === 'enter' || key === ' ')) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            document.getElementById('btn-close-card')?.click();
+            return;
+        }
+
         if (key === 'escape') {
             const previewOverlay = document.getElementById('card-preview-overlay');
             if (previewOverlay && !previewOverlay.classList.contains('hidden')) {
@@ -1310,6 +1503,8 @@ function setupEventListeners() {
 
             if (isInvOpen) {
                 // If in inventory, ESC returns to overworld
+                e.preventDefault();
+                e.stopImmediatePropagation();
                 inventoryOverlay.classList.add('hidden');
                 invNav.active = false;
                 Overworld.isPaused = false;
@@ -1329,10 +1524,10 @@ function setupEventListeners() {
 
         if (key === 'r') {
             const isOverworld = !document.getElementById('screen-overworld').classList.contains('hidden');
-            
+
             // Prevent opening inventory if another interactive overlay is open
             const activeOverlays = [
-                'screen-shop', 'screen-synthesis', 'screen-bio-extract', 
+                'screen-shop', 'screen-synthesis', 'screen-bio-extract',
                 'screen-incubator-menu', 'screen-incubator-heal'
             ];
             const isAnyOtherMenuOpen = activeOverlays.some(id => {
@@ -1342,6 +1537,8 @@ function setupEventListeners() {
 
             if (isOverworld && inventoryOverlay && !isAnyOtherMenuOpen) {
                 if (!isInvOpen) {
+                    inventoryInputReady = false;
+                    setTimeout(() => { inventoryInputReady = true; }, 250);
                     renderInventory();
                     inventoryOverlay.classList.remove('hidden');
                     invNav.active = true;
@@ -1359,7 +1556,7 @@ function setupEventListeners() {
         }
 
         // Inventory Specific Navigation
-        if (invNav.active && isInvOpen) {
+        if (invNav.active && isInvOpen && inventoryInputReady) {
             const activeTab = document.getElementById(`tab-${INVENTORY_TABS[invNav.tabIndex]}`);
 
             // Re-fetch items if not catalyst, otherwise items is null which is fine since catalyst handles its own clicks
@@ -1397,18 +1594,24 @@ function setupEventListeners() {
             const battleScreen = document.getElementById('screen-battle');
             const isBattleOpen = battleScreen && !battleScreen.classList.contains('hidden');
 
-            if (key === 'f' && isBattleOpen && !gameState.isProcessing) {
+            const gameOverOverlay = document.getElementById('game-over-overlay');
+            const isGameOverVisible = gameOverOverlay && !gameOverOverlay.classList.contains('hidden');
+
+            if (key === 'f' && (isBattleOpen || isGameOverVisible) && !gameState.isProcessing) {
                 // Handle Game Over / Victory Continue
                 const gameOverBtn = document.getElementById('btn-continue-overworld');
                 const restartBtn = document.getElementById('btn-restart');
-                const isGameOverVisible = !document.getElementById('game-over-overlay').classList.contains('hidden');
 
                 if (isGameOverVisible) {
                     if (gameOverBtn && !gameOverBtn.classList.contains('hidden')) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
                         gameOverBtn.click();
                         return;
                     }
                     if (restartBtn && !restartBtn.classList.contains('hidden')) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
                         restartBtn.click();
                         return;
                     }
@@ -1868,6 +2071,11 @@ function openMonsterCard(monsterId) {
     renderSkills(monster.defenseMoves, 'detail-defense-skills');
 
     modal.classList.remove('hidden');
+
+    // Pause overworld while card is open
+    if (typeof Overworld !== 'undefined') {
+        Overworld.isPaused = true;
+    }
 }
 
 /**
@@ -2589,9 +2797,9 @@ function renderInventory() {
             const ppPercent = maxPp > 0 ? (cell.pp / maxPp) * 100 : 0;
 
             const iconName = cell.name.charAt(0).toUpperCase() + cell.name.slice(1);
-            
+
             // Efficiency Badge
-            const efficiencyHtml = `<div class="efficiency-badge">${cell.extractEfficiency || 1}</div>`;
+            const efficiencyHtml = `<div class="efficiency-badge">${cell.extractEfficiency ?? 0}</div>`;
 
             // PP Color Logic synced with Battle UI
             const isLysis = cell.pp < 0;
@@ -2630,7 +2838,7 @@ function renderInventory() {
                     </div>
                 </div>
             `;
-            
+
             const fmt = (base, modified) => {
                 const b = base || modified;
                 const bonus = Math.round(modified - b);
@@ -3380,6 +3588,7 @@ function checkGameOver() {
 
     // 1. Double Neutralization Logic
     if (isPlayerDefeated && isEnemyDefeated) {
+        console.log(`[BATTLE] DOUBLE NEUTRALIZATION DETECTED`);
         addLog(`[CRITICAL] Double Neutralization detected. Tactical reset core engaging...`);
         isDragging = false;
         resetSelectorCore();
@@ -3398,7 +3607,7 @@ function checkGameOver() {
             } else if (!nextPlayer) {
                 showGameOver(true); // Failure
             } else if (!nextEnemy) {
-                showGameOver(false); // Victory (unusual on double death but possible if player has more)
+                showGameOver(false); // Victory
             } else {
                 // Both have replacements
                 gameState.player = nextPlayer;
@@ -3417,6 +3626,7 @@ function checkGameOver() {
     }
 
     if (isEnemyDefeated) {
+        console.log(`[BATTLE] ENEMY DEFEATED`);
         resetSelectorCore();
 
         triggerMonsterExit('.enemy-display', () => {
@@ -3426,13 +3636,18 @@ function checkGameOver() {
                 gameState.enemy = nextMonster;
                 updateUI();
                 triggerBattleEntry('.enemy-display', () => {
-                    // Check if player ALSO fainted during the exchange
-                    if (!checkGameOver()) {
+                    // Check if player ALSO fainted during the exchange (e.g. from recoil/reflection processed by the exit timing)
+                    const isPlayerNowDefeated = gameState.player.hp <= 0;
+                    if (!isPlayerNowDefeated) {
                         finalizeTurnSequence();
+                    } else {
+                        // Re-trigger game over logic cleanly without direct recursion if possible
+                        checkGameOver();
                     }
                 });
             } else {
-                if (isPlayerDefeated) {
+                // No more enemies, but double check player state to avoid edge case skips
+                if (gameState.player.hp <= 0) {
                     checkGameOver();
                 } else {
                     showGameOver(false); // Victory
@@ -3444,6 +3659,7 @@ function checkGameOver() {
     }
 
     if (isPlayerDefeated) {
+        console.log(`[BATTLE] PLAYER DEFEATED`);
         isDragging = false;
         resetSelectorCore();
 
@@ -3455,8 +3671,11 @@ function checkGameOver() {
                 updateUI();
                 triggerBattleEntry('.player-display', () => {
                     // Check if AI ALSO fainted (reflection etc)
-                    if (!checkGameOver()) {
+                    const isEnemyNowDefeated = gameState.enemy.hp <= 0;
+                    if (!isEnemyNowDefeated) {
                         finalizeTurnSequence();
+                    } else {
+                        checkGameOver();
                     }
                 });
             } else {
@@ -3510,28 +3729,36 @@ function updateOverworldEXPBar() {
 function showGameOver(isFailure, forceOverlay = false) {
     // Safeguard: Prevent multiple calls if already showing
     if (!document.getElementById('game-over-overlay').classList.contains('hidden') && !forceOverlay) return;
-    
+
     const opponentId = catalystState.battleOpponentId;
     const isBossMatch = (opponentId === 'lana_boss' || opponentId === 'dyzes_boss' || opponentId === 'capsain_boss');
+    
+    // NEW: Check for generic battle-able NPCs that have special post-battle dialogue needs
+    const isCustomNpcMatch = opponentId && !opponentId.endsWith('_wild') && !isBossMatch;
 
-    // Boss Battle Finalization: Trigger dialogue FIRST, then show panel (Victory or Loss)
-    if (isBossMatch && !forceOverlay) {
+    // Trigger dialogue FIRST, then show panel (Victory or Loss)
+    if ((isBossMatch || isCustomNpcMatch) && !forceOverlay) {
         // Transition back to overworld first
         showScreen('screen-overworld');
-        resetPositions(); 
+        resetPositions();
         if (typeof Overworld !== 'undefined') {
             Overworld.startLoop();
-            
+
             // Short delay to let the map render
             setTimeout(() => {
-                const bossId = opponentId.replace('_boss', '');
                 const zone = Overworld.zones[Overworld.currentZone];
-                const npc = zone.objects.find(o => o.id === bossId);
+                let npc = null;
                 
-                if (npc) {
+                if (zone) {
+            const bossId = opponentId.replace('_boss', '').replace('_tutorial', '').replace('_atrium', '');
+                    npc = zone.objects.find(o => o.id === bossId || o.battleEncounterId === opponentId);
+                }
+
+                if (npc || isCustomNpcMatch) {
                     // Trigger "Won" dialogue if player lost (isFailure), otherwise "Defeated"
-                    Overworld.startNPCInteraction(npc, isFailure);
-                    
+                    // Pass true for isPostBattle (3rd arg) to prevent re-triggering the battle
+                    Overworld.startNPCInteraction(npc || opponentId, isFailure, true);
+
                     // Hook into completion to show the actual panel
                     Overworld.onDialogueComplete = () => {
                         showGameOver(isFailure, true); // forceOverlay = true
@@ -3555,6 +3782,7 @@ function showGameOver(isFailure, forceOverlay = false) {
     const expContainer = document.getElementById('battle-result-exp-container');
     const expText = document.getElementById('battle-result-exp-text');
     const expFill = document.getElementById('battle-result-exp-fill');
+    const hint = document.getElementById('game-over-hint');
 
     const isTutorialLoss = isFailure && opponentId === 'jenzi_tutorial';
 
@@ -3636,6 +3864,29 @@ function showGameOver(isFailure, forceOverlay = false) {
                 if (opponentId === 'lana_boss') gameState.storyFlags.lanaBattleDone = true;
                 if (opponentId === 'dyzes_boss') gameState.storyFlags.dyzesBattleDone = true;
                 if (opponentId === 'capsain_boss') gameState.storyFlags.capsainBattleDone = true;
+            } else if (typeof NPC_ENCOUNTERS !== 'undefined' && NPC_ENCOUNTERS[opponentId]) {
+                // Custom Modular Reward from cards.js (e.g., Julia)
+                const enc = NPC_ENCOUNTERS[opponentId];
+                if (enc.reward) {
+                    creditsEarned = Math.round((enc.reward.credits || 50) * rgScaling);
+                    biomassEarned = Math.round((enc.reward.biomass || 5) * rgScaling);
+                    expEarned = Math.round((enc.reward.exp || 15) * rgScaling);
+                } else {
+                    // Default custom reward
+                    creditsEarned = Math.round(50 * rgScaling);
+                    biomassEarned = Math.round(5 * rgScaling);
+                    expEarned = Math.round(25 * rgScaling);
+                }
+
+                // Mark battle as completed for custom NPCs
+                if (gameState.storyFlags) {
+                    gameState.storyFlags[`battleDone_${opponentId}`] = true;
+                    if (isFailure) {
+                        gameState.storyFlags[`battleLost_${opponentId}`] = true;
+                    } else {
+                        gameState.storyFlags[`battleWon_${opponentId}`] = true;
+                    }
+                }
             } else if (opponentId === 'jenzi' || opponentId.startsWith('npc')) {
                 // Human NPC: 120 LC, 9 Biomass
                 creditsEarned = Math.round(120 * rgScaling);
@@ -3680,7 +3931,7 @@ function showGameOver(isFailure, forceOverlay = false) {
         if (targetLevel > currentRg) {
             gameState.profiles.player.level = targetLevel;
             gameState.playerLevel = targetLevel;
-            syncCardsToLevel('player', targetLevel); 
+            syncCardsToLevel('player', targetLevel);
         }
 
         // Set Result Messaging
@@ -3703,7 +3954,7 @@ function showGameOver(isFailure, forceOverlay = false) {
             expFill.style.transition = 'none';
             expFill.style.width = `${initialPercent}%`;
             expText.innerText = `${initialExpRelative} / ${expNeededForLevel}`;
-            
+
             void expFill.offsetWidth; // Force Reflow
             expFill.style.transition = 'width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
 
@@ -3735,6 +3986,14 @@ function showGameOver(isFailure, forceOverlay = false) {
 
         updateOverworldEXPBar();
         overlay.classList.remove('hidden');
+
+        if (hint) {
+            if (btnContinue && !btnContinue.classList.contains('hidden')) {
+                hint.innerText = "[F] CONTINUE";
+            } else if (btnRestart && !btnRestart.classList.contains('hidden')) {
+                hint.innerText = "[F] REINITIALIZE";
+            }
+        }
     }
 }
 
@@ -3788,7 +4047,14 @@ function resetGame() {
     }
 
     gameState.enemyParty = oProfile.party.slice(0, 3).filter(m => m !== null);
-    gameState.enemyLevel = oProfile.level;
+    
+    // Robust level lookup: profile -> encounter data -> default 1
+    let enemyLevel = oProfile.level;
+    if (enemyLevel === undefined && typeof NPC_ENCOUNTERS !== 'undefined' && NPC_ENCOUNTERS[opponentId]) {
+        enemyLevel = NPC_ENCOUNTERS[opponentId].rg === 'auto' ? (gameState.playerLevel || 1) : NPC_ENCOUNTERS[opponentId].rg;
+    }
+    gameState.enemyLevel = enemyLevel || 1;
+
     syncCardsToLevel(opponentId, gameState.enemyLevel);
 
     // 2. Persistent HP/PP: Heal enemy, but NOT the player automatically
@@ -3907,21 +4173,28 @@ function triggerMonsterExit(displaySelector, callback) {
     }
 
     // 1. Reset Classes & Force Reflow
-    portrait.classList.remove('anim-recall-exit', 'anim-monster-pop');
+    portrait.classList.remove('anim-recall-exit', 'anim-monster-pop', 'anim-monster-breathing');
     void portrait.offsetWidth;
 
-    // 2. Monster Shrink
-    portrait.classList.add('anim-recall-exit');
+    // 2. Add Death Fade for a more impactful termination
+    portrait.classList.add('death-fade');
 
-    // 3. Container Capture (Bypass for Wild Encounters)
-    const isWild = catalystState.battleOpponentId === 'stemmy_wild' && displaySelector.includes('enemy');
+    // 3. Monster Shrink (Starts slightly after fade)
+    setTimeout(() => {
+        portrait.classList.add('anim-recall-exit');
+    }, 200);
+
+    // 4. Container Capture (Bypass for Wild Encounters)
+    // Check for any opponentId ending in _wild
+    const isWild = (catalystState.battleOpponentId && catalystState.battleOpponentId.includes('_wild')) && displaySelector.includes('enemy');
+    
     if (isWild) {
         setTimeout(() => {
-            portrait.classList.remove('anim-recall-exit');
+            portrait.classList.remove('anim-recall-exit', 'death-fade');
             portrait.style.opacity = "0";
             portrait.style.transform = "scale(0)";
             if (callback) callback();
-        }, 400); // Matches anim-recall-exit duration
+        }, 600); // Matches anim-recall-exit duration + delay
         return;
     }
 
@@ -3931,15 +4204,14 @@ function triggerMonsterExit(displaySelector, callback) {
     container.innerHTML = `<img src="assets/images/${containerImg}">`;
     display.appendChild(container);
 
-    // 4. Coordination
+    // 5. Coordination
     setTimeout(() => {
-        portrait.classList.remove('anim-recall-exit');
-        // Ensure it's hidden but use a class or consistent style
+        portrait.classList.remove('anim-recall-exit', 'death-fade');
         portrait.style.opacity = "0";
         portrait.style.transform = "scale(0)";
         container.remove();
         if (callback) callback();
-    }, 1000); // Matches container-capture duration
+    }, 1200); // Matches container-capture duration + delay
 }
 
 
@@ -3952,17 +4224,19 @@ function triggerBattleEntry(displaySelector, callback) {
     }
 
     // 1. Reset Classes & Force Reflow
-    portrait.classList.remove('anim-recall-exit', 'anim-monster-pop');
+    portrait.classList.remove('anim-recall-exit', 'anim-monster-pop', 'anim-monster-breathing', 'death-fade');
     portrait.style.opacity = "0";
     portrait.style.transform = "scale(0)";
     void portrait.offsetWidth;
 
     // 2. Spawn CellContainer (Bypass for Wild Encounters)
-    const isWild = catalystState.battleOpponentId === 'stemmy_wild' && displaySelector.includes('enemy');
+    const isWild = (catalystState.battleOpponentId && catalystState.battleOpponentId.includes('_wild')) && displaySelector.includes('enemy');
+
     if (isWild) {
         portrait.style.opacity = "1";
         portrait.style.transform = "scale(1)";
         portrait.classList.add('anim-monster-pop');
+        // In battle, we don't add anim-monster-breathing here because anim-attacker-float handles it during turn
         if (callback) callback();
         return;
     }
@@ -3986,6 +4260,8 @@ function triggerBattleEntry(displaySelector, callback) {
             portrait.style.opacity = "1";
             portrait.style.transform = "scale(1)"; // Clear the scale(0) reset
             portrait.classList.add('anim-monster-pop');
+            // We NO LONGER add anim-monster-breathing here to fix the double-breathing bug.
+            // Battle breathing is now handled exclusively by anim-attacker-float in updateUI.
 
             if (callback) callback();
 
@@ -4030,7 +4306,7 @@ function renderCellStorage() {
         .filter(slot => slot !== null)
         .map(slot => slot.monster?.instanceId);
 
-    const storageMonsters = profile.party.slice(3).filter(m => 
+    const storageMonsters = profile.party.slice(3).filter(m =>
         m !== null && !monstersInGridIds.includes(m.instanceId)
     );
 
@@ -4052,7 +4328,7 @@ function renderCellStorage() {
         const imgName = name.charAt(0).toUpperCase() + name.slice(1);
         icon.innerHTML = `
             <img src="./assets/images/${imgName}.png" alt="${name}" onerror="this.src='./assets/images/Card_Placeholder.png'">
-                    <div class="efficiency-badge">${monster.extractEfficiency || 1}</div>
+                    <div class="efficiency-badge">${monster.extractEfficiency ?? 0}</div>
         `;
 
         icon.ondragstart = (e) => {
@@ -4149,7 +4425,7 @@ function updateTeamSlots() {
         const monster = party[idx];
         if (monster) {
             const imgName = monster.name.charAt(0).toUpperCase() + monster.name.slice(1);
-            
+
             const iconWrapper = document.createElement('div');
             iconWrapper.className = 'monster-icon-wrapper';
             iconWrapper.style.position = 'relative';
@@ -4161,7 +4437,7 @@ function updateTeamSlots() {
 
             iconWrapper.innerHTML = `
                 <img src="./assets/images/${imgName}.png" alt="${monster.name}" onerror="this.src='./assets/images/Card_Placeholder.png'">
-                <div class="efficiency-badge">${monster.extractEfficiency || 1}</div>
+                <div class="efficiency-badge">${monster.extractEfficiency ?? 0}</div>
             `;
             slot.appendChild(iconWrapper);
 
@@ -5085,7 +5361,7 @@ function createMonsterInstance(id, existing = null) {
         turnCount: 0,
         selectedMove: data.moves[0].id,
         currentPresetId: currentPresetId,
-        extractEfficiency: 1
+        extractEfficiency: 0
     };
     return monster;
 }
@@ -5185,6 +5461,8 @@ function applyBonuses(party, level, forceHeal = true) {
  * INCUBATOR SYSTEM
  */
 window.openIncubatorMenu = function () {
+    incubatorInputReady = false;
+    setTimeout(() => { incubatorInputReady = true; }, 250);
     const party = gameState.profiles.player.party;
     const hasMonsters = party.some(m => m !== null);
 
@@ -5226,6 +5504,7 @@ function updateIncubatorSelection() {
 function closeIncubatorMenu() {
     document.getElementById('screen-incubator-menu').classList.add('hidden');
     document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
+    if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
 }
 
 async function startHealSequence() {
@@ -5336,6 +5615,8 @@ window.updateResourceHUD = function () {
 }
 
 window.openShopMenu = function () {
+    shopInputReady = false;
+    setTimeout(() => { shopInputReady = true; }, 250);
     const shopScreen = document.getElementById('screen-shop');
     if (!shopScreen) return;
 
@@ -5352,6 +5633,8 @@ window.openShopMenu = function () {
 let selectedSynthesisMonster = null;
 
 window.openSynthesisMenu = function () {
+    synthInputReady = false;
+    setTimeout(() => { synthInputReady = true; }, 250);
     const synthesisScreen = document.getElementById('screen-synthesis');
     if (!synthesisScreen) return;
 
@@ -5382,12 +5665,12 @@ function renderSynthesisItems() {
     SYNTHESIS_RECIPES.forEach(recipe => {
         const card = document.createElement('div');
         card.className = 'shop-item-card';
+        card.dataset.id = recipe.id;
         if (selectedSynthesisMonster && selectedSynthesisMonster.id === recipe.id) {
             card.classList.add('selected');
         }
 
-        const level = gameState.profiles.player.level || 1;
-        const efficiencyHtml = `<div class="efficiency-badge">RG-${level}</div>`;
+        const efficiencyHtml = `<div class="efficiency-badge">0</div>`;
 
         card.innerHTML = `
             <div class="shop-item-info">
@@ -5423,9 +5706,8 @@ function selectSynthesisItem(recipe) {
     if (descEl) descEl.textContent = recipe.description;
 
     if (iconEl) {
-        const level = gameState.profiles.player.level || 1;
         iconEl.className = 'shop-detail-img ' + recipe.iconClass;
-        iconEl.innerHTML = `<div class="efficiency-badge">RG-${level}</div>`;
+        iconEl.innerHTML = `<div class="efficiency-badge">0</div>`;
     }
 
     updateSynthesisRequirements(recipe);
@@ -5707,6 +5989,8 @@ function createShopItemCard(item, price, currency) {
 }
 
 function openQuantityModal(item, mode) {
+    shopInputReady = false;
+    setTimeout(() => { shopInputReady = true; }, 250);
     const modal = document.getElementById('shop-quantity-modal');
     if (!modal) return;
 

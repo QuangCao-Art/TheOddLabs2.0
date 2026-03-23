@@ -279,6 +279,121 @@ Characters respond differently based on the number of DataLogs you have archived
 - **NPC02_F**: *"Bio-signature match confirmed. Initiating test."*
 - **NPC03_M**: *"Deploying tactical cells. Readiness check."*
 
+## Boss Battle Engagement Template
+
+This template is for high-stakes STORY bosses (Lana, Dyzes, Capsain). They use hardcoded IDs and complex story-gated dialogue rather than simple generic mapping.
+
+### ⚠️ Boss-Specific Post-Mortem
+1.  **ID Mapping**: The Overworld ID (e.g., `lana`) usually maps to a `_boss` profile in `main.js` (e.g., `lana_boss`). Ensure this mapping is consistent in `start-npc-encounter`.
+2.  **Reward Tiers**: Bosses have hardcoded high rewards (350 LC, 15 Biomass, 250 EXP) in `main.js`. Do NOT use modular rewards if you want them to feel like "Sectors Bosses".
+3.  **Complex Flow**: Bosses require multiple flags (e.g., `lanaMet`, `lanaBattleDone`, `lanaDefeatedSeen`) to handle their post-victory reward sequence (Items, Keys).
+4.  **Auto-Equip**: Bosses MUST use `syncCardsToLevel` and `executeQuickEquip` to have legitimate, high-tier card setups in the battle engine.
+
+### 📋 Boss Data Format
+Unlike NPCs, Bosses are a **Hybrid**: defined in Data, but controlled in Code.
+
+#### 1. Data Segment (`src/data/cards.js`)
+- **Key**: (e.g., `lana`) - Used for team and style definition.
+- **Team/RG**: Standard mapping, but usually higher RG (10+).
+
+#### 2. Code Segment (`main.js` & `overworld.js`)
+- **ID Mapping**: `lana` maps to `lana_boss` profile.
+- **Fixed Rewards**: Credits and Biomass are hardcoded for high stakes.
+- **Story States**: Manual check for `lanaMet`, `lanaBattleDone`, etc.
+
+### 📋 Boss Data Format (Basic Info)
+Use this format for planning new Boss encounters.
+
+#### 1. Dialogue (Story-Gated)
+- **Before Battle**: [Manual Overworld Interaction - requires story logs]
+- **Pre-battle**: [Short line said in the VS/Portrait sequence]
+- **Defeated (Player Wins)**: [Lines said after player victory]
+- **Won (Player Loses)**: [Lines said after player defeat]
+
+#### 2. Monster Team (NPC_ENCOUNTERS & main.js)
+- **Monster IDs**: [e.g., cambihil, lydrosome]
+- **Opponent RG Level**: [High stakes: 10, 15, 20]
+- **AI Combat Style**: [survival, utility, aggressive]
+
+#### 3. Rewards (Hardcoded in main.js)
+- **EXP**: [High: 250+]
+- **Biomass**: [High: 15+]
+- **Credits (LC)**: [High: 350+]
+
+### 🛠️ Implementation Steps
+1.  **Overworld Setup** (`overworld.js`):
+    - Implement a manual `if (npc.id === 'boss_id')` branch in `startNPCInteraction`.
+    - Gate the battle trigger behind log counts and story flags.
+    - Set `this.pendingBattleEncounter = 'boss_id';`.
+2.  **Battle Engine Initialization** (`main.js`):
+    - Add a branch in the `start-npc-encounter` listener.
+    - Initialize `gameState.profiles['boss_id_boss']` with stats and monsters.
+    - Call `syncCardsToLevel` and `executeQuickEquip`.
+3.  **Reward & Flag Logic** (`main.js`):
+    - Add the ID to the "Sector Boss" block in `showGameOver`.
+    - Set the specific story flag: `gameState.storyFlags.bossIdBattleDone = true`.
+4.  **Victory Dialogue & Rewards** (`overworld.js`):
+    - Update the `if (npc.id === 'boss_id')` branch to handle the `isBattleDone && !isDefeatedSeen` state.
+
+---
+
+## NPC Battle Engagement Template
+
+This template ensures one-time, bug-free battle encounters for generic or quest NPCs using the modular system.
+
+### ⚠️ AI Post-Mortem: Mistakes to Avoid
+1.  **Reward Nesting (main.js)**: Do NOT nest `NPC_ENCOUNTERS` rewards inside sector boss checks. They must be in their own `else if` branch to set flags correctly.
+2.  **Missing Post-Battle Flag**: `startNPCInteraction` MUST be called with `isPostBattle = true` in `showGameOver` to prevent infinite loops.
+3.  **Result Tracking**: `battleDone` is not enough. You MUST set `battleWon_[id]` and `battleLost_[id]` in `main.js` to show the correct permanent dialogue later.
+4.  **ID Resolution**: Always ensure the `opponentId` from the battle engine matches the `battleEncounterId` in the overworld object.
+
+### 📋 NPC Data Format
+Use this format when defining a new NPC encounter (like Julia).
+
+#### 1. Dialogue
+- **Before Battle**: [Lines said when interaction starts in Overworld]
+- **Pre-battle**: [Short line said in the VS/Portrait sequence]
+- **Defeated (Player Wins)**: [Lines said after player victory]
+- **Won (Player Loses)**: [Lines said after player defeat]
+
+#### 2. Monster Team (NPC_ENCOUNTERS)
+- **Monster IDs**: [e.g., stemmy, nitrophil]
+- **Opponent RG Level**: [e.g., 5, 10, or 'auto']
+- **AI Combat Style**: [aggressive, balanced, survival, utility]
+
+#### 3. Rewards
+- **EXP**: [Amount]
+- **Biomass**: [Amount]
+- **Credits (LC)**: [Amount]
+
+### 🛠️ Implementation Steps
+1.  **Define Encounter** (`src/data/cards.js` -> `NPC_ENCOUNTERS`):
+    - Set `rg`, `team`, `style`, and `reward` using the format above.
+2.  **Setup NPC Object** (`src/engine/overworld.js`):
+    - Add `battleEncounterId` (matches the key in step 1).
+    - Add `dialogue`, `dialogueWin`, and `dialogueLoss` arrays.
+3.  **Result Persistence**: The system automatically handles flags (`battleDone`, `battleWon`, `battleLost`) to ensure the encounter is one-time and outcome-accurate.
+
+---
+
+### Scientist Julia (Atrium)
+
+### 1. Dialogue
+- **Before Battle**: "Excuse me, Intern! Have you mastered the Matching Attack Placement (MAP) system yet? // It's the core of our tactical research. // If you can prove your proficiency, I'll share some insights on the finer points of MAP."
+- **Pre-battle**: "Let's see what you got!"
+- **Defeated (Player Wins)**: "Incredible! Your placement was precise. // That's the secret to the MAP system—it's not just about power, it's about the proximity of your attack nodes. // Think of it like a puzzle: the closer you are to the target, the more damage you deal and the more energy (PP) you gain. // It's all about finding that sweet spot!"
+- **Won (Player Loses)**: "Don't be discouraged! Sometimes a bit of luck helps with the final sync, but skill is the foundation! Just keep practicing your placement."
+
+### 2. Monster Team (NPC_ENCOUNTERS)
+- **Monster IDs**: [1 stemmy]
+- **Opponent RG Level**: [1]
+- **AI Combat Style**: [balanced]
+
+### 3. Rewards
+- **EXP**: [50]
+- **Biomass**: [5]
+- **Credits (LC)**: [60]
+
 ### Background Scientist Dialogue (Random NPCs)
 
 These dialogue lines are randomly assigned to generic researchers based on the sector they are currently in. The `//` symbol indicates a manual page break in the dialogue window.

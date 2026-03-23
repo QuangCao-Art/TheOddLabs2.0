@@ -101,6 +101,14 @@ export const Overworld = {
         this.gameLoopActive = false;
     },
 
+    checkActiveSquad() {
+        if (!window.gameState || !window.gameState.profiles || !window.gameState.profiles.player) return false;
+        const playerProfile = window.gameState.profiles.player;
+        if (!playerProfile.party) return false;
+        const activeCount = playerProfile.party.slice(0, 3).filter(m => m !== null).length;
+        return activeCount > 0;
+    },
+
     // --- Entity Spawner System (Wild Encounters) ---
     spawner: {
         activeSpawn: null,
@@ -220,7 +228,7 @@ export const Overworld = {
                 const mapEl = document.getElementById('overworld-map');
                 const el = document.createElement('div');
                 el.id = `npc-${wildObj.id}`;
-                el.className = `world-object cell ${monsterId} anim-monster-pop`;
+                el.className = `world-object cell ${monsterId} anim-monster-pop anim-monster-breathing`;
                 el.style.width = `${Overworld.tileSize}px`;
                 el.style.height = `${Overworld.tileSize}px`;
                 el.style.left = `${spot.x * Overworld.tileSize}px`;
@@ -450,7 +458,22 @@ export const Overworld = {
                 { id: 'f55_at_w1', x: 3, y: 11, type: 'prop', name: 'Storage Cabinet' },
                 { id: 'f54_at_w2', x: 5, y: 11, type: 'prop', name: 'Storage Cabinet' },
                 { id: 'f55_at_w2', x: 6, y: 11, type: 'prop', name: 'Storage Cabinet' },
-                { id: 'npc_female_at2', x: 11, y: 11, type: 'npc', name: 'Scientist Julia' },
+                { 
+                    id: 'npc_female_at2', x: 11, y: 11, type: 'npc', name: 'Scientist Julia', 
+                    battleEncounterId: 'julia', 
+                    dialogue: [
+                        "Excuse me, Intern! Have you mastered the Matching Attack Placement (MAP) system yet?", 
+                        "It's the core of our tactical research.", 
+                        "If you can prove your proficiency, I'll share some insights on the finer points of MAP."
+                    ],
+                    dialogueWin: ["Don't be discouraged! Sometimes a bit of luck helps with the final sync, but skill is the foundation!", "Just keep practicing your placement."],
+                    dialogueLoss: [
+                        "Incredible! Your placement was precise.", 
+                        "That's the secret to the MAP system—it's not just about power, it's about the proximity of your attack nodes.", 
+                        "Think of it like a puzzle: the closer you are to the target, the more damage you deal and the more energy (PP) you gain.", 
+                        "It's all about finding that sweet spot!"
+                    ]
+                },
                 { id: 'f54_at_e1', x: 12, y: 11, type: 'prop', name: 'Storage Cabinet' },
                 { id: 'f55_at_e1', x: 13, y: 11, type: 'prop', name: 'Storage Cabinet' },
                 { id: 'f54_at_e2', x: 15, y: 11, type: 'prop', name: 'Storage Cabinet' },
@@ -1830,12 +1853,22 @@ export const Overworld = {
         window.addEventListener('keydown', (e) => {
             if (document.getElementById('screen-overworld').classList.contains('hidden')) return;
             if (e.key.toLowerCase() === 'f') {
-                // Only allow holding F if dialogue is active (to show next line / speed up)
-                if (this.isDialogueActive || !e.repeat) {
+                // If dialogue is active, always allow F to advance/speed up
+                if (this.isDialogueActive) {
                     this.interact();
+                } else if (!this.isPaused && !e.repeat) {
+                    // Safety check: Don't interact if any UI overlay/modal is visible
+                    const hasOverlay = document.querySelector('.overlay:not(.hidden), .modal-overlay:not(.hidden), .modal-overlay.active');
+                    if (!hasOverlay) {
+                        this.interact();
+                    }
                 }
             }
             if (e.key.toLowerCase() === 'escape') {
+                // If any menu or modal is open, let that handle the escape key
+                const hasOverlay = document.querySelector('.overlay:not(.hidden), .modal-overlay:not(.hidden), .modal-overlay.active');
+                if (hasOverlay) return;
+
                 document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
                 document.getElementById('screen-main-menu').classList.remove('hidden');
             }
@@ -2166,9 +2199,14 @@ export const Overworld = {
             if (npc.id.includes('_wild_')) {
                 const mName = npc.monsterId.charAt(0).toUpperCase() + npc.monsterId.slice(1);
                 this.spawner.stop(); // Stop wild spawns when interacting with one
-                this.pendingWildEncounter = true;
-                this.pendingWildMonsterId = npc.monsterId;
-                this.showDialogue(mName, [`A wild ${mName} is wandering.`]);
+                
+                if (this.checkActiveSquad()) {
+                    this.pendingWildEncounter = true;
+                    this.pendingWildMonsterId = npc.monsterId;
+                    this.showDialogue(mName, [`A wild ${mName} is wandering.`]);
+                } else {
+                    this.showDialogue(mName, [`A wild ${mName} is wandering. You need an active squad to engage!`]);
+                }
                 return;
             } else {
                 this.startNPCInteraction(npc);
@@ -2270,12 +2308,23 @@ export const Overworld = {
                     this.showDialogue("Security Gate", [msg]);
                     return;
                 }
+                // If the door is found and is NOT locked, we return early
+                // to prevent falling through to generic tileID based locked messages.
+                return;
             }
 
             const tileID = zone.layout[targetY][targetX];
             const lockedTiles = [20, 22, 24, 25, 28, 29, 30, 31];
 
             if (lockedTiles.includes(tileID)) {
+                // Check visual state to see if it's already open (has floor class)
+                const tiles = document.querySelectorAll('#overworld-map .tile');
+                const targetTileIndex = targetY * zone.width + targetX;
+                const targetTile = tiles[targetTileIndex];
+                if (targetTile && targetTile.classList.contains('floor')) {
+                    return;
+                }
+
                 // Check if it's the Atrium WC (coordinates 13,10 or 14,10 in Atrium)
                 const isAtriumWC = this.currentZone === 'atrium' && targetY === 14 && (targetX === 13 || targetX === 14);
 
@@ -2294,8 +2343,25 @@ export const Overworld = {
         }
     },
 
-    startNPCInteraction(npc, bossWon = false) {
-        console.log(`Talking to: ${npc.name}${bossWon ? ' (BOSS WON)' : ''}`);
+    startNPCInteraction(npcOrId, bossWon = false, isPostBattle = false) {
+        let npc = npcOrId;
+        if (typeof npcOrId === 'string') {
+            const zone = this.zones[this.currentZone];
+            if (zone) {
+                npc = zone.objects.find(o => o.id === npcOrId || o.battleEncounterId === npcOrId);
+            }
+        }
+        if (!npc) {
+            console.warn(`NPC interaction requested for non-existent NPC: ${npcOrId}`);
+            if (typeof this.onDialogueComplete === 'function') {
+                const cb = this.onDialogueComplete;
+                this.onDialogueComplete = null;
+                cb();
+            }
+            return;
+        }
+
+        console.log(`Talking to: ${npc.name}${bossWon ? ' (BOSS WON)' : ''} | PostBattle: ${isPostBattle}`);
         this.currentDialoguePartner = npc.id;
 
         // Make NPC face the player
@@ -2311,6 +2377,34 @@ export const Overworld = {
         const logs = this.logsCollected.length;
         let lines = ["..."];
         this.pendingBattleEncounter = null; // Clean slate
+
+        // --- NEW: ONE-TIME BATTLE CHECK ---
+        const encounterId = npc.battleEncounterId || npc.id;
+        const isBattleDone = window.gameState && window.gameState.storyFlags && window.gameState.storyFlags[`battleDone_${encounterId}`];
+
+        // --- NEW: UNIVERSAL POST-BATTLE DIALOGUE ---
+        if (isPostBattle || isBattleDone) {
+            // Determine who won:
+            // 1. If isPostBattle (returning from battle right now), bossWon is the source of truth.
+            // 2. If !isPostBattle (talking later), check storyFlags.
+            //    Note: bossWon (NPC won) corresponds to battleLost_ (player lost).
+            const isNpcVictory = isPostBattle ? bossWon : window.gameState.storyFlags[`battleLost_${encounterId}`];
+
+            if (isNpcVictory) {
+                // NPC WON (Player lost)
+                if (npc.dialogueWin) {
+                    this.showDialogue(npc.name, npc.dialogueWin, npc.id);
+                    return;
+                }
+            } else {
+                // NPC LOST (Player won)
+                if (npc.dialogueLoss) {
+                    this.showDialogue(npc.name, npc.dialogueLoss, npc.id);
+                    return;
+                }
+            }
+            // Fallthrough to regular lines if no specialized dialogue found
+        }
 
         if (npc.id === 'jenzi') {
             if (!window.gameState.storyFlags.starterChosen) {
@@ -2334,12 +2428,16 @@ export const Overworld = {
                 ];
                 // Trigger the modal after dialogue closes.
                 this.pendingBattleEncounter = 'starter_selection';
-            } else if (!window.gameState.storyFlags.jenziFirstBattleDone) {
-                lines = [
-                    "Sheesh, nice pick! Let's see if you can actually use it though.",
-                    "Bet you can't even touch me in a battle. Pelli-it up!"
-                ];
-                this.pendingBattleEncounter = 'jenzi_tutorial';
+            } else if (!window.gameState.storyFlags.jenziFirstBattleDone && !isPostBattle) {
+                if (!this.checkActiveSquad()) {
+                    lines = ["You need an active squad to battle! Check the Incubator or your Inventory to deploy your Cells."];
+                } else {
+                    lines = [
+                        "Sheesh, nice pick! Let's see if you can actually use it though.",
+                        "Bet you can't even touch me in a battle. Pelli-it up!"
+                    ];
+                    this.pendingBattleEncounter = 'jenzi_tutorial';
+                }
             } else if (!this.logsCollected.includes('Log001')) {
                 lines = [
                     "Ayo, not bad for a first-timer! You've got that 'pioneer spirit' everyone talks about.",
@@ -2361,7 +2459,7 @@ export const Overworld = {
                     "Yo, Intern! Keep looking for Datapads.",
                     "The doors are locked until you prove you can do basic research."
                 ];
-            } else if (logs >= 5 && !window.gameState.storyFlags.jenziAtriumBattleDone) {
+            } else if (logs >= 5 && !window.gameState.storyFlags.jenziAtriumBattleDone && !isPostBattle) {
                 lines = [
                     "You've been busy! 5 Datapads already?",
                     "Lowkey impressive.",
@@ -2446,7 +2544,7 @@ export const Overworld = {
                     "Watch your step! Be careful not to disturb the Cambihil spores. They're far more sensitive than your heavy boots suggest!"
                 ];
                 lines = [flavor[Math.floor(Math.random() * flavor.length)]];
-            } else {
+            } else if (!isPostBattle) {
                 lines = [
                     "Wait. You've been poking around the botanical archives, haven't you?",
                     "Look, I love these cells, but the Director says we have to keep the research classified.",
@@ -2491,7 +2589,7 @@ export const Overworld = {
                     "Chill out. Stress increases cortisol, and cortisol ruins the data. If you're going to work here, you've gotta learn to go with the flow."
                 ];
                 lines = [flavors[Math.floor(Math.random() * flavors.length)]];
-            } else {
+            } else if (!isPostBattle) {
                 lines = [
                     "I've seen your log activity. You're piecing together 'The Incident', aren't you?",
                     "Capsain is a good man, just... proud.",
@@ -2562,7 +2660,7 @@ export const Overworld = {
                     "Stop asking about the '27 logs. The archives were purged for security reasons. Unless you have a level 5 clearance, it's none of your business."
                 ];
                 lines = [flavors[Math.floor(Math.random() * flavors.length)]];
-            } else {
+            } else if (!isPostBattle) {
                 lines = [
                     "You found the Noodle Review. You found the '27 security gap.",
                     "But you're still just an intern. I won't have my legacy tarnished by some spicy gossip!",
@@ -2579,6 +2677,21 @@ export const Overworld = {
 
             const randomIndex = Math.floor(Math.random() * activePool.length);
             lines = activePool[randomIndex];
+        }
+
+        // --- NEW: UNIVERSAL BATTLE-ABLE SYSTEM ---
+        // If an NPC has a specific battleEncounterId, it will trigger that encounter
+        // regardless of story progress. This allows for generic "battle-able" NPCs.
+        if (npc.battleEncounterId && !isBattleDone && !isPostBattle) {
+            if (this.checkActiveSquad()) {
+                this.pendingBattleEncounter = npc.battleEncounterId;
+                // If the NPC also has specific intro dialogue, use that instead of the pool
+                if (npc.dialogue && Array.isArray(npc.dialogue)) {
+                    lines = npc.dialogue;
+                }
+            } else {
+                lines = ["You need an active squad to battle! Check the Incubator or your Inventory to deploy your Cells."];
+            }
         }
 
         this.showDialogue(npc.name, lines, npc.id);
@@ -2804,7 +2917,16 @@ export const Overworld = {
                 }, 200);
             } else {
                 setTimeout(() => {
-                    window.dispatchEvent(new CustomEvent('start-npc-encounter', { detail: { id: encounterId } }));
+                    const eventDetail = { id: encounterId };
+                    // We need to find the NPC object to get its battleEncounterId if it wasn't already in encounterId
+                    // Actually, pendingBattleEncounter IS already the battleEncounterId if it exists.
+                    // But to be safe for main.js logic, let's pass it explicitly.
+                    window.dispatchEvent(new CustomEvent('start-npc-encounter', { 
+                        detail: { 
+                            id: encounterId,
+                            battleEncounterId: encounterId // In our new system, encounterId is the battleEncounterId
+                        } 
+                    }));
                 }, 200);
             }
         }
@@ -2897,7 +3019,7 @@ export const Overworld = {
                         type: 'cell',
                         name: slot.monster.name,
                         customSprite: slot.monster.id || slot.monster.name.toLowerCase(),
-                        efficiency: slot.monster.extractEfficiency || 1
+                        efficiency: slot.monster.extractEfficiency ?? 0
                     });
                 }
             });

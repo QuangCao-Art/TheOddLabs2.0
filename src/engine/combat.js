@@ -227,10 +227,14 @@ export function checkOverload(cell) {
 }
 
 export function getModifiedStats(monster, playerLevel = 1) {
+    // 1. Efficiency Bonus (3% per level to ATK and DEF)
+    const effLevel = monster.extractEfficiency || 0;
+    const effMult = 1 + (effLevel * 0.03);
+
     const stats = {
         maxHp: monster.maxHp,
-        atk: monster.atk,
-        def: monster.def,
+        atk: Math.floor(monster.atk * effMult),
+        def: Math.floor(monster.def * effMult),
         spd: monster.spd,
         crit: monster.crit,
         pp: monster.pp,

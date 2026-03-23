@@ -120,6 +120,22 @@ export const NPC_PRESETS = {
             { 0: 'spd_5', 1: 'atk_5', 2: 'pp_1' },
             { 0: 'atk_5', 1: 'crit_1', 2: 'spd_5' }
         ]
+    },
+    'survival_preset': {
+        name: 'Survival Tactical Suite',
+        squadSlots: [
+            { 0: 'leader_3', 1: 'def_10', 2: 'hp_10' },
+            { 0: 'def_5', 1: 'def_5', 2: 'hp_5' },
+            { 0: 'def_5', 1: 'def_5', 2: 'hp_5' }
+        ]
+    },
+    'utility_preset': {
+        name: 'Utility Tactical Suite',
+        squadSlots: [
+            { 0: 'leader_2', 1: 'spd_10', 2: 'pp_5' },
+            { 0: 'spd_5', 1: 'pp_2', 2: 'crit_2' },
+            { 0: 'spd_5', 1: 'pp_2', 2: 'crit_2' }
+        ]
     }
 };
 
@@ -130,5 +146,12 @@ export const NPC_ENCOUNTERS = {
     'capsain': { name: "Capsain (Director Quest)", rg: 20, team: ['nitrophil', 'nitrophil', 'nitrophil'], style: 'aggressive' },
     'npc01': { name: "NPC Male", rg: 5, team: ['stemmy'], style: 'balanced' },
     'npc02': { name: "NPC Female", rg: 5, team: ['stemmy'], style: 'balanced' },
+    'julia': { 
+        name: "Scientist Julia", 
+        rg: 1, 
+        team: ['stemmy'], 
+        style: 'balanced',
+        reward: { exp: 50, biomass: 5, credits: 60 }
+    },
     'stemmy_wild': { name: "Wild Stemmy", rg: 'auto', team: ['stemmy'], style: 'balanced' }
 };
