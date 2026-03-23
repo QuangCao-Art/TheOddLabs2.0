@@ -1,0 +1,85 @@
+      0    1    2    3    4    5    6    7    8    9    10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32
+    +-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+0   | ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ### |
+1   | ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ### |
+2   | ###  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  ### |
+3   | ###  F13  F89  F89  F89  F13  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F61  F89  F89  F89  F89  F89  ### |
+4   | ###  F14  ...  F86  ...  F14  ...  F7.  F89  ...  F9.  F8.  F60  ...  F89  ...  ...  ...  ...  ...  ...  F61  ...  F60  ...  F61  F62  F60  F62  ...  ...  ...  ### |
+5   | ###  F13  ...  F87  ...  F13  ...  ...  ...  ...  ...  ...  ...  ...  F60  F7.  F89  F7.  ...  ...  ...  F62  ...  ...  ...  F62  ...  ...  ...  ...  ...  ...  DOR |
+6   | ###  F14  F88  F88  F88  F14  F88  F88  F9.  F89  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F88  F7.  F88  F62  F88  F88  F88  F62  F88  F88  F88  F88  ### |
+7   | ###  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  F89  ### |
+8   | ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ###  ### |
+    +-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+The above layout is The ancientBotany sector 
+
+[AI_DECORATION_PROTOCOL_V1.0]
+## 1. DATA_HIERARCHY_RESOLUTION
+- ASSERT: `MapBuilder.md` IS THE ABSOLUTE TRUTH FOR ID_TO_NAME AND ID_TO_TILESET_COORD.
+- ASSERT: `style.css` OVERRIDES `overworld.js` FOR TEXTURE_SOURCE (background-image).
+- IF (ID in `style.css` with `!important`) -> IGNORE `customSprite` property.
+
+## 2. STACKING_INTEGRITY_LOGICAL_CONSTRAINTS
+- FOR ANY `BOTTOM_ID` ∈ {F89, F62, F54, F55, F14, F87}:
+    - ACTION: ASSERT `TOP_ID` AT (X, Y-1).
+    - PAIR_REGISTRY: 
+        - F88(Top) <-> F89(Bottom) [Ancient Plant]
+        - F61(Top) <-> F62(Bottom) [Box Pile]
+        - F52/F53(Top) <-> F54/F55(Bottom) [Big Cabinet]
+        - F13(Top) <-> F14(Bottom) [Specimen Tank]
+        - F86(Top) <-> F87(Bottom) [Healthy Plant]
+- CONSTRAINT: MOVING `BOTTOM_ID` REQUIRES ATOMIC SHIFT OF `TOP_ID`.
+- BEHAVIOR: IF (Y-1 == WALL_ID) -> RENDER `TOP_ID` OVER WALL (Leaning Effect).
+
+## 3. MULTI_OBJECT_CELL_RESOLUTION (THE OVERLAP STRATEGY)
+- IF (Cell intersects multiple IDs OR equipment_placement):
+    - ACTION: DEFINE `objects` as `Array<Object>`.
+    - ACTION: ORDER `Array` by [LAYER_0: Background, LAYER_N: Foreground].
+    - EXAMPLE: `[RowPlantPart, ScatteredTankPart]` -> Tank renders in front.
+- LOGIC: `hasCollision: false` (Tops/F61/F88) -> FORCE z-index: 110 (Front).
+- CONSTRAINT: DO NOT USE EXCLUSION LOGIC. RENDER ALL INTERSECTING PARTS.
+
+## 4. TILESET_MAPPING_VALIDATION
+- IF (Zone uses multiple TileSets):
+    - ASSERT `style.css` mapping for every ID.
+    - IF (Mapping missing) -> ACTION: APPEND to `style.css` or use `customSprite` correctly.
+    - WARNING: DO NOT assume category = tileset (e.g. Tank F13 != Plant Tileset).
+
+## 5. PRE_EXECUTION_GRID_TRACE
+- BEFORE_WRITE: Trace every Column 'X'. 
+- IF (Column X contains multi-level object) -> VERIFY Rows Y and Y-1 handle parts correctly.
+- TERMINATE if pairing is non-atomic.
+[/AI_DECORATION_PROTOCOL]
+
+The Furniture ID reference can be found in the MapBuilder.md file.
+
+
+[AI_DECORATION_PROTOCOL_V1.0]
+## 1. DATA_HIERARCHY_RESOLUTION
+- ASSERT: `MapBuilder.md` IS THE ABSOLUTE TRUTH FOR ID_TO_NAME AND ID_TO_TILESET_COORD.
+- ASSERT: `style.css` OVERRIDES `overworld.js` FOR TEXTURE_SOURCE (background-image).
+- IF (ID in `style.css` with `!important`) -> IGNORE `customSprite` property.
+
+## 2. STACKING_INTEGRITY_LOGIC
+- FOR ANY `BOTTOM_ID` ∈ {F89, F62, F54, F55, F14, F87}:
+    - ASSERT `TOP_ID` AT (X, Y-1).
+    - TOP_ID LIST: F88(Plant), F61(Box), F52/F53(Cabinet), F13(Tank), F86(HealthyPlant).
+- CONSTRAINT: MOVING `BOTTOM_ID` REQUIRES ATOMIC SHIFT OF `TOP_ID`.
+
+## 3. MULTI_OBJECT_CELL_RESOLUTION (THE OVERLAP STRATEGY)
+- IF (Cell intersects continuous_row AND equipment_placement):
+    - ACTION: DEFINE `objects` as `Array<Object>`.
+    - ACTION: ORDER `Array` by [BACKGROUND_LAYER, FOREGROUND_LAYER].
+    - EXAMPLE: `[RowPlantPart, ScatteredTankPart]` -> Tank renders in front.
+- CONSTRAINT: DO NOT USE EXCLUSION LOGIC. RENDER ALL INTERSECTING PARTS.
+
+## 4. TILESET_MAPPING_VALIDATION
+- IF (Zone uses multiple TileSets):
+    - ASSERT `style.css` mapping for every ID.
+    - IF (Mapping missing) -> ACTION: APPEND to `style.css` or use `customSprite` correctly.
+    - WARNING: DO NOT assume category = tileset (e.g. Tank F13 != Plant Tileset).
+
+## 5. PRE_EXECUTION_GRID_TRACE
+- BEFORE_WRITE: Trace every Column 'X'. 
+- IF (Column X contains multi-level object) -> VERIFY Rows Y and Y-1 handle parts correctly.
+- TERMINATE if pairing is non-atomic.
+[/AI_DECORATION_PROTOCOL]

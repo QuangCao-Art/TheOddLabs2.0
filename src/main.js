@@ -1,12 +1,20 @@
-﻿import { gameState, applyDebugMode, DEBUG_MODE } from './engine/state.js';
+import { gameState, applySkipTutorial, applyFullCellDebug, SKIP_TUTORIAL, FULL_CELL_DEBUG } from './engine/state.js';
 import { resolveTurn, getDistance, checkOverload, getModifiedStats } from './engine/combat.js';
 import { AI } from './engine/ai.js';
 import { MONSTERS } from './data/monsters.js';
 import { Overworld } from './engine/overworld.js';
 import { CARDS, LEVEL_REWARDS, NPC_PRESETS, NPC_ENCOUNTERS } from './data/cards.js';
+import { SHOP_ITEMS, shopState } from './data/shop.js';
+import { SYNTHESIS_RECIPES } from './data/synthesis.js';
+import { BioExtract } from './ui/bio_extract.js';
 
-// Expose gameState globally for overworld.js
+// Initialize UI Modules
+if (BioExtract) BioExtract.init();
+
+// Expose modules globally for cross-communication
 window.gameState = gameState;
+window.Overworld = Overworld;
+window.BioExtract = BioExtract;
 
 // DOM References
 const interactivePentagon = document.getElementById('interactive-pentagon');
@@ -17,6 +25,30 @@ const enemyPortrait = document.querySelector('.enemy-display .monster-portrait')
 const playerVitals = document.querySelector('.player-display .character-vitals');
 const enemyVitals = document.querySelector('.enemy-display .character-vitals');
 const moveButtons = document.querySelectorAll('.move-btn');
+
+// --- DEBUG WEALTH ---
+document.getElementById('btn-debug-rich')?.addEventListener('click', () => {
+    gameState.credits += 5000;
+    gameState.biomass += 500;
+    if (window.updateResourceHUD) window.updateResourceHUD();
+    else if (typeof updateResourceHUD === 'function') updateResourceHUD();
+
+    // Update active menus if open
+    const shopBM = document.getElementById('shop-bm-balance');
+    if (shopBM) shopBM.textContent = gameState.biomass;
+    const shopLC = document.getElementById('shop-lc-balance');
+    if (shopLC) shopLC.textContent = gameState.credits;
+
+    const synthBM = document.getElementById('synthesis-bm-balance');
+    if (synthBM) synthBM.textContent = gameState.biomass;
+
+    // If a synthesis item is selected, refresh its requirements display
+    if (window.selectSynthesisItem && window.selectedSynthesisMonster) {
+        window.selectSynthesisItem(window.selectedSynthesisMonster);
+    }
+
+    console.log("DEBUG: Resources injected. Credits:", gameState.credits, "Biomass:", gameState.biomass);
+});
 
 // Dragging State
 let isDragging = false;
@@ -69,9 +101,10 @@ let battleLogHistory = [];
 let previousScreen = 'screen-main-menu';
 
 // Inventory Navigation State
+const INVENTORY_TABS = ['logs', 'items', 'cards', 'status', 'catalyst'];
 let invNav = {
     active: false,
-    tabIndex: 0, // 0: Logs, 1: Items, 2: Cells
+    tabIndex: 0, // Maps to INVENTORY_TABS
     itemIndex: 0
 };
 
@@ -246,8 +279,7 @@ function handleDeletePreset() {
 }
 
 const updateInvNav = (isKeyboardAction = false) => {
-    const tabs = ['logs', 'items', 'status', 'catalyst'];
-    const currentTabId = tabs[invNav.tabIndex];
+    const currentTabId = INVENTORY_TABS[invNav.tabIndex];
 
     // 1. Update Tab Visuals
     const tabBtns = document.querySelectorAll('.tab-btn');
@@ -267,6 +299,9 @@ const updateInvNav = (isKeyboardAction = false) => {
             invLayout.style.display = 'none'; // Use display none to hide flex/grid
             catalystState.activeProfile = 'player';
             renderManagementHub();
+        } else if (currentTabId === 'status') {
+            renderInventory();
+            invLayout.style.display = ''; 
         } else {
             invLayout.style.display = ''; // Revert to stylesheet default
         }
@@ -292,26 +327,89 @@ const updateInvNav = (isKeyboardAction = false) => {
     }
 };
 
+window.DATA_LOGS = [
+    { id: 'Log001', tag: 'HISTORY', title: 'Mission Statement', text: "The Odd Labs was founded on a singular, borderline obsessive belief: the microscopic world holds the ultimate cure for the macro-world's failures. By engineering life at the cellular level, we aren't just creating tools; we're designing the future of biological harmony. Healing the earth starts with a single, perfectly optimized cell. Or at least, that's what the brochure says. Reality involves a lot more paperwork and weird smells." },
+    { id: 'Log002', tag: 'FLUFF', title: 'The Coffee Incident', text: "Urgent Notice: Will whoever left a half-empty mug of 'Triple-Roast' in Incubator 3 please come forward? The resulting fuzzy purple mold has progressed beyond 'biological curiosity' and is now actively hoarding office supplies. It isn't sentient yet, but it did try to swallow my favorite fountain pen when I tried to clean the tray. If it starts asking for sugar, we're calling Security." },
+    { id: 'Log003', tag: 'INFO', title: 'Security Protocols', text: "Updated Security Protocol: All entrance gates now require a valid Bio-Signature match for entry. If your Cell pairing isn't synchronized, the gates will remain locked, and you will be forced to wait in the lobby where Jenzi will 'verbally audit' your lack of preparation until you either cry or quit. This has proven 41% more effective than standard fines. - Management." },
+    { id: 'Log004', tag: 'TEASE', title: 'Missing Footage', text: "Maintenance Log 27-A: During the '27 Incident, the security cameras mysteriously cut out for exactly 3 minutes. Director Capsain claims it was just 'radio interference' from his lab equipment. However, the repair crew found that the camera cables had been manually unplugged. It looks like someone definitely didn't want a witness to whatever happened." },
+    { id: 'Log005', tag: 'FUN', title: 'Noodle Tuesday', text: "Internal Memo: Noodle Tuesday has officially surpassed 'Tactical Thursday' as the highest energy-consumption day in the lab, mostly due to the sheer number of hot water dispensers running at max capacity. Director Capsain was spotted by the janitor carrying a suspiciously large carton containing 13 packs of 'Inferno' brand instant noodles. He claimed it was for 'caloric stress-testing'. Nobody believed him." },
+    { id: 'Log006', tag: 'INFO', title: 'Botanic Breakthrough', text: "Lab Report: After seventy-three failed trials, Lana has finally successfully integrated active chlorophyll into a synthetic fibroblast structure. The resulting specimen, codenamed 'Cambihil,' is remarkably stable and seems to enjoy basking in the UV lamps. It’s the first true hybrid of plant resilience and multi-cellular intelligence. Lana didn't smile, but she did stop drinking her fifth cup of coffee for a moment. Progress." },
+    { id: 'Log007', tag: 'TEASE', title: "Lana's Complaint", text: "Lana’s Private Log: The Director is spending an absurd amount of time in that side room. He brings a bowl of noodles in there every day at 1 PM, thinking he's being subtle. I know exactly what he’s 'cultivating' in there, and the constant secrecy is just unprofessional. Seventy-one hours of my team's time, wasted on his little secret." },
+    { id: 'Log008', tag: 'FUN', title: 'Photosynthesis Party', text: "Observation Log: We discovered something peculiar today. Cambihils show a 15.3% increase in photosynthetic efficiency when exposed to high-tempo techno music. They seem to vibrate in time with the bass. Lana absolutely hates the noise and claims it's 'acoustical nonsense,' but the data doesn't lie. I caught her tapping her foot yesterday. She claims it was a muscle spasm caused by inefficient lighting." },
+    { id: 'Log009', tag: 'TEASE', title: 'The Spicy Aroma', text: "Incident Report: Lana filed a complaint about a 'pungent, almost violent peppery smell' leaking from the vents connected to the decommissioned Old Lab wing. She officially logged it as 'volatile botanical mutation fumes' and requested a full air-scrubbing sequence. The Director denied the request, stating it was merely 'experimental ozone' from the nearby power coupling. My eyes are still watering." },
+    { id: 'Log010', tag: 'INFO', title: 'Private Key Log', text: "Security Update: Scientist Lana has updated the biometric lock on her private storage cabinet. The password hint is simply: 'The Day Biology Changed.' I looked it up—that’s the anniversary of the very first successful Cell cultivation. Why would she guard her personal research files with such a sentimental date? She's definitely hiding something more than just old clipboards. - Anon." },
+    { id: 'Log011', tag: 'INFO', title: "Dyzes' Observations", text: "Research Log: Scientist Dyzes is leaning back in his chair, staring at the Lydrosome cultures again. He reports that the latest mutation shows a staggering 99.3% tissue compatibility with organic hosts. This isn't just a discovery; it's a bridge between species. If we can finalize the osmotic pressure variables, we’ll have a Cell that can navigate biological systems like a master surgeon. Dyzes just said, 'It’s like we’re all connected, man.'" },
+    { id: 'Log012', tag: 'TEASE', title: 'Protein Analysis', text: "Unauthorized Analysis: I managed to get a glimpse of the 'mutation' from the Director's restricted samples under the high-res zoom. These aren't radiation burns or ionization scars, as the official report suggests. The molecular signature is clearly a complex protein-capsicum interaction. Wait... is that a microscopic chili seed embedded in the cell wall? If this gets out, Capsain is going to have more than just a headache." },
+    { id: 'Log013', tag: 'FUN', title: 'The Chill Factor', text: "Behavioral Assessment: Observed the latest Nitrophil specimen today. For a Thermogenic Cell that literally houses a miniature combustion reaction, it is remarkably laid back. It spent three hours just drifting around its tank, occasionally glowing orange when it felt bored. We've officially dubbed it the 'Chill-y' cell. Dyzes thinks it's the 'vibes'." },
+    { id: 'Log014', tag: 'TEASE', title: 'Point Zero', text: "Recovery Log: While cleaning out an old terminal, Dyzes recovered a corrupted data fragment referencing something called 'Point Zero'. According to the notes, it’s a location within the facility that isn't listed on any current blueprints or structural maps. Before we could cross-reference the coordinates, Director Capsain remotely accessed the terminal and deleted the remaining metadata. He looked remarkably pale during the staff meeting later." },
+    { id: 'Log015', tag: 'INFO', title: 'Cellular Harmony', text: "Staff Observation: Dyzes has officially gone off the deep end. He firmly believes the Cells are attempting primitive communication through fluctuating osmotic pressure. He spent three full hours today talking to a Lydrosome about 'the nature of the soul.' The terrifying part? The Lydrosome actually waved back with a localized pressure jet. Dyzes didn't even look surprised. He just said, 'I know, buddy. I know.'" },
+    { id: 'Log016', tag: 'FUN', title: 'Noodle Review (Draft)', text: "Draft File (Capsain27_FinalReview): 'Inferno Brand Chili Sauce - Limited Edition Batch. Rating: 5/5. The heat is exquisite, borderline biological. Potency is perfect for late-night research sessions.'" },
+    { id: 'Log017', tag: 'TEASE', title: "Official '27 Report", text: "The 2027 Executive Summary: Official Cause of the Leak: A containment failure in the Mega Incubator's primary reactor, located within the Main Atrium. Note from the Ground Crew (Redacted): 'We entered the Atrium and were hit by a thick, overwhelming spicy aroma that made our eyes water through the gas masks. Management insisted it was merely the smell of oxidized metal and ozone interaction.' The logic is as thin as the Director's patience." },
+    { id: 'Log018', tag: 'FLUFF', title: 'Logistics Update', text: "Logistics Requisition: Monthly order for the Executive Floor has been updated. Item: 'Inferno' Noodle Boxes (31 Cases). Reason: 'Caloric density optimization for late-night research.' Priority: Urgent. The Director has been heard grumbling about the cafeteria's 'lack of kick' while waiting for this shipment. Someone should tell him that consuming this much spice during a single work cycle isn't recommended for biological health." },
+    { id: 'Log019', tag: 'TEASE', title: "Director's Secret Folder", text: "SYSTEM ALERT: Access Denied to restricted sub-directory. Folder Name: [Petri Dish #0 - My Little Accident]. Password Hint: 'The ingredient that makes life better.' I tried 'Science,' 'Knowledge,' and 'Efficiency.' All failed. I have a hunch that if I tried 'Extra Spicy Sauce' or 'Chili,' I might get in. What is Capsain hiding in there? It sounds less like a failure and more like a confession." },
+    { id: 'Log020', tag: 'CLIMAX', title: "The Director's Private Note", text: "Private Encryption (Director Only): Origin is now 15.3cm in diameter. Its orange glow has become so bright it's visible through the lead-lined containment. It’s remarkably hyperactive whenever it detects capsaicin in the air. If the board ever discovers that the crowning achievement of this lab—the very first sentient cell—was born from a clumsy noodle accident and a splash of chili sauce, my career is over. I'm ruined. But... he's so chill." },
+    { id: 'Log999', tag: 'SECRET', title: 'The Burden of Pride', text: "Personal Note 999: I spent an hour alone in the Old Lab today, just talking to Origin. I have to put on this mask of arrogance, shouting about 'monstrous anomalies' and 'biological failures' just so the board doesn't look too closely at the '27 logs. But here, in the dust and silence... I wish I could just be the scientist who made a beautiful mistake. I'm so sorry I have to keep you hidden, little buddy. One day, hopefully, the world will be ready for the truth.", secret: true }
+];
+
 // --- ITEM PICKUP MODAL ---
-const ITEM_PICKUP_DATA = {
-    '001': { name: 'DATAPAD', desc: 'A researcher\'s data pad. Contains Log #001: Mission Statement.', spriteClass: 'data-pad' },
-    '002': { name: 'DATAPAD', desc: 'A discarded data pad. Contains Log #002: The Coffee Incident.', spriteClass: 'data-pad' },
-    '010': { name: 'ROOM KEY', desc: 'Lana\'s private storage key. Or something more secret?', spriteClass: 'room-key' },
-    'SAUCE': { name: 'INFERNO SAUCE', desc: 'Rare Inferno Brand chili sauce. Extreme potency.', spriteClass: 'sauce-bottle' },
-    'SECRET_CARD': { name: 'SECRET CARD', desc: 'A glowing card with experimental data.', spriteClass: 'secret-card' },
-    // Add more as needed by story_lore_progression.md
+window.ITEM_PICKUP_DATA = {
+    'Log001': { name: 'DATAPAD', desc: 'Log #001: Mission Statement.', spriteClass: 'f49', type: 'log' },
+    'Log002': { name: 'DATAPAD', desc: 'Log #002: The Coffee Incident.', spriteClass: 'f49', type: 'log' },
+    'Log003': { name: 'DATAPAD', desc: 'Log #003: Security Protocols.', spriteClass: 'f49', type: 'log' },
+    'Log004': { name: 'DATAPAD', desc: 'Log #004: Missing Footage.', spriteClass: 'f49', type: 'log' },
+    'Log005': { name: 'DATAPAD', desc: 'Log #005: Noodle Tuesday.', spriteClass: 'f49', type: 'log' },
+    'Log006': { name: 'DATAPAD', desc: 'Log #006: Botanic Breakthrough.', spriteClass: 'f49', type: 'log' },
+    'Log007': { name: 'DATAPAD', desc: 'Log #007: Lana\'s Complaint.', spriteClass: 'f49', type: 'log' },
+    'Log008': { name: 'DATAPAD', desc: 'Log #008: Photosynthesis Party.', spriteClass: 'f49', type: 'log' },
+    'Log009': { name: 'DATAPAD', desc: 'Log #009: The Spicy Aroma.', spriteClass: 'f49', type: 'log' },
+    'Log010': { name: 'DATAPAD', desc: 'Log #010: Private Key Log.', spriteClass: 'f49', type: 'log' },
+    'Log011': { name: 'DATAPAD', desc: 'Log #011: Dyzes\' Observations.', spriteClass: 'f49', type: 'log' },
+    'Log012': { name: 'DATAPAD', desc: 'Log #012: Protein Analysis.', spriteClass: 'f49', type: 'log' },
+    'Log013': { name: 'DATAPAD', desc: 'Log #013: The Chill Factor.', spriteClass: 'f49', type: 'log' },
+    'Log014': { name: 'DATAPAD', desc: 'Log #014: Point Zero.', spriteClass: 'f49', type: 'log' },
+    'Log015': { name: 'DATAPAD', desc: 'Log #015: Cellular Harmony.', spriteClass: 'f49', type: 'log' },
+    'Log016': { name: 'DATAPAD', desc: 'Log #016: Noodle Review (Draft).', spriteClass: 'f49', type: 'log' },
+    'Log017': { name: 'DATAPAD', desc: 'Log #017: Official \'82 Report.', spriteClass: 'f49', type: 'log' },
+    'Log018': { name: 'DATAPAD', desc: 'Log #018: Logistics Update.', spriteClass: 'f49', type: 'log' },
+    'Log019': { name: 'DATAPAD', desc: 'Log #019: Director\'s Secret Folder.', spriteClass: 'f49', type: 'log' },
+    'Log020': { name: 'DATAPAD', desc: 'Log #020: Director\'s Private Note.', spriteClass: 'f49', type: 'log' },
+    'Log999': { name: 'DATAPAD', desc: 'Log #999: The Burden of Pride.', spriteClass: 'f49', type: 'log' },
+
+    // Key Items
+    'Quest01': { name: 'OLD KEY CARD', desc: 'An old but still function key card.', spriteClass: 'f50', type: 'item', previewImg: 'Card_Placeholder.png' },
+    'Quest02': { name: 'INFERNO SAUCE', desc: 'A bottle of Inferno Brand super chili sauce.', spriteClass: 'f51', type: 'item', previewImg: 'Card_Placeholder.png' },
+    'Quest03': { name: 'OLD DATA STICK', desc: 'Ancient people used this to store data!', spriteClass: 'f64', type: 'item', previewImg: 'Card_Placeholder.png' },
+    "Quest04": { name: "Origin Nitrophil", icon: "nitrophil-sprite orange-hue", desc: "The ultimate proof. The first-ever mutated cell, hidden by Capsain.", type: "item", spriteClass: "nitrophil orange-hue" },
+    'SSCARD01': { name: 'SS01', desc: 'A data card with super rare custom image on it.', spriteClass: 'f63', type: 'item', previewImg: 'Card_Placeholder.png' },
+    'SSCARD02': { name: 'SS02', desc: 'A data card with super rare custom image on it.', spriteClass: 'f63', type: 'item', previewImg: 'Card_Placeholder.png' },
+    'SSCARD03': { name: 'SS03', desc: 'A data card with super rare custom image on it.', spriteClass: 'f63', type: 'item', previewImg: 'Card_Placeholder.png' },
+    'CARD00': { name: 'CELL CARD: STEMMY', desc: 'A collectible card features Stemmy, hand made by Jenzi.', spriteClass: 'f75', type: 'item', previewImg: 'Card_Stemmy.png' },
+    'CARD01': { name: 'CELL CARD: CAMBIHIL', desc: 'A collectible card features Cambihil, hand made by Jenzi.', spriteClass: 'f75', type: 'item', previewImg: 'Card_Cambihil.png' },
+    'CARD02': { name: 'CELL CARD: LYDROSOME', desc: 'A collectible card features Lydrosome, hand made by Jenzi.', spriteClass: 'f75', type: 'item', previewImg: 'Card_Lydrosome.png' },
+    'CARD03': { name: 'CELL CARD: NITROPHIL', desc: 'A collectible card features Nitrophil, hand made by Jenzi.', spriteClass: 'f75', type: 'item', previewImg: 'Card_Nitrophil.png' },
+    'Quest05': { name: 'OFFICIAL EMPLOYEE CARD', desc: 'You are now a truly member of the pack!', spriteClass: 'f90', type: 'item', previewImg: 'Card_Placeholder.png' },
+    'blueprint_stemmy': { name: 'STEMMY BLUEPRINT', desc: 'A blueprint to create Stemmy.', spriteClass: 'f101', type: 'item', previewImg: 'Card_Placeholder.png' },
 };
 
-window.showDatapadPickupModal = (logId, onClose) => {
+window.showItemPickupModal = (itemId, onClose) => {
     const modal = document.getElementById('item-pickup-modal');
-    const data = ITEM_PICKUP_DATA[logId] || { name: 'ITEM', desc: 'An unknown item.', spriteClass: 'data-pad' };
+    const data = ITEM_PICKUP_DATA[itemId] || { name: 'ITEM', desc: 'An unknown item.', spriteClass: 'data-pad', type: 'item' };
+
+    const label = document.getElementById('pickup-label');
+    if (label) {
+        label.textContent = (itemId === 'Quest04' || data.type === 'monster') ? 'CELL ACQUIRED' : 'ITEM ACQUIRED';
+    }
 
     document.getElementById('pickup-name').textContent = data.name;
     document.getElementById('pickup-desc').textContent = data.desc;
 
     // Swap sprite class
     const sprite = document.getElementById('pickup-sprite');
-    sprite.className = `key-item-sprite ${data.spriteClass}`;
+    if (itemId === 'Quest04' || data.type === 'monster') {
+        sprite.className = `pickup-cell-sprite ${data.spriteClass}`;
+    } else {
+        sprite.className = `key-item-sprite ${data.spriteClass}`;
+    }
 
     modal.classList.remove('hidden');
 
@@ -327,7 +425,7 @@ window.showDatapadPickupModal = (logId, onClose) => {
     function keyHandler(e) {
         if (!inputReady) return;
         if (e.key === 'f' || e.key === 'F' || e.key === 'Enter') {
-            e.preventDefault(); e.stopPropagation();
+            e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
             close();
         }
     }
@@ -587,7 +685,8 @@ function setupNodePositions() {
 function setupEventListeners() {
     // MAIN MENU & SETTINGS
     document.getElementById('btn-open-settings')?.addEventListener('click', () => {
-        document.getElementById('toggle-debug-mode').checked = DEBUG_MODE;
+        document.getElementById('toggle-skip-tutorial').checked = SKIP_TUTORIAL;
+        document.getElementById('toggle-full-cell-debug').checked = FULL_CELL_DEBUG;
         showScreen('screen-settings');
     });
 
@@ -595,16 +694,16 @@ function setupEventListeners() {
         showScreen('screen-main-menu');
     });
 
-    document.getElementById('toggle-debug-mode')?.addEventListener('change', (e) => {
-        applyDebugMode(e.target.checked);
-        // Force an immediate reset based on new settings to populate variables properly
-        resetGame();
-    });
+
 
     // PRESET MANAGEMENT
     document.getElementById('btn-preset-save')?.addEventListener('click', handleSavePreset);
     document.getElementById('btn-preset-rename')?.addEventListener('click', handleRenamePreset);
     document.getElementById('btn-preset-delete')?.addEventListener('click', handleDeletePreset);
+
+    // INCUBATOR SYSTEM
+    document.getElementById('btn-incubator-close')?.addEventListener('click', () => closeIncubatorMenu());
+    document.getElementById('btn-incubator-heal')?.addEventListener('click', () => startHealSequence());
 
     // DRAG AND DROP LOGIC
     selectionCore.addEventListener('mousedown', startDrag);
@@ -652,23 +751,35 @@ function setupEventListeners() {
     });
 
     window.addEventListener('start-wild-encounter', (e) => {
-        const profileId = 'stemmy_wild';
-        const rg = gameState.profiles.player.level || 0;
+        const monsterId = e.detail.id || 'stemmy';
+        const profileId = `${monsterId}_wild`;
+        const playerRg = gameState.profiles.player.level || 0;
+
+        // Randomize Wild RG: 1 to 5 levels lower than player, baseline 0
+        const minRG = Math.max(0, playerRg - 5);
+        const maxRG = Math.max(0, playerRg - 1);
+        const rg = Math.floor(Math.random() * (maxRG - minRG + 1)) + minRG;
 
         // Use base stats from MONSTERS (getModifiedStats will handle scaling)
-        const baseStats = MONSTERS.stemmy;
+        const baseStats = MONSTERS[monsterId] || MONSTERS.stemmy;
 
-        const wildStemmy = createMonsterInstance('stemmy');
-        wildStemmy.id = `stemmy_${Date.now()}`;
-        wildStemmy.pp = wildStemmy.maxPp; // Start wild encounters at max PP for challenge
+        const wildMonster = createMonsterInstance(monsterId);
+        wildMonster.id = `${monsterId}_${Date.now()}`;
+        wildMonster.pp = 1; // Start wild encounters at 1 PP to match player mechanics
 
-        gameState.profiles['stemmy_wild'] = {
-            name: `WILD STEMMY (RG-${rg})`,
+        const monsterName = monsterId.toUpperCase();
+
+        gameState.profiles[profileId] = {
+            name: `WILD ${monsterName} (RG-${rg})`,
             level: rg,
             cardBox: [],
-            team: ['stemmy', null, null],
-            party: [wildStemmy]
+            team: [monsterId, null, null],
+            party: [wildMonster]
         };
+
+        // Populate Card Box and Auto-Equip based on RG level
+        syncCardsToLevel(profileId, rg);
+        executeQuickEquip('balanced', profileId, 0);
 
         catalystState.battleOpponentId = profileId;
         if (typeof Overworld !== 'undefined') Overworld.stopLoop();
@@ -697,6 +808,53 @@ function setupEventListeners() {
                 party: [createMonsterInstance(weakerType)]
             };
             profileId = 'jenzi_tutorial';
+        } else if (npcId === 'jenzi_atrium') {
+            gameState.profiles['jenzi_atrium'] = {
+                name: 'JENZI',
+                level: 5,
+                cardBox: [],
+                team: ['stemmy', null, null],
+                party: [createMonsterInstance('stemmy')]
+            };
+
+            // Generate basic RG-5 cards for Jenzi
+            syncCardsToLevel('jenzi_atrium', 5);
+            executeQuickEquip('balanced', 'jenzi_atrium', 0);
+
+            profileId = 'jenzi_atrium';
+        } else if (npcId === 'lana') {
+            gameState.profiles['lana_boss'] = {
+                name: 'LANA',
+                level: 10,
+                cardBox: [],
+                team: ['cambihil', null, null],
+                party: [createMonsterInstance('cambihil')]
+            };
+            syncCardsToLevel('lana_boss', 10);
+            executeQuickEquip('survival', 'lana_boss', 0);
+            profileId = 'lana_boss';
+        } else if (npcId === 'dyzes') {
+            gameState.profiles['dyzes_boss'] = {
+                name: 'DYZES',
+                level: 15,
+                cardBox: [],
+                team: ['nitrophil', null, null],
+                party: [createMonsterInstance('nitrophil')]
+            };
+            syncCardsToLevel('dyzes_boss', 15);
+            executeQuickEquip('balanced', 'dyzes_boss', 0);
+            profileId = 'dyzes_boss';
+        } else if (npcId === 'capsain') {
+            gameState.profiles['capsain_boss'] = {
+                name: 'CAPSAIN',
+                level: 20,
+                cardBox: [],
+                team: ['lydrosome', null, null],
+                party: [createMonsterInstance('lydrosome')]
+            };
+            syncCardsToLevel('capsain_boss', 20);
+            executeQuickEquip('balanced', 'capsain_boss', 0);
+            profileId = 'capsain_boss';
         } else if (npcId.startsWith('npc_male')) {
             profileId = 'npc01';
         } else if (npcId.startsWith('npc_female')) {
@@ -713,25 +871,37 @@ function setupEventListeners() {
 
     /* --- PRE-BATTLE SEQUENCE LOGIC --- */
     const PRE_BATTLE_DATA = {
-        'jenzi_tutorial': { art: 'Character_FullArt_Jenzi', dialogue: "Square up, Intern! Let's see what you've got." },
+        'jenzi_tutorial': { art: 'Character_FullArt_Jenzi', dialogue: "Pelli-it up, Intern! Let's see what you've got." },
+        'jenzi_atrium': { art: 'Character_FullArt_Jenzi', dialogue: "Pelli-it up!" },
         'player': { art: 'Character_FullArt_Rival', dialogue: "Analysis commencing. Do not disappoint." },
         'opponent': { art: 'Character_FullArt_Rival', dialogue: "Analysis commencing. Do not disappoint." },
         'lana': { art: 'Character_FullArt_Lana', dialogue: "Prepare for a lesson in botanical efficiency!" },
+        'lana_boss': { art: 'Character_FullArt_Lana', dialogue: "Prepare for a lesson in botanical efficiency!" },
         'dyzes': { art: 'Character_FullArt_Dyzes', dialogue: "Let's see if your tactical vibe is strong enough." },
+        'dyzes_boss': { art: 'Character_FullArt_Dyzes', dialogue: "Let's see if your tactical vibe is strong enough." },
         'capsain': { art: 'Character_FullArt_Director', dialogue: "I won't have my legacy tarnished by some spicy gossip!" },
-        'jenzi': { art: 'Character_FullArt_Jenzi', dialogue: "Square up, Intern! Let's see what you've got." },
+        'capsain_boss': { art: 'Character_FullArt_Director', dialogue: "I won't have my legacy tarnished by some spicy gossip!" },
+        'jenzi': { art: 'Character_FullArt_Jenzi', dialogue: "Pelli-it up, Intern! Let's see what you've got." },
         'npc01': { art: 'Character_FullArt_NPC_Male', dialogue: "Commencing standard engagement protocol." },
         'npc02': { art: 'Character_FullArt_NPC_Female', dialogue: "Bio-signature match confirmed. Initiating test." },
         'npc03': { art: 'Character_FullArt_NPC_Male', dialogue: "Deploying tactical cells. Readiness check." },
-        'stemmy_wild': { art: 'Cell_FullArt_Stemmy', dialogue: "*A wild cell aggressively bumps into you!*" }
+        'stemmy_wild': { art: 'Cell_FullArt_Stemmy', dialogue: "*A wild Stemmy aggressively bumps into you!*" },
+        'nitrophil_wild': { art: 'Cell_FullArt_Nitrophil', dialogue: "*A wild Nitrophil aggressively bumps into you!*" },
+        'cambihil_wild': { art: 'Cell_FullArt_Cambihil', dialogue: "*A wild Cambihil aggressively bumps into you!*" },
+        'lydrosome_wild': { art: 'Cell_FullArt_Lydrosome', dialogue: "*A wild Lydrosome aggressively bumps into you!*" }
     };
 
     let preBattleSequenceActive = false;
     let preBattleCurrentStep = 0;
+    let preBattleIsAdvancing = false;
 
     function startPreBattleSequence(opponentProfileId) {
         preBattleSequenceActive = true;
         preBattleCurrentStep = 0;
+        preBattleIsAdvancing = true; // Hard lock for 300ms at sequence start
+        lastPreBattleInput = Date.now();
+        setTimeout(() => { preBattleIsAdvancing = false; }, 300);
+        catalystState.battleOpponentId = opponentProfileId;
 
         // Auto-Equip Boss Tactics if available
         if (NPC_PRESETS[opponentProfileId]) {
@@ -782,7 +952,8 @@ function setupEventListeners() {
     }
 
     function advancePreBattleSequence() {
-        if (!preBattleSequenceActive) return;
+        if (!preBattleSequenceActive || preBattleIsAdvancing) return;
+        preBattleIsAdvancing = true;
 
         const opponentProfileId = catalystState.battleOpponentId || 'opponent';
         const opponent = gameState.profiles[opponentProfileId] || gameState.profiles.opponent;
@@ -795,9 +966,11 @@ function setupEventListeners() {
             // Show Dialogue
             const textEl = document.getElementById('pre-battle-text');
             if (textEl) textEl.innerText = `"${data.dialogue}"`;
+            setTimeout(() => { preBattleIsAdvancing = false; }, 150); // 150ms lockout between steps
         } else if (preBattleCurrentStep === 2) {
             // Trigger Bio-Scan and Laser Wipe
             triggerBioScanTransition();
+            // preBattleIsAdvancing remains true during full screen transition
         }
     }
 
@@ -838,14 +1011,22 @@ function setupEventListeners() {
     }
 
     // Global listeners for advancing pre-battle dialogue
+    let lastPreBattleInput = 0;
     document.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'f' && e.repeat) return;
         if (preBattleSequenceActive && (e.key === 'f' || e.key === 'F' || e.key === 'Enter' || e.key === ' ')) {
+            const now = Date.now();
+            if (now - lastPreBattleInput < 300) return;
+            lastPreBattleInput = now;
             advancePreBattleSequence();
         }
     });
 
     document.addEventListener('mousedown', () => {
         if (preBattleSequenceActive) {
+            const now = Date.now();
+            if (now - lastPreBattleInput < 300) return;
+            lastPreBattleInput = now;
             advancePreBattleSequence();
         }
     });
@@ -861,43 +1042,66 @@ function setupEventListeners() {
     });
 
     document.getElementById('btn-continue-overworld')?.addEventListener('click', () => {
+        const btn = document.getElementById('btn-continue-overworld');
+        const isRecovery = btn.innerText === 'RECOVER AT LOBBY';
+
         document.getElementById('game-over-overlay').classList.add('hidden');
         showScreen('screen-overworld');
 
         if (typeof Overworld !== 'undefined') {
             // Reset any stuck flags (movement, dialogue) before resuming
             Overworld.resetStates();
+
+            if (isRecovery) {
+                // Faint System: Set party to 1 HP and teleport to lobby
+                gameState.profiles.player.party.forEach(mon => {
+                    if (mon) mon.currentHp = 1;
+                });
+
+                // --- CLEANUP WILD SPAWNER ---
+                if (catalystState.battleOpponentId && catalystState.battleOpponentId.endsWith('_wild')) {
+                    Overworld.spawner.despawnCurrent();
+                }
+
+                // Force load lobby and set safe position (center-ish)
+                Overworld.renderMap('lobby', true, 5, 5);
+                gameState.playerPos = { x: 5, y: 5 }; // Safe entrance coords
+                Overworld.playerX = 5;
+                Overworld.playerY = 5;
+
+                btn.innerText = 'CONTINUE TO GAME'; // Reset for next time
+            } else {
+                // --- WILD ENCOUNTER CLEANUP ---
+                if (catalystState.battleOpponentId && catalystState.battleOpponentId.endsWith('_wild')) {
+                    Overworld.spawner.despawnCurrent();
+                }
+            }
+
             Overworld.startLoop();
+            
 
             // --- STORY HOOK: Jenzi post-battle dialogue ---
-            // Don't re-render map here — it breaks the player sprite.
-            // Instead inject the Log item directly into zone objects if not yet present.
-            if (window.gameState.storyFlags.jenziFirstBattleDone && !window.gameState.logs.includes('001')) {
+            const opponentId = catalystState.battleOpponentId;
+            if ((window.gameState.storyFlags.jenziFirstBattleDone || opponentId === 'jenzi_tutorial') && !window.gameState.logs.includes('Log001')) {
+                // Hide Log #001 in the Red Specimen Tank instead of spawning on floor
                 const lobbyZone = Overworld.zones['lobby'];
-                const hasLog = lobbyZone.objects.some(o => o.id === 'log_001');
-                if (!hasLog) {
-                    lobbyZone.objects.push({ id: 'log_001', x: 5, y: 3, type: 'prop', name: 'Log #001', hiddenLogId: '001', customSprite: 'KeyItem-DataPad' });
-                    // Inject only the new item element (no full map re-render)
-                    const mapEl = document.getElementById('overworld-map');
-                    if (mapEl) {
-                        const el = document.createElement('div');
-                        el.id = 'npc-log_001';
-                        el.classList.add('world-object', 'prop', 'KeyItem-DataPad');
-                        el.style.width = `${Overworld.tileSize}px`;
-                        el.style.height = `${Overworld.tileSize}px`;
-                        el.style.left = `${5 * Overworld.tileSize}px`;
-                        el.style.top = `${3 * Overworld.tileSize}px`;
-                        el.style.zIndex = 13;
-                        el.style.position = 'absolute';
-                        mapEl.appendChild(el);
-                    }
+                
+                // DEFENSIVE: Ensure the old floor-log object is removed if it persisted from a previous render
+                lobbyZone.objects = lobbyZone.objects.filter(obj => obj.id !== 'log_001');
+
+                const redTank = lobbyZone.objects.find(o => o.id === 'f23_lob_br');
+                if (redTank && !redTank.hiddenLogId) {
+                    redTank.hiddenLogId = 'Log001';
                 }
 
                 // Trigger Jenzi's post-battle dialogue
                 const jenzi = Overworld.zones['lobby'].objects.find(o => o.id === 'jenzi');
                 if (jenzi) {
                     setTimeout(() => {
-                        Overworld.startNPCInteraction(jenzi);
+                        // Check if dialogue is already somehow active before triggering again
+                        if (typeof Overworld !== 'undefined' && !Overworld.isDialogueActive) {
+                            Overworld.startNPCInteraction(jenzi);
+                        }
                     }, 300);
                 }
             }
@@ -927,7 +1131,7 @@ function setupEventListeners() {
         invNav.active = true;
         invNav.tabIndex = 3; // Default to Catalyst Storage
         invNav.itemIndex = 0;
-        updateInvNav();
+        updateInvNav(true);
         showScreen('screen-inventory');
     });
 
@@ -1013,6 +1217,12 @@ function setupEventListeners() {
         Overworld.isPaused = false;
     });
 
+    document.getElementById('id-inventory-main-menu')?.addEventListener('click', () => {
+        document.getElementById('screen-inventory').classList.add('hidden');
+        invNav.active = false;
+        showScreen('screen-main-menu');
+    });
+
     // Card Preview Controls
     const previewOverlay = document.getElementById('card-preview-overlay');
     const previewImg = document.getElementById('preview-image');
@@ -1036,7 +1246,7 @@ function setupEventListeners() {
         btn.addEventListener('click', () => {
             invNav.tabIndex = idx;
             invNav.itemIndex = 0;
-            updateInvNav();
+            updateInvNav(true); // Force detail update on tab click
         });
     });
 
@@ -1044,16 +1254,48 @@ function setupEventListeners() {
     window.addEventListener('datalog-found', (e) => {
         const logId = e.detail.id;
         console.log(`Main UI: Registering found log ${logId}`);
+
+        // Add to unseen if not already seen
+        if (gameState.unseenLogs && !gameState.unseenLogs.includes(logId)) {
+            gameState.unseenLogs.push(logId);
+        }
+
         // This will update the log count in the overworld UI
-        const countEl = document.getElementById('log-count');
-        if (countEl) countEl.innerText = Overworld.logsCollected.length;
+        if (window.updateResourceHUD) window.updateResourceHUD();
     });
 
 
     window.addEventListener('keydown', (e) => {
         const key = e.key.toLowerCase();
+        if (key === 'f' && e.repeat) return; // Prevent spamming actions by holding F
         const inventoryOverlay = document.getElementById('screen-inventory');
         const isInvOpen = inventoryOverlay && !inventoryOverlay.classList.contains('hidden');
+        const incubatorOverlay = document.getElementById('screen-incubator-menu');
+        const isIncubatorOpen = incubatorOverlay && !incubatorOverlay.classList.contains('hidden');
+
+        if (isIncubatorOpen) {
+            const buttons = incubatorOverlay.querySelectorAll('.btn-neon');
+            if (key === 'w') {
+                e.preventDefault();
+                window.selectedIncubatorIndex = (window.selectedIncubatorIndex - 1 + buttons.length) % buttons.length;
+                updateIncubatorSelection();
+                return;
+            }
+            if (key === 's') {
+                e.preventDefault();
+                window.selectedIncubatorIndex = (window.selectedIncubatorIndex + 1) % buttons.length;
+                updateIncubatorSelection();
+                return;
+            }
+            if (key === 'f') {
+                e.preventDefault();
+                const selectedBtn = buttons[window.selectedIncubatorIndex];
+                if (selectedBtn && !selectedBtn.classList.contains('disabled')) {
+                    selectedBtn.click();
+                }
+                return;
+            }
+        }
 
         if (key === 'escape') {
             const previewOverlay = document.getElementById('card-preview-overlay');
@@ -1066,25 +1308,39 @@ function setupEventListeners() {
             const inventoryOverlay = document.getElementById('screen-inventory');
             const battleScreen = document.getElementById('screen-battle');
 
-            if (rulebookScreen && !rulebookScreen.classList.contains('hidden')) {
-                showScreen(previousScreen);
-                return;
-            }
             if (isInvOpen) {
+                // If in inventory, ESC returns to overworld
                 inventoryOverlay.classList.add('hidden');
                 invNav.active = false;
                 Overworld.isPaused = false;
                 return;
             }
+            if (rulebookScreen && !rulebookScreen.classList.contains('hidden')) {
+                // Return to whatever was before rulebook
+                showScreen(previousScreen || 'screen-overworld');
+                return;
+            }
             if (battleScreen && !battleScreen.classList.contains('hidden')) {
-                showScreen(previousScreen);
+                // Return to main menu or overworld from battle result/pause if implemented
+                showScreen(previousScreen || 'screen-main-menu');
                 return;
             }
         }
 
         if (key === 'r') {
             const isOverworld = !document.getElementById('screen-overworld').classList.contains('hidden');
-            if (isOverworld && inventoryOverlay) {
+            
+            // Prevent opening inventory if another interactive overlay is open
+            const activeOverlays = [
+                'screen-shop', 'screen-synthesis', 'screen-bio-extract', 
+                'screen-incubator-menu', 'screen-incubator-heal'
+            ];
+            const isAnyOtherMenuOpen = activeOverlays.some(id => {
+                const el = document.getElementById(id);
+                return el && !el.classList.contains('hidden');
+            });
+
+            if (isOverworld && inventoryOverlay && !isAnyOtherMenuOpen) {
                 if (!isInvOpen) {
                     renderInventory();
                     inventoryOverlay.classList.remove('hidden');
@@ -1092,7 +1348,7 @@ function setupEventListeners() {
                     invNav.tabIndex = 0;
                     invNav.itemIndex = 0;
                     Overworld.isPaused = true;
-                    updateInvNav();
+                    updateInvNav(true);
                 } else {
                     inventoryOverlay.classList.add('hidden');
                     invNav.active = false;
@@ -1104,21 +1360,20 @@ function setupEventListeners() {
 
         // Inventory Specific Navigation
         if (invNav.active && isInvOpen) {
-            const tabs = ['logs', 'items', 'status', 'catalyst'];
-            const activeTab = document.getElementById(`tab-${tabs[invNav.tabIndex]}`);
+            const activeTab = document.getElementById(`tab-${INVENTORY_TABS[invNav.tabIndex]}`);
 
             // Re-fetch items if not catalyst, otherwise items is null which is fine since catalyst handles its own clicks
             let items = null;
-            if (tabs[invNav.tabIndex] !== 'catalyst') {
+            if (INVENTORY_TABS[invNav.tabIndex] !== 'catalyst') {
                 items = activeTab.querySelectorAll('.log-item, .key-item-slot, .status-item');
             }
 
             if (key === 'q') { // Tab Left
-                invNav.tabIndex = (invNav.tabIndex - 1 + tabs.length) % tabs.length;
+                invNav.tabIndex = (invNav.tabIndex - 1 + INVENTORY_TABS.length) % INVENTORY_TABS.length;
                 invNav.itemIndex = 0;
                 updateInvNav(true);
             } else if (key === 'e') { // Tab Right
-                invNav.tabIndex = (invNav.tabIndex + 1) % tabs.length;
+                invNav.tabIndex = (invNav.tabIndex + 1) % INVENTORY_TABS.length;
                 invNav.itemIndex = 0;
                 updateInvNav(true);
             } else if (key === 'w' || key === 'arrowup' || key === 'a' || key === 'arrowleft') {
@@ -1143,8 +1398,54 @@ function setupEventListeners() {
             const isBattleOpen = battleScreen && !battleScreen.classList.contains('hidden');
 
             if (key === 'f' && isBattleOpen && !gameState.isProcessing) {
+                // Handle Game Over / Victory Continue
+                const gameOverBtn = document.getElementById('btn-continue-overworld');
+                const restartBtn = document.getElementById('btn-restart');
+                const isGameOverVisible = !document.getElementById('game-over-overlay').classList.contains('hidden');
+
+                if (isGameOverVisible) {
+                    if (gameOverBtn && !gameOverBtn.classList.contains('hidden')) {
+                        gameOverBtn.click();
+                        return;
+                    }
+                    if (restartBtn && !restartBtn.classList.contains('hidden')) {
+                        restartBtn.click();
+                        return;
+                    }
+                }
+
                 if (gameState.phase === 'NODE_SELECTION' || gameState.phase === 'MOVE_SELECTION') {
                     triggerRandomPlayerNodeSelection();
+                }
+            }
+
+            // Universal Continue for Pickup/Dialogues
+            if (key === 'f') {
+                const pickupBtn = document.getElementById('btn-pickup-continue');
+                const isPickupVisible = pickupBtn && !document.getElementById('item-pickup-modal').classList.contains('hidden');
+                if (isPickupVisible) {
+                    e.stopImmediatePropagation();
+                    pickupBtn.click();
+                    return;
+                }
+
+                // Treat F as generic "Back/Continue" for modals/screens
+                const invBtn = document.getElementById('btn-inventory-back');
+                if (isInvOpen && invBtn) {
+                    invBtn.click();
+                    return;
+                }
+
+                const settingsScreen = document.getElementById('screen-settings');
+                if (settingsScreen && !settingsScreen.classList.contains('hidden')) {
+                    document.getElementById('btn-settings-back')?.click();
+                    return;
+                }
+
+                const rulebookScreen = document.getElementById('screen-rulebook');
+                if (rulebookScreen && !rulebookScreen.classList.contains('hidden')) {
+                    document.getElementById('btn-rulebook-back')?.click();
+                    return;
                 }
             }
         }
@@ -1251,14 +1552,24 @@ function setupEventListeners() {
     });
 
     // Main Debug Mode Toggle
-    document.getElementById('toggle-debug-mode')?.addEventListener('change', (e) => {
-        applyDebugMode(e.target.checked);
-        // Refresh UI state
+    document.getElementById('toggle-skip-tutorial')?.addEventListener('change', (e) => {
+        applySkipTutorial(e.target.checked);
+        resetGame();
         renderInventory();
         if (!document.getElementById('screen-overworld').classList.contains('hidden')) {
             Overworld.renderMap();
         }
-        addLog(`DEBUG MODE: ${e.target.checked ? 'ENABLED' : 'DISABLED'}.`);
+        addLog(`SKIP TUTORIAL: ${e.target.checked ? 'ENABLED' : 'DISABLED'}.`);
+    });
+
+    document.getElementById('toggle-full-cell-debug')?.addEventListener('change', (e) => {
+        applyFullCellDebug(e.target.checked);
+        resetGame();
+        renderInventory();
+        if (!document.getElementById('screen-overworld').classList.contains('hidden')) {
+            Overworld.renderMap();
+        }
+        addLog(`FULL CELL DEBUG: ${e.target.checked ? 'ENABLED' : 'DISABLED'}.`);
     });
 
     // RG Debug Listeners
@@ -1288,42 +1599,35 @@ function setupEventListeners() {
         }
     });
 
-    document.getElementById('btn-debug-collect-all')?.addEventListener('click', () => {
-        const allLogIds = [
-            '001', '002', '003', '004', '005', '006', '007', '008', '009', '010',
-            '011', '012', '013', '014', '015', '016', '017', '018', '019', '020', '999'
-        ];
-        allLogIds.forEach(id => {
-            if (!Overworld.logsCollected.includes(id)) {
-                Overworld.logsCollected.push(id);
-            }
-        });
+    document.getElementById('toggle-debug-all-logs')?.addEventListener('change', (e) => {
+        gameState.debugAllLogs = e.target.checked;
+        if (typeof Overworld !== 'undefined' && Overworld.refreshLogs) {
+            Overworld.refreshLogs();
+        }
         renderInventory();
-        const countEl = document.getElementById('log-count');
-        if (countEl) countEl.innerText = Overworld.logsCollected.length;
-        addLog("DEBUG: All DataLogs collected.");
+        addLog(`DEBUG: All DataLogs ${gameState.debugAllLogs ? 'visible' : 'reset to collected'}.`);
     });
 
-    document.getElementById('btn-debug-clear-all')?.addEventListener('click', () => {
-        Overworld.logsCollected = [];
+    document.getElementById('toggle-debug-all-items')?.addEventListener('change', (e) => {
+        gameState.debugAllItems = e.target.checked;
         renderInventory();
-        const countEl = document.getElementById('log-count');
-        if (countEl) countEl.innerText = 0;
-        addLog("DEBUG: DataLog collection cleared.");
+        addLog(`DEBUG: All Key Items ${gameState.debugAllItems ? 'visible' : 'reset to collected'}.`);
     });
 
     document.getElementById('toggle-debug-unlock-doors')?.addEventListener('change', (e) => {
         const isUnlocked = e.target.checked;
-        gameState.storyFlags.jenziAtriumUnlocked = isUnlocked;
-        gameState.storyFlags.botanicSectorUnlocked = isUnlocked;
-        gameState.storyFlags.humanWardUnlocked = isUnlocked;
-        gameState.storyFlags.executiveSuiteUnlocked = isUnlocked;
-        gameState.storyFlags.oldLabUnlocked = isUnlocked;
+        gameState.debugUnlockDoors = isUnlocked; // Keep sync for engine checks
+        const flags = gameState.storyFlags;
+        flags.jenziAtriumUnlocked = isUnlocked;
+        flags.botanicSectorUnlocked = isUnlocked;
+        flags.humanWardUnlocked = isUnlocked;
+        flags.executiveSuiteUnlocked = isUnlocked;
+        flags.oldLabUnlocked = isUnlocked;
 
         if (!document.getElementById('screen-overworld').classList.contains('hidden')) {
             Overworld.renderMap();
-            addLog(`DEBUG: All doors ${isUnlocked ? 'UNLOCKED' : 'RESET to progress'}.`);
         }
+        addLog(`DEBUG: All doors ${isUnlocked ? 'UNLOCKED' : 'RESET to progress'}.`);
     });
 
     // --- ENCOUNTER BUILDER LOGIC ---
@@ -1635,7 +1939,7 @@ function addLog(msg) {
     const logContainer = document.getElementById('battle-log');
     if (!logContainer) return;
     battleLogHistory.push(msg);
-    if (battleLogHistory.length > 3) battleLogHistory.shift();
+    if (battleLogHistory.length > 4) battleLogHistory.shift();
     renderLog();
 }
 
@@ -1808,7 +2112,7 @@ function updateUI() {
     setSafe('.player-display .name-val', 'textContent', gameState.player.name);
     setSafe('#player-rg', 'textContent', `RG-${gameState.playerLevel}`);
     setSafe('.enemy-display .name-val', 'textContent', gameState.enemy.name);
-    setSafe('#enemy-rg', 'textContent', `RG-${gameState.enemyLevel || 1}`);
+    setSafe('#enemy-rg', 'textContent', `RG-${gameState.enemyLevel}`);
     const pLayer = document.querySelector('.player-display .monster-float-layer');
     const pImg = document.querySelector('.player-display .monster-portrait');
     const pNameRaw = gameState.player.name.toLowerCase();
@@ -1821,7 +2125,7 @@ function updateUI() {
     if (pLayer) pLayer.classList.toggle('anim-attacker-float', gameState.currentTurn === 'PLAYER');
 
     // Enemy PP
-    const eStats = getModifiedStats(gameState.enemy, gameState.enemyLevel || 1);
+    const eStats = getModifiedStats(gameState.enemy, gameState.enemyLevel);
     const ePP = gameState.enemy.pp;
     const eMax = eStats.maxPp;
     const eIsLysis = ePP < 0;
@@ -2063,8 +2367,8 @@ function renderInventory() {
     if (!logList || !itemGrid || !statusList) return;
 
     // Helper to update the detail panel
-    const updateDetail = (title, desc, imgSrc) => {
-        if (detailTitle) detailTitle.innerText = title;
+    const updateDetail = (title, desc, imgSrc, statsGridHtml = "") => {
+        if (detailTitle) detailTitle.innerHTML = title;
         if (detailDesc) detailDesc.innerText = desc;
         const cardContainer = detailCard ? detailCard.closest('.detail-card-container') : null;
         if (imgSrc) {
@@ -2076,40 +2380,31 @@ function renderInventory() {
         } else {
             if (cardContainer) cardContainer.style.display = 'none';
         }
-    };
 
-    // DataLog Entries (from story_lore.md)
-    const dataLogs = [
-        { id: '001', tag: 'HISTORY', title: 'Mission Statement', text: "The Odd Labs was founded on the belief that the microscopic world holds the cure for the macro-world. We heal the earth by healing the cell." },
-        { id: '002', tag: 'FLUFF', title: 'The Coffee Incident', text: "Someone left a half-empty mug in the incubator. It has grown a fuzzy purple mold. It isn't sentient, but it did try to eat my pen." },
-        { id: '003', tag: 'INFO', title: 'Security Protocols', text: "Entrance gates now require a valid Bio-Signature match. Unregistered interns will be teased by Jenzi until they cry. - Management." },
-        { id: '004', tag: 'TEASE', title: 'Missing Footage', text: "Automatic backup failed during the '82 Incident. Exactly 4 minutes of footage are missing from the central hub. Capsain claims it was 'ozone interference'." },
-        { id: '005', tag: 'FUN', title: 'Noodle Tuesday', text: "Cafeteria Update: Noodle Tuesday is now the highest energy-consumption day in the lab. Director Capsain was seen carrying 12 packs of 'Inferno' brand." },
-        { id: '006', tag: 'INFO', title: 'Botanic Breakthrough', text: "Lana successfully integrated chlorophyll into a fibroblast today. The resulting 'Cambihil' is incredibly stable." },
-        { id: '007', tag: 'TEASE', title: "Lana's Complaint", text: "The Director is spending far too much time in the maintenance closet of Sector 4. He brings a bowl of noodles in there every day. Sus." },
-        { id: '008', tag: 'FUN', title: 'Photosynthesis Party', text: "Cambihils actually grow 15% faster when exposed to high-tempo music. Lana hates it, but the data doesn't lie." },
-        { id: '009', tag: 'TEASE', title: 'The Spicy Aroma', text: "Lana noted a 'pungent, peppery smell' coming from the vents near the Old Lab wing. She logged it as 'botanical mutation fumes'." },
-        { id: '010', tag: 'INFO', title: 'Private Key Log', text: "Lana changed the lock on her private storage. Hint: It's the same day she first successfully grew a Cell. (Is she hiding something? - Anon)." },
-        { id: '011', tag: 'INFO', title: "Dyzes' Observations", text: "Scientist Dyzes reports that the 'Lydrosome' mutation shows 99% tissue compatibility with the human host." },
-        { id: '012', tag: 'TEASE', title: 'Protein Analysis', text: "Looking at the 'mutation' under zoom. These aren't radiation burns. These are protein capsicum interactions. Is that a chili seed?" },
-        { id: '013', tag: 'FUN', title: 'The Chill Factor', text: "Observation on Nitrophil: For a Thermogenic Cell it is remarkably laid back. We've officially dubbed it the 'Chill-y' cell." },
-        { id: '014', tag: 'TEASE', title: 'Point Zero', text: "Dyzes found a data fragment mentioning 'Point Zero'. It's a location not listed in the current blueprints. Capsain deleted the rest." },
-        { id: '015', tag: 'INFO', title: 'Cellular Harmony', text: "Dyzes believes the Cells are actually trying to communicate. He spent two hours talking to a Lydrosome today. It waved back." },
-        { id: '016', tag: 'FUN', title: 'Noodle Review (Draft)', text: "User: Capsain82. Review: Inferno Brand Chili Sauce. Rating: 5/5. Potency is perfect. One drop fell in workspace—hope nobody noticed." },
-        { id: '017', tag: 'TEASE', title: "Official '82 Report", text: "Official Cause: Faulty reactor shield. Note: Clean-up crew reported a 'spicy aroma'. Logged as 'oxidized metal ozone'." },
-        { id: '018', tag: 'FLUFF', title: 'Logistics Update', text: "Monthly Order: 1 Case of Industrial-Strength Antacid. Priority for the Director's Office." },
-        { id: '019', tag: 'TEASE', title: "Director's Secret Folder", text: "ACCESS DENIED. Folder Name: [Petri Dish #0 - My Little Accident]. Password hint: What makes everything better? (Spices?)" },
-        { id: '020', tag: 'CLIMAX', title: "The Director's Private Note", text: "Origin is now 15cm. Its orange glow is getting brighter. If they ever find out the project was born from a noodle accident, I'm ruined." },
-        { id: '999', tag: 'SECRET', title: 'The Burden of Pride', text: "I spent an hour today just talking to Origin. I have to shout and complain about 'monstrous anomalies' so the board doesn't suspect. But here... I wish I could just tell everyone. I'm so sorry, little buddy.", secret: true }
-    ];
+        const statsContainer = document.getElementById('inventory-detail-stats');
+        if (statsContainer) {
+            statsContainer.innerHTML = statsGridHtml;
+            statsContainer.style.display = statsGridHtml ? 'grid' : 'none';
+        }
+    };
 
     // 1. Populate Logs (Conditional display)
     logList.innerHTML = '';
 
-    // Filter logs: In DEBUG_MODE, show all. In Normal, show only collected.
-    const displayLogs = DEBUG_MODE
-        ? dataLogs
-        : dataLogs.filter(log => Overworld.logsCollected.includes(log.id));
+    // Filter logs: In FULL_CELL_DEBUG or debugAllLogs, show all. In Normal, show only collected.
+    let displayLogs = (FULL_CELL_DEBUG || gameState.debugAllLogs)
+        ? [...DATA_LOGS]
+        : DATA_LOGS.filter(log => Overworld.logsCollected.includes(log.id));
+
+    // AUTO-SORT: Always sort by log number numerically
+    displayLogs.sort((a, b) => {
+        const numA = parseInt(a.id.replace(/\D/g, '')) || 0;
+        const numB = parseInt(b.id.replace(/\D/g, '')) || 0;
+        return numA - numB;
+    });
+
+    // Tracking for selection timer
+    let selectTimer = null;
 
     if (displayLogs.length === 0) {
         const emptyMsg = document.createElement('div');
@@ -2118,24 +2413,48 @@ function renderInventory() {
         emptyMsg.innerHTML = '<span class="log-status" style="opacity: 0.5;">No logs. Either you just started,<br>or you\'re actively avoiding knowledge.</span>';
         logList.appendChild(emptyMsg);
         // Empty state detail panel
-        if (detailTitle) detailTitle.innerText = 'NO DATA FOUND';
-        if (detailDesc) detailDesc.innerText = 'This unit has zero logs on record.\n\nProbably because someone forgot to save them. Or dropped them somewhere messy. Or both.';
+        if (detailTitle) detailTitle.innerText = 'DATABASE: NONE';
+        if (detailDesc) detailDesc.innerText = 'This unit has zero logs on record. Either you\'re a speedrunner, or you just don\'t like reading. But you need datalog to progress the game you know?\n\nGo talk to Jenzi? She seems to know everything (maybe too much).';
         const cardContainer = detailCard ? detailCard.closest('.detail-card-container') : null;
         if (cardContainer) cardContainer.style.display = 'none';
     } else {
         displayLogs.forEach((log, i) => {
-            const isFound = Overworld.logsCollected.includes(log.id);
+            const isCollected = Overworld.logsCollected.includes(log.id);
+            const isRevealed = isCollected || gameState.debugAllLogs;
+            const isNew = gameState.unseenLogs.includes(log.id);
+
             const item = document.createElement('div');
-            item.className = `log-item ${isFound ? '' : 'locked'} ${log.secret ? 'secret' : ''}`;
+            item.className = `log-item ${isRevealed ? '' : 'locked'} ${log.secret ? 'secret' : ''} ${isNew ? 'new' : ''}`;
             item.innerHTML = `
                 <span class="log-id">#${log.id}</span>
-                <span class="log-status">${isFound ? `[${log.tag}] ${log.title}` : 'ENCRYPTED DATA'}</span>
+                <span class="log-status">${isRevealed ? log.title : 'ENCRYPTED DATA'}</span>
             `;
+
+            const clearNewStatus = () => {
+                if (gameState.unseenLogs.includes(log.id)) {
+                    gameState.unseenLogs = gameState.unseenLogs.filter(id => id !== log.id);
+                    item.classList.remove('new');
+                    console.log(`Log ${log.id} marked as seen.`);
+                }
+            };
+
             item.onclick = () => {
                 invNav.itemIndex = i;
                 updateInvNav(false);
-                if (isFound) {
-                    updateDetail(`[${log.tag}] LOG #${log.id}: ${log.title}`, log.text, null);
+
+                // Clear any existing timer
+                if (selectTimer) {
+                    clearTimeout(selectTimer);
+                    selectTimer = null;
+                }
+
+                if (isRevealed) {
+                    updateDetail(`${log.id.toUpperCase()}:<br>${log.title}`, log.text, null);
+
+                    // Selection Timer: Clear 'new' indicator after 3 seconds of selection
+                    if (isNew) {
+                        selectTimer = setTimeout(clearNewStatus, 3000);
+                    }
                 } else {
                     updateDetail(`LOCKED LOG #${log.id}`, "DATA IS CURRENTLY ENCRYPTED. \n\nExplore furniture in the overworld to initialize decryption sequence for this memory fragment.", null);
                 }
@@ -2147,67 +2466,90 @@ function renderInventory() {
         const newestLog = displayLogs[displayLogs.length - 1];
         if (newestLog) {
             invNav.itemIndex = displayLogs.length - 1;
-            updateDetail(`[${newestLog.tag}] LOG #${newestLog.id}: ${newestLog.title}`, newestLog.text, null);
+            updateDetail(`${newestLog.id.toUpperCase()}:<br>${newestLog.title}`, newestLog.text, null);
             // Highlight the last item visually
             const lastItem = logList.lastElementChild;
-            if (lastItem) lastItem.classList.add('nav-selected');
-        }
-    }
-
-    // 2. Populate Key Items (Conditional display)
-    itemGrid.innerHTML = '';
-    const keyItems = [
-        { id: 'datapad', name: 'KeyItem-DataPad', desc: 'Mostly contains encrypted logs, but some files are just high-score records for \'Snake\'.', icon: 'data-pad', img: 'Card_Placeholder.png' },
-        { id: 'room_key', name: 'KeyItem-RoomKey', desc: 'A magnetic keycard. Smells like the Director\'s expensive cologne.', icon: 'room-key', img: 'Card_Placeholder.png' },
-        { id: 'sauce_bottle', name: 'KeyItem-SauceBottle', desc: 'Label: \'SUPERNOVA SAUCE\'. Scoville rating: YES. Lab-certified to burn through metal.', icon: 'sauce-bottle', img: 'Card_Placeholder.png' },
-        { id: 'card_stemmy', name: 'MONSTER CARD: STEMMY', desc: 'Tactical analysis of the undifferentiated stem cell. Essential for field research.', icon: 'card-stemmy', img: 'Card_Stemmy.png' }
-    ];
-
-    // Debug auto-populate
-    if (DEBUG_MODE) {
-        keyItems.forEach(k => {
-            if (!gameState.items.includes(k.id)) gameState.items.push(k.id);
-        });
-    }
-
-    // Determine what to show in the grid
-    // Determine what to show: In DEBUG show all key items. In Normal show only found ones + 1 extra placeholder.
-    const foundItems = keyItems.filter(item => gameState.items.includes(item.id));
-    let itemsToShow = DEBUG_MODE ? [...keyItems] : [...foundItems];
-
-    // Add exactly one placeholder if not everything is found (Normal Mode)
-    if (!DEBUG_MODE && itemsToShow.length < keyItems.length) {
-        itemsToShow.push({ isPlaceholder: true });
-    }
-
-
-    // Fill slots
-    itemsToShow.forEach((item, i) => {
-        const slot = document.createElement('div');
-        slot.className = 'key-item-slot';
-
-
-
-        if (item.isPlaceholder) {
-            slot.classList.add('empty-slot');
-            // Explicitly fixed size for internal circle to ensure it stays round
-            slot.innerHTML = `<div style="width: 25px; height: 25px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 50%; display: block; box-sizing: border-box;"></div>`;
-            slot.onclick = () => updateDetail("VACANT SLOT", "Maintain field operations to secure additional laboratory assets.", 'assets/images/Card_Placeholder.png');
-        } else {
-            const hasItem = gameState.items.includes(item.id);
-            if (hasItem) {
-                slot.innerHTML = `<div class="key-item-sprite ${item.icon}"></div>`;
-                slot.onclick = () => {
-                    invNav.itemIndex = i;
-                    updateInvNav(false);
-                    document.querySelectorAll('.key-item-slot').forEach(s => s.classList.remove('active'));
-                    slot.classList.add('active');
-                    updateDetail(item.name.toUpperCase(), item.desc, `assets/images/${item.img}`);
-                };
+            if (lastItem) {
+                lastItem.classList.add('nav-selected');
+                // If it's the auto-selected one and it's new, start the timer
+                if (gameState.unseenLogs.includes(newestLog.id)) {
+                    if (selectTimer) clearTimeout(selectTimer);
+                    selectTimer = setTimeout(() => {
+                        gameState.unseenLogs = gameState.unseenLogs.filter(id => id !== newestLog.id);
+                        lastItem.classList.remove('new');
+                        console.log(`Newest Log ${newestLog.id} marked as seen.`);
+                    }, 3000);
+                }
             }
         }
-        itemGrid.appendChild(slot);
-    });
+    }
+
+    // 2. Populate Items & Cards
+    const populateGrid = (gridId, filterFn) => {
+        const grid = document.getElementById(gridId);
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        const categoryItems = Object.entries(ITEM_PICKUP_DATA)
+            .filter(([id, data]) => data.type === 'item' && filterFn(id))
+            .map(([id, data]) => ({
+                id: id,
+                name: data.name,
+                desc: data.desc,
+                icon: data.icon || data.spriteClass,
+                img: data.previewImg || 'Card_Placeholder.png'
+            }));
+
+        const itemsInInventory = (SKIP_TUTORIAL || FULL_CELL_DEBUG || gameState.debugAllItems) ? categoryItems.map(i => i.id) : gameState.items;
+
+        // Group items and count them
+        const itemCounts = {};
+        itemsInInventory.forEach(id => {
+            if (categoryItems.some(i => i.id === id)) {
+                itemCounts[id] = (itemCounts[id] || 0) + 1;
+            }
+        });
+
+        const itemsToShow = Object.keys(itemCounts).map(id => {
+            const data = categoryItems.find(i => i.id === id);
+            return { ...data, count: itemCounts[id] };
+        });
+
+        if (!(SKIP_TUTORIAL || FULL_CELL_DEBUG) && itemsToShow.length < categoryItems.length) {
+            itemsToShow.push({ isPlaceholder: true });
+        }
+
+        itemsToShow.forEach((item, i) => {
+            const slot = document.createElement('div');
+            slot.className = 'key-item-slot';
+
+            if (item.isPlaceholder) {
+                slot.classList.add('empty-slot');
+                slot.innerHTML = `<div style="width: 25px; height: 25px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 50%; display: block; box-sizing: border-box;"></div>`;
+                slot.onclick = () => updateDetail("VACANT SLOT", "Maintain field operations to secure additional laboratory assets.", 'assets/images/Card_Placeholder.png');
+            } else {
+                const isSelectable = true; // Since we filtered foundItems above
+
+                if (isSelectable) {
+                    slot.innerHTML = `
+                        <div class="key-item-sprite ${item.icon}"></div>
+                        ${item.count > 1 ? `<div class="item-stack-count">x${item.count}</div>` : ''}
+                    `;
+                    slot.onclick = () => {
+                        invNav.itemIndex = i;
+                        updateInvNav(false);
+                        grid.querySelectorAll('.key-item-slot').forEach(s => s.classList.remove('active'));
+                        slot.classList.add('active');
+                        updateDetail(item.name.toUpperCase(), item.desc, item.img ? `assets/images/${item.img}` : 'assets/images/Card_Placeholder.png');
+                    };
+                }
+            }
+            grid.appendChild(slot);
+        });
+    };
+
+    populateGrid('inventory-item-grid', (id) => !id.includes('CARD'));
+    populateGrid('inventory-card-grid', (id) => id.includes('CARD'));
 
     // 3. Populate Cell Status
     statusList.innerHTML = '';
@@ -2240,23 +2582,88 @@ function renderInventory() {
             // Dynamically compute stats including any C-Cards equipped
             const stats = getModifiedStats(cell, playerLevel);
             const maxHp = stats.maxHp;
+            const maxPp = stats.maxPp;
 
             // Avoid NaN if maxHp is 0 somehow
             const hpPercent = maxHp > 0 ? (cell.hp / maxHp) * 100 : 0;
+            const ppPercent = maxPp > 0 ? (cell.pp / maxPp) * 100 : 0;
 
             const iconName = cell.name.charAt(0).toUpperCase() + cell.name.slice(1);
+            
+            // Efficiency Badge
+            const efficiencyHtml = `<div class="efficiency-badge">${cell.extractEfficiency || 1}</div>`;
+
+            // PP Color Logic synced with Battle UI
+            const isLysis = cell.pp < 0;
+            const ppFillPercent = Math.min(100, (Math.abs(cell.pp) / maxPp) * 100);
+            const ppColor = isLysis
+                ? 'var(--color-lysis)'
+                : `hsl(183, ${10 + 90 * (cell.pp / maxPp)}%, ${40 + 10 * (cell.pp / maxPp)}%)`;
+            const isOverload = cell.pp >= 10;
+
             item.innerHTML = `
                 <div class="status-cell-icon">
                     <img src="assets/images/${iconName}.png" alt="${cell.name}">
+                    ${efficiencyHtml}
                 </div>
                 <div class="status-info">
-                    <div class="status-name">${cell.name.toUpperCase()} <span style="font-size: 0.7rem; color: #fff; opacity: 0.8;">[RG ${cell.level || 1}]</span></div>
-                    <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); text-align: left;">HEALTH VITALITY: ${cell.hp}/${maxHp}</div>
-                    <div class="status-hp-bar">
-                        <div class="hp-fill" style="width: ${hpPercent}%"></div>
+                    <div class="status-name-row">
+                        <div class="status-name">${cell.name.toUpperCase()}</div>
+                    </div>
+                    <div class="status-main-row">
+                        <div class="status-bars">
+                            <div class="status-hp-bar">
+                                <span class="status-bar-label">HP ${cell.hp}/${maxHp}</span>
+                                <div class="hp-fill-bg"><div class="hp-fill" style="width: ${hpPercent}%"></div></div>
+                            </div>
+                            <div class="status-pp-bar">
+                                <span class="status-bar-label ${isLysis ? 'lysis' : ''}">PP ${cell.pp}/${maxPp}</span>
+                                <div class="pp-fill-bg"><div class="pp-fill ${isOverload ? 'overload' : ''}" style="width: ${ppFillPercent}%; background: ${ppColor};"></div></div>
+                            </div>
+                        </div>
+                        <div class="status-mini-stats">
+                            <div class="mini-stat">ATK ${stats.atk}</div>
+                            <div class="mini-stat">DEF ${stats.def}</div>
+                            <div class="mini-stat">SPD ${stats.spd}</div>
+                            <div class="mini-stat">CRIT ${stats.crit}%</div>
+                        </div>
                     </div>
                 </div>
             `;
+            
+            const fmt = (base, modified) => {
+                const b = base || modified;
+                const bonus = Math.round(modified - b);
+                return bonus > 0 ? `${modified} (${b}+${bonus})` : `${modified}`;
+            };
+
+            const statsGridHtml = `
+                <div class="stat-box">
+                    <span class="stat-label">HP</span>
+                    <span class="stat-value">${fmt(cell.maxHp, stats.maxHp)}</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">PP</span>
+                    <span class="stat-value">${fmt(cell.maxPp, stats.maxPp)}</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">ATK</span>
+                    <span class="stat-value">${fmt(cell.atk, stats.atk)}</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">DEF</span>
+                    <span class="stat-value">${fmt(cell.def, stats.def)}</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">SPD</span>
+                    <span class="stat-value">${fmt(cell.spd, stats.spd)}</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">CRIT</span>
+                    <span class="stat-value">${stats.crit}%</span>
+                </div>
+            `;
+
             item.onclick = () => {
                 invNav.itemIndex = index;
                 updateInvNav(false);
@@ -2266,7 +2673,7 @@ function renderInventory() {
 
                 const iconNameClick = cell.name.charAt(0).toUpperCase() + cell.name.slice(1);
                 const cardImg = `assets/images/Card_${iconNameClick}.png`;
-                updateDetail(cell.name.toUpperCase(), cell.lore, cardImg);
+                updateDetail(cell.name.toUpperCase(), cell.lore, cardImg, statsGridHtml);
             };
             statusList.appendChild(item);
         });
@@ -3100,7 +3507,44 @@ function updateOverworldEXPBar() {
     if (elMax) elMax.innerText = expNeededForLevel;
 }
 
-function showGameOver(isFailure) {
+function showGameOver(isFailure, forceOverlay = false) {
+    // Safeguard: Prevent multiple calls if already showing
+    if (!document.getElementById('game-over-overlay').classList.contains('hidden') && !forceOverlay) return;
+    
+    const opponentId = catalystState.battleOpponentId;
+    const isBossMatch = (opponentId === 'lana_boss' || opponentId === 'dyzes_boss' || opponentId === 'capsain_boss');
+
+    // Boss Battle Finalization: Trigger dialogue FIRST, then show panel (Victory or Loss)
+    if (isBossMatch && !forceOverlay) {
+        // Transition back to overworld first
+        showScreen('screen-overworld');
+        resetPositions(); 
+        if (typeof Overworld !== 'undefined') {
+            Overworld.startLoop();
+            
+            // Short delay to let the map render
+            setTimeout(() => {
+                const bossId = opponentId.replace('_boss', '');
+                const zone = Overworld.zones[Overworld.currentZone];
+                const npc = zone.objects.find(o => o.id === bossId);
+                
+                if (npc) {
+                    // Trigger "Won" dialogue if player lost (isFailure), otherwise "Defeated"
+                    Overworld.startNPCInteraction(npc, isFailure);
+                    
+                    // Hook into completion to show the actual panel
+                    Overworld.onDialogueComplete = () => {
+                        showGameOver(isFailure, true); // forceOverlay = true
+                    };
+                } else {
+                    // Fallback
+                    showGameOver(isFailure, true);
+                }
+            }, 600);
+        }
+        return;
+    }
+
     resetPositions(); // Clear state immediately when battle ends
     const overlay = document.getElementById('game-over-overlay');
     const title = document.getElementById('game-over-title');
@@ -3112,21 +3556,40 @@ function showGameOver(isFailure) {
     const expText = document.getElementById('battle-result-exp-text');
     const expFill = document.getElementById('battle-result-exp-fill');
 
-    const opponentId = catalystState.battleOpponentId;
     const isTutorialLoss = isFailure && opponentId === 'jenzi_tutorial';
 
     if (overlay && title && msg) {
         if (isFailure && !isTutorialLoss) {
-            title.innerHTML = `EXPERIMENT <span class="neon-text" style="color: #ff3333; text-shadow: 0 0 10px #ff3333;">FAILED</span>`;
-            msg.innerText = `Cellular entities neutralized. Re-evaluation required.`;
-            if (btnRestart) btnRestart.classList.remove('hidden');
+            title.innerHTML = `THE EXPERIMENT HAS <span class="neon-text" style="color: #ff3333; text-shadow: 0 0 10px #ff3333;">FAILED!</span>`;
+
+            const quirkyMessages = [
+                "Your cells need more love... and maybe some specialized vitamins.",
+                "Tactical extraction initiated. Your monster looks like it needs a long nap and a hug.",
+                "Experiment paused. Critical affection levels detected. Returning to base for snacks.",
+                "Self-care protocol activated. Even bio-engineered cells need a break sometimes.",
+                "Neural link stabilized. Let's get you back to the lab for some TLC and re-calibration."
+            ];
+            const randomMsg = quirkyMessages[Math.floor(Math.random() * quirkyMessages.length)];
+            msg.innerText = randomMsg;
+
+            if (btnRestart) btnRestart.classList.add('hidden'); // HIDDEN as per user request (use RECOVER instead)
             if (btnMainMenu) btnMainMenu.classList.remove('hidden');
-            if (btnContinue) btnContinue.classList.add('hidden');
-            if (expContainer) expContainer.classList.add('hidden');
+            if (btnContinue) {
+                btnContinue.classList.remove('hidden');
+                btnContinue.innerText = "RECOVER AT LOBBY";
+            }
         } else {
-            if (isTutorialLoss) {
-                title.innerHTML = `TEST <span class="neon-text" style="color: #ffcc00; text-shadow: 0 0 10px #ffcc00;">CONCLUDED</span>`;
+            if (isTutorialLoss || (opponentId === 'jenzi_tutorial' && !isFailure)) {
                 gameState.storyFlags.jenziFirstBattleDone = true;
+
+                // Tutorial recovery: Always full heal after first battle (win or loss)
+                applyBonuses(gameState.profiles.player.party, gameState.profiles.player.level, true);
+
+                if (isTutorialLoss) {
+                    title.innerHTML = `TEST <span class="neon-text" style="color: #ffcc00; text-shadow: 0 0 10px #ffcc00;">CONCLUDED</span>`;
+                } else {
+                    title.innerHTML = `EXPERIMENT <span class="neon-text">SUCCESSFUL</span>`;
+                }
             } else {
                 title.innerHTML = `EXPERIMENT <span class="neon-text">SUCCESSFUL</span>`;
             }
@@ -3134,133 +3597,143 @@ function showGameOver(isFailure) {
             if (btnRestart) btnRestart.classList.add('hidden');
             if (btnMainMenu) btnMainMenu.classList.add('hidden');
             if (btnContinue) btnContinue.classList.remove('hidden');
-            if (expContainer) expContainer.classList.remove('hidden');
+        }
 
-            // --- GRINDING & PROGRESSION REWARD LOGIC ---
-            const opponentId = catalystState.battleOpponentId;
-            let expEarned = 0;
-            let creditsEarned = 0;
-            const currentRg = gameState.profiles.player.level || 0;
-            const expBefore = gameState.exp || 0;
-            const expFloor = getExpReqForLevel(currentRg);
-            const expCap = getExpReqForLevel(currentRg + 1);
-            const initialExpRelative = Math.max(0, expBefore - expFloor);
-            const expNeededForLevel = expCap - expFloor;
-            const initialPercent = Math.max(0, Math.min((initialExpRelative / expNeededForLevel) * 100, 100));
+        // --- GRINDING & PROGRESSION REWARD LOGIC (Now Universal) ---
+        let expEarned = 0;
+        let creditsEarned = 0;
+        let biomassEarned = 0;
+        const currentRg = gameState.profiles.player.level || 0;
+        const playerRG = gameState.profiles.player.level || 0;
+        const rgScaling = 1 + (playerRG * 0.05);
 
-            if (opponentId === 'stemmy_wild') {
-                // Dynamic Scaling Rewards
-                expEarned = Math.round(10 * (1.0 + (currentRg * 0.5)));
-                creditsEarned = Math.round(10 * (1.0 + (currentRg * 0.5)));
-            } else if (opponentId === 'lana' || opponentId === 'dyzes' || opponentId === 'capsain') {
-                // Sector Boss
-                expEarned = 250;
-                creditsEarned = 250;
+        // Only calculate typical rewards if not a generic failure
+        if (!isFailure || isTutorialLoss) {
+            if (opponentId === 'jenzi_tutorial') {
+                if (isFailure) {
+                    expEarned = 12; // Balanced to half of tutorial win (25)
+                    creditsEarned = 20;
+                    biomassEarned = 2;
+                } else {
+                    expEarned = 25;
+                    creditsEarned = 50;
+                    biomassEarned = 5;
+                }
+            } else if (opponentId && opponentId.endsWith('_wild')) {
+                // Wild Encounter: 10-25 LC, 1-5 Biomass
+                const baseLC = 10 + Math.floor(Math.random() * 16);
+                const baseBM = 1 + Math.floor(Math.random() * 5);
+
+                creditsEarned = Math.round(baseLC * rgScaling);
+                biomassEarned = Math.round(baseBM * rgScaling);
+                expEarned = Math.round(15 * rgScaling);
+            } else if (opponentId === 'lana_boss' || opponentId === 'dyzes_boss' || opponentId === 'capsain_boss') {
+                // Sector Boss: 350 LC, 15 Biomass
+                creditsEarned = Math.round(350 * rgScaling);
+                biomassEarned = Math.round(15 * rgScaling);
+                expEarned = Math.round(250 * rgScaling);
+
+                if (opponentId === 'lana_boss') gameState.storyFlags.lanaBattleDone = true;
+                if (opponentId === 'dyzes_boss') gameState.storyFlags.dyzesBattleDone = true;
+                if (opponentId === 'capsain_boss') gameState.storyFlags.capsainBattleDone = true;
             } else if (opponentId === 'jenzi' || opponentId.startsWith('npc')) {
-                // Tutorial / Standard Generic NPC
-                expEarned = 50;
-                creditsEarned = 50;
-            } else if (opponentId === 'jenzi_tutorial') {
-                expEarned = 50;
-                creditsEarned = 50;
-                gameState.storyFlags.jenziFirstBattleDone = true;
+                // Human NPC: 120 LC, 9 Biomass
+                creditsEarned = Math.round(120 * rgScaling);
+                biomassEarned = Math.round(9 * rgScaling);
+                expEarned = Math.round(50 * rgScaling);
             } else {
-                // Fallback Opponent profile
-                expEarned = 50;
-                creditsEarned = 50;
+                // Fallback
+                creditsEarned = Math.round(50 * rgScaling);
+                biomassEarned = Math.round(5 * rgScaling);
+                expEarned = Math.round(25 * rgScaling);
             }
+        }
 
-            gameState.exp += expEarned;
-            gameState.credits += creditsEarned;
+        const expBefore = gameState.exp || 0;
+        const expFloor = getExpReqForLevel(currentRg);
+        const expCap = getExpReqForLevel(currentRg + 1);
+        const initialExpRelative = Math.max(0, expBefore - expFloor);
+        const expNeededForLevel = expCap - expFloor;
+        const initialPercent = Math.max(0, Math.min((initialExpRelative / expNeededForLevel) * 100, 100));
 
-            // Check Level Up!
-            let targetLevel = currentRg;
-            let levelUpText = "";
+        gameState.exp += expEarned;
+        gameState.credits += creditsEarned;
+        gameState.biomass += biomassEarned;
 
-            while (targetLevel < 20 && gameState.exp >= getExpReqForLevel(targetLevel + 1)) {
-                targetLevel++;
-                levelUpText += `<br><span class="neon-text">RG LEVEL UP! [RG-${targetLevel}]</span> - New C-Cards Synced!`;
-            }
+        // Log the rewards
+        if (expEarned > 0 || creditsEarned > 0) {
+            console.log(`Battle Rewards: ${creditsEarned} LC, ${biomassEarned} Biomass, ${expEarned} EXP`);
+            updateResourceHUD();
+        }
 
-            if (targetLevel > currentRg) {
-                gameState.profiles.player.level = targetLevel;
-                gameState.playerLevel = targetLevel;
-                syncCardsToLevel('player', targetLevel); // Apply new level rewards
-            }
+        if (expContainer) expContainer.classList.remove('hidden');
 
+        // Check Level Up!
+        let targetLevel = currentRg;
+        let levelUpText = "";
+
+        while (targetLevel < 20 && gameState.exp >= getExpReqForLevel(targetLevel + 1)) {
+            targetLevel++;
+            levelUpText += `<br><span class="neon-text">RG LEVEL UP! [RG-${targetLevel}]</span> - New C-Cards Synced!`;
+        }
+
+        if (targetLevel > currentRg) {
+            gameState.profiles.player.level = targetLevel;
+            gameState.playerLevel = targetLevel;
+            syncCardsToLevel('player', targetLevel); 
+        }
+
+        // Set Result Messaging
+        if (!isFailure) {
             msg.innerHTML = `All target entities have been purged. Objective secured.<br><br>
             <span style="color: #00ff66;">+${expEarned} EXP</span><br>
-            <span style="color: #00f3ff;">+${creditsEarned} LAB CREDITS</span>
+            <span style="color: #ffd700;">+${creditsEarned} LC</span> | <span style="color: #00ff66;">+${biomassEarned} Biomass</span>
             ${levelUpText}`;
-
-            // Initialize EXP Bar visually
-            if (expFill && expText) {
-                expFill.style.transition = 'none';
-                expFill.style.width = `${initialPercent}%`;
-
-                if (isTutorialLoss) {
-                    msg.innerHTML = `"Oof. That was rough, Intern. But hey, it's just a test. You definitely have... potential."<br><br>
-                    <span style="color: #ffaa00;">+0 EXP (TEST FAILED)</span><br>
-                    <span style="color: #ffaa00;">+0 LAB CREDITS</span>`;
-                    if (expContainer) expContainer.classList.add('hidden');
-                } else {
-                    msg.innerHTML = `Variables controlled. Desired outcome achieved.<br><br>
-                    <span style="color: #00ff66;">+${expEarned} EXP</span><br>
-                    <span style="color: #00f3ff;">+${creditsEarned} LAB CREDITS</span>
-                    ${levelUpText}`;
-                    if (expContainer) expContainer.classList.remove('hidden');
-                }
-
-                expText.innerText = `${initialExpRelative} / ${expNeededForLevel}`;
-                void expFill.offsetWidth; // Force Reflow
-                expFill.style.transition = 'width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
-            } else {
-                if (isTutorialLoss) {
-                    msg.innerHTML = `"Oof. That was rough, Intern. But hey, it's just a test. You definitely have... potential."<br><br>
-                    <span style="color: #ffaa00;">+0 EXP (TEST FAILED)</span><br>
-                    <span style="color: #ffaa00;">+0 LAB CREDITS</span>`;
-                } else {
-                    msg.innerHTML = `Variables controlled. Desired outcome achieved.<br><br>
-                    <span style="color: #00ff66;">+${expEarned} EXP</span><br>
-                    <span style="color: #00f3ff;">+${creditsEarned} LAB CREDITS</span>
-                    ${levelUpText}`;
-                }
-            }
-
-            if (!isTutorialLoss && expFill && expText) {
-                setTimeout(() => {
-                    if (targetLevel > currentRg) {
-                        // Leveled Up - Fill to 100%
-                        if (expFill) expFill.style.width = `100%`;
-                        if (expText) expText.innerHTML = `${expCap - expFloor} / ${expNeededForLevel} <span style="color: #00ff66;">[LEVEL UP!]</span>`;
-
-                        // After the 1.5s fill, animate the remainder
-                        setTimeout(() => {
-                            const newFloor = getExpReqForLevel(targetLevel);
-                            const newCap = getExpReqForLevel(targetLevel + 1);
-                            const newNeeded = newCap - newFloor;
-                            const remainder = gameState.exp - newFloor;
-
-                            if (expFill) {
-                                expFill.style.transition = 'none';
-                                expFill.style.width = `0%`;
-                                void expFill.offsetWidth; // Reflow
-                                expFill.style.transition = 'width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
-                                expFill.style.width = `${(remainder / newNeeded) * 100}%`;
-                            }
-                            if (expText) expText.innerText = `${remainder} / ${newNeeded}`;
-                        }, 1600);
-                    } else {
-                        // Normal calculation
-                        const currentExpRelative = gameState.exp - expFloor;
-                        if (expFill) expFill.style.width = `${(currentExpRelative / expNeededForLevel) * 100}%`;
-                        if (expText) expText.innerText = `${currentExpRelative} / ${expNeededForLevel}`;
-                    }
-                }, 500);
-            }
-
-            updateOverworldEXPBar();
+        } else if (isTutorialLoss) {
+            msg.innerHTML = `"Oof. That was rough, Intern. But hey, it's just a test. You definitely have... potential."<br><br>
+            <span style="color: #00ff66;">+${expEarned} EXP</span><br>
+            <span style="color: #ffd700;">+${creditsEarned} LC</span> | <span style="color: #00ff66;">+${biomassEarned} Biomass</span>`;
+        } else {
+            // Already has msg.innerText set via quirkyMessages, but we can append EXP
+            msg.innerHTML += `<br><br><span style="color: #888;">+${expEarned} EXP</span>`;
         }
+
+        // Initialize & Animate EXP Bar
+        if (expFill && expText) {
+            expFill.style.transition = 'none';
+            expFill.style.width = `${initialPercent}%`;
+            expText.innerText = `${initialExpRelative} / ${expNeededForLevel}`;
+            
+            void expFill.offsetWidth; // Force Reflow
+            expFill.style.transition = 'width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+
+            setTimeout(() => {
+                if (targetLevel > currentRg) {
+                    expFill.style.width = `100%`;
+                    expText.innerHTML = `${expCap - expFloor} / ${expNeededForLevel} <span style="color: #00ff66;">[LEVEL UP!]</span>`;
+
+                    setTimeout(() => {
+                        const nFloor = getExpReqForLevel(targetLevel);
+                        const nCap = getExpReqForLevel(targetLevel + 1);
+                        const nNeeded = nCap - nFloor;
+                        const remainder = gameState.exp - nFloor;
+
+                        expFill.style.transition = 'none';
+                        expFill.style.width = `0%`;
+                        void expFill.offsetWidth;
+                        expFill.style.transition = 'width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                        expFill.style.width = `${(remainder / nNeeded) * 100}%`;
+                        expText.innerText = `${remainder} / ${nNeeded}`;
+                    }, 1600);
+                } else {
+                    const currExpRel = gameState.exp - expFloor;
+                    expFill.style.width = `${(currExpRel / expNeededForLevel) * 100}%`;
+                    expText.innerText = `${currExpRel} / ${expNeededForLevel}`;
+                }
+            }, 500);
+        }
+
+        updateOverworldEXPBar();
         overlay.classList.remove('hidden');
     }
 }
@@ -3318,9 +3791,9 @@ function resetGame() {
     gameState.enemyLevel = oProfile.level;
     syncCardsToLevel(opponentId, gameState.enemyLevel);
 
-    // 2. Full heal at the start of each battle
-    applyBonuses(gameState.playerParty, gameState.playerLevel);
-    applyBonuses(gameState.enemyParty, gameState.enemyLevel);
+    // 2. Persistent HP/PP: Heal enemy, but NOT the player automatically
+    applyBonuses(gameState.playerParty, gameState.playerLevel, false);
+    applyBonuses(gameState.enemyParty, gameState.enemyLevel, true);
 
     // If player hasn't chosen a starter yet, skip battle setup
     if (gameState.playerParty.length === 0 || gameState.enemyParty.length === 0) {
@@ -3440,7 +3913,18 @@ function triggerMonsterExit(displaySelector, callback) {
     // 2. Monster Shrink
     portrait.classList.add('anim-recall-exit');
 
-    // 3. Container Capture
+    // 3. Container Capture (Bypass for Wild Encounters)
+    const isWild = catalystState.battleOpponentId === 'stemmy_wild' && displaySelector.includes('enemy');
+    if (isWild) {
+        setTimeout(() => {
+            portrait.classList.remove('anim-recall-exit');
+            portrait.style.opacity = "0";
+            portrait.style.transform = "scale(0)";
+            if (callback) callback();
+        }, 400); // Matches anim-recall-exit duration
+        return;
+    }
+
     const container = document.createElement('div');
     container.className = 'dead-cell-container anim-container-capture';
     const containerImg = displaySelector.includes('player') ? 'CellContainer_Back.png' : 'CellContainer.png';
@@ -3473,7 +3957,16 @@ function triggerBattleEntry(displaySelector, callback) {
     portrait.style.transform = "scale(0)";
     void portrait.offsetWidth;
 
-    // 2. Spawn CellContainer
+    // 2. Spawn CellContainer (Bypass for Wild Encounters)
+    const isWild = catalystState.battleOpponentId === 'stemmy_wild' && displaySelector.includes('enemy');
+    if (isWild) {
+        portrait.style.opacity = "1";
+        portrait.style.transform = "scale(1)";
+        portrait.classList.add('anim-monster-pop');
+        if (callback) callback();
+        return;
+    }
+
     const container = document.createElement('div');
     container.className = 'dead-cell-container animate-heavy-drop'; // Reuse drop style
 
@@ -3532,10 +4025,24 @@ function renderCellStorage() {
     const profile = gameState.profiles[profileId];
 
     // Show ONLY monsters in index 3 onwards (The "Storage" part)
-    const storageMonsters = profile.party.slice(3);
+    // AND Exclude those currently in the Bio-Extract grid
+    const monstersInGridIds = (window.gameState.bioExtractGrid || [])
+        .filter(slot => slot !== null)
+        .map(slot => slot.monster?.instanceId);
 
-    storageMonsters.forEach((monster, sIdx) => {
-        const partyIdx = sIdx + 3; // Shift to actual party index
+    const storageMonsters = profile.party.slice(3).filter(m => 
+        m !== null && !monstersInGridIds.includes(m.instanceId)
+    );
+
+    if (storageMonsters.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'empty-reserve-msg';
+        emptyMsg.innerText = 'No Cells are home at the moment!';
+        grid.appendChild(emptyMsg);
+    }
+
+    storageMonsters.forEach((monster) => {
+        const partyIdx = profile.party.indexOf(monster);
         const name = monster.name;
 
         const icon = document.createElement('div');
@@ -3543,7 +4050,10 @@ function renderCellStorage() {
         icon.draggable = true;
 
         const imgName = name.charAt(0).toUpperCase() + name.slice(1);
-        icon.innerHTML = `<img src="./assets/images/${imgName}.png" alt="${name}" onerror="this.src='./assets/images/Card_Placeholder.png'">`;
+        icon.innerHTML = `
+            <img src="./assets/images/${imgName}.png" alt="${name}" onerror="this.src='./assets/images/Card_Placeholder.png'">
+                    <div class="efficiency-badge">${monster.extractEfficiency || 1}</div>
+        `;
 
         icon.ondragstart = (e) => {
             e.dataTransfer.setData('sourceStorageIdx', partyIdx);
@@ -3639,15 +4149,25 @@ function updateTeamSlots() {
         const monster = party[idx];
         if (monster) {
             const imgName = monster.name.charAt(0).toUpperCase() + monster.name.slice(1);
-            const img = document.createElement('img');
-            img.onerror = () => img.src = './assets/images/Card_Placeholder.png';
-            img.src = `./assets/images/${imgName}.png`;
-            img.alt = monster.name;
-            slot.appendChild(img);
+            
+            const iconWrapper = document.createElement('div');
+            iconWrapper.className = 'monster-icon-wrapper';
+            iconWrapper.style.position = 'relative';
+            iconWrapper.style.width = '100%';
+            iconWrapper.style.height = '100%';
+            iconWrapper.style.display = 'flex';
+            iconWrapper.style.alignItems = 'center';
+            iconWrapper.style.justifyContent = 'center';
+
+            iconWrapper.innerHTML = `
+                <img src="./assets/images/${imgName}.png" alt="${monster.name}" onerror="this.src='./assets/images/Card_Placeholder.png'">
+                <div class="efficiency-badge">${monster.extractEfficiency || 1}</div>
+            `;
+            slot.appendChild(iconWrapper);
 
             const removeBtn = document.createElement('button');
             removeBtn.className = 'btn-remove-monster btn-icon danger';
-            removeBtn.innerHTML = '✖';
+            removeBtn.innerHTML = 'X';
             removeBtn.title = 'Remove from Squad';
             removeBtn.onclick = (e) => {
                 e.stopPropagation(); // Prevent selecting the slot as active
@@ -3922,6 +4442,7 @@ function updateCatalystCore() {
         if (crtPeek) crtPeek.textContent = '--';
 
         anchor.innerHTML = '';
+        drawConnections([], null);
         return;
     }
 
@@ -4554,6 +5075,8 @@ function createMonsterInstance(id, existing = null) {
 
     const monster = {
         ...data,
+        id: id,
+        instanceId: existing ? existing.instanceId : 'mon_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
         currentNode: null,
         blockedNodes: [],
         equippedCards: existing ? [...existing.equippedCards] : [],
@@ -4561,7 +5084,8 @@ function createMonsterInstance(id, existing = null) {
         pp: 1,
         turnCount: 0,
         selectedMove: data.moves[0].id,
-        currentPresetId: currentPresetId
+        currentPresetId: currentPresetId,
+        extractEfficiency: 1
     };
     return monster;
 }
@@ -4634,7 +5158,7 @@ document.getElementById('card-detail-modal')?.addEventListener('click', (e) => {
  * Pre-applies Catalyst Bonuses and heals monsters to their modified max health.
  * Used during battle start and roster initialization.
  */
-function applyBonuses(party, level) {
+function applyBonuses(party, level, forceHeal = true) {
     if (!party) return;
     // Only apply to first 3 (active team) for efficiency if needed, 
     // but usually safe for the whole party.
@@ -4642,14 +5166,747 @@ function applyBonuses(party, level) {
         if (!monster) return;
         const mod = getModifiedStats(monster, level);
 
-        // Full heal based on modified max HP
-        monster.hp = mod.maxHp;
+        // Conditional heal based on modified max HP
+        if (forceHeal) {
+            monster.hp = mod.maxHp;
+            monster.pp = 1; // Reset to default state as per user request
+        } else {
+            // Ensure HP doesn't exceed new modified max
+            if (monster.hp > mod.maxHp) monster.hp = mod.maxHp;
+        }
 
-        // PP is not auto-filled, it must be generated, but ensure it's not over max
+        // Always ensure PP is clamped to maxPp
+        monster.maxPp = mod.maxPp; // Ensure maxPp is synced
         if (monster.pp > mod.maxPp) monster.pp = mod.maxPp;
     });
+}
+
+/**
+ * INCUBATOR SYSTEM
+ */
+window.openIncubatorMenu = function () {
+    const party = gameState.profiles.player.party;
+    const hasMonsters = party.some(m => m !== null);
+
+    if (!hasMonsters) {
+        if (typeof Overworld !== 'undefined') {
+            Overworld.showDialogue("Incubator Unit", ["No biological signatures detected.", "Please insert a cell for maintenance."]);
+        }
+        return;
+    }
+
+    // Pause overworld and blur
+    if (typeof Overworld !== 'undefined') {
+        Overworld.isPaused = true;
+        document.getElementById('overworld-viewport')?.classList.add('blur-overlay');
+    }
+
+    // Show menu directly (avoiding showScreen which hides overworld)
+    document.getElementById('screen-incubator-menu')?.classList.remove('hidden');
+
+    // Initialize keyboard selection
+    window.selectedIncubatorIndex = 0;
+    updateIncubatorSelection();
+};
+
+function updateIncubatorSelection() {
+    const menu = document.getElementById('screen-incubator-menu');
+    if (!menu || menu.classList.contains('hidden')) return;
+
+    const buttons = menu.querySelectorAll('.btn-neon');
+    buttons.forEach((btn, index) => {
+        if (index === window.selectedIncubatorIndex) {
+            btn.classList.add('selected');
+        } else {
+            btn.classList.remove('selected');
+        }
+    });
+}
+
+function closeIncubatorMenu() {
+    document.getElementById('screen-incubator-menu').classList.add('hidden');
+    document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
+}
+
+async function startHealSequence() {
+    // Hide menu without removing blur
+    document.getElementById('screen-incubator-menu').classList.add('hidden');
+
+    const healScreen = document.getElementById('screen-incubator-heal');
+    healScreen.classList.remove('hidden');
+
+    const statusText = document.getElementById('heal-status-text');
+    const scanLine = document.getElementById('heal-scan-line');
+    statusText.textContent = "INITIALIZING BIO-SYNC...";
+
+    // Clear previous state
+    const slots = document.querySelectorAll('.heal-slot');
+    slots.forEach(s => {
+        s.classList.remove('active');
+        s.removeAttribute('data-monster');
+        const bar = s.querySelector('.heal-stat-bar');
+        bar.classList.remove('charged');
+        s.querySelector('.heal-fill').style.width = '0%';
+        s.querySelector('.slot-portrait').classList.remove('anim-monster-pop');
+    });
+
+    await new Promise(r => setTimeout(r, 600));
+
+    // 1. Load Monsters into slots
+    const party = gameState.profiles.player.party;
+    for (let i = 0; i < 3; i++) {
+        const monster = party[i];
+        if (monster) {
+            const slot = slots[i];
+            const portrait = slot.querySelector('.slot-portrait');
+
+            // Use tileset mapping via data attribute
+            slot.setAttribute('data-monster', monster.id);
+
+            slot.classList.add('active');
+            portrait.classList.add('anim-monster-pop');
+            await new Promise(r => setTimeout(r, 300));
+        }
+    }
+
+    statusText.textContent = "SCANNING BIOLOGICAL SIGNATURES...";
+    await new Promise(r => setTimeout(r, 600));
+
+    // 2. Start Scan Animation
+    scanLine.classList.add('animate-heal-scan');
+
+    // 3. Dynamic Filling (Battery metaphor)
+    for (let i = 0; i < 3; i++) {
+        const monster = party[i];
+        if (!monster) continue;
+
+        // Punchy timing: wait for scan line to sweep
+        await new Promise(r => setTimeout(r, 600));
+
+        statusText.textContent = `RESTORING: ${monster.id.toUpperCase()}...`;
+        const slot = slots[i];
+        const fill = slot.querySelector('.heal-fill');
+        const bar = slot.querySelector('.heal-stat-bar');
+
+        fill.style.width = '100%';
+        bar.classList.add('charged'); // Changes background to green
+
+        // Actual state restoration
+        const mod = getModifiedStats(monster, gameState.profiles.player.level);
+        monster.hp = mod.maxHp;
+        monster.pp = 1; // Reset to default starting PP
+    }
+
+    await new Promise(r => setTimeout(r, 800));
+    scanLine.classList.remove('animate-heal-scan');
+    statusText.textContent = "MAINTENANCE COMPLETE. ALL CELLS STABILIZED.";
+    statusText.style.color = "#00ff88";
+
+    await new Promise(r => setTimeout(r, 1500));
+
+    // Final cleanup and return to overworld
+    healScreen.classList.add('hidden');
+    statusText.style.color = ""; // Reset color
+
+    if (typeof Overworld !== 'undefined') {
+        document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
+        Overworld.isPaused = false;
+        Overworld.isTransitioning = false;
+        // No need to showScreen('screen-overworld') as it was never hidden
+    }
 }
 
 // Final Initialization
 window.addEventListener('load', init);
 
+// --- RESOURCE HUD & SHOP LOGIC ---
+window.updateResourceHUD = function () {
+    const lcVal = document.getElementById('hud-lc-val');
+    const bmVal = document.getElementById('hud-bm-val');
+    const rgVal = document.getElementById('overworld-rg-val');
+    const logCount = document.getElementById('log-count');
+
+    if (lcVal) lcVal.innerText = gameState.credits || 0;
+    if (bmVal) bmVal.innerText = gameState.biomass || 0;
+    if (rgVal) rgVal.innerText = gameState.playerLevel || (gameState.profiles && gameState.profiles.player ? gameState.profiles.player.level : 1);
+
+    if (logCount && typeof Overworld !== 'undefined') {
+        logCount.innerText = Overworld.logsCollected.length;
+    }
+}
+
+window.openShopMenu = function () {
+    const shopScreen = document.getElementById('screen-shop');
+    if (!shopScreen) return;
+
+    shopScreen.classList.remove('hidden');
+    Overworld.isPaused = true;
+    shopState.activeTab = 'buy';
+    shopState.selectedItemId = null;
+
+    updateShopUI();
+};
+
+// --- MONSTER SYNTHESIS SYSTEM ---
+
+let selectedSynthesisMonster = null;
+
+window.openSynthesisMenu = function () {
+    const synthesisScreen = document.getElementById('screen-synthesis');
+    if (!synthesisScreen) return;
+
+    synthesisScreen.classList.remove('hidden');
+
+    // Update Biomass balance
+    const bmBalance = document.getElementById('synthesis-bm-balance');
+    if (bmBalance) bmBalance.textContent = gameState.biomass;
+
+    renderSynthesisItems();
+
+    // Default selection
+    if (SYNTHESIS_RECIPES.length > 0) {
+        selectSynthesisItem(SYNTHESIS_RECIPES[0]);
+    }
+
+    if (typeof Overworld !== 'undefined') {
+        Overworld.isPaused = true;
+        document.getElementById('overworld-viewport')?.classList.add('blur-overlay');
+    }
+};
+
+function renderSynthesisItems() {
+    const listEl = document.getElementById('synthesis-item-list');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+
+    SYNTHESIS_RECIPES.forEach(recipe => {
+        const card = document.createElement('div');
+        card.className = 'shop-item-card';
+        if (selectedSynthesisMonster && selectedSynthesisMonster.id === recipe.id) {
+            card.classList.add('selected');
+        }
+
+        const level = gameState.profiles.player.level || 1;
+        const efficiencyHtml = `<div class="efficiency-badge">RG-${level}</div>`;
+
+        card.innerHTML = `
+            <div class="shop-item-info">
+                <div class="shop-item-icon ${recipe.iconClass}">
+                    ${efficiencyHtml}
+                </div>
+                <div class="shop-item-name">${recipe.name}</div>
+            </div>
+            <div class="shop-item-price-btn">SYNTHESIS</div>
+        `;
+
+        card.onclick = () => selectSynthesisItem(recipe);
+        listEl.appendChild(card);
+    });
+}
+
+function selectSynthesisItem(recipe) {
+    selectedSynthesisMonster = recipe;
+
+    // Update highlights
+    const cards = document.querySelectorAll('#synthesis-item-list .shop-item-card');
+    cards.forEach((c, idx) => {
+        if (SYNTHESIS_RECIPES[idx].id === recipe.id) c.classList.add('selected');
+        else c.classList.remove('selected');
+    });
+
+    // Update Detail Panel
+    const nameEl = document.getElementById('synthesis-detail-name');
+    const descEl = document.getElementById('synthesis-detail-desc');
+    const iconEl = document.getElementById('synthesis-detail-icon');
+
+    if (nameEl) nameEl.textContent = recipe.name;
+    if (descEl) descEl.textContent = recipe.description;
+
+    if (iconEl) {
+        const level = gameState.profiles.player.level || 1;
+        iconEl.className = 'shop-detail-img ' + recipe.iconClass;
+        iconEl.innerHTML = `<div class="efficiency-badge">RG-${level}</div>`;
+    }
+
+    updateSynthesisRequirements(recipe);
+}
+
+function updateSynthesisRequirements(recipe) {
+    const reqListEl = document.getElementById('synthesis-requirement-list');
+    if (!reqListEl) return;
+    reqListEl.innerHTML = '';
+
+    let allMet = true;
+
+    recipe.requirements.forEach(req => {
+        const item = document.createElement('div');
+        item.className = 'requirement-item';
+
+        let current = 0;
+        if (req.type === 'resource') {
+            current = gameState[req.id] || 0;
+        } else if (req.type === 'item') {
+            current = (gameState.items || []).filter(i => i === req.id).length;
+        }
+
+        const isMet = current >= req.amount;
+        if (!isMet) allMet = false;
+
+        item.classList.add(isMet ? 'met' : 'missing');
+        item.innerHTML = `
+            <span>${req.name}</span>
+            <span class="requirement-val">${current}/${req.amount}</span>
+        `;
+        reqListEl.appendChild(item);
+    });
+
+    const actionBtn = document.getElementById('btn-synthesis-action');
+    if (actionBtn) actionBtn.disabled = !allMet;
+}
+
+document.getElementById('btn-synthesis-action')?.addEventListener('click', () => {
+    if (selectedSynthesisMonster) {
+        document.getElementById('synthesis-confirm-modal')?.classList.remove('hidden');
+    }
+});
+
+document.getElementById('btn-synthesis-confirm')?.addEventListener('click', () => {
+    if (selectedSynthesisMonster) {
+        handleSynthesis(selectedSynthesisMonster.id);
+        document.getElementById('synthesis-confirm-modal')?.classList.add('hidden');
+    }
+});
+
+document.getElementById('btn-synthesis-cancel')?.addEventListener('click', () => {
+    document.getElementById('synthesis-confirm-modal')?.classList.add('hidden');
+});
+
+document.getElementById('btn-synthesis-close')?.addEventListener('click', () => {
+    document.getElementById('screen-synthesis')?.classList.add('hidden');
+    if (typeof Overworld !== 'undefined') {
+        Overworld.isPaused = false;
+        document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
+    }
+});
+
+async function handleSynthesis(monsterId) {
+    const recipe = SYNTHESIS_RECIPES.find(r => r.id === monsterId);
+    if (!recipe) return;
+
+    // Final check
+    let allMet = true;
+    recipe.requirements.forEach(req => {
+        let current = 0;
+        if (req.type === 'resource') current = gameState[req.id] || 0;
+        else if (req.type === 'item') current = (gameState.items || []).filter(i => i === req.id).length;
+        if (current < req.amount) allMet = false;
+    });
+
+    if (!allMet) return;
+
+    // Consume requirements
+    recipe.requirements.forEach(req => {
+        if (req.type === 'resource') {
+            gameState[req.id] -= req.amount;
+        } else if (req.type === 'item') {
+            for (let i = 0; i < req.amount; i++) {
+                const idx = gameState.items.indexOf(req.id);
+                if (idx > -1) gameState.items.splice(idx, 1);
+            }
+        }
+    });
+
+    if (window.updateResourceHUD) window.updateResourceHUD();
+
+    // Add Monster using the official constructor
+    const newMonster = createMonsterInstance(monsterId);
+    const pProfile = gameState.profiles.player;
+
+    // Determine if it should be marked as going to Squad or Storage
+    // The first 3 slots (0-2) are considered the Active Squad.
+    const destination = pProfile.party.length < 3 ? 'ACTIVE SQUAD' : 'CATALYST BOX';
+
+    // Always push to the player's underlying party/team arrays
+    pProfile.party.push(newMonster);
+    pProfile.team.push(monsterId);
+
+    // Animation
+    await startSynthesisAnimation(monsterId, destination);
+}
+
+async function startSynthesisAnimation(monsterId, destination) {
+    document.getElementById('screen-synthesis')?.classList.add('hidden');
+    const animScreen = document.getElementById('screen-synthesis-animation');
+    if (!animScreen) return;
+
+    animScreen.classList.remove('hidden');
+
+    const statusText = document.getElementById('synthesis-status-text');
+    const scanLine = document.getElementById('synthesis-scan-line');
+    const cellReveal = document.getElementById('synthesis-cell-reveal');
+
+    if (!cellReveal) return;
+
+    const monsterData = MONSTERS[monsterId];
+    cellReveal.style.backgroundImage = `url(./assets/images/${monsterData.id.charAt(0).toUpperCase() + monsterData.id.slice(1)}.png)`;
+
+    // EXPLICIT RESET of visibility and animation state before starting
+    cellReveal.classList.remove('animate-synthesis-reveal', 'synthesis-complete', 'synthesis-glitch');
+    if (scanLine) {
+        scanLine.classList.remove('animate-synthesis-scan');
+        scanLine.style.opacity = '0';
+    }
+
+    const container = document.getElementById('synthesis-anim-container');
+
+    if (statusText) statusText.textContent = "ESTABLISHING NEURAL LINK...";
+    await new Promise(r => setTimeout(r, 800));
+
+    if (statusText) statusText.textContent = "MOLDING BIOLOGICAL ARCHITECTURE...";
+    await new Promise(r => setTimeout(r, 600));
+
+    // Start 3D Print with effects
+    if (container) container.classList.add('synthesis-shake');
+    if (cellReveal) cellReveal.classList.add('synthesis-glitch');
+    if (scanLine) scanLine.classList.add('animate-synthesis-scan');
+    cellReveal.classList.add('animate-synthesis-reveal');
+    if (statusText) statusText.textContent = "SYNTHESIZING CELLULAR MEMBRANE...";
+
+    await new Promise(r => setTimeout(r, 3000));
+
+    // Complete Sequence
+    if (container) container.classList.remove('synthesis-shake');
+    if (cellReveal) {
+        cellReveal.classList.remove('synthesis-glitch');
+        cellReveal.classList.remove('animate-synthesis-reveal');
+        cellReveal.classList.add('synthesis-complete');
+    }
+    if (scanLine) {
+        scanLine.classList.remove('animate-synthesis-scan');
+        scanLine.style.opacity = '0'; // Explicit hide
+    }
+
+    // Create Flash
+    const flash = document.createElement('div');
+    flash.className = 'synthesis-flash';
+    animScreen.appendChild(flash);
+    setTimeout(() => flash.remove(), 1000);
+
+    if (statusText) {
+        statusText.textContent = "STABILIZATION COMPLETE. UNIT READY.";
+        statusText.style.color = "#00ff88";
+    }
+
+    await new Promise(r => setTimeout(r, 1000));
+
+    // Cleanup
+    animScreen.classList.add('hidden');
+    if (statusText) statusText.style.color = "";
+
+    // Show Acquisition Modal
+    if (window.showItemPickupModal) {
+        const pickupId = 'monster_' + monsterId;
+        window.ITEM_PICKUP_DATA[pickupId] = {
+            name: monsterData.name.toUpperCase(),
+            desc: `Synthesized successfully!\nWelcome to the Lab my friend!`,
+            spriteClass: monsterId,
+            type: 'monster'
+        };
+        window.showItemPickupModal(pickupId);
+    }
+
+    if (typeof Overworld !== 'undefined') {
+        Overworld.isPaused = false;
+        document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
+    }
+}
+
+function updateShopUI() {
+    const buyBtn = document.querySelector('.shop-tab-btn[data-tab="buy"]');
+    const sellBtn = document.querySelector('.shop-tab-btn[data-tab="sell"]');
+
+    if (shopState.activeTab === 'buy') {
+        buyBtn?.classList.add('active');
+        sellBtn?.classList.remove('active');
+    } else {
+        buyBtn?.classList.remove('active');
+        sellBtn?.classList.add('active');
+    }
+
+    // Sync balances
+    const lcBalance = document.getElementById('shop-lc-balance');
+    const bmBalance = document.getElementById('shop-bm-balance');
+    if (lcBalance) lcBalance.innerText = gameState.credits;
+    if (bmBalance) bmBalance.innerText = gameState.biomass;
+
+    renderShopItems();
+    updateResourceHUD();
+}
+
+function renderShopItems() {
+    const listEl = document.getElementById('shop-item-list');
+    if (!listEl) return;
+
+    listEl.innerHTML = '';
+
+    if (shopState.activeTab === 'buy') {
+        // Only show items not already owned if oneTime
+        Object.values(SHOP_ITEMS).forEach(item => {
+            if (item.oneTime && gameState.items.includes(item.id)) return;
+
+            const card = createShopItemCard(item, item.price, 'LC');
+            listEl.appendChild(card);
+        });
+    } else {
+        // Sell tab: Only show Biomass if we have any
+        if (gameState.biomass > 0) {
+            const item = SHOP_ITEMS['biomass'];
+            const card = createShopItemCard(item, item.sellPrice, 'LC');
+            listEl.appendChild(card);
+        } else {
+            listEl.innerHTML = '<div style="padding: 20px; color: rgba(255,255,255,0.4); text-align: center;">There is nothing to sell!</div>';
+        }
+    }
+
+    // Auto-select first if none selected
+    if (!shopState.selectedItemId && listEl.children.length > 0) {
+        const firstId = listEl.children[0].dataset.id;
+        if (firstId) selectShopItem(firstId);
+    } else if (listEl.children.length === 0) {
+        clearShopDetail();
+    }
+}
+
+function createShopItemCard(item, price, currency) {
+    const div = document.createElement('div');
+    div.className = `shop-item-card ${shopState.selectedItemId === item.id ? 'selected' : ''}`;
+    div.dataset.id = item.id;
+
+    const isSell = shopState.activeTab === 'sell';
+    const btnText = isSell ? `SELL (${price})` : `BUY (${price})`;
+    const btnClass = isSell ? 'sell' : '';
+
+    div.innerHTML = `
+        <div class="shop-item-info">
+            <div class="shop-item-icon ${item.iconClass || ''}">${item.icon || ''}</div>
+            <div class="shop-item-name">${item.name}</div>
+        </div>
+        <button class="shop-item-price-btn ${btnClass}">${btnText}</button>
+    `;
+
+    div.addEventListener('click', () => selectShopItem(item.id));
+
+    const buyBtn = div.querySelector('.shop-item-price-btn');
+    buyBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Don't trigger card selection
+        selectShopItem(item.id);
+        openQuantityModal(item, shopState.activeTab);
+    });
+
+    return div;
+}
+
+function openQuantityModal(item, mode) {
+    const modal = document.getElementById('shop-quantity-modal');
+    if (!modal) return;
+
+    const title = document.getElementById('qmodal-title');
+    const name = document.getElementById('qmodal-item-name');
+    const icon = document.getElementById('qmodal-item-icon');
+    const input = document.getElementById('shop-qty-input');
+    const confirmBtn = document.getElementById('btn-qmodal-confirm');
+
+    if (title) title.innerHTML = 'Select the quantity.';
+    if (name) name.innerText = item.name.toUpperCase();
+    if (icon) {
+        icon.innerHTML = item.icon || '';
+        icon.className = 'qmodal-item-icon ' + (item.iconClass || '');
+    }
+    if (input) {
+        input.value = 1;
+        // Limit max quantity based on credits/biomass
+        if (mode === 'buy') {
+            if (item.oneTime) {
+                input.max = 1;
+            } else {
+                const maxBuy = Math.floor(gameState.credits / item.price);
+                input.max = Math.max(1, maxBuy);
+            }
+        } else {
+            input.max = Math.max(1, gameState.biomass);
+        }
+    }
+    if (confirmBtn) confirmBtn.innerText = mode === 'buy' ? 'ACQUIRE' : 'LIQUIDATE';
+
+    // Reset subtraction display
+    const subEl = document.getElementById('qmodal-subtraction');
+    if (subEl) subEl.innerHTML = '';
+
+    updateQuantityTotal();
+    modal.classList.remove('hidden');
+}
+
+function closeQuantityModal() {
+    document.getElementById('shop-quantity-modal')?.classList.add('hidden');
+}
+
+function updateQuantityTotal() {
+    if (!shopState.selectedItemId) return;
+    const item = SHOP_ITEMS[shopState.selectedItemId];
+    const input = document.getElementById('shop-qty-input');
+    const totalEl = document.getElementById('qmodal-total-value');
+    const subEl = document.getElementById('qmodal-subtraction');
+    if (!item || !input || !totalEl) return;
+
+    const qty = parseInt(input.value) || 1;
+    const isBuy = shopState.activeTab === 'buy';
+    const price = isBuy ? item.price : item.sellPrice;
+    const totalCost = price * qty;
+
+    totalEl.innerText = totalCost + ' LC';
+
+    if (subEl) {
+        const currentLC = gameState.credits;
+        if (isBuy) {
+            const remaining = currentLC - totalCost;
+            subEl.innerHTML = `${currentLC} - ${totalCost} = <span class="neon-text">${remaining}</span> LC`;
+        } else {
+            const remaining = currentLC + totalCost;
+            subEl.innerHTML = `${currentLC} + ${totalCost} = <span class="neon-text">${remaining}</span> LC`;
+        }
+    }
+}
+
+function selectShopItem(id) {
+    shopState.selectedItemId = id;
+    const item = SHOP_ITEMS[id];
+    if (!item) return;
+
+    // Update highlighted card
+    document.querySelectorAll('.shop-item-card').forEach(c => {
+        c.classList.toggle('selected', c.dataset.id === id);
+    });
+
+    // Update detail side
+    const nameEl = document.getElementById('shop-detail-name');
+    const descEl = document.getElementById('shop-detail-desc');
+    const iconEl = document.getElementById('shop-detail-icon');
+
+    if (nameEl) nameEl.innerText = item.name.toUpperCase();
+    if (descEl) descEl.innerText = item.desc;
+    if (iconEl) {
+        iconEl.innerHTML = item.icon || '';
+        iconEl.className = 'shop-detail-img ' + (item.iconClass || '');
+    }
+
+    // Action button removed from detail side, logic moved to quantity modal
+}
+
+function clearShopDetail() {
+    const nameEl = document.getElementById('shop-detail-name');
+    const descEl = document.getElementById('shop-detail-desc');
+    const iconEl = document.getElementById('shop-detail-icon');
+
+    if (nameEl) nameEl.innerText = 'TERMINAL IDLE';
+    if (descEl) descEl.innerText = 'Select a protocol to proceed with acquisition or liquidation.';
+    if (iconEl) iconEl.innerText = '🛒';
+}
+
+function handleShopAction() {
+    if (!shopState.selectedItemId) return;
+    const item = SHOP_ITEMS[shopState.selectedItemId];
+    const qtyInput = document.getElementById('shop-qty-input');
+    const qty = parseInt(qtyInput?.value) || 1;
+    if (!item) return;
+
+    if (shopState.activeTab === 'buy') {
+        const totalCost = item.price * qty;
+        if (gameState.credits >= totalCost) {
+            gameState.credits -= totalCost;
+
+            if (item.id === 'biomass') {
+                gameState.biomass += qty;
+            } else {
+                // Multi-buy support (e.g. Blueprints if oneTime: false)
+                for (let i = 0; i < qty; i++) {
+                    if (item.oneTime && (gameState.items || []).includes(item.id)) continue;
+                    gameState.items.push(item.id);
+                }
+                if (item.oneTime) shopState.selectedItemId = null;
+            }
+
+            console.log(`Purchased ${qty}x ${item.name}`);
+            closeQuantityModal();
+            updateShopUI();
+        }
+    } else {
+        // Sell
+        if (item.id === 'biomass' && gameState.biomass >= qty) {
+            gameState.biomass -= qty;
+            gameState.credits += (item.sellPrice * qty);
+            console.log(`Sold ${qty}x Biomass`);
+            closeQuantityModal();
+            updateShopUI();
+
+            if (gameState.biomass <= 0) shopState.selectedItemId = null;
+        }
+    }
+}
+
+// Initial Listeners for Shop UI
+function initShopEventListeners() {
+    document.getElementById('btn-shop-close')?.addEventListener('click', () => {
+        document.getElementById('screen-shop').classList.add('hidden');
+        Overworld.isPaused = false;
+    });
+
+    document.querySelectorAll('.shop-tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            shopState.activeTab = e.currentTarget.dataset.tab;
+            shopState.selectedItemId = null;
+            updateShopUI();
+        });
+    });
+
+    // Quantity Modal Listeners
+    document.getElementById('btn-qmodal-confirm')?.addEventListener('click', () => {
+        handleShopAction();
+    });
+
+    document.getElementById('btn-qmodal-cancel')?.addEventListener('click', () => {
+        closeQuantityModal();
+    });
+
+    document.getElementById('btn-qty-minus')?.addEventListener('click', () => {
+        const input = document.getElementById('shop-qty-input');
+        if (input && input.value > 1) {
+            input.value = parseInt(input.value) - 1;
+            updateQuantityTotal();
+        }
+    });
+
+    document.getElementById('btn-qty-plus')?.addEventListener('click', () => {
+        const input = document.getElementById('shop-qty-input');
+        if (input) {
+            const max = parseInt(input.max) || 99;
+            if (input.value < max) {
+                input.value = parseInt(input.value) + 1;
+                updateQuantityTotal();
+            }
+        }
+    });
+
+    document.getElementById('shop-qty-input')?.addEventListener('change', () => {
+        const input = document.getElementById('shop-qty-input');
+        if (input) {
+            const max = parseInt(input.max) || 99;
+            if (input.value < 1) input.value = 1;
+            if (input.value > max) input.value = max;
+            updateQuantityTotal();
+        }
+    });
+}
+
+// Ensure listeners are initialized
+initShopEventListeners();
+updateResourceHUD();

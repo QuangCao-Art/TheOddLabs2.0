@@ -1,0 +1,448 @@
+/* Shop UI Styles */
+#screen-shop {
+    z-index: 2000;
+}
+
+#screen-shop {
+    overflow-y: auto; /* Allow the whole panel to scroll if viewport is tiny */
+    padding: 20px 0;
+}
+
+.shop-panel {
+    width: 1000px;
+    height: auto;
+    max-height: 90vh; /* Don't exceed 90% of screen height */
+    background: rgba(0, 10, 20, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), inset 0 0 100px rgba(0, 243, 255, 0.05);
+    padding: 30px 40px; /* Top/Bottom 30px, Left/Right 40px */
+    display: flex;
+    flex-direction: column;
+    margin: auto; /* Centering helper for fixed/flex */
+}
+
+.shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0 25px 0; /* Added small top margin */
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+}
+
+.shop-balance-group {
+    display: flex;
+    gap: 40px;
+}
+
+.shop-balance {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center labels and numbers */
+}
+
+.shop-balance .label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+}
+
+.shop-balance .value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem; /* Reduced from 1.8rem */
+    font-weight: 900;
+    line-height: 1;
+}
+
+.shop-balance.lc .value {
+    color: #ffd700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+.shop-balance.bm .value {
+    color: #00ff66;
+    text-shadow: 0 0 15px rgba(0, 255, 102, 0.5);
+}
+
+.shop-tabs {
+    display: flex;
+    gap: 10px;
+}
+
+.shop-tab-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.5);
+    padding: 10px 25px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 5px;
+}
+
+.shop-tab-btn:hover {
+    background: rgba(0, 243, 255, 0.05);
+    border-color: rgba(0, 243, 255, 0.5);
+    color: white;
+}
+
+.shop-tab-btn.active {
+    background: rgba(0, 243, 255, 0.15);
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+    text-shadow: 0 0 10px var(--neon-cyan);
+}
+
+.shop-content {
+    display: flex;
+    gap: 30px;
+    flex: 1; /* Match inventory approach: let it fill space */
+    min-height: 0;
+    overflow: hidden;
+}
+
+.shop-items-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Custom Scrollbar for Shop List */
+.shop-items-list::-webkit-scrollbar {
+    width: 6px;
+}
+.shop-items-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+.shop-items-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 243, 255, 0.2);
+    border-radius: 10px;
+}
+
+.shop-footer {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 243, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.shop-balance-group {
+    display: flex;
+    gap: 60px; /* Generous gap between LC and Biomass */
+}
+
+#btn-shop-close {
+    /* Auto alignment via space-between pushes this to the right */
+}
+.shop-item-card {
+    background: rgba(0, 10, 20, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border-radius: 12px;
+}
+
+.shop-item-card:hover {
+    background: rgba(0, 243, 255, 0.08);
+    border-color: rgba(0, 243, 255, 0.3);
+    transform: translateX(10px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.shop-item-card.selected {
+    background: rgba(0, 243, 255, 0.15);
+    border-color: var(--neon-cyan);
+    box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.1);
+}
+
+.shop-item-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.shop-item-icon {
+    width: 48px; /* Slightly larger to show sprites clearly */
+    height: 48px;
+    background: rgba(0, 243, 255, 0.05); /* Lighter background for the icon container */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    background-repeat: no-repeat;
+    /* White Stroke for the icon sprite itself */
+    filter: drop-shadow(1px 0 0 white) drop-shadow(-1px 0 0 white) drop-shadow(0 1px 0 white) drop-shadow(0 -1px 0 white);
+    position: relative;
+    overflow: visible;
+}
+
+/* Shop Icon Classes (reusing Lab_TileSet_03) */
+.icon-biomass {
+    background-image: url('../../assets/images/Lab_TileSet_03.png') !important;
+    background-size: calc(2048px * 48 / 256) auto !important; /* Scale 2048px tileset so 256px sprite fits in 48px */
+    background-position: calc(-1792px * 48 / 256) calc(-0px * 48 / 256) !important;
+}
+
+.icon-blueprint {
+    background-image: url('../../assets/images/Lab_TileSet_03.png') !important;
+    background-size: calc(2048px * 48 / 256) auto !important;
+    background-position: calc(-1536px * 48 / 256) calc(-0px * 48 / 256) !important;
+    /* Stroke already handled globally on icon class */
+}
+
+/* Scale for Detail Image (320px container, 160px sprite) */
+.shop-detail-img.icon-biomass {
+    background-size: calc(2048px * 160 / 256) auto !important;
+    background-position: calc(-1792px * 160 / 256) calc(-0px * 160 / 256) !important;
+}
+
+.shop-detail-img.icon-blueprint {
+    background-size: calc(2048px * 160 / 256) auto !important;
+    background-position: calc(-1536px * 160 / 256) calc(-0px * 160 / 256) !important;
+}
+
+/* Scale for Quantity Modal Icon (matches .qmodal-item-info size approx) */
+.qmodal-item-icon {
+    width: 64px;
+    height: 64px;
+    background-repeat: no-repeat;
+}
+.qmodal-item-icon.icon-biomass {
+    background-size: calc(2048px * 64 / 256) auto !important;
+    background-position: calc(-1792px * 64 / 256) calc(-0px * 64 / 256) !important;
+}
+.qmodal-item-icon.icon-blueprint {
+    background-size: calc(2048px * 64 / 256) auto !important;
+    background-position: calc(-1536px * 64 / 256) calc(-0px * 64 / 256) !important;
+    filter: drop-shadow(1px 0 0 white) drop-shadow(-1px 0 0 white) drop-shadow(0 1px 0 white) drop-shadow(0 -1px 0 white);
+}
+
+.shop-item-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #eee;
+}
+
+.shop-item-price-btn {
+    background: rgba(255, 215, 0, 0.05);
+    border: 1px solid #ffd700;
+    color: #ffd700;
+    padding: 6px 12px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 80px;
+}
+
+.shop-item-price-btn:hover {
+    background: #ffd700;
+    color: #000;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
+
+.shop-item-price-btn.sell {
+    border-color: #00ff66;
+    color: #00ff66;
+    background: rgba(0, 255, 102, 0.05);
+}
+
+.shop-item-price-btn.sell:hover {
+    background: #00ff66;
+    color: #000;
+    box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+}
+
+.shop-detail-side {
+    width: 320px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05); /* Very subtle border, no glow */
+    border-radius: 12px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+}
+
+.shop-detail-img {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 20px auto;
+    background: rgba(0, 10, 20, 0.7); /* Standard Glass Background */
+    backdrop-filter: blur(20px);
+    border: none;
+    border-radius: 20px; 
+    box-shadow: none; /* Removed glow/shadow */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    background-repeat: no-repeat;
+    /* White Stroke Standard for all detail images (the sprites) */
+    filter: drop-shadow(2px 0 0 white) drop-shadow(-2px 0 0 white) drop-shadow(0 2px 0 white) drop-shadow(0 -2px 0 white);
+    position: relative;
+    overflow: visible;
+}
+
+#shop-detail-name {
+    text-align: center;
+    margin-top: 10px;
+    letter-spacing: 2px;
+}
+
+.shop-detail-desc {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 10px 0;
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100px;
+    text-align: center; /* Centering description as well for symmetry */
+}
+
+.shop-action-btn {
+    width: 100%;
+    padding: 12px 35px;
+    background: rgba(0, 243, 255, 0.05);
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+}
+
+.shop-action-btn:hover:not(:disabled) {
+    background: var(--neon-cyan);
+    color: #000;
+    box-shadow: 0 0 25px var(--neon-cyan);
+}
+
+.shop-action-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+/* Quantity Modal Styles */
+.quantity-modal {
+    width: 400px;
+    text-align: center;
+}
+
+.qmodal-content {
+    margin: 30px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.qmodal-item-info {
+    font-size: 1.5rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.qty-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.qty-btn:hover {
+    background: rgba(0, 243, 255, 0.2);
+    border-color: var(--neon-cyan);
+}
+
+#shop-qty-input {
+    width: 60px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--neon-cyan);
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    border-radius: 5px;
+}
+
+/* Chrome, Safari, Edge, Opera */
+#shop-qty-input::-webkit-outer-spin-button,
+#shop-qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.qmodal-total {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.qmodal-subtraction {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: -10px;
+    letter-spacing: 1px;
+}
+
+.qmodal-subtraction .neon-text {
+    font-weight: 700;
+}
+
+.modal-buttons .btn-neon.cancel {
+    border-color: #ff3366;
+    color: #ff3366;
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.2);
+}
+
+.modal-buttons .btn-neon.cancel:hover {
+    background: #ff3366;
+    color: white;
+    box-shadow: 0 0 20px rgba(255, 51, 102, 0.4);
+}

@@ -49,7 +49,7 @@ export function calculateDamage(attacker, defender, move, dist) {
         statRatio = attacker.atk / 1; // Effectively 1 Def
     }
 
-    let baseDamage = ((statRatio * rawPower * 0.5) + 2) * typeEffect * critMult * gpm * randomRoll;
+    let baseDamage = ((statRatio * rawPower * 0.5) + 3) * typeEffect * critMult * gpm * randomRoll;
 
     // LEADER PERK #3: x2 First Hit Damage
     const hasLeader3 = attacker.equippedCards && attacker.equippedCards.some(s => s.cardId === 'leader_3');

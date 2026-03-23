@@ -1,0 +1,385 @@
+/* Bio Extract Module Styles */
+
+#screen-bio-extract {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    box-sizing: border-box;
+    z-index: 2000;
+}
+
+#bio-extract-panel {
+    width: 98vw;
+    max-width: 1400px;
+    max-height: 95vh;
+    background: rgba(0, 10, 20, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), inset 0 0 100px rgba(0, 243, 255, 0.05);
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+#bio-extract-layout {
+    display: grid;
+    grid-template-columns: 300px 550px 340px;
+    gap: 50px;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    margin-top: 20px;
+}
+
+#bio-extract-sidebar {
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    background: rgba(0, 20, 30, 0.6);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+}
+
+#bio-extract-storage-grid {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px 10px;
+    justify-items: center;
+    padding-top: 20px;
+}
+
+#bio-extract-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#bio-extract-3x3-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 144px);
+    grid-template-rows: repeat(3, 144px);
+    gap: 15px;
+    padding: 20px;
+    background: rgba(0, 243, 255, 0.03);
+    border: 2px solid rgba(0, 243, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: inset 0 0 30px rgba(0, 243, 255, 0.05);
+}
+
+.extraction-slot {
+    width: 144px;
+    height: 144px;
+    background: rgba(0, 40, 60, 0.4);
+    border: 1px dashed rgba(0, 243, 255, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.extraction-slot:hover {
+    background: rgba(0, 243, 255, 0.08);
+    border-color: rgba(0, 243, 255, 0.6);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+.extraction-slot.drag-over {
+    background: rgba(0, 243, 255, 0.15);
+    border-style: solid;
+    border-color: var(--neon-cyan);
+    transform: scale(1.05);
+}
+
+#screen-bio-extract .monster-icon {
+    border-radius: 50% !important;
+    position: relative;
+    overflow: visible !important;
+}
+
+.extraction-slot .monster-icon {
+    width: 110px;
+    height: 110px;
+}
+
+/* Scoped Efficiency Badge for Bio-Extraction */
+#screen-bio-extract .efficiency-badge {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 26px;
+    height: 26px;
+    background: #0a0f14;
+    color: var(--neon-cyan);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: none;
+    border: 1px solid var(--neon-cyan);
+    z-index: 110;
+}
+
+#screen-bio-extract .efficiency-badge-large {
+    background: rgba(0, 243, 255, 0.1);
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    padding: 5px 20px;
+    border-radius: 20px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 10px 0;
+    text-align: center;
+    letter-spacing: 1px;
+    width: auto;
+    min-width: 180px;
+}
+
+#screen-bio-extract .panel-title {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Details Panel */
+#bio-extract-details {
+    padding: 30px;
+    background: rgba(0, 15, 25, 0.8);
+    display: flex;
+    flex-direction: column;
+}
+
+#bio-extract-detail-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#bio-extract-details.guide-mode #bio-extract-detail-content {
+    justify-content: center;
+    align-items: center;
+}
+
+#bio-extract-details.guide-mode .detail-text {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.detail-card-container.mini {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 20px;
+    background: rgba(0, 10, 20, 0.4);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+}
+
+.detail-card-container.mini img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.stats-mini-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 15px 0 5px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.stat-mini {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: nowrap;
+}
+
+.stat-bonus-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    color: var(--neon-cyan);
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+}
+
+.extraction-status {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    border-left: 3px solid var(--neon-cyan);
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.production-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50px;
+    margin-top: 10px;
+}
+
+.timer {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    color: var(--neon-cyan);
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+}
+
+.amount {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    animation: pulse-ready 2s infinite;
+}
+
+.icon-biomass.mini {
+    width: 48px;
+    height: 48px;
+    background-image: url('../../assets/images/Lab_TileSet_03.png') !important;
+    background-repeat: no-repeat !important;
+    background-size: 384px auto !important;
+    background-position: -336px 0 !important;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: -10px;
+    flex-shrink: 0;
+}
+
+@keyframes pulse-ready {
+    0% {
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+    }
+
+    50% {
+        transform: scale(1.05);
+        text-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
+    }
+
+    100% {
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+    }
+}
+
+.extraction-status .label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--neon-cyan);
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.extraction-status .value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* Biomass Tick Animation */
+@keyframes biomass-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+        text-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}
+
+.pulsing {
+    animation: biomass-pulse 2s infinite ease-in-out;
+}
+
+#bio-extract-storage-grid.drag-over {
+    background: rgba(0, 243, 255, 0.05);
+    border-radius: 10px;
+}
+
+#bio-extract-cell-name {
+    text-align: center;
+    width: 100%;
+    margin: 10px 0;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+#bio-extract-cell-name.guide-text {
+    font-size: 0.85rem;
+    text-transform: none;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+    margin: 0;
+    padding: 0 20px;
+    font-weight: 400;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 1px;
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+#btn-collect-biomass {
+    margin: 20px auto 0;
+    display: block;
+    width: 100%;
+}
+
+#btn-collect-biomass.disabled {
+    filter: grayscale(1);
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    background: rgba(80, 80, 80, 0.3) !important;
+    border-color: rgba(150, 150, 150, 0.3) !important;
+    color: rgba(150, 150, 150, 0.5) !important;
+    box-shadow: none !important;
+}

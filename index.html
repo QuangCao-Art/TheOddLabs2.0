@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Odd Labs 2.0</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="src/ui/hud.css">
+    <link rel="stylesheet" href="src/ui/shop_ui.css">
+    <link rel="stylesheet" href="src/ui/synthesis_ui.css">
+    <link rel="stylesheet" href="src/ui/bio_extract.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap"
         rel="stylesheet">
@@ -40,13 +44,21 @@
 
                     <div class="setting-row"
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-family: 'Orbitron', sans-serif; color: #fff;">
-                        <label for="toggle-debug-mode" style="cursor: pointer; font-size: 0.85rem;">Skip Tutorial and
-                            Add full Cells</label>
-                        <input type="checkbox" id="toggle-debug-mode" style="transform: scale(1.3); cursor: pointer;">
+                        <label for="toggle-skip-tutorial" style="cursor: pointer; font-size: 0.85rem;">SKIP TUTORIAL
+                            START</label>
+                        <input type="checkbox" id="toggle-skip-tutorial"
+                            style="transform: scale(1.3); cursor: pointer;">
+                    </div>
+                    <div class="setting-row"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-family: 'Orbitron', sans-serif; color: #fff;">
+                        <label for="toggle-full-cell-debug" style="cursor: pointer; font-size: 0.85rem;">ADD FULL CELL
+                            INVENTORY</label>
+                        <input type="checkbox" id="toggle-full-cell-debug"
+                            style="transform: scale(1.3); cursor: pointer;">
                     </div>
                     <div
                         style="font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 25px; font-style: italic; line-height: 1.3;">
-                        Skips intro and grants advanced Cells for testing. Warning: Resets progress.
+                        Use to test later game stages. Warning: Resets progress.
                     </div>
 
                     <div class="setting-row"
@@ -65,16 +77,31 @@
                             style="transform: scale(1.3); cursor: pointer;">
                     </div>
 
+                    <div class="setting-row" style="margin-bottom: 15px;">
+                        <button id="btn-debug-rich" class="btn-neon"
+                            style="width: 100%; height: 40px; font-size: 0.8rem; letter-spacing: 2px;">MAKE ME
+                            RICH</button>
+                    </div>
+
                     <div style="height: 1px; background: rgba(0, 243, 255, 0.15); margin: 20px 0;"></div>
 
                     <h4 class="neon-text"
                         style="font-size: 0.8rem; margin-bottom: 12px; color: rgba(0, 243, 255, 0.8); text-align: center; letter-spacing: 1px;">
-                        DATALOG QUICK TOOLS</h4>
-                    <div class="debug-btns" style="display: flex; gap: 12px; justify-content: center;">
-                        <button id="btn-debug-collect-all" class="btn-neon small"
-                            style="padding: 6px 12px; font-size: 0.7rem;">COLLECT ALL</button>
-                        <button id="btn-debug-clear-all" class="btn-neon small"
-                            style="padding: 6px 12px; font-size: 0.7rem;">CLEAR ALL</button>
+                        DATALOG AND ITEM</h4>
+                    <div class="setting-row"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-family: 'Orbitron', sans-serif; color: #fff;">
+                        <label for="toggle-debug-all-logs" style="cursor: pointer; font-size: 0.85rem;">ADD ALL
+                            LOGS</label>
+                        <input type="checkbox" id="toggle-debug-all-logs"
+                            style="transform: scale(1.3); cursor: pointer;">
+                    </div>
+
+                    <div class="setting-row"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; font-family: 'Orbitron', sans-serif; color: #fff;">
+                        <label for="toggle-debug-all-items" style="cursor: pointer; font-size: 0.85rem;">ADD ALL KEY
+                            ITEMS</label>
+                        <input type="checkbox" id="toggle-debug-all-items"
+                            style="transform: scale(1.3); cursor: pointer;">
                     </div>
 
                     <div style="height: 1px; background: rgba(0, 243, 255, 0.15); margin: 20px 0;"></div>
@@ -177,15 +204,48 @@
         <!-- Overworld Screen -->
         <div id="screen-overworld" class="screen hidden">
             <div id="overworld-ui">
-                <div id="exp-tracker-display">
-                    <div class="exp-label">EXP: <span id="exp-current">0</span>/<span id="exp-max">30</span></div>
-                    <div class="exp-bar-bg">
-                        <div id="exp-bar-fill" class="exp-bar-fill"></div>
+                <div class="ui-group-left">
+                    <div id="rg-box">
+                        <span class="rg-label">RG</span>
+                        <span id="overworld-rg-val" class="rg-val">0</span>
+                    </div>
+
+                    <div id="log-count-display">
+                        <span class="log-label">DATA</span>
+                        <span id="log-count" class="log-val">0</span>
+                    </div>
+
+                    <div id="resource-hud">
+                        <div class="resource-item lc">
+                            <span class="resource-label">LC</span>
+                            <span id="hud-lc-val" class="resource-value">0</span>
+                        </div>
+                        <div class="resource-item biomass">
+                            <span class="resource-label">BIOMASS</span>
+                            <span id="hud-bm-val" class="resource-value">0</span>
+                        </div>
                     </div>
                 </div>
-                <div id="log-count-display">DATA LOGS: <span id="log-count">0</span></div>
-                <div id="location-display">LOCATION: <span id="location-name">LAB LOBBY</span></div>
+
+                <div id="location-display">
+                    <span class="loc-label">LOCATION</span>
+                    <span id="location-name">LAB LOBBY</span>
+                </div>
+
+                <div class="ui-group-right">
+                    <div id="exp-tracker-display">
+                        <div class="exp-label">EXP <span id="exp-current">0</span>/<span id="exp-max">30</span></div>
+                        <div class="exp-bar-bg">
+                            <div id="exp-bar-fill" class="exp-bar-fill"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <div id="overworld-left-gradient"></div>
+            <div id="overworld-right-gradient"></div>
+            <div id="overworld-footer-gradient"></div>
+
             <div id="overworld-viewport">
                 <div id="overworld-map">
                     <div id="player-sprite"></div>
@@ -455,9 +515,10 @@
                     <h2 class="neon-text">INVENTORY</h2>
                     <div class="tabs">
                         <button class="tab-btn active" data-tab="logs">DATA LOGS</button>
-                        <button class="tab-btn" data-tab="items">KEY ITEMS</button>
+                        <button class="tab-btn" data-tab="items">ITEMS</button>
+                        <button class="tab-btn" data-tab="cards">COLLECTIBLE CARDS</button>
                         <button class="tab-btn" data-tab="status">CELL STATUS</button>
-                        <button class="tab-btn" data-tab="catalyst">CELL STORAGE</button>
+                        <button class="tab-btn" data-tab="catalyst">CATALYST BOX</button>
                     </div>
                 </div>
 
@@ -474,6 +535,13 @@
                         <!-- Items Section -->
                         <div id="tab-items" class="inventory-tab hidden">
                             <div class="key-items-grid" id="inventory-item-grid">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Cards Section -->
+                        <div id="tab-cards" class="inventory-tab hidden">
+                            <div class="key-items-grid" id="inventory-card-grid">
                                 <!-- Populated by JS -->
                             </div>
                         </div>
@@ -496,6 +564,9 @@
                             <h3 id="inventory-detail-title">SELECT DATA</h3>
                             <div class="header-line"></div>
                             <p id="inventory-detail-desc">Initial tactical readout standby...</p>
+                            <div id="inventory-detail-stats" class="detail-stats-grid">
+                                <!-- Populated by JS -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -513,7 +584,7 @@
 
                             <div class="panel-divider"></div>
 
-                            <h3 class="panel-title">ALL <span class="neon-text">CELLS</span></h3>
+                            <h3 class="panel-title">CELL <span class="neon-text">RESERVE</span></h3>
                             <div class="grid-container">
                                 <!-- Populated by JS -->
                             </div>
@@ -607,9 +678,222 @@
                         <span><b>Q/E</b> Tab</span>
                         <span><b>F</b> Select</span>
                         <span><b>CLICK IMG</b> Full-Screen</span>
-                        <span><b>ESC</b> Back</span>
+                        <span><b>ESC</b> PREV</span>
                     </div>
                     <button id="btn-inventory-back" class="btn-neon">BACK TO LAB</button>
+                    <button id="id-inventory-main-menu" class="btn-neon inventory-main-menu-btn">MAIN MENU</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Screen (already exists above) -->
+
+        <!-- Shop Screen (already exists above) -->
+
+        <!-- Bio Extract (Mega Incubator) Screen -->
+        <div id="screen-bio-extract" class="overlay hidden">
+            <div id="bio-extract-panel" class="glass-panel">
+                <div class="shop-header">
+                    <h2 class="neon-text">MEGA <span class="white-text">INCUBATOR</span></h2>
+                    <div class="shop-tabs">
+                        <button class="shop-tab-btn active">BIO-EXTRACT MODULE</button>
+                    </div>
+                </div>
+
+                <div id="bio-extract-layout">
+                    <aside id="bio-extract-sidebar" class="glass-panel">
+                        <h3 class="panel-title">CELL <span class="neon-text">RESERVE</span></h3>
+                        <div id="bio-extract-storage-grid" class="grid-container">
+                            <!-- Populated by JS: All non-equipped cells -->
+                        </div>
+                        <div class="setup-hint">DRAG TO EXTRACTOR</div>
+                    </aside>
+
+                    <main id="bio-extract-main">
+                        <div id="bio-extract-grid-container">
+                            <h3 class="panel-title" style="text-align: center; margin-bottom: 20px;">EXTRACTION <span
+                                    class="neon-text">MATRIX (3x3)</span></h3>
+                            <div id="bio-extract-3x3-grid">
+                                <!-- 9 slots created by JS -->
+                            </div>
+                        </div>
+                    </main>
+
+                    <aside id="bio-extract-details" class="glass-panel">
+                        <h3 class="panel-title">MONITORING <span class="neon-text">DATA</span></h3>
+                        <div id="bio-extract-detail-content">
+                            <div class="detail-card-container mini">
+                                <img id="bio-extract-detail-img" src="./assets/images/Card_Placeholder.png"
+                                    alt="Cell Detail">
+                            </div>
+                            <div class="detail-text">
+                                <h4 id="bio-extract-cell-name" class="neon-text">NO DATA</h4>
+                                <div id="bio-extract-cell-efficiency" class="efficiency-badge-large">EFFICIENCY LV.0
+                                </div>
+                                <div id="bio-extract-stat-bonus" class="stat-bonus-text"></div>
+                                <div class="extraction-status">
+                                    <span class="label">BIOMASS PROCESSING</span>
+                                    <div id="bio-extract-production-display" class="production-display">
+                                        <span id="bio-extract-timer" class="timer">00:00</span>
+                                        <span id="bio-extract-ready-amount" class="amount hidden"></span>
+                                    </div>
+                                </div>
+                                <button id="btn-collect-biomass" class="btn-neon" disabled>COLLECT BIOMASS</button>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+
+                <div class="shop-footer">
+                    <div class="shop-balance-group">
+                        <div class="shop-balance bm">
+                            <span class="label">TOTAL BIOMASS</span>
+                            <span class="value" id="bio-extract-bm-balance">0</span>
+                        </div>
+                    </div>
+                    <button id="btn-bio-extract-close" class="btn-neon">DISCONNECT [ESC]</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Synthesis Screen -->
+        <div id="screen-synthesis" class="overlay hidden">
+            <div class="shop-panel glass-panel">
+                <div class="shop-header">
+                    <h2 class="neon-text">CELL <span class="white-text">SYNTHESIZER</span></h2>
+                    <div class="shop-tabs">
+                        <button class="shop-tab-btn active">SYNTHESIS PROTOCOL</button>
+                    </div>
+                </div>
+
+                <div class="shop-content">
+                    <div class="shop-items-list" id="synthesis-item-list">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div class="shop-detail-side">
+                        <div class="shop-detail-img" id="synthesis-detail-icon">🧬</div>
+                        <div class="shop-detail-content">
+                            <h3 id="synthesis-detail-name" class="neon-text">SELECT CELL</h3>
+                            <div class="header-line"></div>
+                            <p id="synthesis-detail-desc" class="shop-detail-desc">Initialize biological synthesis by
+                                selecting a cell blueprint from the database.</p>
+
+                            <div id="synthesis-requirement-list" class="requirement-list">
+                                <!-- Populated by JS (e.g. 90/90 BioMass) -->
+                            </div>
+                        </div>
+                        <button id="btn-synthesis-action" class="shop-action-btn" disabled>INITIALIZE SYNTHESIS</button>
+                    </div>
+                </div>
+
+                <div class="shop-footer">
+                    <div class="shop-balance-group">
+                        <div class="shop-balance bm">
+                            <span class="label">RESERVE BIOMASS</span>
+                            <span class="value" id="synthesis-bm-balance">0</span>
+                        </div>
+                    </div>
+                    <button id="btn-synthesis-close" class="btn-neon">EXIT SYNTHESIZER [ESC]</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Synthesis Animation Screen -->
+        <div id="screen-synthesis-animation" class="overlay hidden">
+            <div id="synthesis-anim-container">
+                <div id="synthesis-platform">
+                    <div id="synthesis-cell-reveal"></div>
+                    <div id="synthesis-scan-overlay">
+                        <div id="synthesis-scan-line"></div>
+                    </div>
+                </div>
+                <div id="synthesis-status-text" class="neon-text">ESTABLISHING BIO-LINK...</div>
+            </div>
+        </div>
+        <div id="screen-shop" class="overlay hidden">
+            <div class="shop-panel glass-panel">
+                <div class="shop-header">
+                    <h2 class="neon-text">VENDING <span class="white-text">MACHINE</span></h2>
+                    <div class="shop-tabs">
+                        <button class="shop-tab-btn active" data-tab="buy">BUY PROTOCOL</button>
+                        <button class="shop-tab-btn" data-tab="sell">SELL PROTOCOL</button>
+                    </div>
+                </div>
+
+                <div class="shop-content">
+                    <div class="shop-items-list" id="shop-item-list">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div class="shop-detail-side">
+                        <div class="shop-detail-img" id="shop-detail-icon">🛒</div>
+                        <div class="shop-detail-content">
+                            <h3 id="shop-detail-name" class="neon-text">SELECT ITEM</h3>
+                            <div class="header-line"></div>
+                            <p id="shop-detail-desc" class="shop-detail-desc">Please select an item from the automated
+                                terminal to view detailed data and acquisition protocols.</p>
+                        </div>
+                        <!-- Action button removed from here, now triggered per-item -->
+                    </div>
+                </div>
+
+                <div class="shop-footer">
+                    <div class="shop-balance-group">
+                        <div class="shop-balance lc">
+                            <span class="label">LAB CREDITS</span>
+                            <span class="value" id="shop-lc-balance">0</span>
+                        </div>
+                        <div class="shop-balance bm">
+                            <span class="label">BIOMASS</span>
+                            <span class="value" id="shop-bm-balance">0</span>
+                        </div>
+                    </div>
+                    <button id="btn-shop-close" class="btn-neon">EXIT TERMINAL [ESC]</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shop Quantity Modal -->
+        <div id="shop-quantity-modal" class="overlay hidden">
+            <div class="modal glass-panel quantity-modal">
+                <h2 id="qmodal-title" class="neon-text">ACQUIRE <span class="white-text">PROTOCOL</span></h2>
+                <div class="qmodal-content">
+                    <div class="qmodal-item-info">
+                        <span id="qmodal-item-icon">🦠</span>
+                        <span id="qmodal-item-name">BIOMASS</span>
+                    </div>
+                    <div class="quantity-selector">
+                        <button id="btn-qty-minus" class="qty-btn">-</button>
+                        <input type="number" id="shop-qty-input" value="1" min="1" max="99">
+                        <button id="btn-qty-plus" class="qty-btn">+</button>
+                    </div>
+                    <div class="qmodal-total">
+                        TOTAL: <span id="qmodal-total-value" class="neon-text">0 LC</span>
+                    </div>
+                    <div id="qmodal-subtraction" class="qmodal-subtraction">
+                        <!-- 3000 - 1500 = 1500 LC -->
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button id="btn-qmodal-confirm" class="btn-neon">ACQUIRE</button>
+                    <button id="btn-qmodal-cancel" class="btn-neon cancel">NOPE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Synthesis Confirmation Modal -->
+        <div id="synthesis-confirm-modal" class="overlay hidden">
+            <div class="modal glass-panel">
+                <h2 class="neon-text">INITIATE <span class="white-text">SYNTHESIS</span></h2>
+                <p id="synthesis-confirm-message"
+                    style="margin: 20px 0; color: rgba(255,255,255,0.8); line-height: 1.5;">
+                    Are you sure you want to proceed with the biological synthesis? This will consume the required
+                    biomass and blueprints.
+                </p>
+                <div class="modal-buttons">
+                    <button id="btn-synthesis-confirm" class="btn-neon">CONFIRM</button>
+                    <button id="btn-synthesis-cancel" class="btn-neon cancel">ABORT</button>
                 </div>
             </div>
         </div>
@@ -827,6 +1111,52 @@
             </div>
         </div>
 
+        <!-- Incubator Interaction Menu -->
+        <div id="screen-incubator-menu" class="overlay hidden">
+            <div class="modal glass-panel">
+                <h2 class="neon-text">INCUBATOR UNIT <span style="color: var(--color-bio);">CONNECTED</span></h2>
+                <p>System authorized. Select biological maintenance protocol:</p>
+                <div class="modal-buttons">
+                    <button id="btn-incubator-heal" class="btn-neon">HEAL CELL</button>
+                    <button id="btn-incubator-create" class="btn-neon disabled" title="Research Data Incomplete">CREATE
+                        CELL (PH)</button>
+                    <button id="btn-incubator-close" class="btn-neon">CLOSE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Incubator Healing Sequence -->
+        <div id="screen-incubator-heal" class="overlay hidden">
+            <div id="incubator-heal-container">
+                <div id="incubator-capsule">
+                    <div id="heal-slots">
+                        <div class="heal-slot" data-slot="0">
+                            <div class="slot-portrait"></div>
+                            <div class="heal-stat-bar">
+                                <div class="heal-fill"></div>
+                            </div>
+                        </div>
+                        <div class="heal-slot" data-slot="1">
+                            <div class="slot-portrait"></div>
+                            <div class="heal-stat-bar">
+                                <div class="heal-fill"></div>
+                            </div>
+                        </div>
+                        <div class="heal-slot" data-slot="2">
+                            <div class="slot-portrait"></div>
+                            <div class="heal-stat-bar">
+                                <div class="heal-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="heal-scan-overlay">
+                    <div id="heal-scan-line"></div>
+                </div>
+                <div id="heal-status-text" class="neon-text">INITIALIZING BIO-SYNC...</div>
+            </div>
+        </div>
+
         <!-- Full-screen Card Preview Overlay -->
         <div id="card-preview-overlay" class="overlay hidden">
             <div class="preview-content">
@@ -930,7 +1260,7 @@
     <!-- Item Pickup Modal -->
     <div id="item-pickup-modal" class="overlay hidden">
         <div class="pickup-panel glass-panel">
-            <div class="pickup-label">ITEM ACQUIRED</div>
+            <div class="pickup-label" id="pickup-label">ITEM ACQUIRED</div>
             <div class="pickup-img-wrap">
                 <div id="pickup-sprite" class="key-item-sprite data-pad"></div>
             </div>
@@ -940,6 +1270,9 @@
             <div class="pickup-hint">[ F ] or click to close</div>
         </div>
     </div>
+
+    <!-- Zone Transition Overlay -->
+    <div id="zone-transition-overlay" class="hidden"></div>
 
     <script type="module" src="src/main.js"></script>
 </body>

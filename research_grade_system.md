@@ -43,6 +43,35 @@ Leader cards are **Passive**. Having them in the `cardBox` unlocks specific tact
 > - **Tier 2**: Slot +1 (Crit 2% / PP +2).
 > - **Tier 3**: Slot +2 (Crit 3% / PP +3).
 
+## EXP & Progression Scaling
+
+### EXP Requirements per RG Level
+The total EXP required to reach the next RG level follows a power curve:
+**Total EXP Required = Sum(floor(30 * (RG + 1)^1.5))**
+
+| RG | EXP to Next | Total EXP |
+|:---|:---|:---|
+| 0 | 30 | 0 |
+| 1 | 84 | 30 |
+| 2 | 155 | 114 |
+| 3 | 240 | 269 |
+| 4 | 335 | 509 |
+
+### Wild Encounter Rewards
+Rewards scale dynamically based on the current player RG level and a monster-specific variety multiplier:
+**Reward = round(10 * (1.0 + (PlayerRG * 0.5)) * Multiplier)**
+
+| Monster | Multiplier | Base Reward (RG 0) |
+|:---|:---|:---|
+| **Stemmy** | 1.0x | 10 EXP |
+| **Nitrophil** | 1.15x | 12 EXP |
+| **Cambihil** | 1.25x | 13 EXP |
+| **Lydrosome** | 1.1x | 11 EXP |
+
+### Fixed Rewards
+- **NPC / Training**: 50 EXP
+- **Sector Bosses**: 250 EXP
+
 🧠 Tactical Skill Unlocking
 I've clarified the Leader Brain descriptions to ensure the mapping is clear:
 

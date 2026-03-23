@@ -7,7 +7,7 @@
 Years ago, a mysterious "accident" occurred that changed everything. Overnight, the microscopic cells mutated into sentient, large-scale entities (reaching up to 15cm). While the staff and the public grew to love these helpful "Cells," **Director Capsain** turned against them, claiming they were unstable anomalies.
 
 ### The False Accident (The Cover-up)
-To hide the truth, Director Capsain officially logged the event as **"The Ionization Leak of '82."** He claimed a faulty reactor shield allowed high-energy particles to bathe the petri dishes, causing "unforeseen genetic drift." This allowed him to blame aging equipment rather than his own actions.
+To hide the truth, Director Capsain officially logged the event as **"The Ionization Leak of '27."** He claimed a faulty reactor shield allowed high-energy particles to bathe the petri dishes, causing "unforeseen genetic drift." This allowed him to blame aging equipment rather than his own actions.
 
 ### The True Plot Twist
 The "Ionization Leak" never happened. While working late, Director Capsain accidentally dropped a generous amount of **"Inferno Chili Sauce"** into the central neutrophil immune cell dish while eating extra-spicy noodles.
@@ -21,7 +21,7 @@ To save the project and reveal the truth, the player must recover the **Origin N
 
 ### The Three Keys of Proof
 1.  **Lana (The Botanic Expert)**: Scientist working on **Cambihil**. Defeat her to receive the **Old Lab Room Key**.
-2.  **Dyzes (The Human Cell Expert)**: Scientist working on **Lydrosome**. Defeat him to receive the **Location DataLog**.
+2.  **Dyzes (The Human Cell Expert)**: Scientist working on **Lydrosome**. Defeat him to receive the **Old Data Stick**.
 3.  **Director Capsain**: The head of the lab. Defeat him to receive the **Rare Inferno Sauce**.
 
 ### Major NPC Profiles
@@ -29,7 +29,7 @@ To save the project and reveal the truth, the player must recover the **Origin N
 - **Jenzi (Senior / Gatekeeper)**: The face of the Entrance Room. She's "Gen Z" to the core—mischievous, speaks in slang, and loves teasing interns. Despite her playful attitude, she's a highly skilled Senior with deep knowledge of the lab's inner workings. She guides the player and "validates" their findings.
 - **Director Capsain**: The authoritarian head of The Odd Labs. He is grumpy, defensive about the '82 Leak, and values "professionalism" above all else. He publicly despises the sentient Cells as "monstrous anomalies," but secretly cares for the Origin Nitrophil and is deeply embarrassed by his noodle-related mistake.
 - **Lana (Botanic Expert)**: A brilliant but impatient scientist. She is hardheaded and often snaps at the player for being inefficient. After being defeated, she seems to be holding something back, giving the player a key but warning them to mind their own business.
-- **Dyzes (Human Cell Expert)**: Chill, laid-back, and eccentric. He believes in "cellular harmony." After his battle, he acts suspicious/hiding something, but provides the data needed to find the Old Lab.
+- **Dyzes (Human Cell Expert)**: Chill, laid-back, and eccentric. He believes in "cellular harmony." After his battle, he acts suspicious/hiding something, but provides the **Old Data Stick** needed to find the Old Lab.
 
 ## NPC Tactical Snapshots (Presets)
 
@@ -71,14 +71,60 @@ The absolute peak of cellular enhancement. Maximum efficiency.
 ## The Origin Nitrophil
 The **Origin Nitrophil** is a secret known only to Director Capsain. Hidden in a dusty, unused corner of the lab, it is the Director's silent burden. It is significantly larger than its siblings, with a vibrant, glowing **Orange Chili Hue**. Surprisingly, it isn't aggressive; it's incredibly chill and hyperactive—a direct result of its high-potency capsicum origins.
 
+## All Items
+These items are essential for uncovering the truth about the '82 Incident, accessing secret files, or enhancing your tactical research.
+
+| ID | Item Name | Image | Description |
+|:---|:---|:---|:---|
+| **Quest01** | Old Lab Room Key | F50 | An old but still functional key card to a restricted storage wing. Given by Lana. |
+| **Quest03** | Old Data Stick | F64 | Ancient people used this to store data! |
+| **Quest02** | Inferno Sauce | F51 | A bottle of Director Capsain's high-potency research sample. Defeat the Director to secure it. |
+| **Quest04** | Origin Nitrophil | C3 | The ultimate proof. The first-ever mutated cell, hidden by Capsain. |
+| **SSCARD01** | SS01 | F63 | A data card with super rare custom image on it. |
+| **SSCARD02** | SS02 | F63 | A data card with super rare custom image on it. |
+| **SSCARD03** | SS03 | F63 | A data card with super rare custom image on it. |
+| **CARD00** | CELL CARD: STEMMY | F75 | A collectible card features Stemmy, hand made by Jenzi. |
+| **CARD01** | CELL CARD: CAMBIHIL | F75 | A collectible card features Cambihil, hand made by Jenzi. |
+| **CARD02** | CELL CARD: LYDROSOME | F75 | A collectible card features Lydrosome, hand made by Jenzi. |
+| **CARD03** | CELL CARD: NITROPHIL | F75 | A collectible card features Nitrophil, hand made by Jenzi. |
+
+## Shopping System & Resources (Vending Machines)
+
+The lab's auxiliary economy runs on **Lab-Credits (LC)** and **Biomass**. Vending Machines (f67-f70) located in designated breakrooms (such as the Kitchen area) serve as the automated hubs for trading these resources.
+
+### Currency & Materials
+- **Lab-Credits (LC)**: The official currency used by staff for equipment and rare acquisitions.
+- **Biomass**: A biological byproduct dropped by Cells. It is the core material required for the **Monster Synthesis System**.
+
+### The Vending Machine (Shop)
+Interacting with a Vending Machine opens a simple Buy/Sell interface:
+- **Buy Tab**: Purchase Synthesis Recipes, Rare Cards, and raw Biomass.
+- **Sell Tab**: Offload surplus Biomass for LC to fund expensive research.
+
+### Item Catalog (Standard Vending)
+| Item | Price (LC) | Type | Note |
+|:---|:---|:---|:---|
+| **Biomass** | 20 LC | Resource | Can be bought infinitely. |
+| **Stemmy Recipe** | 500 LC | Recipe | One-time buy. Essential for Synthesis. |
+| **Dyzes Rare Card** | 1000 LC | Rare Card | One-time buy. Features unique art. |
+
+### Battle Rewards & Scaling
+Victory in battle rewards players with both LC and Biomass. The amount scales slightly based on the player's **Research Grade (RG)**.
+
+| Encounter | Base LC | Base Biomass | RG Scaling |
+|:---|:---|:---|:---|
+| **Wild Monster** | 10 - 25 | 1 - 5 | +5% per RG |
+| **Human NPC** | 120 | 9 | +5% per RG |
+| **Sector Boss** | 350 | 15 | +5% per RG |
+
 ## Progression: The DataLog System
 The truth is hidden in the digital archives. Collecting DataLogs unlocks new sectors and reveals the real history of the Lab.
 
-**Lobby Start**: Talk to Jenzi -> Choose Cell -> **Test Battle** (Win or Lose is both ok) -> **Log #001** drops near Atrium door. (block the door) (use | **F50** | KeyItem-RoomKey | image)
+**Lobby Start**: Talk to Jenzi -> Choose Cell -> **Test Battle** (Win or Lose is both ok) -> Talk to Jenzi again -> **Log #001** is hidden in the Red Specimen Tank (**f23_lob_br**). 
 **Atrium Unlock**: Collect Log #001 -> Talk to Jenzi -> Atrium door unlocks. 
-**Atrium's Quest**: Collect enough 5 datalog will trigger battle with Jenzi (RG-5), if win her, (She tells the False Incident) -> Lana's Room unlocks. 
+**Atrium's Quest**: Collect 4 more logs in the Atrium (Total 5) -> Talk to Jenzi -> Battle Jenzi (RG-5, 1 Stemmy, Balance style) -> Win -> She tells you about the False Incident and directs you to Lana -> Botanic Sector door unlocks.
 **Lana's Sector**: Collect 5 logs in Lana's Room (Total 10) -> Battle Lana(RG-10) -> Receive Key -> Talk to Jenzi -> Dyzes' Room unlocks.
-**Dyzes' Sector**: Collect 5 logs in Dyzes' Room (Total 15) -> Battle Dyzes(RG-15) -> Receive Old Lab info -> Talk to Jenzi -> Director's Room unlocks.
+**Dyzes' Sector**: Collect 5 logs in Dyzes' Room (Total 15) -> Battle Dyzes(RG-15) -> Receive **Old Data Stick** -> Talk to Jenzi -> Director's Room unlocks.
 **Director's Suite**: Find 5 logs in Director's Room (Total 20) -> Battle Director(RG-20) -> Receive Inferno Sauce -> Talk to Jenzi.
 **Final Secret**: Find the **Old Lab Room** -> Read **Final Datalog** -> Take **Origin Nitrophil** to Director -> Game End.
 
@@ -87,75 +133,75 @@ The truth is hidden in the digital archives. Collecting DataLogs unlocks new sec
 ### Group 1: The Main Atrium (Logs 1-5)
 
 #### [HISTORY] Log #001: Mission Statement
-"The Odd Labs was founded on the belief that the microscopic world holds the cure for the macro-world. We heal the earth by healing the cell." (Dropped by the Atrium door after the first battle).
+"The Odd Labs was founded on a singular, borderline obsessive belief: the microscopic world holds the ultimate cure for the macro-world's failures. By engineering life at the cellular level, we aren't just creating tools; we're designing the future of biological harmony. Healing the earth starts with a single, perfectly optimized cell. Or at least, that's what the brochure says. Reality involves a lot more paperwork and weird smells."
 
 #### [FLUFF] Log #002: The Coffee Incident
-"Someone left a half-empty mug in the incubator. It has grown a fuzzy purple mold. It isn't sentient, but it did try to eat my pen."
+"Urgent Notice: Will whoever left a half-empty mug of 'Triple-Roast' in Incubator 3 please come forward? The resulting fuzzy purple mold has progressed beyond 'biological curiosity' and is now actively hoarding office supplies. It isn't sentient yet, but it did try to swallow my favorite fountain pen when I tried to clean the tray. If it starts asking for sugar, we're calling Security."
 
 #### [INFO] Log #003: Security Protocols
-"Entrance gates now require a valid Bio-Signature match. Unregistered interns will be teased by Jenzi until they cry. - Management."
+"Updated Security Protocol: All entrance gates now require a valid Bio-Signature match for entry. If your Cell pairing isn't synchronized, the gates will remain locked, and you will be forced to wait in the lobby where Jenzi will 'verbally audit' your lack of preparation until you either cry or quit. This has proven 41% more effective than standard fines. - Management."
 
 #### [TEASE] Log #004: Missing Footage
-"Automatic backup failed during the '82 Incident. Exactly 4 minutes of footage are missing from the central hub. Capsain claims it was 'ozone interference'."
+"Maintenance Log 27-A: During the '27 Incident, the security cameras mysteriously cut out for exactly 3 minutes. Director Capsain claims it was just 'radio interference' from his lab equipment. However, the repair crew found that the camera cables had been manually unplugged. It looks like someone definitely didn't want a witness to whatever happened."
 
 #### [FUN] Log #005: Noodle Tuesday
-"Cafeteria Update: Noodle Tuesday is now the highest energy-consumption day in the lab. Director Capsain was seen carrying 12 packs of 'Inferno' brand."
+"Internal Memo: Noodle Tuesday has officially surpassed 'Tactical Thursday' as the highest energy-consumption day in the lab, mostly due to the sheer number of hot water dispensers running at max capacity. Director Capsain was spotted by the janitor carrying a suspiciously large carton containing 13 packs of 'Inferno' brand instant noodles. He claimed it was for 'caloric stress-testing'. Nobody believed him."
 
 ### Group 2: Botanic Sector (Logs 6-10)
 
 #### [INFO] Log #006: Botanic Breakthrough
-"Lana successfully integrated chlorophyll into a fibroblast today. The resulting 'Cambihil' is incredibly stable."
+"Lab Report: After seventy-three failed trials, Lana has finally successfully integrated active chlorophyll into a synthetic fibroblast structure. The resulting specimen, codenamed 'Cambihil,' is remarkably stable and seems to enjoy basking in the UV lamps. It’s the first true hybrid of plant resilience and multi-cellular intelligence. Lana didn't smile, but she did stop drinking her fifth cup of coffee for a moment. Progress."
 
 #### [TEASE] Log #007: Lana's Complaint
-"The Director is spending far too much time in the maintenance closet of Sector 4. He brings a bowl of noodles in there every day. Sus."
+"Lana’s Private Log: The Director is spending an absurd amount of time in that side room. He brings a bowl of noodles in there every day at 1 PM, thinking he's being subtle. I know exactly what he’re 'cultivating' in there, and the constant secrecy is just unprofessional. Seventy-one hours of my team's time, wasted on his little secret."
 
 #### [FUN] Log #008: Photosynthesis Party
-"Cambihils actually grow 15% faster when exposed to high-tempo music. Lana hates it, but the data doesn't lie."
+"Observation Log: We discovered something peculiar today. Cambihils show a 15.3% increase in photosynthetic efficiency when exposed to high-tempo techno music. They seem to vibrate in time with the bass. Lana absolutely hates the noise and claims it's 'acoustical nonsense,' but the data doesn't lie. I caught her tapping her foot yesterday. She claims it was a muscle spasm caused by inefficient lighting."
 
 #### [TEASE] Log #009: The Spicy Aroma
-"Lana noted a 'pungent, peppery smell' coming from the vents near the Old Lab wing. She logged it as 'botanical mutation fumes'."
+"Incident Report: Lana filed a complaint about a 'pungent, almost violent peppery smell' leaking from the vents connected to the decommissioned Old Lab wing. She officially logged it as 'volatile botanical mutation fumes' and requested a full air-scrubbing sequence. The Director denied the request, stating it was merely 'experimental ozone' from the nearby power coupling. My eyes are still watering."
 
 #### [INFO] Log #010: Private Key Log
-"Lana changed the lock on her private storage. Hint: It's the same day she first successfully grew a Cell. (Is she hiding something? - Anon)."
+"Security Update: Scientist Lana has updated the biometric lock on her private storage cabinet. The password hint is simply: 'The Day Biology Changed.' I looked it up—that’s the anniversary of the very first successful Cell cultivation. Why would she guard her personal research files with such a sentimental date? She's definitely hiding something more than just old clipboards. - Anon."
 
 ### Group 3: Human Research Ward (Logs 11-15)
 
 #### [INFO] Log #011: Dyzes' Observations
-"Scientist Dyzes reports that the 'Lydrosome' mutation shows 99% tissue compatibility with the human host."
+"Research Log: Scientist Dyzes is leaning back in his chair, staring at the Lydrosome cultures again. He reports that the latest mutation shows a staggering 99.3% tissue compatibility with organic hosts. This isn't just a discovery; it's a bridge between species. If we can finalize the osmotic pressure variables, we’ll have a Cell that can navigate biological systems like a master surgeon. Dyzes just said, 'It’s like we’re all connected, man.'"
 
 #### [TEASE] Log #012: Protein Analysis
-"Looking at the 'mutation' under zoom. These aren't radiation burns. These are protein capsicum interactions. Is that a chili seed?"
+"Unauthorized Analysis: I managed to get a glimpse of the 'mutation' from the Director's restricted samples under the high-res zoom. These aren't radiation burns or ionization scars, as the official report suggests. The molecular signature is clearly a complex protein-capsicum interaction. Wait... is that a microscopic chili seed embedded in the cell wall? If this gets out, Capsain is going to have more than just a headache."
 
 #### [FUN] Log #013: The Chill Factor
-"Observation on Nitrophil: For a Thermogenic Cell it is remarkably laid back. We've officially dubbed it the 'Chill-y' cell."
+"Behavioral Assessment: Observed the latest Nitrophil specimen today. For a Thermogenic Cell that literally houses a miniature combustion reaction, it is remarkably laid back. It spent three hours just drifting around its tank, occasionally glowing orange when it felt bored. We've officially dubbed it the 'Chill-y' cell. Dyzes thinks it's the 'vibes'."
 
 #### [TEASE] Log #014: Point Zero
-"Dyzes found a data fragment mentioning 'Point Zero'. It's a location not listed in the current blueprints. Capsain deleted the rest."
+"Recovery Log: While cleaning out an old terminal, Dyzes recovered a corrupted data fragment referencing something called 'Point Zero'. According to the notes, it’s a location within the facility that isn't listed on any current blueprints or structural maps. Before we could cross-reference the coordinates, Director Capsain remotely accessed the terminal and deleted the remaining metadata. He looked remarkably pale during the staff meeting later."
 
 #### [INFO] Log #015: Cellular Harmony
-"Dyzes believes the Cells are actually trying to communicate. He spent two hours talking to a Lydrosome today. It waved back."
+"Staff Observation: Dyzes has officially gone off the deep end. He firmly believes the Cells are attempting primitive communication through fluctuating osmotic pressure. He spent three full hours today talking to a Lydrosome about 'the nature of the soul.' The terrifying part? The Lydrosome actually waved back with a localized pressure jet. Dyzes didn't even look surprised. He just said, 'I know, buddy. I know.'"
 
 ### Group 4: Executive Suite (Logs 16-20)
 
 #### [FUN] Log #016: Noodle Review (Draft)
-"User: Capsain82. Review: Inferno Brand Chili Sauce. Rating: 5/5. Potency is perfect. One drop fell in workspace—hope nobody noticed."
+"Draft File (Capsain27_FinalReview): 'Inferno Brand Chili Sauce - Limited Edition Batch. Rating: 5/5. The heat is exquisite, borderline biological. Potency is perfect for late-night research sessions.'"
 
-#### [TEASE] Log #017: Official '82 Report
-"Official Cause: Faulty reactor shield. Note: Clean-up crew reported a 'spicy aroma'. Logged as 'oxidized metal ozone'."
+#### [TEASE] Log #017: Official '27 Report
+"The 2027 Executive Summary: Official Cause of the Leak: A containment failure in the Mega Incubator's primary reactor, located within the Main Atrium. Note from the Ground Crew (Redacted): 'We entered the Atrium and were hit by a thick, overwhelming spicy aroma that made our eyes water through the gas masks. Management insisted it was merely the smell of oxidized metal and ozone interaction.' The logic is as thin as the Director's patience."
 
 #### [FLUFF] Log #018: Logistics Update
-"Monthly Order: 1 Case of Industrial-Strength Antacid. Priority for the Director's Office."
+"Logistics Requisition: Monthly order for the Executive Floor has been updated. Item: 'Inferno' Noodle Boxes (31 Cases). Reason: 'Caloric density optimization for late-night research.' Priority: Urgent. The Director has been heard grumbling about the cafeteria's 'lack of kick' while waiting for this shipment. Someone should tell him that consuming this much spice during a single work cycle isn't recommended for biological health."
 
 #### [TEASE] Log #019: Director's Secret Folder
-"ACCESS DENIED. Folder Name: [Petri Dish #0 - My Little Accident]. Password hint: What makes everything better? (Spices?)"
+"SYSTEM ALERT: Access Denied to restricted sub-directory. Folder Name: [Petri Dish #0 - My Little Accident]. Security Level: 5. Password Hint: 'The ingredient that makes life better.' I tried 'Science,' 'Knowledge,' and 'Efficiency.' All failed. I have a hunch that if I tried 'Extra Spicy Sauce' or 'Chili,' I might get in. What is Capsain hiding in there? It sounds less like a failure and more like a confession."
 
 #### [CLIMAX] Log #020: The Director's Private Note
-"Origin is now 15cm. Its orange glow is getting brighter. If they ever find out the project was born from a noodle accident, I'm ruined."
+"Private Encryption (Director Only): Origin is now 15.3cm in diameter. Its orange glow has become so bright it's visible through the lead-lined containment. It’s remarkably hyperactive whenever it detects capsaicin in the air. If the board ever discovers that the crowning achievement of this lab—the very first sentient cell—was born from a clumsy noodle accident and a splash of chili sauce, my career is over. I'm ruined. But... he's so chill."
 
 ### Final Log: The Old Lab Room
 
 #### [SECRET] Log #999: The Burden of Pride
-"I spent an hour today just talking to Origin. I have to shout and complain about 'monstrous anomalies' so the board doesn't suspect. But here... I wish I could just tell everyone. I'm so sorry, little buddy."
+"Personal Note 999: I spent an hour alone in the Old Lab today, just talking to Origin. I have to put on this mask of arrogance, shouting about 'monstrous anomalies' and 'biological failures' just so the board doesn't look too closely at the '27 logs. But here, in the dust and silence... I wish I could just be the scientist who made a beautiful mistake. I'm so sorry I have to keep you hidden, little buddy. One day, hopefully, the world will be ready for the truth."
 
 ## NPC Dialogue Progression
 
@@ -163,61 +209,67 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ### Jenzi (Senior / Gatekeeper)
 ### Jenzi: The Introduction
-**Jenzi:** *"Welcome to the trenches, Intern! I'm Jenzi, and I'll be your guide through this corporate fever dream. We're supposedly 'healing the world,' but mostly we're just trying not to get fired by Capsain."*
+**Jenzi:** *"Welcome to the trenches, Intern! I'm Jenzi, your guide through this corporate fever dream. We're supposedly 'healing the world,' but mostly we're just trying not to get fired by Lab Director Capsain. This floor is only a tiny slice of the National Lab mega-structure, though. We just handle a few departments here—Botanic, Human Research, and the Executive Suite."*
 
-**Jenzi:** *"Since you're the new main character, you need a Companion Cell. It's like a smart pet, but way more... liquid. It'll help you access the lab's tactical subnet and, you know, not die. Pick your favorite vibe."*
+**Jenzi:** *"Since you're the new main character, you need a Companion Cell. It's like a smart pet, but way more... liquid. We use them for everything—from heavy lifting to high-end research, though most researchers just end up teaching them tricks during lunch. Their origins are a whole rabbit hole of lab theories, but basically everyone loves them. Well, except for... actually, don't worry about that yet. Just know they're the ultimate lab partners."*
 
-**Jenzi:** *"I've got three in the incubator. Don't overthink it, unless you're a Tryhard."*
+**Jenzi:** *"I've got three in the incubator. It's a lab tradition—who knows when or why it started, but everyone who works here must have at least one Companion Cell. So just pick one that vibe with you the most."*
 
 - **Cambihil**: *"Tanky and green. Good for people who like to play safe and hide behind a shield of salad."*
 - **Lydrosome**: *"High IQ and precise. It uses water pressure to snipe things. Very 'surgical' if you're into that."*
 - **Nitrophil**: *"Pure chaos and fire. It's the 'hold my juice' of the lab. Aggressive af."*
 
-**Jenzi confirmation:** *"Choose well, bestie. This cell is your new personality. Ready to lock it in?"*
-- **After Pairing**: *"Sheesh, nice pick! Let's see if you can actually use it though. Bet you can't even touch me in a battle. Square up!"*
-- **Before Battle**: *"Square up, Intern! Let's see what you've got."*
-- **Post Test Battle**: *"Not bad, not bad. You actually have some skill. No cap. Oh look, someone's out here littering again. Pick up that Datapad next to the Atrium door. It's giving... 'lazy researcher' vibes."*
+- **After Pairing**: *"Sheesh, nice pick! Let's see if you can actually use it though. Bet you can't even touch me in a battle. Pelli-it up!"*
+- **Before Battle**: *"Pelli-it up, Intern! Let's see what you've got."*
+- **Post Test Battle**: *"Ayo, not bad for a first-timer! You've got that 'pioneer spirit' everyone talks about. Win or lose, you've been brave enough to test that Cell today. Respect. Wait, did you see that? Something just flashed over by the specimen tanks. Go check if someone dropped something in there. I swear, these scientists have the attention span of a goldfish once they leave their desks."*
 - **After Picking up Log #001**: *"Aha! A lost Datapad. People here would forget their own heads if they weren't attached. Collect 'em and bring 'em to me, okay? I'll 'officially' return them to the owners. Door to the Atrium is open now. Go explore, but don't get lost in the sauce."*
-- **Atrium Progression (5 Logs)**: *"You've been busy! 5 Datapads already? Lowkey impressive. Since you're actually doing work, I'll tell you the 'tea' about the Incident. Director says it was an 'Ionization Leak'. Major cap. But honestly, go ask Lana in the Botanic wing. She's the main character of that floor anyway. Door's open!"*
+- **Atrium Progression (5 Logs - Pre-Battle)**: *"You've been busy! 5 Datapads already? Lowkey impressive. Then you must smell something fishy about the Incident. But before I tell you about the 'smell', let's see if you've actually worth it. My Stemmy is ready to rumble. Pelli-it up!"*
+- **Atrium Progression (5 Logs - Post-Battle)**: *"Okay, okay, you got me! You're actually decent. Since you won, here's the tea about 'The Incident'. Director Capsain says it was an 'Ionization Leak'. Something about that story just isn't right... Well beat me, what do I know. If you want the real story, go ask Lana in the Botanic wing. She's the main character of that floor anyway. I've unlocked the door for you. Keep collecting those logs!"*
 - **Lana Progression (10 Logs)**: *"Wait, Lana gave you a key? And she was acting sus? Sus-picious! That's weird af. Maybe things aren't as simple as 'spicy ozone'. You should totally go bother Dyzes in Human Research. He's chill, but he definitely knows things he's not saying."*
-- **Dyzes Progression (15 Logs)**: *"Dyzes gave you info on an 'Old Lab'? Okay, now this is getting serious. No more jokes. You need to confront the final boss himself. Director Capsain. His room is open. Go get the truth, Intern."*
+- **Dyzes Progression (15 Logs)**: *"Dyzes gave you an 'Old Data Stick'? Okay, now this is getting serious. No more jokes. You need to confront the final boss himself. Director Capsain. His room is open. Go get the truth, Intern."*
 - **Director Progression (20 Logs)**: *"You beat the Director and got the Inferno Sauce? Main Character energy! You have all the clues now. Find that Old Lab Room. That's where the final secret is hidden."*
 
 ### Lana (Botanic Expert)
-- **Normal (< 5 Logs)**: *"Hello there! Be careful not to step on the Cambihil spores. They're quite sensitive to heavy boots. Have you seen the Director? He was looking for a 'spicy' fertilizer earlier..."*
-- **Flavor Lines (Anytime)**:
-    - *"You're 14 seconds late for this conversation. Make it quick! It’s not like I was waiting for you or anything, I have nitrogen-cycles to monitor!"*
-    - *"Your last research report was... acceptable. Barely. Don't look so happy, Intern, basic competency is the bare minimum!"*
-    - *"Don't get used to me helping you. I just don't want an incompetent intern lowering the lab's safety rating. Now take this notes and leave!"*
-    - *"Why are you still standing here? Efficiency isn't a suggestion! ...But, I suppose you haven't completely failed yet. Keep it up. Not that I'm cheering for you."*
-    - *"Why are you staring? I was just... checking if your partner Cell was properly hydrated! Not because I'm worried about you! It’s a valuable lab asset, unlike Some People!"*
+- **First Meeting**: *"Hmph. So YOU'RE the new intern Jenzi was giggling about? I'm Lana, Senior Scientist of the Botanic Sector. Don't think for a second that I have time to babysit you! My work on Cambihil is far more complex than anything you've seen, so keep your clumsy fingers off my equipment! And... and whatever Jenzi told you about... things? It's all lies! She just thrives on office gossip! Now, either help with the nutrient sensors or get out of my light!"*
+- **Random Lines (Anytime)**:
+    - *"What are you staring at? I was merely performing a hydration assessment on your partner Cell. It is a critical laboratory asset, unlike... some uncalibrated interns! Hmph!"*
+    - *"Why are you obstructing the walkway? Efficiency is the cornerstone of the Botanic Sector. If you are going to be non-productive, do it elsewhere! ...But, I suppose you can observe the nutrient cycles from over there. Just don't touch anything!"*
+    - *"Do not simply stand there! It is... it is scientifically distracting! If you are here for research, take a clipboard. If you are here to gawk at the flora, do it silently. Honestly, the lack of focus in new recruits these days..."*
+    - *"I have no intention of providing remedial guidance. I simply don't want an incompetent intern lowering this sector's safety rating on their first day! It would be a stain on my professional record, that's all! Don't get the wrong idea!"*
+    - *"Your tactical signature is completely unoptimized. Did Jenzi provide zero fundamental training, or were you intentionally ignoring protocol? Honestly... hand me your device. I am only recalibrating it because its current state is an affront to efficiency, understood?"*
+    - *"Watch your step! Be careful not to disturb the Cambihil spores. They're far more sensitive than your heavy boots suggest! ...Are your boots properly sealed? I mean—the spores! Worry about the spores!"*
 - **Boss (>= 5 Logs)**: *"Wait. You've been poking around the botanical archives, haven't you? Look, I love these cells, but the Director says we have to keep the research classified. If you want that Old Lab Key, you'll have to prove you can handle the truth in a duel!"*
 - **Before Battle**: *"Prepare for a lesson in botanical efficiency!"*
 - **Defeated**: *"Fine! You win! *[Mutters]* Just like the Director during the Leak... always so stubborn. Here, take this Old Lab Room Key. It's for some old storage room. Just... don't believe everything you read in the logs. "*
+- **Won**: *"Hmph. Just as I suspected. Your tactical calibration is completely non-existent! You're lucky my Cambihil was in a 'passive' mode, or you'd be more than just extracted. Go back to the entrance and... and don't come back until you've read at least three field guides! Honestly!"*
 
 ### Dyzes (Human Cell Expert)
-- **Normal (< 10 Logs)**: *"Lydrosome is a marvel of tactical evolution. Its osmotic pressure allows for surgical precision—dissolving a single harmful enzyme without touching the surrounding tissue. It's the ultimate biological sniper."*
-- **Flavor Lines (Anytime)**:
+- **First Meeting**: *"Hey. I'm Dyzes. Welcome to the chillest wing of the lab. We study the Lydrosome here—it's all about that cellular harmony, you know? Jenzi probably made me sound like a relic, but I prefer 'seasoned professional'. Watch your step, the osmotic mist is fresh today."*
+- **Random Lines (Anytime)**:
+    - *"Lydrosome is a marvel of tactical evolution. Its osmotic pressure allows for surgical precision—dissolving a single harmful enzyme without touching the surrounding tissue. It's the ultimate biological sniper."*
     - *"Hey. Breathe in that osmotic mist... feels like a fresh ocean breeze, right? Or maybe just distilled enzymes. Same thing, really."*
     - *"The Lydrosomes are in a good mood today. One of them actually waved at me. Or it was just a pressure vent. I'm choosing to believe it waved."*
-    - *"Don't mind the hum. That's just the sound of cellular harmony. Or my fan. Honestly, I stopped checking."*
-    - *"You ever wonder if we're just big cells in a giant lab called 'Earth'? Deep stuff, Intern. Real deep."*
-    - *"Chill out. Stress increases cortisol, and cortisol ruins the data. Just let the flow take you."*
+    - *"Don't mind the hum. That's just the sound of cellular harmony. Or my fan. Honestly, I stopped checking which was which long ago."*
+    - *"You ever wonder if we're just big cells in a giant lab called 'Earth'? Deep stuff, Intern. Real deep. Think about it next time you're filing data."*
+    - *"Chill out. Stress increases cortisol, and cortisol ruins the data. If you're going to work here, you've gotta learn to go with the flow."*
 - **Boss (>= 10 Logs)**: *"I've seen your log activity. You're piecing together 'The Incident', aren't you? Capsain is a good man, just... proud. I can't let you expose him without a proper test of your tactical skill. Prepare yourself!"*
 - **Before Battle**: *"Let's see if your tactical vibe is strong enough."*
-- **Defeated**: *"Woah, okay. Your tactical flow is elite. I can't really hide the truth if you're this good. The Old Lab exists, man. It's not on the main maps. Here's the coordinates I found. Capsain is just... he's protective, you know? Good luck."*
+- **Defeated**: *"Woah, okay. Your tactical flow is elite. I can't really hide the truth if you're this good. The Old Lab exists, man. It's not on the main maps. Wait, let me give you this old data stick I found in the archives. It contains a floor plan that reveals the hidden lab location. Go talk to Jenzi. She'll level with you about how to get in. Capsain is just... he's protective, you know? Good luck."*
+- **Won**: *"Woah, man. You're a bit out of sync. Take a breather, hydrate, and maybe try focusing on the flow next time. No rush."*
 
 ### Director Capsain
-- **Normal (< 15 Logs)**: *"What are you doing here? These labs aren't for sightseeing! Get back to your station or I'll have you filing paperwork for a month. And ignore that smell, it's... experimental ozone."*
-- **Flavor Lines (Anytime)**:
+- **First Meeting**: *"Do you have an appointment? No? Then you're trespassing on executive time. I am Director Capsain. I don't have time for 'meaningful introductions' with every intern that wanders in. If you're looking for gossip, go back to Jenzi. If you're here to work, then start working. And ignore that smell—it's industrial-grade experimental ozone."*
+- **Random Lines (Anytime)**:
+    - *"What are you doing here? These labs aren't for sightseeing! Get back to your station or I'll have you filing paperwork for a month. And ignore that smell, it's... experimental ozone."*
     - *"I don't pay you to wander the atrium. I pay you to contribute to a failing project. Wait, I don't pay interns at all. Even better—get back to work."*
     - *"There is a very specific protocol for handling sensitive materials. Step one: Don't touch anything. Step two: Refer to step one."*
     - *"Lana's greenhouse is taking up too much power. If it weren't for the board's interest in 'green tech', I'd have paved that wing for more reactor space."*
     - *"The smell? It’s industrial ionization. If you can’t handle a little stinging in the nostrils, you shouldn’t be in a lab."*
-    - *"Stop asking about the '82 logs. The archives were purged for security reasons. Unless you have a level 5 clearance, it's none of your business."*
-- **Boss (>= 15 Logs)**: *"So. You found the Noodle Review. You found the '82 security gap. You think a little chili sauce is enough to topple this Director? Fine. If you want the 'Origin', you'll have to go through me and my strongest Nitrophil first!"*
+    - *"Stop asking about the '27 logs. The archives were purged for security reasons. Unless you have a level 5 clearance, it's none of your business."*
+- **Boss (>= 15 Logs)**: *"So. You found the Noodle Review. You found the '27 security gap. You think a little chili sauce is enough to topple this Director? Fine. If you want the 'Origin', you'll have to go through me and my strongest Nitrophil first!"*
 - **Before Battle**: *"I won't have my legacy tarnished by some spicy gossip!"*
 - **Defeated**: *"I... I failed? To an intern? *[Sighs deeply]* You've seen the logs. You have the sauce. You've basically already found out. Here, take this Rare Inferno Sauce... it's just a research sample! Nothing more! Now go away, I have... important papers to write."*
+- **Won**: *"Dismissed. If you can't even handle a basic engagement, you have no business poking around the archives. Go back to filing paperwork, Intern."*
 
 ### Rival (Mystery Scientist)
 - **Before Battle**: *"Analysis commencing. Do not disappoint."*
@@ -242,7 +294,7 @@ These dialogue lines are randomly assigned to generic researchers based on the s
 #### Zone: Main Atrium (The Hub)
 1. *"Have you seen the latest readings on the Nitrophils?// They seem to have a higher metabolic rate whenever it's Noodle Tuesday.// Strange correlation."*
 2. *"The Director was shouting in the cafeteria again.// He called the Nitrophils 'bio-hazardous junk' and threatened to incinerate any dish with a red stain.// I've never seen someone so angry at a cell."*
-3. *"I remember the Leak of '82... supposedly.// The Director still uses it as an excuse to ignore the Cells.// He calls them 'failed remnants of a dark day' whenever he's in a bad mood."*
+3. *"I remember the Leak of '27... supposedly.// The Director still uses it as an excuse to ignore the Cells.// He calls them 'failed remnants of a dark day' whenever he's in a bad mood."*
 4. *"The Cells are so helpful! One of them helped me reorganize my entire filing cabinet.// Although, it did categorize everything by 'color' instead of 'alphabetical'."*
 5. *"Why is the vending machine always out of Spicy Peanuts?// I suspect the Director is buying the entire stock for his late-night shifts."*
 6. *"Did you hear? A junior intern claims to have seen a 'giant' cell in the old storage wing.// Probably just lack of sleep and too many energy drinks."*
@@ -258,7 +310,7 @@ These dialogue lines are randomly assigned to generic researchers based on the s
 16. *"What if we synthesized a cell that only eats student loans?// We'd have to give it a very high affinity for 'depleted wallets' and 'unpaid interest'.// I think it's a Nobel Prize waiting to happen."*
 17. *"Did you know that some cells in the Botanic Sector can actually hear you scream?// Well, not 'hear' in the traditional sense, but they respond to high-frequency vibrations.// So if you're having a bad day, please scream quietly.// You're stressing the ferns."*
 18. *"I asked the Nitrophils if they knew any jokes about thermal dynamics.// They acts like they're too 'hot' to handle.// I really need to stop talking to the thermogenic specimens."*
-19. *"I've been calculating the trajectory of a Nitrophil launched from a high-pressure bio-chute.// If we get the angle right, we could technically deliver spicy noodles across the entire lab in 0.8 seconds.// The Director's office is right in the flight path, though."*
+19. *"I've been calculating the trajectory of a Nitrophil launched from a high-pressure bio-chute.// If we get the angle right, we could technically deliver spicy noodles across the entire lab in 0.7 seconds.// The Director's office is right in the flight path, though."*
 20. *"Did you know the 'anti-slip' coating on the stairs is actually a layer of modified adhesive cells that 'lick' your shoes to keep them in place?// It works wonders, but the feeling of a thousand tiny tongues tasting your sneakers is... technically questionable.// And remarkably loud on quiet shifts."*
 
 #### Zone: Botanic Sector (Lana's Wing)
@@ -278,7 +330,7 @@ These dialogue lines are randomly assigned to generic researchers based on the s
 5. *"I heard the Scavenger team in the basement is working on Chlarob.// It's based on Chlamydia, but instead of making you sick, it's programmed to thieve energy from enemy cells. Tactical, but a bit creepy."*
 6. *"Micro-tactical data is coming in fast today.// Dyzes is going to be pleased with the latest Lydrosome stats."*
 7. *"I asked Dyzes for a Band-Aid after a papercut.// He tried to give me a 'Lydrosome-infused regenerating patch' that cost more than my monthly salary.// I just used a napkin instead."*
-8. *"Dyzes says the human-cell interface is 98% stable.// I'm just wondering about what happens with that last 2%."*
+8. *"Dyzes says the human-cell interface is 99.3% stable.// I'm just wondering about what happens with that last 0.7%."*
 
 ### Background Staff Appearance & Behavior
 - **Appearance**: Standard white lab coats with "Odd Labs" armbands. Badge colors indicate department:
@@ -288,162 +340,14 @@ These dialogue lines are randomly assigned to generic researchers based on the s
 - **Behavior**: Most scientists are busy holding clipboards or looking at tablets. They will stop to gossip if the player has collected enough DataLogs, but otherwise, they are focused on their task of "cleaning up" or "monitoring" the Cells.
 
 ## NPC Distribution
-The lab's 23 residents are distributed as follows:
+The lab's 19 residents are distributed as follows:
 
-- **Lab Entrance (Lobby)**: **Jenzi** (The Senior Gatekeeper) and 1 Security Guard.
-- **Main Atrium (The Hub)**: 10 Researchers (The main source of logs and gossip).
-- **Botanic Sector**: 3 Researchers + **Lana**.
-- **Human Research Ward**: 3 Researchers + **Dyzes**.
-- **Executive Suite**: 2 Personal Assistants + **Director Capsain**.
-- **The Secret Old Lab**: Empty (Only the **Origin Nitrophil** remains).
-
-## Overworld Lab Layout
-
-### [Visual] Lab Map Blueprint
-This map shows the high-level connection between the lab sectors.
-
-```text
-                     [ EXECUTIVE SUITE ]
-                              ^
-                              | (Gated: 15 Logs)
-                              |
- [ BOTANIC ] <----------- [ ATRIUM ] -----------> [ HUMAN RESEARCH ]
- (Lana's Wing)           (The Hub)                (Dyzes' Wing)
-                           ^ | |
-                           | | |
- [ ENTERTAINMENT ] <-------+ | +-------> [ STORAGE BAY ]
- (Lounge)                    | |         (Logistics)
-                             | |
-                       [ LAB LOBBY ] \---> [ THE OLD LAB ]
-                      (Entrance Area)      (Origin Nitrophil)
-```
-
-### Zone 1: Lab Lobby (Entrance)
-**Layout Grid ($20 \times 12$):**
-```text
-W W W W W [ TO ATRIUM ] W W W W W
-W . . H . . . H . . W  H = Wall Hanging
-W I I R . R . . . k W  I = Incubator (2x2), R = Equipment Rack, k = Tank-T
-W I I . . . . . . m W  m = Tank-B
-W . . . . . J . T r W  J = Jenzi, T = Desk (Top), r = Chair
-W k L . . . . . B k W  L = Log, B = Desk (Bottom), k = Tank-T
-W m . . . S . . . m W  m = Tank-B, S = Spawn Point
-W W W W W [ D ] W W W W W  D = South Gate (Tile 29)
-```
-- **Incubation Chamber [I]**: Starter choice trigger.
-- **Reception Desk [R]**: **Jenzi's** station.
-- **Security Gates [G]**: Security Guard blocks path until Cell is chosen and Test Battle is complete.
-- **DataLog [L]**: Log #001 (Found on the floor next to the Atrium door after the battle).
-
-### Zone 2: Main Atrium (The Hub)
-**Layout Grid ($25 \times 15$):**
-```text
-W W W W W W W W W [ EXECUTIVE SUITE ] W W W W W W W W W
-W . . D r t c . . . . . . . . . r t c D . W  t = TableC-T, r/c = Chairs, D = Device-on-Rack
-W . . . r b c . . . . . . . . . r b c . . W  b = TableC-B
-[ ENTERTAIN ] . . . . . . . . h . h . . . . . . [ STORAGE ]
-W . . . . . . . . . . . . . . . . . . . . . . . . . . . . W
-W . . . [ L ] . . . . . . . . . . . . . . . [ L ] . . W  L = DataLog Tablet
-W . . . . . . . . . . . [ WC ] [ WC ] . . . . . . . . W  WC = Locked Restrooms
-W W W W W W W W W W W [ TO LOBBY ] W W W W W W W W W W W
-```
-- **Department Signage [SIGN]**: Directional info.
-- **Entertainment & Storage Wings**: Standardized 8x8 utility rooms to the East and West.
-- **Scientific Stations**: Computer terminal patches and research racks added throughout.
-- **Seating**: Relaxation clusters added near the south-west and south-east entrances.
-- **DataLog Tablets [L]**: Contains DataLogs from Group 1.
-- **Restrooms [WC]**: Symmetrically placed locked doors on the southern wall.
-- **Goal**: Reach 5 total archived logs (including Lobby and Kitchen) to unlock the Botanic Sector.
-
-### Zone 2.5: Staff Kitchen
-**Layout Grid ($10 \times 8$):**
-```text
-W W W W W W W W W W
-W . . . . . . . . D W  D = Atrium Door (Tile 9)
-W . . . . . . . . . W
-W . . . . . . . . . W
-W . . . . . . . . . W
-W . . . . . . . . . W
-W . . . . . . . . . W
-W . . . . . . . . . W
-W . . . . . . . . . W
-W W W W W W W W W W
-```
-- **Vending Machine [V]**: Always out of Spicy Peanuts (Capsain's favorite).
-- **Kitchen DataLog [L]**: Contains a DataLog from Group 1 (found next to a coffee mug).
-
-### Zone 3: Botanic Sector (Lana's Wing)
-**Layout Grid ($20 \times 15$):**
-```text
-W W W W W [ LANA'S OFFICE ] W W W W W
-W P . P . . . N . . . P . P W  N = Lana, P = Plant-T
-W p k p . . . . . . . p k p W  p = Plant-B, k = Tank-T
-W . m . . . . . . . . . . m W  m = Tank-B
-W P . P . . . . . . . P . P W
-W p . p . . . . . . . p . p W
-W . T c . P . L . . P . P . W  T = TableC-T, L = Log, P = Plant-T
-W . B . . p . . . . p . p . D  B = TableC-B, c = Chair, p = Plant-B, D = Door
-W . . . . . . . . . . . . . . W
-D . . . . . . . . . . . . . . W  D = Atrium Door (Right Wall)
-W . [ SPAWN ] . . . . . . . . . W
-W W W W W W W W W W W W W W W W W
-```
-- **Environment**: Lush vegetation, humid atmosphere, and hanging vines.
-- **DataLog Tablets [L]**: Contains DataLogs from Group 2 (found hidden in planters or in vines).
-- **Goal**: Reach 10 total archived logs to unlock the Human Research Ward.
-
-### Zone 4: Human Research Ward (Dyzes' Wing)
-**Layout Grid ($20 \times 15$):**
-```text
-W W W W W [ DYZES' ROOM ] W W W W W
-W . . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . . W
-D . . . . . . . . . . . . . . W  D = Atrium Door (Left Wall)
-W . [ SPAWN ] . . . . . . . . . W
-W W W W W W W W W W W W W W W W W
-```
-- **Environment**: Clinical white surfaces, glowing blue data streams, and sterile equipment.
-- **DataLog Tablets [L]**: Contains DataLogs from Group 3 (found on equipment racks or bio-beds).
-- **Goal**: Reach 15 total archived logs to access the Executive Suite.
-
-### Zone 5: Executive Suite (Capsain's Sector)
-**Layout Grid ($20 \times 12$):**
-```text
-W W W W W W W W W W W W W W W
-W . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . W
-W W W W W W W D W W W W W W W  D = Atrium Door (Bottom wall)
-```
-- **Environment**: High-end minimalist design, mahogany accents, and a suspiciously strong "spicy" air freshener. 
-- **Capsain's Desk**: Contains several hidden "Inferno Sauce" packets in the drawers.
-- **NPCs**: Two Personal Assistants who strictly tell you not to touch the furniture.
-
-### Zone 6: The Secret Old Lab
-**Layout Grid ($15 \times 12$):**
-```text
-W W W W W [ INCUBATOR ] W W W W W
-W . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . W
-W . . . . . . . . . . . . . W
-D . . . . . . . . . . . . . W  D = Atrium Door (Left Wall)
-W W W W W W W W W W W W W W W
-```
-- **Environment**: Dusty, dimly lit, filled with crates and obsolete machinery.
-- **The Incubator**: A single, glowing orange tank containing the **Origin Nitrophil**.
-- **DataLog [L]**: Contains **Log #999** (left on the floor in the dust).
+- **Lab Entrance (Lobby)**: **Jenzi** (The Senior Gatekeeper) and 1 Staff member (Mark).
+- **Main Atrium (The Hub)**: 5 Researchers (Sarah, Mark, Paul, Julia, Tom).
+- **Botanic Sector**: 3 Researchers (Evan, Clara, Leo) + **Lana**.
+- **Human Research Ward**: 2 Female Researchers (Maya, Elena) + **Dyzes**.
+- **Executive Suite**: 2 Male Assistants (James, Robert) + **Director Capsain**.
+- **The Secret Old Lab**: 1 Resident (The **Origin Nitrophil**).
 
 ## Starter Monster: Your Bio-Signature
 Upon entering the lab for your first shift, Jenzi leads you to the **Incubation Chamber** in the Lobby. To proceed with your research, you must choose a "Primary Biological Signature":
@@ -463,7 +367,7 @@ The game concludes through a specific sequence of investigative steps:
 ### The Climax Dialogue
 **[Player presents the Origin Nitrophil]**
 
-**Director Capsain:** *"WHAT?! Where did you... how did you find that?! That room was sealed! It was supposed to stay buried with the '82 logs! Get that... that anomaly out of my sight immediately!"*
+**Director Capsain:** *"WHAT?! Where did you... how did you find that?! That room was sealed! It was supposed to stay buried with the '27 logs! Get that... that anomaly out of my sight immediately!"*
 
 **[Origin Nitrophil glows a hyperactive orange and vibrates happily]**
 

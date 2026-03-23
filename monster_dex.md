@@ -19,7 +19,7 @@ This document tracks the cellular entities discovered within The Odd Labs.
 | :--- | :--- |
 | **Archetype** | BASE_CELL (Playable) |
 | **Type** | SOMATIC |
-| **Stats** | 100 HP / 15 ATK / 10 DEF / 10 MAX PP / 12 SPD / 5% CRIT |
+| **Stats** | 90 HP / 9 ATK / 9 DEF / 9 MAX PP / 9 SPD / 9% CRIT |
 | **Lore** | An undifferentiated stem cell brimming with potential. While it lacks specialized organelles, its raw adaptable cytoplasm allows it to mimic more advanced functions. It is the blank slate from which all cellular life emerges. |
 | **Skills** | **• Cell Bump** [**SOMATIC**]: Clumsy unspecialized bump (Power 40).<br>**• Mitosis Slap** [**SOMATIC**]: Divides to slap twice (Power 55, 3 PP). [**RELIABLE HIT**]: Forces a NEAR result.<br>**• Potency Surge** [**SOMATIC**]: Raw undifferentiated energy (Power 60, 5 PP). [**RELIABLE HIT**]: Cytoplasmic stabilization forces a NEAR result. |
 | **Defense** | **• Wobble** [**SOMATIC**]: A pathetic wobble evasion (0 PP).<br>**• Cytoplasmic Wall** [**SOMATIC**]: Jelly-like shield (2 PP). [**RELIABLE HIT**]: Forces a NEAR result on enemy attacks.<br>**• Apopto-Shield** [**SOMATIC**]: Sacrificial layer (4 PP). [**RELIABLE HIT**]: Forces a NEAR result on enemy attacks. |
@@ -48,10 +48,13 @@ This document tracks the cellular entities discovered within The Odd Labs.
 | **Skills** | **• Enzyme Lance** [**SOMATIC**]: Basic enzymatic jet (Power 40).<br>**• Osmotic Surge** [**OSMOTIC**]: Pressure burst; [**CHOICEBLOCK**] locks movement options (Power 65, 4 PP).<br>**• Hydro Shot** [**OSMOTIC**]: Osmotic blast (Power 85, 6 PP). [**ALL OR NOTHING**]: Devastating damage at Node 0 (MATCH), but accuracy falls off sharply at range. |
 | **Defense** | **• Osmo Dodge** [**OSMOTIC**]: Standard evasion (0 PP).<br>**• Ion Veil** [**OSMOTIC**]: Repulsive field; forces [**PUNY SLAP**] result to stay away from predators (2 PP).<br>**• Osmotic Snare** [**OSMOTIC**]: Suspended field; [**HURTBLOCK**] disables nodes for both (4 PP). |
 
-## 2. Damage Engine 2.0 (Pokemon-Inspired)
+## 2. System Engine 2.0 (Scaling & Rewards)
 | Component | Logic |
 | :--- | :--- |
-| **Scaling** | x 0.5 Move Power + 2 |
+| **Damage** | ((Atk / Def) * Power * 0.5) + 3 |
+| **EXP Req** | floor(30 * (RG + 1)^1.5) |
+| **EXP Reward** | 10 * (1.0 + (RG * 0.5)) * Multiplier |
+| **Variety** | Stem (1x), Nitro (1.15x), Cambi (1.25x), Lydro (1.1x) |
 | **Modifiers** | Type (1.5x / 0.75x), Crit (1.5x), MAP (1.25x / 1.0x / 0.75x) |
 | **Shielding** | Final damage reduced by (Defender PP * 3) |
 | **Mitigation** | PP acts as a flat shield. Every 1 PP blocks 3 incoming HP damage. |

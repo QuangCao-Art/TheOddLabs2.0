@@ -356,3 +356,21 @@ A major overhaul of the equipment management system, focusing on automation, inv
 - **Global Inventory Hardening**: Standardized `syncCardsToLevel` to clear the `cardBox` for **all** profiles (Player, Opponent, and NPC) before re-syncing. This prevents the accumulation of "ghost" items in NPCs and ensures a clean tactical slate across the entire environment.
 - **State Sanitization (Final)**: Implemented mandatory cleanup for all drag-related variables (`dragSourceSlot`, `draggedCardId`) at the start of automated protocols to prevent systemic interference from interrupted manual moves.
 - **Tactical Narrative Logging**: Integrated detailed summaries into the Bio-Intelligence Feed (Diary), displaying protocol names and success counts for specific card tiers (e.g., `T3x2 T2x1`) to provide lore-friendly feedback for every calibration.
+
+### 2.57 Wild Encounter Refinement (Stemmy Population Control)
+Implemented a series of visual and logical refinements to the wild encounter system, ensuring a high-fidelity overworld experience and balanced combat scaling.
+
+- **Tactical Input Hardening**: 
+    - **Dialogue Lockout**: Implemented a mandatory **300ms initial lockout** and a **150ms inter-step delay** for pre-battle sequences. This prevents accidental dialogue skips and ensures the player can actually read the encounter text.
+    - **Responsive Debounce**: Fine-tuned the global interaction delay to **150ms** to maintain a snappy field experience while preventing command buffering.
+- **Overworld Sprite Lifecycle**: 
+    - **Defeat Cleanup**: Resolved a persistence bug where defeated wild monsters remained on the map. The system now calls `despawnCurrent()` upon battle conclusion, removing the sprite and resetting the encounter meter.
+    - **Timed Despawn VFX**: Fixed the "pop-out" issues for timed despawns. The `despawnCurrent` logic now explicitly clears previous animations and forces a reflow to ensure the **Shrink Down** (recall) effect plays reliably.
+- **Streamlined Battle Visuals**: 
+    - **Animation Bypass**: Wild encounters now bypass the heavy "CellContainer" sequence. 
+    - **Dynamic Pop-In/Out**: Opponent monsters use a **Pop Out** animation on entry and a **Shrink Down** effect on defeat, providing a distinct, "wild" feel compared to human-controlled cell battles.
+- **Standardized Interaction**: 
+    - **Pre-Battle Presence**: Added a mandatory dialogue step upon interacting with wild sprites. The system displays a tactical notification (**"A wild Stemmy is wandering."**) and only proceeds to combat once the player confirms, matching NPC interaction protocols.
+- **Autonomous Scaling & Equipment**: 
+    - **Randomized RG Logic**: Implemented a dynamic leveling system where wild monsters are assigned a Research Grade **1 to 5 levels lower** than the player (min RG-0). 
+    - **Automated Calibration**: The system now silently executes a `syncCardsToLevel` and a **Balanced Quick-Equip** pass during encounter initialization. Wild monsters start with 1 PP and a full set of tier-appropriate modules, ensuring they are challenging but fair adversaries.

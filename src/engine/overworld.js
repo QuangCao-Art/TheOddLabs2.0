@@ -38,7 +38,7 @@ export const Overworld = {
         botanic: [
             ["Lana is brilliant with those Cambihils, but she has to hide them when the Director walks by.", "He calls them 'invasive weeds' and says they're a disgrace to the department."],
             ["Fun fact: Cambihils actually photosynthetic at a 15% higher efficiency rate when they're near a window.", "They're basically high-speed solar panels with leaves."],
-            ["Watch out for the 'Canobolus' project in the Fungal Ward.", "It’s a Ballistospore with a catapult mechanism.", "They say it roots itself into the floor and just starts peppering its target with high-pressure spores like a machine gun."],
+            ["Watch out for the 'Canobolus' project in the Fungal Ward.", "Itâ€™s a Ballistospore with a catapult mechanism.", "They say it roots itself into the floor and just starts peppering its target with high-pressure spores like a machine gun."],
             ["The humidity in here is great for the ferns, but it's murder on my paperwork."],
             ["Did you see the glowing hedge move?", "Lana says it's just 'bio-active curiosity', but I'm not so sure."],
             ["Lana spends more time talking to the plants than most of us.", "Can't blame her, really. At least the plants don't complain about data entry."],
@@ -46,8 +46,8 @@ export const Overworld = {
         ],
         human: [
             ["Working in Human Cell Research with Dyzes is great,", "but the Lydrosomes keep trying to 'clean' my coffee mug with high-pressure jets. It's quite a messy way to start the morning."],
-            ["Viral-type cells don't actually 'infect'—they just share data at a molecular level.", "The Director hates them the most;", "he says they're 'biological parasites' that should have been deleted years ago."],
-            ["Sector 7 is trying to fix a 'buggy' mitochondria they're calling Mitonegy.", "It’s supposed to act like a transformer, patching up colleagues' membranes automatically.", "Sounds like a maintenance nightmare."],
+            ["Viral-type cells don't actually 'infect'â€”they just share data at a molecular level.", "The Director hates them the most;", "he says they're 'biological parasites' that should have been deleted years ago."],
+            ["Sector 7 is trying to fix a 'buggy' mitochondria they're calling Mitonegy.", "Itâ€™s supposed to act like a transformer, patching up colleagues' membranes automatically.", "Sounds like a maintenance nightmare."],
             ["Have you seen the blueprints for the 'Kerashell'?", "It's a Keratinocyte with an armor plates made of skin protein.", "They say it can take a beating with almost zero energy cost.", "I wish my lab coat was that durable."],
             ["I heard the Scavenger team in the basement is working on Chlarob.", "It's based on Chlamydia, but instead of making you sick, it's programmed to thieve energy from enemy cells.", "Tactical, but a bit creepy."],
             ["Micro-tactical data is coming in fast today.", "Dyzes is going to be pleased with the latest Lydrosome stats."],
@@ -79,7 +79,13 @@ export const Overworld = {
     typingInterval: null,
     isTransitioning: false,
     isPaused: false,
+    lastInteractTime: 0,
     logsCollected: [], // Local cache, synced from gameState.logs in renderMap
+    pendingIncubatorMenu: false, // flag for incubator healing flow
+    pendingShopMenu: false, // New flag for shop terminal flow
+    pendingSynthesisMenu: false, // New flag for synthesis terminal flow
+    deferredItemPickup: null, // For rewards that trigger after dialogue
+    onDialogueComplete: null, // Callback for when current dialogue ends
     gameLoopActive: false,
 
     resetStates() {
@@ -100,8 +106,8 @@ export const Overworld = {
         activeSpawn: null,
         spawnTimer: null,
         cooldownTimer: null,
-        allowedZones: ['atrium', 'botanic', 'human', 'executive'],
-        cooldownMs: 8000, // 8 seconds cooldown between spawns
+        allowedZones: ['atrium', 'botanic', 'human', 'executive', 'specimenStorage', 'kitchen', 'storage', 'entertainment', 'ancientBotany', 'preservationRoom', 'library'],
+        cooldownMs: 10000, // 10 seconds cooldown between spawns
 
         start() {
             if (!this.allowedZones.includes(Overworld.currentZone)) return;
@@ -123,14 +129,45 @@ export const Overworld = {
         },
 
         scheduleSpawn() {
-            // Random time between 10s and 25s for next spawn
-            const delay = Math.floor(Math.random() * 15000) + 10000;
-            this.spawnTimer = setTimeout(() => this.spawnStemmy(), delay);
+            // Random time between 10s and 20s for next spawn
+            const delay = Math.floor(Math.random() * 10000) + 10000;
+            this.spawnTimer = setTimeout(() => this.spawnWildMonster(), delay);
         },
 
-        spawnStemmy() {
+        spawnWildMonster() {
+            if (!this.allowedZones.includes(Overworld.currentZone)) return;
             const zone = Overworld.zones[Overworld.currentZone];
+
             if (!zone) return;
+
+            // 1. Determine which monster to spawn based on location
+            let monsterId = 'stemmy';
+            const roll = Math.random() * 100;
+
+            if (['botanic', 'ancientBotany'].includes(Overworld.currentZone)) {
+                if (roll < 60) monsterId = 'stemmy';
+                else if (roll < 70) monsterId = 'nitrophil';
+                else if (roll < 90) monsterId = 'cambihil';
+                else monsterId = 'lydrosome';
+            } else if (['human', 'preservationRoom'].includes(Overworld.currentZone)) {
+                if (roll < 60) monsterId = 'stemmy';
+                else if (roll < 70) monsterId = 'nitrophil';
+                else if (roll < 80) monsterId = 'cambihil';
+                else monsterId = 'lydrosome';
+            } else if (['executive', 'library'].includes(Overworld.currentZone)) {
+                if (roll < 60) monsterId = 'stemmy';
+                else if (roll < 80) monsterId = 'nitrophil';
+                else if (roll < 90) monsterId = 'cambihil';
+                else monsterId = 'lydrosome';
+            } else {
+                // Atrium and other small rooms
+                if (roll < 70) monsterId = 'stemmy';
+                else if (roll < 80) monsterId = 'nitrophil';
+                else if (roll < 90) monsterId = 'cambihil';
+                else monsterId = 'lydrosome';
+            }
+
+            const monsterName = monsterId.charAt(0).toUpperCase() + monsterId.slice(1);
 
             // Define target radius: Spawn ~2-4 tiles away from player
             const radius = 3;
@@ -165,36 +202,34 @@ export const Overworld = {
             if (validSpots.length > 0) {
                 const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
 
-                const stemmyObj = {
-                    id: 'stemmy_wild_' + Date.now(),
+                const wildObj = {
+                    id: `${monsterId}_wild_` + Date.now(),
+                    monsterId: monsterId,
                     x: spot.x,
                     y: spot.y,
                     type: 'npc',
-                    name: 'Wild Stemmy',
+                    name: `Wild ${monsterName}`,
                     direction: 'down',
                     temp: true
                 };
 
-                zone.objects.push(stemmyObj);
-                this.activeSpawn = stemmyObj;
+                zone.objects.push(wildObj);
+                this.activeSpawn = wildObj;
 
                 // Render it instantly
                 const mapEl = document.getElementById('overworld-map');
                 const el = document.createElement('div');
-                el.id = `npc-${stemmyObj.id}`;
-                el.className = `world-object npc face-down stemmy wild-stemmy jump-spawn`;
+                el.id = `npc-${wildObj.id}`;
+                el.className = `world-object cell ${monsterId} anim-monster-pop`;
                 el.style.width = `${Overworld.tileSize}px`;
                 el.style.height = `${Overworld.tileSize}px`;
                 el.style.left = `${spot.x * Overworld.tileSize}px`;
                 el.style.top = `${spot.y * Overworld.tileSize}px`;
                 el.style.zIndex = spot.y + 11;
-                el.style.backgroundImage = "url('assets/images/Encounter_Stemmy.png')";
-                el.style.backgroundSize = "contain";
-                el.style.backgroundRepeat = "no-repeat";
                 mapEl.appendChild(el);
 
-                // Stemmy stays for ~15 to 30 seconds before despawning
-                const lifespan = Math.floor(Math.random() * 15000) + 15000;
+                // Monster stays for ~10 to 20 seconds before despawning
+                const lifespan = Math.floor(Math.random() * 10000) + 10000;
                 this.spawnTimer = setTimeout(() => this.despawnCurrent(), lifespan);
             } else {
                 // Try again later if blocked
@@ -204,12 +239,24 @@ export const Overworld = {
 
         despawnCurrent() {
             if (!this.activeSpawn) return;
+            const spawnId = this.activeSpawn.id; // Localize ID to prevent race condition
             const zone = Overworld.zones[Overworld.currentZone];
-            const idx = zone.objects.findIndex(o => o.id === this.activeSpawn.id);
+            const idx = zone.objects.findIndex(o => o.id === spawnId);
             if (idx > -1) zone.objects.splice(idx, 1);
 
-            const el = document.getElementById(`npc-${this.activeSpawn.id}`);
-            if (el) el.remove();
+            const el = document.getElementById(`npc-${spawnId}`);
+            if (el) {
+                // Clear any existing animation classes and force reflow to ensure it plays
+                el.classList.remove('anim-monster-pop', 'anim-recall-exit');
+                void el.offsetWidth;
+
+                el.classList.add('anim-recall-exit');
+                setTimeout(() => {
+                    // Re-verify element still exists before removing
+                    const stillExists = document.getElementById(`npc-${spawnId}`);
+                    if (stillExists) stillExists.remove();
+                }, 400);
+            }
 
             this.activeSpawn = null;
             if (this.spawnTimer) clearTimeout(this.spawnTimer);
@@ -240,43 +287,43 @@ export const Overworld = {
                 [2, 9, 9, 9, 9, 29, 9, 9, 9, 9, 3]
             ],
             objects: [
-                { id: 'incubatorA-TL_lob', x: 1, y: 2, type: 'prop', name: 'Incubation Chamber' },
-                { id: 'incubatorA-TR_lob', x: 2, y: 2, type: 'prop', name: 'Incubation Chamber' },
-                { id: 'incubatorA-BL_lob', x: 1, y: 3, type: 'prop', name: 'Incubation Chamber' },
-                { id: 'incubatorA-BR_lob', x: 2, y: 3, type: 'prop', name: 'Incubation Chamber' },
+                { id: 'f38_lob', x: 1, y: 2, type: 'prop', name: 'Incubation Chamber' },
+                { id: 'f39_lob', x: 2, y: 2, type: 'prop', name: 'Incubation Chamber' },
+                { id: 'f40_lob', x: 1, y: 3, type: 'prop', name: 'Incubation Chamber' },
+                { id: 'f41_lob', x: 2, y: 3, type: 'prop', name: 'Incubation Chamber' },
                 // Diversified Corner Tank Arrays
-                { id: 'labTankA-T_lob_tr', x: 9, y: 2, type: 'prop', name: 'Nutrient Tank' },
-                { id: 'labTankA-B_lob_tr', x: 9, y: 3, type: 'prop', name: 'Nutrient Tank' },
+                { id: 'f13_lob_tr', x: 9, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_lob_tr', x: 9, y: 3, type: 'prop', name: 'Green Specimen Tank' },
                 // Shifted Lower Tanks to North Wall per user request
-                { id: 'labTankB-T_lob_bl', x: 7, y: 2, type: 'prop', name: 'Cryo Tank' },
-                { id: 'labTankB-B_lob_bl', x: 7, y: 3, type: 'prop', name: 'Cryo Tank' },
-                { id: 'labTankC-T_lob_br', x: 8, y: 2, type: 'prop', name: 'Chemical Reactor' },
-                { id: 'labTankC-B_lob_br', x: 8, y: 3, type: 'prop', name: 'Chemical Reactor' },
+                { id: 'f15_lob_bl', x: 7, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_lob_bl', x: 7, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_lob_br', x: 8, y: 2, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_lob_br', x: 8, y: 3, type: 'prop', name: 'Red Specimen Tank' },
                 { id: 'jenzi', x: 4, y: 4, type: 'npc', name: 'Jenzi' },
-                { id: 'chairA-R_lobby_wait1', x: 1, y: 5, type: 'prop', name: 'Lab Chair' },
-                { id: 'chairA-R_lobby_wait2', x: 1, y: 6, type: 'prop', name: 'Lab Chair' },
+                { id: 'f1_lobby_wait1', x: 1, y: 5, type: 'prop', name: 'Lab Chair' },
+                { id: 'f1_lobby_wait2', x: 1, y: 6, type: 'prop', name: 'Lab Chair' },
                 // Reception Desk
-                { id: 'TableLeaderB-Top_reception', x: 8, y: 5, type: 'prop', name: 'Leader Desk' },
-                { id: 'TableLeaderB-Bottom_reception', x: 8, y: 6, type: 'prop', name: 'Leader Desk' },
-                { id: 'chairA-L_reception_desk', x: 9, y: 5, type: 'prop', name: 'Lab Chair' },
+                { id: 'f56_reception', x: 8, y: 5, type: 'prop', name: 'Leader Desk' },
+                { id: 'f57_reception', x: 8, y: 6, type: 'prop', name: 'Leader Desk' },
+                { id: 'f0_reception_desk', x: 9, y: 5, type: 'prop', name: 'Lab Chair' },
                 // Storage & Decor
                 // PotPlants instead of cylinder tables
-                { id: 'potPlantB-T_lob1', x: 4, y: 2, type: 'prop', name: 'Decorative Fern' },
-                { id: 'potPlantB-B_lob1', x: 4, y: 3, type: 'prop', name: 'Decorative Fern' },
-                { id: 'potPlantB-T_lob2', x: 6, y: 2, type: 'prop', name: 'Decorative Fern' },
-                { id: 'potPlantB-B_lob2', x: 6, y: 3, type: 'prop', name: 'Decorative Fern' },
-                { id: 'wallHangingA_lob1', x: 3, y: 2, type: 'prop', name: 'Lab Protocol' },
+                { id: 'f20_lob1', x: 4, y: 2, type: 'prop', name: 'Decorative Fern' },
+                { id: 'f21_lob1', x: 4, y: 3, type: 'prop', name: 'Decorative Fern' },
+                { id: 'f20_lob2', x: 6, y: 2, type: 'prop', name: 'Decorative Fern' },
+                { id: 'f21_lob2', x: 6, y: 3, type: 'prop', name: 'Decorative Fern' },
+                { id: 'f6_lob1', x: 3, y: 2, type: 'prop', name: 'Lab Protocol' },
                 { id: 'npc_male_lob1', x: 7, y: 5, type: 'npc', name: 'Researcher Mark' }
             ],
             doors: [
-                { x: 5, y: 2, targetZone: 'atrium', targetX: 9, targetY: 9, requiredFlag: 'jenziAtriumUnlocked' }
+                { x: 5, y: 2, targetZone: 'atrium', targetX: 9, targetY: 13, requiredFlag: 'jenziAtriumUnlocked' }
             ]
         },
         atrium: {
             name: 'MAIN ATRIUM',
             width: 19,
-            height: 11,
-            spawn: { x: 9, y: 9 },
+            height: 15,
+            spawn: { x: 9, y: 12 },
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1], // Row 0 (Edge)
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11], // Row 1 (Mid-Top)
@@ -284,101 +331,211 @@ export const Overworld = {
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 3
                 [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Row 4 (Side Doors Closed - Human on right)
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 5
-                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Row 6 (Kitchen opposite - Specimen Storage)
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 7
-                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Row 8 (Storage Entrance / Entertainment Entrance)
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 6 (Walls)
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Row 7 (Kitchen / Specimen Storage Shifted Down 1)
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 8 (Walls)
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 9
-                [2, 9, 9, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 29, 29, 9, 9, 9, 3] // Row 10 (Bottom Gate + WC Pair on right)
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Row 10 (Storage / Entertainment Shifted Down 2)
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 11
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 12 (New Floor)
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 13 (New Floor)
+                [2, 9, 9, 9, 20, 9, 9, 9, 9, 20, 9, 9, 9, 29, 29, 9, 9, 9, 3] // Row 14 (Door at x=4)
             ],
             objects: [
-                { id: 'PotPlant-Small_at3', x: 6, y: 9, type: 'prop', name: 'Atrium Decoration' },
-                { id: 'PotPlant-Small_at4', x: 12, y: 9, type: 'prop', name: 'Atrium Decoration' },
-                // North Stations
-                { id: 'tableB-L_n1', x: 2, y: 3, type: 'prop', name: 'Lab Station' },
-                { id: 'tableB-R_n1', x: 3, y: 3, type: 'prop', name: 'Lab Station' },
-                { id: 'tableB-L_n2', x: 15, y: 3, type: 'prop', name: 'Lab Station' },
-                { id: 'tableB-R_n2', x: 16, y: 3, type: 'prop', name: 'Lab Station' },
-                { id: 'wallHangingA_at1', x: 7, y: 2, type: 'prop', name: 'Wall Plate' },
-                { id: 'wallHangingA_at2', x: 11, y: 2, type: 'prop', name: 'Wall Plate' },
-                // Corner Tank Arrays
-                { id: 'labTankA-T_at_tl', x: 1, y: 2, type: 'prop', name: 'Corner Array' },
-                { id: 'labTankA-B_at_tl', x: 1, y: 3, type: 'prop', name: 'Corner Array' },
-                { id: 'labTankA-T_at_tr', x: 17, y: 2, type: 'prop', name: 'Corner Array' },
-                { id: 'labTankA-B_at_tr', x: 17, y: 3, type: 'prop', name: 'Corner Array' },
-                // Large Cabinets in the North Stations
-                { id: 'Cabinet-Big-TopLeft_at1', x: 5, y: 2, type: 'prop', name: 'Storage Cabinet' },
-                { id: 'Cabinet-Big-TopRight_at1', x: 6, y: 2, type: 'prop', name: 'Storage Cabinet' },
-                { id: 'Cabinet-Big-BottomLeft_at1', x: 5, y: 3, type: 'prop', name: 'Storage Cabinet', hiddenLogId: '002' },
-                { id: 'Cabinet-Big-BottomRight_at1', x: 6, y: 3, type: 'prop', name: 'Storage Cabinet' },
+                // Row 2 (Top Wall decorations & Tank Tops)
+                { id: 'f13_at_tl', x: 1, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f15_at_n1', x: 4, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f52_at1', x: 5, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_at1', x: 6, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f22_at_n1', x: 7, y: 2, type: 'prop', name: 'Bio-Reactor' },
+                { id: 'f6_at1', x: 8, y: 2, type: 'prop', name: 'Wall Decoration' },
+                { id: 'f17_at1', x: 10, y: 2, type: 'prop', name: 'Wall Decoration' },
+                { id: 'f22_at_n2', x: 11, y: 2, type: 'prop', name: 'Bio-Reactor' },
+                { id: 'f52_at2', x: 12, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_at2', x: 13, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f15_at_n2', x: 14, y: 2, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f13_at_tr', x: 17, y: 2, type: 'prop', name: 'Specimen Tank' },
 
-                { id: 'Cabinet-Big-TopLeft_at2', x: 12, y: 2, type: 'prop', name: 'Storage Cabinet' },
-                { id: 'Cabinet-Big-TopRight_at2', x: 13, y: 2, type: 'prop', name: 'Storage Cabinet' },
-                { id: 'Cabinet-Big-BottomLeft_at2', x: 12, y: 3, type: 'prop', name: 'Storage Cabinet' },
-                { id: 'Cabinet-Big-BottomRight_at2', x: 13, y: 3, type: 'prop', name: 'Storage Cabinet' },
+                // Row 3 (Tank Bottoms, Tables, Cabinet Bottoms, North Equipment)
+                { id: 'f14_at_tl', x: 1, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f4_n1', x: 2, y: 3, type: 'prop', name: 'Research Table' },
+                { id: 'f5_n1', x: 3, y: 3, type: 'prop', name: 'Research Table' },
+                { id: 'f16_at_n1', x: 4, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f54_at1', x: 5, y: 3, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f55_at1', x: 6, y: 3, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f23_at_n1', x: 7, y: 3, type: 'prop', name: 'Bio-Reactor' },
+                { id: 'f9_at_n1', x: 8, y: 3, type: 'prop', name: 'Lab Device' },
+                { id: 'f7_at_n1', x: 10, y: 3, type: 'prop', name: 'Console Station', hiddenLogId: 'Log004' },
+                { id: 'f23_at_n2', x: 11, y: 3, type: 'prop', name: 'Bio-Reactor' },
+                { id: 'f54_at2', x: 12, y: 3, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f55_at2', x: 13, y: 3, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f16_at_n2', x: 14, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f4_n2', x: 15, y: 3, type: 'prop', name: 'Research Table' },
+                { id: 'f5_n2', x: 16, y: 3, type: 'prop', name: 'Research Table' },
+                { id: 'f14_at_tr', x: 17, y: 3, type: 'prop', name: 'Specimen Tank' },
 
-                // Small Cabinets flanking the central path
-                { id: 'Cabinet-Small_at1', x: 7, y: 3, type: 'prop', name: 'Supply Cabinet' },
-                { id: 'Cabinet-Small_at2', x: 8, y: 3, type: 'prop', name: 'Supply Cabinet' },
-                { id: 'Cabinet-Small_at3', x: 10, y: 3, type: 'prop', name: 'Supply Cabinet' },
-                { id: 'Cabinet-Small_at4', x: 11, y: 3, type: 'prop', name: 'Supply Cabinet' },
+                // Row 5 (Sarah, Paul, Mixed Tank Tops)
+                { id: 'npc_female_at1', x: 8, y: 4, type: 'npc', name: 'Assistant Sarah' },
+                { id: 'f1_at_nw1', x: 2, y: 5, type: 'prop', name: 'Lab Chair' },
+                { id: 'f11_at_nw', x: 3, y: 5, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f11_at1', x: 5, y: 5, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f0_at1', x: 6, y: 5, type: 'prop', name: 'Reception Desk' },
+                { id: 'f13_at_acc', x: 8, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f15_at_acc', x: 9, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f22_at_acc', x: 10, y: 5, type: 'prop', name: 'Bio-Reactor' },
+                { id: 'npc_male_at2', x: 7, y: 10, type: 'npc', name: 'Researcher Paul' },
+                { id: 'f1_at_ne1', x: 12, y: 5, type: 'prop', name: 'Lab Chair' },
+                { id: 'f11_at_ne', x: 13, y: 5, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f11_at_e', x: 15, y: 5, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f0_at2', x: 16, y: 5, type: 'prop', name: 'Reception Desk' },
 
-                // Shifted from bottom to Northern Stations
-                { id: 'labTankB-T_at_n1', x: 4, y: 2, type: 'prop', name: 'Station Tank' },
-                { id: 'labTankB-B_at_n1', x: 4, y: 3, type: 'prop', name: 'Station Tank', hiddenLogId: '004' },
-                { id: 'labTankB-T_at_n2', x: 14, y: 2, type: 'prop', name: 'Station Tank' },
-                { id: 'labTankB-B_at_n2', x: 14, y: 3, type: 'prop', name: 'Station Tank', hiddenLogId: '003' },
-                // Cluster A (West)
-                { id: 'tableC-T_at_nw', x: 3, y: 5, type: 'prop', name: 'Atrium Core Table' },
-                { id: 'tableC-B_at_nw', x: 3, y: 6, type: 'prop', name: 'Atrium Core Table' },
-                { id: 'chairA-R_at_nw1', x: 2, y: 5, type: 'prop', name: 'Lab Chair' },
-                { id: 'chairA-R_at_nw2', x: 2, y: 6, type: 'prop', name: 'Lab Chair' },
-                { id: 'tableD-L_at_nw_s', x: 2, y: 7, type: 'prop', name: 'Analysis Table' },
-                { id: 'tableD-R_at_nw_s', x: 3, y: 7, type: 'prop', name: 'Analysis Table' },
-                { id: 'tableC-T_at1', x: 6, y: 5, type: 'prop', name: 'Atrium Core Table' },
-                { id: 'tableC-B_at1', x: 6, y: 6, type: 'prop', name: 'Atrium Core Table' },
-                { id: 'chairA-R_at3', x: 5, y: 5, type: 'prop', name: 'Lab Chair' },
-                { id: 'chairA-R_at4', x: 5, y: 6, type: 'prop', name: 'Lab Chair' },
-                { id: 'tableD-L_at1_s', x: 5, y: 7, type: 'prop', name: 'Analysis Table', hiddenLogId: '014' },
-                { id: 'tableD-R_at1_s', x: 6, y: 7, type: 'prop', name: 'Analysis Table' },
-                // Cluster B (East) - Cleared per user request
-                { id: 'tableD-L_atB1', x: 12, y: 5, type: 'prop', name: 'Executive Desk' },
-                { id: 'tableD-R_atB1', x: 13, y: 5, type: 'prop', name: 'Executive Desk' },
-                { id: 'tableD-L_atB2', x: 12, y: 7, type: 'prop', name: 'Executive Desk' },
-                { id: 'tableD-R_atB2', x: 13, y: 7, type: 'prop', name: 'Executive Desk' },
-                // Shifted LabTankC Units (Down 1 tile to overlap with Incubator top at y=5)
-                { id: 'labTankC-T_at1', x: 15, y: 4, type: 'prop', name: 'Reactor Core' },
-                { id: 'labTankC-B_at1', x: 15, y: 5, type: 'prop', name: 'Reactor Core' },
-                { id: 'labTankC-T_at2', x: 16, y: 4, type: 'prop', name: 'Reactor Core' },
-                { id: 'labTankC-B_at2', x: 16, y: 5, type: 'prop', name: 'Reactor Core' },
-                // Mega Incubator (Genesis Machine) - (Shifted up 1 tile to y=5-7)
-                { id: 'megaIncubatorA-TL_at1', x: 15, y: 5, type: 'prop', name: 'Mega Incubator' },
-                { id: 'megaIncubatorA-TR_at1', x: 16, y: 5, type: 'prop', name: 'Mega Incubator' },
-                { id: 'megaIncubatorA-midL_at1', x: 15, y: 6, type: 'prop', name: 'Mega Incubator' },
-                { id: 'megaIncubatorA-midR_at1', x: 16, y: 6, type: 'prop', name: 'Mega Incubator' },
-                { id: 'megaIncubatorA-BL_at1', x: 15, y: 7, type: 'prop', name: 'Mega Incubator' },
-                { id: 'megaIncubatorA-BR_at1', x: 16, y: 7, type: 'prop', name: 'Mega Incubator' },
-                // Cluster C (Central South)
-                { id: 'tableC-T_at3', x: 8, y: 5, type: 'prop', name: 'Atrium Core Table' },
-                { id: 'tableC-B_at3', x: 8, y: 6, type: 'prop', name: 'Atrium Core Table' },
-                { id: 'tableC-T_at4', x: 10, y: 5, type: 'prop', name: 'Atrium Core Table' },
-                { id: 'tableC-B_at4', x: 10, y: 6, type: 'prop', name: 'Atrium Core Table' },
-                { id: 'PotPlant-Small_at6', x: 1, y: 9, type: 'prop', name: 'Atrium Decoration' },
-                { id: 'PotPlant-Small_at7', x: 17, y: 9, type: 'prop', name: 'Atrium Decoration' },
-                { id: 'npc_female_at1', x: 7, y: 7, type: 'npc', name: 'Assistant Sarah' },
-                { id: 'npc_male_at1', x: 14, y: 7, type: 'npc', name: 'Researcher Mark' },
-                { id: 'npc_male_at2', x: 2, y: 4, type: 'npc', name: 'Researcher Paul' },
-                { id: 'npc_female_at2', x: 11, y: 4, type: 'npc', name: 'Scientist Julia' },
-                { id: 'npc_male_at3', x: 11, y: 9, type: 'npc', name: 'Biologist Tom' }
+                // Row 6 (Cluster Mid-B, Mixed Tank Bottoms Overlapping CellAcc Tops)
+                { id: 'f1_at_nw2', x: 2, y: 6, type: 'prop', name: 'Lab Chair' },
+                { id: 'f12_at_nw', x: 3, y: 6, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f12_at1', x: 5, y: 6, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f0_at1_b', x: 6, y: 6, type: 'prop', name: 'Reception Desk' },
+                { id: 'f14_at_acc', x: 8, y: 6, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f16_at_acc', x: 9, y: 6, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f23_at_acc', x: 10, y: 6, type: 'prop', name: 'Bio-Reactor' },
+                { id: 'f92_acc', x: 8, y: 6, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
+                { id: 'f93_acc', x: 9, y: 6, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
+                { id: 'f94_acc', x: 10, y: 6, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
+                { id: 'f1_at_ne2', x: 12, y: 6, type: 'prop', name: 'Lab Chair' },
+                { id: 'f12_at_ne', x: 13, y: 6, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f12_at_e', x: 15, y: 6, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f0_at2_b', x: 16, y: 6, type: 'prop', name: 'Reception Desk' },
+
+                // Row 7 (Tom, Kevin, CellAccelerator Mid Row)
+                { id: 'npc_male_at3', x: 4, y: 6, type: 'npc', name: 'Biologist Tom', dialogue: ["Hello! I'm Tom.", "Processing the new cells..."] },
+                { id: 'f95_acc', x: 8, y: 7, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
+                { id: 'f96_acc', x: 9, y: 7, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
+                { id: 'f97_acc', x: 10, y: 7, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
+                { id: 'npc_male_at1', x: 14, y: 8, type: 'npc', name: 'Researcher Kevin' },
+
+                // Row 8 (Analysis Tables, Leader Table, CellAccelerator Bottom Row, Lab Cylinders)
+                { id: 'f26_at_nw_s', x: 2, y: 8, type: 'prop', name: 'Analysis Table' },
+                { id: 'f27_at_nw_s', x: 3, y: 8, type: 'prop', name: 'Analysis Table' },
+                { id: 'f26_at1_s', x: 5, y: 8, type: 'prop', name: 'Analysis Table' },
+                { id: 'f27_at1_s', x: 6, y: 8, type: 'prop', name: 'Analysis Table' },
+                { id: 'f98_acc', x: 8, y: 8, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
+                { id: 'f99_acc', x: 9, y: 8, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
+                { id: 'f100_acc', x: 10, y: 8, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
+                { id: 'f8_at_s1', x: 12, y: 8, type: 'prop', name: 'Lab Equipment' },
+                { id: 'f9_at_s1', x: 13, y: 8, type: 'prop', name: 'Lab Device' },
+                { id: 'f28_at_s1', x: 15, y: 8, type: 'prop', name: 'Executive Desk' },
+                { id: 'f29_at_s1', x: 16, y: 8, type: 'prop', name: 'Executive Desk' },
+
+                // Row 9 (More Equipment, Computers, Supply Cabinets)
+                { id: 'f8_at_s2', x: 2, y: 9, type: 'prop', name: 'Lab Equipment' },
+                { id: 'f9_at_s2', x: 3, y: 9, type: 'prop', name: 'Lab Device' },
+                { id: 'f7_at_s1', x: 5, y: 9, type: 'prop', name: 'Console Station' },
+                { id: 'f7_at_s2', x: 6, y: 9, type: 'prop', name: 'Console Station' },
+                { id: 'f7_at_s3', x: 12, y: 9, type: 'prop', name: 'Console Station' },
+                { id: 'f7_at_s4', x: 13, y: 9, type: 'prop', name: 'Console Station' },
+                { id: 'f58_at5', x: 15, y: 9, type: 'prop', name: 'Supply Cabinet' },
+                { id: 'f58_at6', x: 16, y: 9, type: 'prop', name: 'Supply Cabinet' },
+
+                // Row 10 (Storage Cabinet Tops x4)
+                { id: 'f52_at_w1', x: 2, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_at_w1', x: 3, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f52_at_w2', x: 5, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_at_w2', x: 6, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f52_at_e1', x: 12, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_at_e1', x: 13, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f52_at_e2', x: 15, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_at_e2', x: 16, y: 10, type: 'prop', name: 'Storage Cabinet' },
+
+                // Row 11 (Cabinet Bottoms x4, Julia)
+                { id: 'f54_at_w1', x: 2, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f55_at_w1', x: 3, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f54_at_w2', x: 5, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f55_at_w2', x: 6, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'npc_female_at2', x: 11, y: 11, type: 'npc', name: 'Scientist Julia' },
+                { id: 'f54_at_e1', x: 12, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f55_at_e1', x: 13, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f54_at_e2', x: 15, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f55_at_e2', x: 16, y: 11, type: 'prop', name: 'Storage Cabinet' },
+
+                // Row 12 (Box Pile Tops)
+                { id: 'f61_at_s2', x: 1, y: 12, type: 'prop', name: 'Box Pile' },
+                { id: 'f61_at_s3', x: 7, y: 12, type: 'prop', name: 'Box Pile' },
+                { id: 'f61_at_s4', x: 16, y: 12, type: 'prop', name: 'Box Pile' },
+
+                // Row 13 (Southern Path Decorations & Box Pile Bottoms)
+                { id: 'f62_at_s2', x: 1, y: 13, type: 'prop', name: 'Box Pile' },
+                { id: 'f59_at_s1', x: 2, y: 13, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'f3_at_s1', x: 3, y: 13, type: 'prop', name: 'Meeting Table' },
+                { id: 'f62_at_s3', x: 7, y: 13, type: 'prop', name: 'Box Pile', hiddenLogId: 'Log005' },
+                { id: 'f59_at_s4', x: 8, y: 13, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'f59_at_s5', x: 10, y: 13, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'f8_at_s4', x: 11, y: 13, type: 'prop', name: 'Lab Equipment' },
+                { id: 'f59_at_s6', x: 12, y: 13, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'f59_at_s7', x: 15, y: 13, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'f62_at_s4', x: 16, y: 13, type: 'prop', name: 'Box Pile' },
+                { id: 'f9_at_s4', x: 17, y: 13, type: 'prop', name: 'Lab Device' }
             ],
             doors: [
-                { x: 9, y: 10, targetZone: 'lobby', targetX: 5, targetY: 3 },
-                { x: 0, y: 6, targetZone: 'kitchen', targetX: 9, targetY: 6, requiredFlag: 'botanicSectorUnlocked' },
-                { x: 0, y: 8, targetZone: 'entertainment', targetX: 6, targetY: 6 },
-                { x: 18, y: 8, targetZone: 'storage', targetX: 1, targetY: 6 },
+                { x: 9, y: 14, targetZone: 'lobby', targetX: 5, targetY: 3 },
+                { x: 4, y: 14, targetZone: 'bioExtraction', targetX: 5, targetY: 3 },
+                { x: 0, y: 7, targetZone: 'kitchen', targetX: 9, targetY: 4, requiredFlag: 'botanicSectorUnlocked' },
+                { x: 0, y: 10, targetZone: 'entertainment', targetX: 6, targetY: 6 },
+                { x: 18, y: 10, targetZone: 'storage', targetX: 1, targetY: 6 },
                 { x: 0, y: 4, targetZone: 'botanic', targetX: 13, targetY: 13, requiredFlag: 'botanicSectorUnlocked' },
                 { x: 18, y: 4, targetZone: 'human', targetX: 1, targetY: 13, requiredFlag: 'humanWardUnlocked' },
-                { x: 18, y: 6, targetZone: 'specimenStorage', targetX: 1, targetY: 4, requiredFlag: 'humanWardUnlocked' },
+                { x: 18, y: 7, targetZone: 'specimenStorage', targetX: 1, targetY: 4, requiredFlag: 'humanWardUnlocked' },
                 { x: 9, y: 2, targetZone: 'executive', targetX: 7, targetY: 7, requiredFlag: 'executiveSuiteUnlocked' }
+            ]
+        },
+        bioExtraction: {
+            name: 'BIO EXTRACTION ROOM',
+            width: 8,
+            height: 10,
+            spawn: { x: 5, y: 3 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 1], // Row 0
+                [10, 14, 14, 14, 14, 14, 14, 11], // Row 1
+                [10, 15, 15, 15, 15, 22, 15, 11], // Row 2 (Door at index 5)
+                [10, 13, 13, 13, 13, 13, 13, 11], // Row 3
+                [10, 13, 13, 13, 13, 13, 13, 11], // Row 4
+                [10, 13, 13, 13, 13, 13, 13, 11], // Row 5
+                [10, 13, 13, 13, 13, 13, 13, 11], // Row 6
+                [10, 13, 13, 13, 13, 13, 13, 11], // Row 7
+                [10, 13, 13, 13, 13, 13, 13, 11], // Row 8
+                [2, 9, 9, 9, 9, 9, 9, 3]  // Row 9
+            ],
+            objects: [
+                // Mega Incubator centered in 8x10 room
+                // Horizontal: indices 3, 4 | Vertical: indices 4, 5, 6
+                { id: 'f42_bio', x: 3, y: 4, type: 'prop', name: 'Mega Incubator' },
+                { id: 'f43_bio', x: 4, y: 4, type: 'prop', name: 'Mega Incubator' },
+                { id: 'f44_bio', x: 3, y: 5, type: 'prop', name: 'Mega Incubator' },
+                { id: 'f45_bio', x: 4, y: 5, type: 'prop', name: 'Mega Incubator' },
+                { id: 'f46_bio', x: 3, y: 6, type: 'prop', name: 'Mega Incubator' },
+                { id: 'f47_bio', x: 4, y: 6, type: 'prop', name: 'Mega Incubator' },
+                // Decorative Plants
+                { id: 'f59_bio_nw', x: 1, y: 3, type: 'prop', name: 'Potted Plant' },
+                { id: 'f4_bio_n', x: 2, y: 3, type: 'prop', name: 'Research Table' },
+                { id: 'f5_bio_n', x: 3, y: 3, type: 'prop', name: 'Research Table' },
+                { id: 'f7_bio_n', x: 4, y: 3, type: 'prop', name: 'Research Terminal' },
+                { id: 'f59_bio_ne', x: 6, y: 3, type: 'prop', name: 'Potted Plant' },
+                { id: 'f59_bio_sw', x: 1, y: 8, type: 'prop', name: 'Potted Plant' },
+                { id: 'f59_bio_se', x: 6, y: 8, type: 'prop', name: 'Potted Plant' },
+                // Huge Petry Dishes
+                { id: 'f103_bio_l1', x: 1, y: 4, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_l2', x: 1, y: 5, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_l3', x: 1, y: 6, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_l4', x: 1, y: 7, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_r1', x: 6, y: 4, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_r2', x: 6, y: 5, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_r3', x: 6, y: 6, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_r4', x: 6, y: 7, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_s1', x: 2, y: 8, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_s2', x: 3, y: 8, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_s3', x: 4, y: 8, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_s4', x: 5, y: 8, type: 'prop', name: 'Huge Petry Dish' }
+            ],
+            doors: [
+                { x: 5, y: 2, targetZone: 'atrium', targetX: 4, targetY: 13 }
             ]
         },
         specimenStorage: {
@@ -389,86 +546,108 @@ export const Overworld = {
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1], // Row 0
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11], // Row 1
-                [10, 15, 15, 15, 15, 15, 22, 15, 15, 15, 15, 15, 15, 28, 15, 15, 15, 15, 15, 11], // Row 2 (Unlocked Door to Human Ward)
+                [10, 15, 15, 15, 15, 15, 22, 15, 15, 15, 15, 15, 15, 22, 15, 15, 15, 15, 15, 11], // Row 2 (Unlocked Door to Human Ward)
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 3
-                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 31], // Row 4
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Row 4
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 5
-                [2, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 29, 9, 9, 9, 9, 9, 3] // Row 6 (Doors at x=6 and x=13)
+                [2, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 3] // Row 6 (Doors at x=6 and x=13)
             ],
             objects: [
                 // Top Row of Tanks (Varied)
-                { id: 'labTankA-T_spec1', x: 1, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-B_spec1', x: 1, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-T_spec2', x: 2, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-B_spec2', x: 2, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-T_spec3', x: 3, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-B_spec3', x: 3, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-T_spec4', x: 4, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-B_spec4', x: 4, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-T_spec5', x: 5, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-B_spec5', x: 5, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-T_spec6', x: 9, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-B_spec6', x: 9, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-T_spec7', x: 7, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-B_spec7', x: 7, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-T_spec8', x: 8, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-B_spec8', x: 8, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-T_spec10', x: 10, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-B_spec10', x: 10, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-T_spec11', x: 11, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-B_spec11', x: 11, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-T_spec12', x: 12, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-B_spec12', x: 12, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-T_spec14', x: 14, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-B_spec14', x: 14, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-T_spec15', x: 15, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-B_spec15', x: 15, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-T_spec16', x: 16, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-B_spec16', x: 16, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-T_spec17', x: 17, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-B_spec17', x: 17, y: 3, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-T_spec18', x: 18, y: 2, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-B_spec18', x: 18, y: 3, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f13_spec1', x: 1, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec1', x: 1, y: 3, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec2', x: 2, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec2', x: 2, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec3', x: 3, y: 2, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec3', x: 3, y: 3, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec4', x: 4, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec4', x: 4, y: 3, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec5', x: 5, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec5', x: 5, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec6', x: 9, y: 2, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec6', x: 9, y: 3, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec7', x: 7, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec7', x: 7, y: 3, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec8', x: 8, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec8', x: 8, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f13_spec10', x: 10, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec10', x: 10, y: 3, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec11', x: 11, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec11', x: 11, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec12', x: 12, y: 2, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec12', x: 12, y: 3, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f15_spec14', x: 14, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec14', x: 14, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec15', x: 15, y: 2, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec15', x: 15, y: 3, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec16', x: 16, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec16', x: 16, y: 3, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec17', x: 17, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec17', x: 17, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec18', x: 18, y: 2, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec18', x: 18, y: 3, type: 'prop', name: 'Red Specimen Tank' },
 
                 // Bottom Row of Tanks (Varied)
-                { id: 'labTankA-T_spec19', x: 1, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-B_spec19', x: 1, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-T_spec20', x: 2, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-B_spec20', x: 2, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-T_spec21', x: 3, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-B_spec21', x: 3, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-T_spec22', x: 4, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-B_spec22', x: 4, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-T_spec23', x: 5, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-B_spec23', x: 5, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-T_spec24', x: 9, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-B_spec24', x: 9, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-T_spec25', x: 7, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-B_spec25', x: 7, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-T_spec26', x: 8, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-B_spec26', x: 8, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-T_spec28', x: 10, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-B_spec28', x: 10, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-T_spec29', x: 11, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-B_spec29', x: 11, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-T_spec30', x: 12, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-B_spec30', x: 12, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-T_spec32', x: 14, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-B_spec32', x: 14, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-T_spec33', x: 15, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-B_spec33', x: 15, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-T_spec34', x: 16, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankA-B_spec34', x: 16, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-T_spec35', x: 17, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankB-B_spec35', x: 17, y: 5, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-T_spec36', x: 18, y: 4, type: 'prop', name: 'Specimen Tank' },
-                { id: 'labTankC-B_spec36', x: 18, y: 5, type: 'prop', name: 'Specimen Tank' }
+                { id: 'f13_spec19', x: 1, y: 4, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec19', x: 1, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec20', x: 2, y: 4, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec20', x: 2, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec21', x: 3, y: 4, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec21', x: 3, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec22', x: 4, y: 4, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec22', x: 4, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec23', x: 5, y: 4, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec23', x: 5, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec24', x: 9, y: 4, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec24', x: 9, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec25', x: 7, y: 4, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec25', x: 7, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec26', x: 8, y: 4, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec26', x: 8, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f13_spec28', x: 10, y: 4, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec28', x: 10, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec29', x: 11, y: 4, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec29', x: 11, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec30', x: 12, y: 4, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec30', x: 12, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f15_spec32', x: 14, y: 4, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec32', x: 14, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec33', x: 15, y: 4, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec33', x: 15, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec34', x: 16, y: 4, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec34', x: 16, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec35', x: 17, y: 4, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec35', x: 17, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec36', x: 18, y: 4, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec36', x: 18, y: 5, type: 'prop', name: 'Red Specimen Tank' }
             ],
             doors: [
-                { x: 0, y: 4, targetZone: 'atrium', targetX: 17, targetY: 6 },
+                { x: 0, y: 4, targetZone: 'atrium', targetX: 17, targetY: 7 },
                 { x: 6, y: 6, targetZone: 'storage', targetX: 5, targetY: 3, requiredFlag: 'humanWardUnlocked' },
                 { x: 6, y: 2, targetZone: 'human', targetX: 7, targetY: 14 },
-                { x: 19, y: 4, targetZone: 'old_lab', targetX: 1, targetY: 4, requiredFlag: 'oldLabUnlocked' }
+                { x: 19, y: 4, targetZone: 'old_lab', targetX: 1, targetY: 4, requiredItems: ['Quest01', 'Quest02', 'Quest03'] },
+                { x: 13, y: 2, targetZone: 'executive', targetX: 18, targetY: 7, requiredFlag: 'executiveSuiteUnlocked' },
+                { x: 13, y: 6, targetZone: 'truth_room', targetX: 5, targetY: 3, requiredItem: 'Quest05' }
+            ]
+        },
+        truth_room: {
+            name: 'THE TRUTH ROOM',
+            width: 11,
+            height: 8,
+            spawn: { x: 5, y: 3 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 22, 15, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+            ],
+            objects: [],
+            doors: [
+                { x: 5, y: 2, targetZone: 'specimenStorage', targetX: 13, targetY: 5 }
             ]
         },
         old_lab: {
@@ -481,14 +660,42 @@ export const Overworld = {
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
                 [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [26, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [
-                { id: 'incubator_origin', x: 5, y: 2, width: 2, height: 2, type: 'prop', name: 'ORIGIN INCUBATOR' },
-                { id: 'log_999', x: 8, y: 6, type: 'log', name: 'DataLog #999' }
+                { id: 'f61_ol1', x: 1, y: 2, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'f62_ol1', x: 1, y: 3, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'f61_ol2', x: 2, y: 2, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'f62_ol3', x: 2, y: 3, type: 'prop', name: 'Storage Box' },
+                { id: 'f52_ol1', x: 6, y: 2, type: 'prop', name: 'Large Cabinet' },
+                { id: 'f53_ol1', x: 7, y: 2, type: 'prop', name: 'Large Cabinet' },
+                { id: 'f54_ol1', x: 6, y: 3, type: 'prop', name: 'Large Cabinet' },
+                { id: 'f55_ol1', x: 7, y: 3, type: 'prop', name: 'Large Cabinet' },
+                { id: 'f37_ol1', x: 3, y: 3, type: 'prop', name: 'Empty Bowl' },
+                { id: 'f37_ol2', x: 4, y: 3, type: 'prop', name: 'Empty Bowl' },
+                { id: 'f36_ol1', x: 5, y: 3, type: 'prop', name: 'Fresh Noodles' },
+                { id: 'f30_ol1', x: 8, y: 3, type: 'prop', name: 'Director Desk', hiddenLogId: 'Log999' },
+                { id: 'f31_ol1', x: 9, y: 3, type: 'prop', name: 'Director Desk' },
+                { id: 'f37_ol3', x: 6, y: 4, type: 'prop', name: 'Empty Bowl' },
+                { id: 'f0_ol1', x: 9, y: 4, type: 'prop', name: 'Lab Chair' },
+                { id: 'item_origin_nitrophil', x: 5, y: 4, type: 'cell', name: 'Origin Nitrophil', hiddenItemId: 'Quest04', customSprite: 'c3 orange-hue' },
+                { id: 'f22_ol1', x: 1, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_ol1', x: 1, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f61_ol2_dup', x: 3, y: 5, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'f62_ol4', x: 3, y: 6, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'f34_ol1', x: 6, y: 5, type: 'prop', name: 'Model Skeleton' },
+                { id: 'f35_ol1', x: 6, y: 6, type: 'prop', name: 'Model Skeleton' },
+                { id: 'f60_ol1', x: 8, y: 5, type: 'prop', name: 'Small Box' },
+                { id: 'f60_ol2', x: 8, y: 6, type: 'prop', name: 'Small Box' },
+                { id: 'f22_ol2', x: 9, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_ol2', x: 9, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f9_ol1', x: 2, y: 6, type: 'prop', name: 'Research Device' },
+                { id: 'f8_ol1', x: 4, y: 6, type: 'prop', name: 'Lab Glassware' },
+                { id: 'f37_ol4', x: 5, y: 6, type: 'prop', name: 'Empty Bowl' },
+                { id: 'f36_ol2', x: 7, y: 6, type: 'prop', name: 'Fresh Noodles' }
             ],
             doors: [
                 { x: 0, y: 4, targetZone: 'specimenStorage', targetX: 18, targetY: 4 }
@@ -513,107 +720,332 @@ export const Overworld = {
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25],
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [
                 { id: 'lana', x: 7, y: 3, type: 'npc', name: 'Lana' },
                 // North Storage Row (y=3 with y=2 tops)
-                { id: 'Cabinet-Big-TopLeft_bot1', x: 1, y: 2, type: 'prop', name: 'Storage Unit' },
-                { id: 'Cabinet-Big-TopRight_bot1', x: 2, y: 2, type: 'prop', name: 'Storage Unit' },
-                { id: 'Cabinet-Big-BottomLeft_bot1', x: 1, y: 3, type: 'prop', name: 'Storage Unit', hiddenLogId: '007' },
-                { id: 'Cabinet-Big-BottomRight_bot1', x: 2, y: 3, type: 'prop', name: 'Storage Unit' },
-                { id: 'Cabinet-Small_bot1', x: 3, y: 3, type: 'prop', name: 'Supply Cabinet' },
-                { id: 'Cabinet-Small_bot2', x: 11, y: 3, type: 'prop', name: 'Supply Cabinet' },
-                { id: 'Cabinet-Big-TopLeft_bot2', x: 12, y: 2, type: 'prop', name: 'Storage Unit' },
-                { id: 'Cabinet-Big-TopRight_bot2', x: 13, y: 2, type: 'prop', name: 'Storage Unit' },
-                { id: 'Cabinet-Big-BottomLeft_bot2', x: 12, y: 3, type: 'prop', name: 'Storage Unit' },
-                { id: 'Cabinet-Big-BottomRight_bot2', x: 13, y: 3, type: 'prop', name: 'Storage Unit' },
+                { id: 'f52_bot1', x: 1, y: 2, type: 'prop', name: 'Storage Unit' },
+                { id: 'f53_bot1', x: 2, y: 2, type: 'prop', name: 'Storage Unit' },
+                { id: 'f54_bot1', x: 1, y: 3, type: 'prop', name: 'Storage Unit', hiddenLogId: 'Log007' },
+                { id: 'f55_bot1', x: 2, y: 3, type: 'prop', name: 'Storage Unit' },
+                { id: 'f58_bot1', x: 3, y: 3, type: 'prop', name: 'Supply Cabinet' },
+                { id: 'f58_bot2', x: 11, y: 3, type: 'prop', name: 'Supply Cabinet' },
+                { id: 'f52_bot2', x: 12, y: 2, type: 'prop', name: 'Storage Unit' },
+                { id: 'f53_bot2', x: 13, y: 2, type: 'prop', name: 'Storage Unit' },
+                { id: 'f54_bot2', x: 12, y: 3, type: 'prop', name: 'Storage Unit' },
+                { id: 'f55_bot2', x: 13, y: 3, type: 'prop', name: 'Storage Unit' },
                 // Upper Garden Cluster (y=4,5,6,7) - STACK at x=4
-                { id: 'potPlantC-T_bot1', x: 2, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot1', x: 2, y: 5, type: 'prop', name: 'Bioluminescent Bush', hiddenLogId: '008' },
-                { id: 'potPlantC-T_bot2', x: 3, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot2', x: 3, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot3a', x: 4, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot3a', x: 4, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot3b', x: 4, y: 5, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot3b', x: 4, y: 6, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot3c', x: 4, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot3c', x: 4, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot4', x: 5, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot4', x: 5, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot5', x: 6, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot5', x: 6, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'labTankA-T_bot1', x: 8, y: 4, type: 'prop', name: 'Research Tank' }, { id: 'labTankA-B_bot1', x: 8, y: 5, type: 'prop', name: 'Research Tank', hiddenLogId: '006' },
-                { id: 'labTankA-T_bot2', x: 9, y: 4, type: 'prop', name: 'Research Tank' }, { id: 'labTankA-B_bot2', x: 9, y: 5, type: 'prop', name: 'Research Tank' },
-                { id: 'incubatorA-TL_bot1', x: 10, y: 4, type: 'prop', name: 'Incubation Chamber' }, { id: 'incubatorA-TR_bot1', x: 11, y: 4, type: 'prop', name: 'Incubation Chamber' },
-                { id: 'incubatorA-BL_bot1', x: 10, y: 5, type: 'prop', name: 'Incubation Chamber' }, { id: 'incubatorA-BR_bot1', x: 11, y: 5, type: 'prop', name: 'Incubation Chamber' },
-                { id: 'labTankA-T_bot3', x: 12, y: 4, type: 'prop', name: 'Research Tank' }, { id: 'labTankA-B_bot3', x: 12, y: 5, type: 'prop', name: 'Research Tank' },
-                { id: 'labTankA-T_bot4', x: 13, y: 4, type: 'prop', name: 'Research Tank' }, { id: 'labTankA-B_bot4', x: 13, y: 5, type: 'prop', name: 'Research Tank' },
+                { id: 'f24_bot1', x: 2, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot1', x: 2, y: 5, type: 'prop', name: 'Bioluminescent Bush', hiddenLogId: 'Log008' },
+                { id: 'f24_bot2', x: 3, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot2', x: 3, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot3a', x: 4, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot3a', x: 4, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot3b', x: 4, y: 5, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot3b', x: 4, y: 6, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot3c', x: 4, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot3c', x: 4, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot4', x: 5, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot4', x: 5, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot5', x: 6, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot5', x: 6, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f13_bot1', x: 8, y: 4, type: 'prop', name: 'Green Specimen Tank' }, { id: 'f14_bot1', x: 8, y: 5, type: 'prop', name: 'Green Specimen Tank', hiddenLogId: 'Log006' },
+                { id: 'f13_bot2', x: 9, y: 4, type: 'prop', name: 'Green Specimen Tank' }, { id: 'f14_bot2', x: 9, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f38_bot1', x: 10, y: 4, type: 'prop', name: 'Incubation Chamber' }, { id: 'f39_bot1', x: 11, y: 4, type: 'prop', name: 'Incubation Chamber' },
+                { id: 'f40_bot1', x: 10, y: 5, type: 'prop', name: 'Incubation Chamber' }, { id: 'f41_bot1', x: 11, y: 5, type: 'prop', name: 'Incubation Chamber' },
+                { id: 'f13_bot3', x: 12, y: 4, type: 'prop', name: 'Green Specimen Tank' }, { id: 'f14_bot3', x: 12, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f13_bot4', x: 13, y: 4, type: 'prop', name: 'Green Specimen Tank' }, { id: 'f14_bot4', x: 13, y: 5, type: 'prop', name: 'Green Specimen Tank' },
                 // Middle Garden Cluster (y=6,7)
-                { id: 'potPlantC-T_bot6', x: 2, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot6', x: 2, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot7', x: 3, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot7', x: 3, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot9', x: 5, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot9', x: 5, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'potPlantC-T_bot10', x: 6, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'potPlantC-B_bot10', x: 6, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'Cartonbox-Small_bot1', x: 8, y: 7, type: 'prop', name: 'Archived Samples' },
-                { id: 'tableLeaderA-L_bot1', x: 9, y: 7, type: 'prop', name: 'Lead Analysis Desk', hiddenLogId: '010' },
-                { id: 'tableLeaderA-R_bot1', x: 10, y: 7, type: 'prop', name: 'Lead Analysis Desk' },
-                { id: 'Cartonbox-Pile-Top_bot1', x: 11, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'Cartonbox-Pile-Bottom_bot1', x: 11, y: 7, type: 'prop', name: 'Stacked Boxes', hiddenLogId: '009' },
+                { id: 'f24_bot6', x: 2, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot6', x: 2, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot7', x: 3, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot7', x: 3, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot9', x: 5, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot9', x: 5, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot10', x: 6, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot10', x: 6, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f60_bot1', x: 8, y: 7, type: 'prop', name: 'Archived Samples' },
+                { id: 'f28_bot1', x: 9, y: 7, type: 'prop', name: 'Lead Analysis Desk', hiddenLogId: 'Log010' },
+                { id: 'f29_bot1', x: 10, y: 7, type: 'prop', name: 'Lead Analysis Desk' },
+                { id: 'f61_bot1', x: 11, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'f62_bot1', x: 11, y: 7, type: 'prop', name: 'Stacked Boxes', hiddenLogId: 'Log009' },
                 { id: 'KeyItem-SecretCard_bot1', x: 12, y: 7, type: 'prop', name: 'Access Key' },
-                { id: 'Cartonbox-Pile-Top_bot2', x: 13, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'Cartonbox-Pile-Bottom_bot2', x: 13, y: 7, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'f61_bot2', x: 13, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'f62_bot2', x: 13, y: 7, type: 'prop', name: 'Stacked Boxes' },
                 // Refined Hedge Row (y=8) with Column 7 Path
-                { id: 'PotPlant-Small_bot1', x: 1, y: 8, type: 'prop', name: 'Decorative Bush' },
-                { id: 'PotPlant-Small_bot2', x: 2, y: 8, type: 'prop', name: 'Decorative Bush' },
-                { id: 'PotPlant-Small_bot3', x: 3, y: 8, type: 'prop', name: 'Decorative Bush' },
-                { id: 'PotPlant-Small_bot4', x: 4, y: 8, type: 'prop', name: 'Decorative Bush' },
-                { id: 'PotPlant-Small_bot5', x: 5, y: 8, type: 'prop', name: 'Decorative Bush' },
-                { id: 'PotPlant-Small_bot6', x: 6, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot1', x: 1, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot2', x: 2, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot3', x: 3, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot4', x: 4, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot5', x: 5, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot6', x: 6, y: 8, type: 'prop', name: 'Decorative Bush' },
                 // Path at x=7
-                { id: 'PotPlant-Small_bot7', x: 8, y: 8, type: 'prop', name: 'Decorative Bush' },
-                { id: 'PotPlant-Small_bot8', x: 9, y: 8, type: 'prop', name: 'Decorative Bush' },
-                { id: 'PotPlant-Small_bot9', x: 10, y: 8, type: 'prop', name: 'Decorative Bush' },
-                { id: 'PotPlant-Small_bot10', x: 11, y: 8, type: 'prop', name: 'Decorative Bush' },
-                { id: 'PotPlant-Small_bot11', x: 12, y: 8, type: 'prop', name: 'Decorative Bush' },
-                { id: 'PotPlant-Small_bot12', x: 13, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot7', x: 8, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot8', x: 9, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot9', x: 10, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot10', x: 11, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot11', x: 12, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot12', x: 13, y: 8, type: 'prop', name: 'Decorative Bush' },
                 // Expanded Lower Garden Rows (y=9-12) - STACKS at x=4 and x=10
-                { id: 'potPlantA-T_bot1', x: 2, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot1', x: 2, y: 10, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot2', x: 3, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot2', x: 3, y: 10, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot3a', x: 4, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot3a', x: 4, y: 10, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot3b', x: 4, y: 10, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot3b', x: 4, y: 11, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot3c', x: 4, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot3c', x: 4, y: 12, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot4', x: 5, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot4', x: 5, y: 10, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot5', x: 6, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot5', x: 6, y: 10, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantB-T_bot1', x: 8, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot1', x: 8, y: 10, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot2', x: 9, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot2', x: 9, y: 10, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot3a', x: 10, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot3a', x: 10, y: 10, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot3b', x: 10, y: 10, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot3b', x: 10, y: 11, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot3c', x: 10, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot3c', x: 10, y: 12, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot4', x: 11, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot4', x: 11, y: 10, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot5', x: 12, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot5', x: 12, y: 10, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantA-T_bot6', x: 2, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot6', x: 2, y: 12, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot7', x: 3, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot7', x: 3, y: 12, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot9', x: 5, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot9', x: 5, y: 12, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantA-T_bot10', x: 6, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'potPlantA-B_bot10', x: 6, y: 12, type: 'prop', name: 'Scented Specimen' },
-                { id: 'potPlantB-T_bot6', x: 8, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot6', x: 8, y: 12, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot7', x: 9, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot7', x: 9, y: 12, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot9', x: 11, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot9', x: 11, y: 12, type: 'prop', name: 'Specimen Fern' },
-                { id: 'potPlantB-T_bot10', x: 12, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'potPlantB-B_bot10', x: 12, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_botA1', x: 2, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA1', x: 2, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA2', x: 3, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA2', x: 3, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA3a', x: 4, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA3a', x: 4, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA3b', x: 4, y: 10, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA3b', x: 4, y: 11, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA3c', x: 4, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA3c', x: 4, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA4', x: 5, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA4', x: 5, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA5', x: 6, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA5', x: 6, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_bot1', x: 8, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot1', x: 8, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot2', x: 9, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot2', x: 9, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot3a', x: 10, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot3a', x: 10, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot3b', x: 10, y: 10, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot3b', x: 10, y: 11, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot3c', x: 10, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot3c', x: 10, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot4', x: 11, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot4', x: 11, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot5', x: 12, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot5', x: 12, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_botA6', x: 2, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA6', x: 2, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA7', x: 3, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA7', x: 3, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA9', x: 5, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA9', x: 5, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA10', x: 6, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA10', x: 6, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_bot6', x: 8, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot6', x: 8, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot7', x: 9, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot7', x: 9, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot9', x: 11, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot9', x: 11, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot10', x: 12, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot10', x: 12, y: 12, type: 'prop', name: 'Specimen Fern' },
                 // Final Station Wall (y=13,14)
-                { id: 'Cartonbox-Pile-Top_bot3', x: 1, y: 13, type: 'prop', name: 'Stacked Boxes' }, { id: 'Cartonbox-Pile-Bottom_bot3', x: 1, y: 14, type: 'prop', name: 'Stacked Boxes' },
-                { id: 'tableD-L_bot1', x: 2, y: 14, type: 'prop', name: 'Research Station' },
-                { id: 'tableD-R_bot1', x: 3, y: 14, type: 'prop', name: 'Research Station' },
-                { id: 'Cartonbox-Small_bot2', x: 4, y: 14, type: 'prop', name: 'Archived Samples' },
-                { id: 'Cartonbox-Small_bot3', x: 5, y: 14, type: 'prop', name: 'Archived Samples' },
-                { id: 'tableDeviceA_bot1', x: 6, y: 14, type: 'prop', name: 'Protein Sequencer' },
-                { id: 'tableLabCylindersA_bot1', x: 8, y: 14, type: 'prop', name: 'Lab Cylinders' },
-                { id: 'Cartonbox-Small_bot5', x: 9, y: 14, type: 'prop', name: 'Archived Samples' },
-                { id: 'tableLeaderA-L_bot2', x: 10, y: 14, type: 'prop', name: 'Lead Analysis Desk' },
-                { id: 'tableLeaderA-R_bot2', x: 11, y: 14, type: 'prop', name: 'Lead Analysis Desk' },
-                { id: 'tableD-L_bot2', x: 12, y: 14, type: 'prop', name: 'Research Station' },
-                { id: 'tableD-R_bot2', x: 13, y: 14, type: 'prop', name: 'Research Station' },
+                { id: 'f61_bot3', x: 1, y: 13, type: 'prop', name: 'Stacked Boxes' }, { id: 'f62_bot3', x: 1, y: 14, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'f26_bot1', x: 2, y: 14, type: 'prop', name: 'Research Station' },
+                { id: 'f27_bot1', x: 3, y: 14, type: 'prop', name: 'Research Station' },
+                { id: 'f60_bot2', x: 4, y: 14, type: 'prop', name: 'Archived Samples' },
+                { id: 'f60_bot3', x: 5, y: 14, type: 'prop', name: 'Archived Samples' },
+                { id: 'f9_bot1', x: 6, y: 14, type: 'prop', name: 'Protein Sequencer' },
+                { id: 'f8_bot1', x: 8, y: 14, type: 'prop', name: 'Lab Cylinders' },
+                { id: 'f60_bot5', x: 9, y: 14, type: 'prop', name: 'Archived Samples' },
+                { id: 'f28_bot2', x: 10, y: 14, type: 'prop', name: 'Lead Analysis Desk' },
+                { id: 'f29_bot2', x: 11, y: 14, type: 'prop', name: 'Lead Analysis Desk' },
+                { id: 'f26_bot2', x: 12, y: 14, type: 'prop', name: 'Research Station' },
+                { id: 'f27_bot2', x: 13, y: 14, type: 'prop', name: 'Research Station' },
                 // Staff NPCs
-                { id: 'npc_male_bot1', x: 2, y: 13, type: 'npc', name: 'Researcher Evan' },
+                { id: 'npc_male_bot1', x: 2, y: 9, type: 'npc', name: 'Researcher Evan' },
                 { id: 'npc_female_bot1', x: 1, y: 5, type: 'npc', name: 'Scientist Clara' },
                 { id: 'npc_male_bot2', x: 13, y: 9, type: 'npc', name: 'Tech Leo' },
-                { id: 'npc_female_bot2', x: 9, y: 11, type: 'npc', name: 'Biologist Mia' }
             ],
             doors: [
                 { x: 14, y: 13, targetZone: 'atrium', targetX: 1, targetY: 4 },
-                { x: 7, y: 15, targetZone: 'kitchen', targetX: 7, targetY: 3 }
+                { x: 7, y: 15, targetZone: 'kitchen', targetX: 7, targetY: 3 },
+                { x: 0, y: 13, targetZone: 'ancientBotany', targetX: 31, targetY: 5 }
+            ]
+        },
+        ancientBotany: {
+            name: 'ANCIENT BOTANY LAB',
+            width: 33,
+            height: 9,
+            spawn: { x: 16, y: 6 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 27],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+            ],
+            objects: [
+                // [AI_DECORATION_PROTOCOL] START RENDER: Rows 2-7 (v4.1)
+                // Row 2: CONTINUOUS PLANT TOPS (F88) (1-31)
+                ...Array.from({ length: 31 }, (_, i) => ({ id: 'f88', x: i + 1, y: 2, type: 'prop', customSprite: 'tileset-03' })),
+
+                // Row 3: CONTINUOUS PLANT BOTTOMS (F89) + SCATTERED TOP OVERLAPS (1-31)
+                ...Array.from({ length: 31 }, (_, i) => {
+                    const x = i + 1;
+                    const items = [{ id: 'f89', x, y: 3, type: 'prop', customSprite: 'tileset-03' }];
+
+                    // LAYER_RESOLVE: Items listed later appear in front
+                    if (x === 1) items.push({ id: 'f13', x, y: 3, type: 'prop' }); // Tank Top (Bottom at 1,4)
+                    if (x === 5) items.push({ id: 'f13', x, y: 3, type: 'prop' }); // Tank Top (Bottom at 5,4)
+                    if (x === 26) items.push({ id: 'f61', x, y: 3, type: 'prop' }); // Box Top (Bottom at 26,4)
+                    if (x === 28) items.push({ id: 'f61', x, y: 3, type: 'prop' }); // Box Top (Bottom at 28,4)
+
+                    // Add Tops of equipment below (Y=4)
+                    if (x === 8) items.push({ id: 'f88', x, y: 3, type: 'prop', customSprite: 'tileset-03' }); // Plant Top (Bottom at 8,4)
+                    if (x === 14) items.push({ id: 'f88', x, y: 3, type: 'prop', customSprite: 'tileset-03' }); // Plant Top (Bottom at 14,4)
+
+                    return items;
+                }).flat(),
+
+                // Row 4: SCATTERED EQUIPMENT & BOTTOMS & SOME TOPS for row 5
+                { id: 'f14', x: 1, y: 4, type: 'prop' }, // Tank Bottom (Top at 1,3)
+                { id: 'f86', x: 3, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Healthy Top (Bottom at 3,5)
+                { id: 'f14', x: 5, y: 4, type: 'prop' }, // Tank Bottom (Top at 5,3)
+                { id: 'f7', x: 7, y: 4, type: 'prop' }, // Computer
+                { id: 'f89', x: 8, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Plant Bottom (Top at 8,3)
+                { id: 'f9', x: 10, y: 4, type: 'prop' }, // Sequencer
+                { id: 'f8', x: 11, y: 4, type: 'prop' }, // Cylinders
+                { id: 'f60', x: 12, y: 4, type: 'prop' }, // Box
+                { id: 'f89', x: 14, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Plant Bottom (Top at 14,3)
+                { id: 'f88', x: 16, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Plant Top (Bottom at 16,5)
+                { id: 'f61', x: 21, y: 4, type: 'prop' }, // Box Top (Bottom at 21,5)
+                { id: 'f60', x: 23, y: 4, type: 'prop' }, // Box
+                { id: 'f61', x: 25, y: 4, type: 'prop' }, // Box Top (Bottom at 25,5)
+                { id: 'f62', x: 26, y: 4, type: 'prop' }, // Box Bottom (Top at 26,3)
+                { id: 'f60', x: 27, y: 4, type: 'prop' }, // Box
+                { id: 'f62', x: 28, y: 4, type: 'prop' }, // Box Bottom (Top at 28,3)
+
+                // Row 5: SCATTERED EQUIPMENT & BOTTOMS & SOME TOPS for row 6
+                { id: 'f13', x: 1, y: 5, type: 'prop' }, // Tank Top (Bottom at 1,6)
+                { id: 'f87', x: 3, y: 5, type: 'prop', customSprite: 'tileset-03' }, // Healthy Bottom (Top at 3,4)
+                { id: 'f13', x: 5, y: 5, type: 'prop' }, // Tank Top (Bottom at 5,6)
+                { id: 'f60', x: 14, y: 5, type: 'prop' }, // Box
+                { id: 'f7', x: 15, y: 5, type: 'prop' }, // Computer
+                { id: 'f89', x: 16, y: 5, type: 'prop', customSprite: 'tileset-03' }, // Plant Bottom (Top at 16,4)
+                { id: 'f7', x: 17, y: 5, type: 'prop' }, // Computer
+                { id: 'f62', x: 21, y: 5, type: 'prop' }, // Box Bottom (Top at 21,4)
+                { id: 'f62', x: 25, y: 5, type: 'prop' }, // Box Bottom (Top at 25,4)
+
+                // Tops for row 6 per Stacking Rule
+                { id: 'f88', x: 9, y: 5, type: 'prop', customSprite: 'tileset-03' }, // Plant Top (Bottom at 9,6)
+                { id: 'f61', x: 23, y: 5, type: 'prop' }, // Box Top (Bottom at 23,6)
+                { id: 'f61', x: 27, y: 5, type: 'prop' }, // Box Top (Bottom at 27,6)
+
+                // Row 6: CONTINUOUS PLANT TOPS (F88) + SCATTERED BOTTOM OVERLAPS (1-31)
+                ...Array.from({ length: 31 }, (_, i) => {
+                    const x = i + 1;
+                    const items = [{ id: 'f88', x, y: 6, type: 'prop', customSprite: 'tileset-03' }];
+
+                    if (x === 1) items.push({ id: 'f14', x, y: 6, type: 'prop' }); // Tank Bottom (Top at 1,5)
+                    if (x === 5) items.push({ id: 'f14', x, y: 6, type: 'prop' }); // Tank Bottom (Top at 5,5)
+                    if (x === 8) items.push({ id: 'f9', x, y: 6, type: 'prop' }); // Sequencer
+                    if (x === 9) items.push({ id: 'f89', x, y: 6, type: 'prop', customSprite: 'tileset-03' }); // Plant Bottom (Top at 9,5)
+                    if (x === 21) items.push({ id: 'f7', x, y: 6, type: 'prop' }); // Computer
+                    if (x === 23) items.push({ id: 'f62', x, y: 6, type: 'prop' }); // Box Bottom (Top at 23,5)
+                    if (x === 27) items.push({ id: 'f62', x, y: 6, type: 'prop' }); // Box Bottom (Top at 27,5)
+
+                    return items;
+                }).flat(),
+
+                // Row 7: CONTINUOUS PLANT BOTTOMS (F89) (1-31)
+                ...Array.from({ length: 31 }, (_, i) => ({ id: 'f89', x: i + 1, y: 7, type: 'prop', customSprite: 'tileset-03' })),
+                // [AI_DECORATION_PROTOCOL] END RENDER
+            ],
+            doors: [
+                { x: 32, y: 5, targetZone: 'botanic', targetX: 1, targetY: 13 }
+            ]
+        },
+        preservationRoom: {
+            name: 'PRESERVATION ROOM',
+            width: 33,
+            height: 9,
+            spawn: { x: 1, y: 5 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+            ],
+            objects: [
+                // --- Back Wall Leaning (Tops for Row 3) ---
+                { id: 'f15_t3_1', x: 1, y: 2, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_t3_5', x: 5, y: 2, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_t3_8', x: 8, y: 2, type: 'prop', name: 'Tank Top' },
+                { id: 'f61_t3_10', x: 10, y: 2, type: 'prop', name: 'Box Top' }, // Revision 5: Leaning box top
+                { id: 'f15_t3_14', x: 14, y: 2, type: 'prop', name: 'Tank Top' },
+                { id: 'f61_t3_15', x: 15, y: 2, type: 'prop', name: 'Box Top' }, // Revision 5: Leaning box top
+                { id: 'f61_t3_25', x: 25, y: 2, type: 'prop', name: 'Box Top' }, // Leaning box pile for f62 at (25,3)
+                { id: 'f15_t3_26', x: 26, y: 2, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_t3_29', x: 29, y: 2, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_t3_31', x: 31, y: 2, type: 'prop', name: 'Tank Top' },
+
+                // --- Row 3 (Tops/Equipment) ---
+                { id: 'f16_3_1', x: 1, y: 3, type: 'prop' },
+                { id: 'f80_3_3', x: 3, y: 3, type: 'prop' }, { id: 'f81_3_4', x: 4, y: 3, type: 'prop' },
+                { id: 'f16_3_5', x: 5, y: 3, type: 'prop' },
+                { id: 'f80_3_6', x: 6, y: 3, type: 'prop' }, { id: 'f81_3_7', x: 7, y: 3, type: 'prop' },
+                { id: 'f16_3_8', x: 8, y: 3, type: 'prop' },
+                { id: 'f80_3_9', x: 9, y: 3, type: 'prop' },
+                { id: 'f81_3_10', x: 10, y: 3, type: 'prop' }, { id: 'f62_3_10', x: 10, y: 3, type: 'prop' }, // Revision 5: Box Bottom at (10,3)
+                { id: 'f80_3_12', x: 12, y: 3, type: 'prop' }, { id: 'f9_3_12', x: 12, y: 3, type: 'prop' }, // Overlap f80/f9
+                { id: 'f81_3_13', x: 13, y: 3, type: 'prop' }, { id: 'f60_3_13', x: 13, y: 3, type: 'prop' }, // Overlap f81/f60
+                { id: 'f16_3_14', x: 14, y: 3, type: 'prop' },
+                { id: 'f80_3_15', x: 15, y: 3, type: 'prop' }, { id: 'f62_3_15', x: 15, y: 3, type: 'prop' }, // Revision 5: Box Bottom at (15,3)
+                { id: 'f81_3_16', x: 16, y: 3, type: 'prop' },
+                { id: 'f80_3_18', x: 18, y: 3, type: 'prop' }, { id: 'f81_3_19', x: 19, y: 3, type: 'prop' },
+                { id: 'f61_3_20', x: 20, y: 3, type: 'prop' },
+                { id: 'f80_3_21', x: 21, y: 3, type: 'prop' }, { id: 'f81_3_22', x: 22, y: 3, type: 'prop' },
+                { id: 'f80_3_24', x: 24, y: 3, type: 'prop' }, { id: 'f60_3_24', x: 24, y: 3, type: 'prop' }, // Overlap f80/f60
+                { id: 'f81_3_25', x: 25, y: 3, type: 'prop' }, { id: 'f62_3_25', x: 25, y: 3, type: 'prop' }, // Overlap f81/f62
+                { id: 'f16_3_26', x: 26, y: 3, type: 'prop' },
+                { id: 'f80_3_27', x: 27, y: 3, type: 'prop' }, { id: 'f60_3_27', x: 27, y: 3, type: 'prop' }, // Overlap f80/f60
+                { id: 'f81_3_28', x: 28, y: 3, type: 'prop' }, { id: 'f7_3_28', x: 28, y: 3, type: 'prop' }, // Overlap f81/f7
+                { id: 'f16_3_29', x: 29, y: 3, type: 'prop' },
+                { id: 'f16_3_31', x: 31, y: 3, type: 'prop' },
+
+                // --- Row 4 (Bottoms) ---
+                { id: 'f82_4_3', x: 3, y: 4, type: 'prop' }, { id: 'f83_4_4', x: 4, y: 4, type: 'prop' },
+                { id: 'f82_4_6', x: 6, y: 4, type: 'prop' }, { id: 'f83_4_7', x: 7, y: 4, type: 'prop' },
+                { id: 'f82_4_9', x: 9, y: 4, type: 'prop' },
+                { id: 'f83_4_10', x: 10, y: 4, type: 'prop' },
+                { id: 'f82_4_12', x: 12, y: 4, type: 'prop' },
+                { id: 'f83_4_13', x: 13, y: 4, type: 'prop' },
+                { id: 'f82_4_15', x: 15, y: 4, type: 'prop' }, { id: 'f61_4_15', x: 15, y: 4, type: 'prop' }, // Overlap f82/f61 for f62 at (15,5)
+                { id: 'f83_4_16', x: 16, y: 4, type: 'prop' },
+                { id: 'f82_4_18', x: 18, y: 4, type: 'prop' }, { id: 'f83_4_19', x: 19, y: 4, type: 'prop' },
+                { id: 'f62_4_20', x: 20, y: 4, type: 'prop' },
+                { id: 'f82_4_21', x: 21, y: 4, type: 'prop' }, { id: 'f83_4_22', x: 22, y: 4, type: 'prop' },
+                { id: 'f82_4_24', x: 24, y: 4, type: 'prop' }, { id: 'f83_4_25', x: 25, y: 4, type: 'prop' },
+                { id: 'f82_4_27', x: 27, y: 4, type: 'prop' }, { id: 'f83_4_28', x: 28, y: 4, type: 'prop' },
+
+                // --- Row 5 (Tops) ---
+                { id: 'f80_5_3', x: 3, y: 5, type: 'prop' }, { id: 'f81_5_4', x: 4, y: 5, type: 'prop' },
+                { id: 'f80_5_6', x: 6, y: 5, type: 'prop' }, { id: 'f81_5_7', x: 7, y: 5, type: 'prop' },
+                { id: 'f61_5_8', x: 8, y: 5, type: 'prop' },
+                { id: 'f80_5_9', x: 9, y: 5, type: 'prop' }, { id: 'f81_5_10', x: 10, y: 5, type: 'prop' },
+                { id: 'f80_5_12', x: 12, y: 5, type: 'prop' }, { id: 'f81_5_13', x: 13, y: 5, type: 'prop' },
+                { id: 'f80_5_15', x: 15, y: 5, type: 'prop' }, { id: 'f62_5_15', x: 15, y: 5, type: 'prop' }, // Overlap f80/f62
+                { id: 'f81_5_16', x: 16, y: 5, type: 'prop' }, { id: 'f60_5_16', x: 16, y: 5, type: 'prop' }, // Overlap f81/f60
+                { id: 'f80_5_18', x: 18, y: 5, type: 'prop' }, { id: 'f81_5_19', x: 19, y: 5, type: 'prop' },
+                { id: 'f80_5_21', x: 21, y: 5, type: 'prop' }, { id: 'f60_5_21', x: 21, y: 5, type: 'prop' }, // Revision 5: Added box overlap
+                { id: 'f81_5_22', x: 22, y: 5, type: 'prop' },
+                { id: 'f80_5_24', x: 24, y: 5, type: 'prop' }, { id: 'f81_5_25', x: 25, y: 5, type: 'prop' },
+                { id: 'f80_5_27', x: 27, y: 5, type: 'prop' }, { id: 'f81_5_28', x: 28, y: 5, type: 'prop' },
+
+                // --- Row 6 (Bottoms/Tops overlap) ---
+                { id: 'f82_6_3', x: 3, y: 6, type: 'prop' }, { id: 'f61_6_3', x: 3, y: 6, type: 'prop' }, // Overlap f82/f61 for f62 at (3,7)
+                { id: 'f83_6_4', x: 4, y: 6, type: 'prop' },
+                { id: 'f15_6_5', x: 5, y: 6, type: 'prop' }, // Top for Tank at (5,7)
+                { id: 'f82_6_6', x: 6, y: 6, type: 'prop' },
+                { id: 'f83_6_7', x: 7, y: 6, type: 'prop' }, { id: 'f61_6_7', x: 7, y: 6, type: 'prop' }, // Overlap f83/f61 for f62 at (7,7)
+                { id: 'f62_6_8', x: 8, y: 6, type: 'prop' },
+                { id: 'f82_6_9', x: 9, y: 6, type: 'prop' }, { id: 'f83_6_10', x: 10, y: 6, type: 'prop' },
+                { id: 'f82_6_12', x: 12, y: 6, type: 'prop' }, { id: 'f83_6_13', x: 13, y: 6, type: 'prop' },
+                { id: 'f82_6_15', x: 15, y: 6, type: 'prop' },
+                { id: 'f83_6_16', x: 16, y: 6, type: 'prop' },
+                { id: 'f7_6_17', x: 17, y: 6, type: 'prop' }, // Revision 4: Added PC Terminal
+                { id: 'f82_6_18', x: 18, y: 6, type: 'prop' }, { id: 'f83_6_19', x: 19, y: 6, type: 'prop' },
+                { id: 'f82_6_21', x: 21, y: 6, type: 'prop' }, { id: 'f83_6_22', x: 22, y: 6, type: 'prop' },
+                { id: 'f82_6_24', x: 24, y: 6, type: 'prop' }, { id: 'f61_6_24', x: 24, y: 6, type: 'prop' }, // Overlap f82/f61 for f62 at (24,7)
+                { id: 'f83_6_25', x: 25, y: 6, type: 'prop' },
+                { id: 'f82_6_27', x: 27, y: 6, type: 'prop' }, { id: 'f83_6_28', x: 28, y: 6, type: 'prop' },
+
+                // Row 6 Missing Tops for Row 7 Tanks
+                { id: 'f15_6_1', x: 1, y: 6, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_6_11', x: 11, y: 6, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_6_23', x: 23, y: 6, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_6_29', x: 29, y: 6, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_6_31', x: 31, y: 6, type: 'prop', name: 'Tank Top' },
+
+                // --- Row 7 (Bottoms) ---
+                { id: 'f16_7_1', x: 1, y: 7, type: 'prop' },
+                { id: 'f62_7_3', x: 3, y: 7, type: 'prop' },
+                { id: 'f16_7_5', x: 5, y: 7, type: 'prop' },
+                { id: 'f60_7_6', x: 6, y: 7, type: 'prop' },
+                { id: 'f62_7_7', x: 7, y: 7, type: 'prop' },
+                { id: 'f9_7_8', x: 8, y: 7, type: 'prop' },
+                { id: 'f7_7_10', x: 10, y: 7, type: 'prop' },
+                { id: 'f16_7_11', x: 11, y: 7, type: 'prop' },
+                { id: 'f9_7_12', x: 12, y: 7, type: 'prop' },
+                { id: 'f9_7_22', x: 22, y: 7, type: 'prop' },
+                { id: 'f16_7_23', x: 23, y: 7, type: 'prop' },
+                { id: 'f62_7_24', x: 24, y: 7, type: 'prop' },
+                { id: 'f7_7_28', x: 28, y: 7, type: 'prop' },
+                { id: 'f16_7_29', x: 29, y: 7, type: 'prop' },
+                { id: 'f16_7_31', x: 31, y: 7, type: 'prop' }
+            ],
+            doors: [
+                { x: 0, y: 5, targetZone: 'human', targetX: 13, targetY: 13 }
             ]
         },
         human: {
@@ -635,114 +1067,280 @@ export const Overworld = {
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Exit to Atrium (Closed)
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Exit to Atrium (Left) and Preservation Room (Right)
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [
                 { id: 'dyzes', x: 7, y: 3, type: 'npc', name: 'Dyzes' },
+                { id: 'npc_female_hum1', x: 6, y: 7, type: 'npc', name: 'Researcher Maya' },
+                { id: 'npc_female_hum2', x: 10, y: 11, type: 'npc', name: 'Researcher Elena' },
 
-                // Row 3 (Cabinets, Boxes, NPCs)
-                { id: 'Cabinet-Big-TopLeft_hum1', x: 1, y: 2, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-TopRight_hum1', x: 2, y: 2, type: 'prop', name: 'Human Archive' },
-                { id: 'Cabinet-Big-BottomLeft_hum1', x: 1, y: 3, type: 'prop', name: 'Human Archive', hiddenLogId: '011' }, { id: 'Cabinet-Big-BottomRight_hum1', x: 2, y: 3, type: 'prop', name: 'Human Archive' },
+                // Row 2
+                { id: 'f52_r2a', x: 1, y: 2, type: 'prop', name: 'Archive' }, { id: 'f53_r2a', x: 2, y: 2, type: 'prop', name: 'Archive' },
+                { id: 'f52_r2b', x: 3, y: 2, type: 'prop', name: 'Archive' }, { id: 'f53_r2b', x: 4, y: 2, type: 'prop', name: 'Archive' },
+                { id: 'f52_r2c', x: 10, y: 2, type: 'prop', name: 'Archive' }, { id: 'f53_r2c', x: 11, y: 2, type: 'prop', name: 'Archive' },
+                { id: 'f52_r2d', x: 12, y: 2, type: 'prop', name: 'Archive' }, { id: 'f53_r2d', x: 13, y: 2, type: 'prop', name: 'Archive' },
 
-                { id: 'Cabinet-Big-TopLeft_hum2', x: 3, y: 2, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-TopRight_hum2', x: 4, y: 2, type: 'prop', name: 'Human Archive' },
-                { id: 'Cabinet-Big-BottomLeft_hum2', x: 3, y: 3, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-BottomRight_hum2', x: 4, y: 3, type: 'prop', name: 'Human Archive' },
+                // Row 3
+                { id: 'f54_r3a', x: 1, y: 3, type: 'prop', name: 'Archive' }, { id: 'f55_r3a', x: 2, y: 3, type: 'prop', name: 'Archive' },
+                { id: 'f54_r3b', x: 3, y: 3, type: 'prop', name: 'Archive', hiddenLogId: 'Log011' }, { id: 'f55_r3b', x: 4, y: 3, type: 'prop', name: 'Archive' },
+                { id: 'f48_r3a', x: 5, y: 3, type: 'prop', name: 'Hand Box' },
+                { id: 'f48_r3b', x: 9, y: 3, type: 'prop', name: 'Hand Box' },
+                { id: 'f54_r3c', x: 10, y: 3, type: 'prop', name: 'Archive' }, { id: 'f55_r3c', x: 11, y: 3, type: 'prop', name: 'Archive' },
+                { id: 'f54_r3d', x: 12, y: 3, type: 'prop', name: 'Archive' }, { id: 'f55_r3d', x: 13, y: 3, type: 'prop', name: 'Archive' },
 
-                { id: 'boxHandA_hum1', x: 5, y: 3, type: 'prop', name: 'Hand Samples', hiddenLogId: '015' },
-                { id: 'boxHandA_hum2', x: 9, y: 3, type: 'prop', name: 'Hand Samples' },
+                // Row 4 (Empty in new grid)
 
-                { id: 'Cabinet-Big-TopLeft_hum3', x: 10, y: 2, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-TopRight_hum3', x: 11, y: 2, type: 'prop', name: 'Human Archive' },
-                { id: 'Cabinet-Big-BottomLeft_hum3', x: 10, y: 3, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-BottomRight_hum3', x: 11, y: 3, type: 'prop', name: 'Human Archive' },
+                // Row 5 (Stasis Tanks + Storage Pods top)
+                { id: 'f15_r5a', x: 1, y: 5, type: 'prop', name: 'Stasis Tank' }, { id: 'f84_r5a', x: 2, y: 5, type: 'prop', name: 'Storage Pod' },
+                { id: 'f15_r5b', x: 3, y: 5, type: 'prop', name: 'Stasis Tank' }, { id: 'f84_r5b', x: 4, y: 5, type: 'prop', name: 'Storage Pod' },
+                { id: 'f15_r5c', x: 5, y: 5, type: 'prop', name: 'Stasis Tank' }, { id: 'f84_r5c', x: 6, y: 5, type: 'prop', name: 'Storage Pod' },
+                { id: 'f84_r5d', x: 8, y: 5, type: 'prop', name: 'Storage Pod' }, { id: 'f15_r5d', x: 9, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f84_r5e', x: 10, y: 5, type: 'prop', name: 'Storage Pod' }, { id: 'f15_r5e', x: 11, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f84_r5f', x: 12, y: 5, type: 'prop', name: 'Storage Pod' }, { id: 'f15_r5f', x: 13, y: 5, type: 'prop', name: 'Stasis Tank' },
 
-                { id: 'Cabinet-Big-TopLeft_hum4', x: 12, y: 2, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-TopRight_hum4', x: 13, y: 2, type: 'prop', name: 'Human Archive' },
-                { id: 'Cabinet-Big-BottomLeft_hum4', x: 12, y: 3, type: 'prop', name: 'Human Archive' }, { id: 'Cabinet-Big-BottomRight_hum4', x: 13, y: 3, type: 'prop', name: 'Human Archive' },
+                // Row 6 (Stasis Tanks + Storage Pods bottom)
+                { id: 'f16_r6a', x: 1, y: 6, type: 'prop', name: 'Stasis Tank' }, { id: 'f85_r6a', x: 2, y: 6, type: 'prop', name: 'Storage Pod' },
+                { id: 'f16_r6b', x: 3, y: 6, type: 'prop', name: 'Stasis Tank' }, { id: 'f85_r6b', x: 4, y: 6, type: 'prop', name: 'Storage Pod', hiddenLogId: 'Log013' },
+                { id: 'f16_r6c', x: 5, y: 6, type: 'prop', name: 'Stasis Tank' }, { id: 'f85_r6c', x: 6, y: 6, type: 'prop', name: 'Storage Pod' },
+                { id: 'f85_r6d', x: 8, y: 6, type: 'prop', name: 'Storage Pod' }, { id: 'f16_r6d', x: 9, y: 6, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f85_r6e', x: 10, y: 6, type: 'prop', name: 'Storage Pod' }, { id: 'f16_r6e', x: 11, y: 6, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f85_r6f', x: 12, y: 6, type: 'prop', name: 'Storage Pod' }, { id: 'f16_r6f', x: 13, y: 6, type: 'prop', name: 'Stasis Tank' },
 
-                // Row 4-5 (Solid Stasis Row)
-                { id: 'labTankC-T_hum_r1a', x: 1, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1a', x: 1, y: 5, type: 'prop', name: 'Stasis Tank' },
-                { id: 'labTankC-T_hum_r1b', x: 2, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1b', x: 2, y: 5, type: 'prop', name: 'Stasis Tank' },
-                { id: 'labTankC-T_hum_r1c', x: 3, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1c', x: 3, y: 5, type: 'prop', name: 'Stasis Tank' },
-                { id: 'labTankC-T_hum_r1d', x: 4, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1d', x: 4, y: 5, type: 'prop', name: 'Stasis Tank' },
-                { id: 'labTankC-T_hum_r1e', x: 5, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1e', x: 5, y: 5, type: 'prop', name: 'Stasis Tank' },
-                { id: 'labTankC-T_hum_r1f', x: 6, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1f', x: 6, y: 5, type: 'prop', name: 'Stasis Tank' },
+                // Row 7 (Skeleton + Maya)
+                { id: 'f34_r7a', x: 4, y: 7, type: 'prop', name: 'Skeleton' },
+                // Maya is declared at the top of objects array at (x:6, y:7) now. (I will assume her Y is 7 here despite the grid putting MAY on row 7, because in the grid row 7 is MAY, but she was declared at (6,6) originally. We'll leave her at 6,7 as requested).
 
-                { id: 'labTankC-T_hum_r1g', x: 8, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1g', x: 8, y: 5, type: 'prop', name: 'Stasis Tank' },
-                { id: 'labTankC-T_hum_r1h', x: 9, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1h', x: 9, y: 5, type: 'prop', name: 'Stasis Tank' },
-                { id: 'labTankC-T_hum_r1i', x: 10, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1i', x: 10, y: 5, type: 'prop', name: 'Stasis Tank' },
-                { id: 'labTankC-T_hum_r1j', x: 11, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1j', x: 11, y: 5, type: 'prop', name: 'Stasis Tank' },
-                { id: 'labTankC-T_hum_r1k', x: 12, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1k', x: 12, y: 5, type: 'prop', name: 'Stasis Tank' },
-                { id: 'labTankC-T_hum_r1l', x: 13, y: 4, type: 'prop', name: 'Stasis Tank' }, { id: 'labTankC-B_hum_r1l', x: 13, y: 5, type: 'prop', name: 'Stasis Tank' },
+                // Row 8 (CryoPods + Skeletons)
+                { id: 'f65_r8a', x: 2, y: 8, type: 'prop', name: 'CryoPod' }, { id: 'f66_r8a', x: 3, y: 8, type: 'prop', name: 'CryoPod' },
+                { id: 'f35_r8a', x: 4, y: 8, type: 'prop', name: 'Skeleton' },
+                { id: 'f65_r8b', x: 5, y: 8, type: 'prop', name: 'CryoPod' }, { id: 'f66_r8b', x: 6, y: 8, type: 'prop', name: 'CryoPod' },
+                { id: 'f65_r8c', x: 8, y: 8, type: 'prop', name: 'CryoPod' }, { id: 'f66_r8c', x: 9, y: 8, type: 'prop', name: 'CryoPod', hiddenLogId: 'Log015' },
+                { id: 'f65_r8d', x: 11, y: 8, type: 'prop', name: 'CryoPod' }, { id: 'f66_r8d', x: 12, y: 8, type: 'prop', name: 'CryoPod' },
 
-                // Row 7 (Medical Row)
-                { id: 'bedA-L_hum7a', x: 2, y: 7, type: 'prop', name: 'Medical Pod', hiddenLogId: '013' }, { id: 'bedA-R_hum7a', x: 3, y: 7, type: 'prop', name: 'Medical Pod' },
-                { id: 'skeletonA-T_hum7', x: 4, y: 6, type: 'prop', name: 'Anatomical Model' }, { id: 'skeletonA-B_hum7', x: 4, y: 7, type: 'prop', name: 'Anatomical Model' },
-                { id: 'bedA-L_hum7b', x: 5, y: 7, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum7b', x: 6, y: 7, type: 'prop', name: 'Medical Pod' },
-                { id: 'bedA-L_hum7c', x: 8, y: 7, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum7c', x: 9, y: 7, type: 'prop', name: 'Medical Pod' },
-                { id: 'bedA-L_hum7d', x: 11, y: 7, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum7d', x: 12, y: 7, type: 'prop', name: 'Medical Pod' },
+                // Row 9 (Skeletons + Incubators)
+                { id: 'f34_r9a', x: 1, y: 9, type: 'prop', name: 'Skeleton' },
+                { id: 'f38_r9a', x: 8, y: 9, type: 'prop', name: 'Incubator' }, { id: 'f39_r9a', x: 9, y: 9, type: 'prop', name: 'Incubator' },
+                { id: 'f34_r9b', x: 13, y: 9, type: 'prop', name: 'Skeleton' },
 
-                // Row 9 (Medical Row)
-                { id: 'skeletonA-T_hum9a', x: 1, y: 8, type: 'prop', name: 'Anatomical Model' }, { id: 'skeletonA-B_hum9a', x: 1, y: 9, type: 'prop', name: 'Anatomical Model' },
-                { id: 'bedA-L_hum9a', x: 2, y: 9, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum9a', x: 3, y: 9, type: 'prop', name: 'Medical Pod' },
-                { id: 'bedA-L_hum9b', x: 5, y: 9, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum9b', x: 6, y: 9, type: 'prop', name: 'Medical Pod' },
-                { id: 'skeletonA-T_hum9b', x: 7, y: 8, type: 'prop', name: 'Anatomical Model' }, { id: 'skeletonA-B_hum9b', x: 7, y: 9, type: 'prop', name: 'Anatomical Model' },
-                { id: 'bedA-L_hum9c', x: 8, y: 9, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum9c', x: 9, y: 9, type: 'prop', name: 'Medical Pod' },
-                { id: 'bedA-L_hum9d', x: 11, y: 9, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum9d', x: 12, y: 9, type: 'prop', name: 'Medical Pod' },
-                { id: 'skeletonA-T_hum9c', x: 13, y: 8, type: 'prop', name: 'Anatomical Model' }, { id: 'skeletonA-B_hum9c', x: 13, y: 9, type: 'prop', name: 'Anatomical Model' },
+                // Row 10 (Skeletons + CryoPods + Tables + Incubators)
+                { id: 'f35_r10a', x: 1, y: 10, type: 'prop', name: 'Skeleton' },
+                { id: 'f65_r10a', x: 2, y: 10, type: 'prop', name: 'CryoPod' }, { id: 'f66_r10a', x: 3, y: 10, type: 'prop', name: 'CryoPod' },
+                { id: 'f4_r10a', x: 5, y: 10, type: 'prop', name: 'Table' }, { id: 'f5_r10a', x: 6, y: 10, type: 'prop', name: 'Table' },
+                { id: 'f58_r10a', x: 7, y: 10, type: 'prop', name: 'Small Cabinet' },
+                { id: 'f40_r10a', x: 8, y: 10, type: 'prop', name: 'Incubator' }, { id: 'f41_r10a', x: 9, y: 10, type: 'prop', name: 'Incubator' },
+                { id: 'f65_r10b', x: 11, y: 10, type: 'prop', name: 'CryoPod' }, { id: 'f66_r10b', x: 12, y: 10, type: 'prop', name: 'CryoPod' },
+                { id: 'f35_r10b', x: 13, y: 10, type: 'prop', name: 'Skeleton' },
 
-                // Row 11 (Medical Row)
-                { id: 'bedA-L_hum11a', x: 2, y: 11, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum11a', x: 3, y: 11, type: 'prop', name: 'Medical Pod' },
-                { id: 'bedA-L_hum11b', x: 5, y: 11, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum11b', x: 6, y: 11, type: 'prop', name: 'Medical Pod' },
-                { id: 'skeletonA-T_hum11', x: 7, y: 10, type: 'prop', name: 'Anatomical Model' }, { id: 'skeletonA-B_hum11', x: 7, y: 11, type: 'prop', name: 'Anatomical Model' },
-                { id: 'bedA-L_hum11c', x: 8, y: 11, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum11c', x: 9, y: 11, type: 'prop', name: 'Medical Pod' },
-                { id: 'bedA-L_hum11d', x: 11, y: 11, type: 'prop', name: 'Medical Pod' }, { id: 'bedA-R_hum11d', x: 12, y: 11, type: 'prop', name: 'Medical Pod' },
+                // Row 11
+                { id: 'f34_r11a', x: 7, y: 11, type: 'prop', name: 'Skeleton' },
 
-                // Row 14 (Desks & Devices)
-                { id: 'tableDeviceA_hum14a', x: 1, y: 14, type: 'prop', name: 'Bio-Sampler', hiddenLogId: '012' },
-                { id: 'tableLabCylindersA_hum14a', x: 2, y: 14, type: 'prop', name: 'Cylinder Array' },
-                { id: 'tableDeviceA_hum14b', x: 3, y: 14, type: 'prop', name: 'Bio-Sampler' },
-                { id: 'tableDeviceA_hum14c', x: 4, y: 14, type: 'prop', name: 'Bio-Sampler' },
-                { id: 'tableDeviceA_hum14d', x: 5, y: 14, type: 'prop', name: 'Bio-Sampler' },
-                { id: 'tableLabCylindersA_hum14b', x: 6, y: 14, type: 'prop', name: 'Cylinder Array' },
-                { id: 'tableDeviceA_hum14e', x: 8, y: 14, type: 'prop', name: 'Bio-Sampler' },
-                { id: 'tableDeviceA_hum14f', x: 9, y: 14, type: 'prop', name: 'Bio-Sampler' },
-                { id: 'tableLabCylindersA_hum14c', x: 10, y: 14, type: 'prop', name: 'Cylinder Array' },
-                { id: 'tableDeviceA_hum14g', x: 11, y: 14, type: 'prop', name: 'Bio-Sampler' },
-                { id: 'tableLabCylindersA_hum14d', x: 12, y: 14, type: 'prop', name: 'Cylinder Array' },
-                { id: 'tableDeviceA_hum14h', x: 13, y: 14, type: 'prop', name: 'Bio-Sampler' }
+                // Row 12 (CryoPods + Skeletons)
+                { id: 'f65_r12a', x: 2, y: 12, type: 'prop', name: 'CryoPod', hiddenLogId: 'Log014' }, { id: 'f66_r12a', x: 3, y: 12, type: 'prop', name: 'CryoPod' },
+                { id: 'f65_r12b', x: 5, y: 12, type: 'prop', name: 'CryoPod' }, { id: 'f66_r12b', x: 6, y: 12, type: 'prop', name: 'CryoPod' },
+                { id: 'f35_r12a', x: 7, y: 12, type: 'prop', name: 'Skeleton' },
+                { id: 'f65_r12c', x: 8, y: 12, type: 'prop', name: 'CryoPod' }, { id: 'f66_r12c', x: 9, y: 12, type: 'prop', name: 'CryoPod' },
+                // Elena is at (10, 12) per grid row 12
+                { id: 'f65_r12d', x: 11, y: 12, type: 'prop', name: 'CryoPod' }, { id: 'f66_r12d', x: 12, y: 12, type: 'prop', name: 'CryoPod' },
+
+                // Row 14 (Boxes at entry - Grid row 13)
+                { id: 'f61_r14a', x: 8, y: 13, type: 'prop', name: 'Box Pile' },
+                { id: 'f61_r14b', x: 13, y: 13, type: 'prop', name: 'Box Pile' },
+
+                // Row 14
+                { id: 'f9_r14a', x: 1, y: 14, type: 'prop', name: 'Device' },
+                { id: 'f8_r14a', x: 2, y: 14, type: 'prop', name: 'Cylinders' },
+                { id: 'f2_r14a', x: 3, y: 14, type: 'prop', name: 'Table' },
+                { id: 'f36_r14a', x: 4, y: 14, type: 'prop', name: 'Noodles' },
+                { id: 'f9_r14d', x: 5, y: 14, type: 'prop', name: 'Device' },
+                { id: 'f60_r14a', x: 6, y: 14, type: 'prop', name: 'Box' },
+                { id: 'f62_r14a', x: 8, y: 14, type: 'prop', name: 'Box Pile' },
+                { id: 'f9_r14e', x: 9, y: 14, type: 'prop', name: 'Device' },
+                { id: 'f8_r14b', x: 10, y: 14, type: 'prop', name: 'Cylinders' },
+                { id: 'f9_r14f', x: 11, y: 14, type: 'prop', name: 'Device', hiddenLogId: 'Log012' },
+                { id: 'f60_r14b', x: 12, y: 14, type: 'prop', name: 'Box' },
+                { id: 'f62_r14b', x: 13, y: 14, type: 'prop', name: 'Box Pile' }
             ],
             doors: [
                 { x: 0, y: 13, targetZone: 'atrium', targetX: 17, targetY: 4 },
-                { x: 7, y: 15, targetZone: 'specimenStorage', targetX: 6, targetY: 3 }
+                { x: 7, y: 15, targetZone: 'specimenStorage', targetX: 6, targetY: 3 },
+                { x: 14, y: 13, targetZone: 'preservationRoom', targetX: 1, targetY: 5 }
             ]
         },
         executive: {
             name: 'EXECUTIVE SUITE',
-            width: 15,
+            width: 22,
             height: 9,
             spawn: { x: 7, y: 7 },
             layout: [
-                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
-                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
-                [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3]
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1, 0, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 5, 4, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 18, 16, 15, 15, 22, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 19, 17, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 7, 6, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3, 2, 9, 9, 20, 9, 9, 3]
             ],
             objects: [
-                { id: 'capsain', x: 7, y: 3, type: 'npc', name: 'Director Capsain' },
-                { id: 'tableDirectorA-L_exec', x: 6, y: 3, type: 'prop', name: 'Director Desk', hiddenLogId: '016' },
-                { id: 'tableDirectorA-R_exec', x: 7, y: 3, type: 'prop', name: 'Director Desk', hiddenLogId: '019' },
-                { id: 'Cabinet-Big-TopLeft_exec', x: 1, y: 2, type: 'prop', name: 'Archives' },
-                { id: 'Cabinet-Big-TopRight_exec', x: 2, y: 2, type: 'prop', name: 'Archives' },
-                { id: 'Cabinet-Big-BottomLeft_exec', x: 1, y: 3, type: 'prop', name: 'Archives', hiddenLogId: '017' },
-                { id: 'Cabinet-Big-BottomRight_exec', x: 2, y: 3, type: 'prop', name: 'Archives', hiddenLogId: '018' },
-                { id: 'tableComputerA_exec', x: 13, y: 3, type: 'prop', name: 'Security Terminal', hiddenLogId: '020' }
+                { id: 'capsain', x: 7, y: 4, type: 'npc', name: 'Director Capsain' },
+                { id: 'npc_male_exec1', x: 3, y: 5, type: 'npc', name: 'Assistant James' },
+                { id: 'npc_male_exec2', x: 10, y: 7, type: 'npc', name: 'Assistant Robert' },
+
+                // Director Desk (F30, F31) - Moved to y=5
+                { id: 'f30_director', x: 7, y: 5, type: 'prop', name: 'Director Desk', hiddenLogId: 'Log016' },
+                { id: 'f31_director', x: 8, y: 5, type: 'prop', name: 'Director Desk', hiddenLogId: 'Log019' },
+
+                // Central Bookshelf Cluster (F76-F79) and Cabinets (F58)
+                { id: 'f76_execMid', x: 7, y: 2, type: 'prop', name: 'Executive Bookshelf' },
+                { id: 'f77_execMid', x: 8, y: 2, type: 'prop', name: 'Executive Bookshelf' },
+                { id: 'f78_execMid', x: 7, y: 3, type: 'prop', name: 'Executive Bookshelf' },
+                { id: 'f79_execMid', x: 8, y: 3, type: 'prop', name: 'Executive Bookshelf' },
+                { id: 'f58_execMidL', x: 6, y: 3, type: 'prop', name: 'Small Cabinet' },
+                { id: 'f58_execMidR', x: 9, y: 3, type: 'prop', name: 'Small Cabinet' },
+
+                // Noodle Snacks (F36)
+                { id: 'f36_exec1', x: 3, y: 3, type: 'prop', name: 'Snack' },
+                { id: 'f36_exec2', x: 11, y: 3, type: 'prop', name: 'Snack' },
+                { id: 'f36_exec3', x: 9, y: 5, type: 'prop', name: 'Snack' },
+                { id: 'f36_exec4', x: 1, y: 7, type: 'prop', name: 'Snack' },
+                { id: 'f36_exec5', x: 13, y: 7, type: 'prop', name: 'Snack' },
+
+                // Archives (L) - Clusters (F52-F55)
+                { id: 'f52_execL1', x: 1, y: 2, type: 'prop', name: 'Archives' },
+                { id: 'f53_execL1', x: 2, y: 2, type: 'prop', name: 'Archives' },
+                { id: 'f54_execL1', x: 1, y: 3, type: 'prop', name: 'Archives', hiddenLogId: 'Log017' },
+                { id: 'f55_execL1', x: 2, y: 3, type: 'prop', name: 'Archives', hiddenLogId: 'Log018' },
+
+                { id: 'f52_execL2', x: 1, y: 4, type: 'prop', name: 'Archives' },
+                { id: 'f53_execL2', x: 2, y: 4, type: 'prop', name: 'Archives' },
+                { id: 'f54_execL2', x: 1, y: 5, type: 'prop', name: 'Archives' },
+                { id: 'f55_execL2', x: 2, y: 5, type: 'prop', name: 'Archives' },
+
+                // Archives (R) - F52-F55
+                { id: 'f52_execR', x: 12, y: 2, type: 'prop', name: 'Archives' },
+                { id: 'f53_execR', x: 13, y: 2, type: 'prop', name: 'Archives' },
+                { id: 'f54_execR', x: 12, y: 3, type: 'prop', name: 'Archives' },
+                { id: 'f55_execR', x: 13, y: 3, type: 'prop', name: 'Archives' },
+
+                // Incubator (Center-Left) - F38-F41
+                { id: 'f38_exec', x: 4, y: 2, type: 'prop', name: 'Incubator' },
+                { id: 'f39_exec', x: 5, y: 2, type: 'prop', name: 'Incubator' },
+                { id: 'f40_exec', x: 4, y: 3, type: 'prop', name: 'Incubator' },
+                { id: 'f41_exec', x: 5, y: 3, type: 'prop', name: 'Incubator' },
+
+                // Assistant Desks - F28, F29
+                { id: 'f28_exec1', x: 4, y: 5, type: 'prop', name: 'Assistant Desk' },
+                { id: 'f29_exec1', x: 5, y: 5, type: 'prop', name: 'Assistant Desk' },
+                { id: 'f28_exec2', x: 11, y: 5, type: 'prop', name: 'Assistant Desk' },
+                { id: 'f29_exec2', x: 12, y: 5, type: 'prop', name: 'Assistant Desk' },
+
+                // Corridor (Right) - F76-F79
+                { id: 'f76_execCor', x: 14, y: 3, type: 'prop', name: 'Bookshelf' },
+                { id: 'f77_execCor', x: 15, y: 3, type: 'prop', name: 'Bookshelf' },
+                { id: 'f78_execCor', x: 14, y: 4, type: 'prop', name: 'Bookshelf' },
+                { id: 'f79_execCor', x: 15, y: 4, type: 'prop', name: 'Bookshelf' },
+
+                // Terminals and Tanks
+                { id: 'f7_execCor1', x: 16, y: 3, type: 'prop', name: 'Terminal' },
+                { id: 'f7_execCor2', x: 20, y: 3, type: 'prop', name: 'Terminal' },
+
+                { id: 'f22_exec_C1', x: 17, y: 3, type: 'prop', name: 'Research Tank' },
+                { id: 'f23_exec_C1', x: 17, y: 4, type: 'prop', name: 'Research Tank' },
+                { id: 'f22_exec_C2', x: 17, y: 5, type: 'prop', name: 'Research Tank' },
+                { id: 'f23_exec_C2', x: 17, y: 6, type: 'prop', name: 'Research Tank' },
+
+                { id: 'f22_exec_C3', x: 19, y: 3, type: 'prop', name: 'Research Tank' },
+                { id: 'f23_exec_C3', x: 19, y: 4, type: 'prop', name: 'Research Tank' },
+                { id: 'f22_exec_C4', x: 19, y: 5, type: 'prop', name: 'Research Tank' },
+                { id: 'f23_exec_C4', x: 19, y: 6, type: 'prop', name: 'Research Tank' },
+
+                { id: 'f9_execCor1', x: 16, y: 7, type: 'prop', name: 'Bio Scanner' },
+                { id: 'f9_execCor2', x: 20, y: 7, type: 'prop', name: 'Bio Scanner' },
+
+                // Box Piles and Storage - F60, F61, F62
+                { id: 'f61_execTop1', x: 10, y: 2, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_execBot1', x: 10, y: 3, type: 'prop', name: 'Box Pile' },
+                { id: 'f61_execTop2', x: 3, y: 6, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_execBot2', x: 3, y: 7, type: 'prop', name: 'Box Pile' },
+
+                { id: 'f60_exec1', x: 2, y: 7, type: 'prop', name: 'Storage Box' },
+                { id: 'f60_exec2', x: 4, y: 7, type: 'prop', name: 'Storage Box' },
+                { id: 'f60_exec3', x: 11, y: 7, type: 'prop', name: 'Storage Box' },
+                { id: 'f60_exec4', x: 12, y: 7, type: 'prop', name: 'Storage Box' }
             ],
             doors: [
-                { x: 7, y: 8, targetZone: 'atrium', targetX: 9, targetY: 3 }
+                { x: 7, y: 8, targetZone: 'atrium', targetX: 9, targetY: 3 },
+                { x: 18, y: 8, targetZone: 'specimenStorage', targetX: 13, targetY: 3 },
+                { x: 18, y: 2, targetZone: 'library', targetX: 3, targetY: 15 }
+            ]
+        },
+        library: {
+            name: 'EXECUTIVE LIBRARY',
+            width: 7,
+            height: 17,
+            spawn: { x: 3, y: 15 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 20, 9, 9, 3]
+            ],
+            objects: [
+                // Bookshelf Row (Left & Right)
+                { id: 'f76_lib1', x: 1, y: 2, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib1', x: 2, y: 2, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f76_lib2', x: 4, y: 2, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib2', x: 5, y: 2, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib1', x: 1, y: 3, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib1', x: 2, y: 3, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib2', x: 4, y: 3, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib2', x: 5, y: 3, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+
+                { id: 'f76_lib3', x: 1, y: 4, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib3', x: 2, y: 4, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f76_lib4', x: 4, y: 4, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib4', x: 5, y: 4, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib3', x: 1, y: 5, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib3', x: 2, y: 5, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib4', x: 4, y: 5, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib4', x: 5, y: 5, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+
+                { id: 'f76_lib5', x: 1, y: 6, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib5', x: 2, y: 6, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f76_lib6', x: 4, y: 6, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib6', x: 5, y: 6, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib5', x: 1, y: 7, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib5', x: 2, y: 7, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib6', x: 4, y: 7, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib6', x: 5, y: 7, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+
+                { id: 'f76_lib7', x: 1, y: 8, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib7', x: 2, y: 8, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f76_lib8', x: 4, y: 8, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib8', x: 5, y: 8, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib7', x: 1, y: 9, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib7', x: 2, y: 9, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib8', x: 4, y: 9, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib8', x: 5, y: 9, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+
+                { id: 'f76_lib9', x: 1, y: 10, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib9', x: 2, y: 10, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f76_lib10', x: 4, y: 10, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib10', x: 5, y: 10, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib9', x: 1, y: 11, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib9', x: 2, y: 11, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib10', x: 4, y: 11, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib10', x: 5, y: 11, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+
+                { id: 'f76_lib11', x: 1, y: 12, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib11', x: 2, y: 12, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f4_lib', x: 4, y: 13, type: 'prop', name: 'Research Table' }, { id: 'f5_lib', x: 5, y: 13, type: 'prop', name: 'Research Table' },
+
+                { id: 'f78_lib11', x: 1, y: 13, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib11', x: 2, y: 13, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f61_lib', x: 1, y: 14, type: 'prop', name: 'Stored Boxes' },
+                { id: 'f0_lib1', x: 5, y: 14, type: 'prop', name: 'Study Chair' },
+
+                { id: 'f62_lib', x: 1, y: 15, type: 'prop', name: 'Stored Boxes' },
+                { id: 'f60_lib', x: 2, y: 15, type: 'prop', name: 'Reference Box' },
+                { id: 'f0_lib2', x: 5, y: 15, type: 'prop', name: 'Study Chair' }
+            ],
+            doors: [
+                { x: 3, y: 16, targetZone: 'executive', targetX: 18, targetY: 3 }
             ]
         },
         kitchen: {
@@ -755,22 +1353,51 @@ export const Overworld = {
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
                 [10, 15, 15, 15, 15, 15, 15, 22, 15, 15, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Exit to Atrium (Shifted Up 2)
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Exit to Atrium (In the wall)
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Exit to Atrium (In the wall)
                 [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 3]
             ],
             objects: [
-                { id: 'tableB-L_kit', x: 5, y: 4, type: 'prop', name: 'Dining Table' },
-                { id: 'tableB-R_kit', x: 6, y: 4, type: 'prop', name: 'Dining Table' },
-                { id: 'chairA-F_kit1', x: 5, y: 5, type: 'prop', name: 'Kitchen Chair' },
-                { id: 'chairA-F_kit2', x: 6, y: 5, type: 'prop', name: 'Kitchen Chair' },
-                { id: 'tableComputerA_kit', x: 9, y: 4, type: 'prop', name: 'Staff PC', hiddenLogId: '005' }
+                // Vending Machines (L) - Shifted to Y=2,3
+                { id: 'f67_kitL', x: 1, y: 2, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-TopLeft tileset-03' },
+                { id: 'f68_kitL', x: 2, y: 2, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-TopRight tileset-03' },
+                { id: 'f69_kitL', x: 1, y: 3, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-BottomLeft tileset-03' },
+                { id: 'f70_kitL', x: 2, y: 3, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-BottomRight tileset-03' },
+
+                // Vending Machines (R) - Shifted to Y=2,3
+                { id: 'f67_kitR', x: 8, y: 2, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-TopLeft tileset-03' },
+                { id: 'f68_kitR', x: 9, y: 2, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-TopRight tileset-03' },
+                { id: 'f69_kitR', x: 8, y: 3, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-BottomLeft tileset-03' },
+                { id: 'f70_kitR', x: 9, y: 3, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-BottomRight tileset-03' },
+
+                // snacks and trash (Y=3)
+                { id: 'f36_kit1', x: 3, y: 3, type: 'prop', name: 'Quick Bite' },
+                { id: 'f36_kit2', x: 4, y: 3, type: 'prop', name: 'Forgotten Lunch' },
+                { id: 'f60_kit_trash', x: 5, y: 3, type: 'prop', name: 'Trash Box' },
+                { id: 'f37_kit1', x: 6, y: 3, type: 'prop', name: 'Empty Bowl' },
+
+                // Chairs (L)
+                { id: 'f1_kit1', x: 1, y: 4, type: 'prop', name: 'Kitchen Chair' },
+                { id: 'f1_kit2', x: 1, y: 5, type: 'prop', name: 'Kitchen Chair' },
+
+                // Tables (Center/Right - Y=5)
+                { id: 'f3_kit1', x: 3, y: 5, type: 'prop', name: 'Coffee Table' },
+                { id: 'f3_kit2', x: 5, y: 5, type: 'prop', name: 'Coffee Table' },
+                { id: 'f36_kit4', x: 8, y: 6, type: 'prop', name: 'Mid-Day Snack' },
+                { id: 'f3_kit3', x: 9, y: 6, type: 'prop', name: 'Coffee Table' },
+
+                // Mixed Decor Row (Y=6)
+                { id: 'f59_kit1', x: 1, y: 6, type: 'prop', name: 'Kitchen Fern' },
+                { id: 'f60_kit1', x: 2, y: 6, type: 'prop', name: 'Supplies' },
+                { id: 'f59_kit3', x: 3, y: 6, type: 'prop', name: 'Kitchen Fern' },
+                { id: 'f36_kit3', x: 4, y: 6, type: 'prop', name: 'Abandoned Snack' },
+                { id: 'f59_kit2', x: 5, y: 6, type: 'prop', name: 'Kitchen Fern' }
             ],
             doors: [
-                { x: 10, y: 6, targetZone: 'atrium', targetX: 1, targetY: 6 },
+                { x: 10, y: 4, targetZone: 'atrium', targetX: 1, targetY: 7 },
                 { x: 7, y: 2, targetZone: 'botanic', targetX: 7, targetY: 14 },
-                { x: 7, y: 7, targetZone: 'entertainment', targetX: 4, targetY: 3, requiredFlag: 'botanicSectorUnlocked' }
+                { x: 7, y: 7, targetZone: 'entertainment', targetX: 5, targetY: 3, requiredFlag: 'botanicSectorUnlocked' }
             ]
         },
         storage: {
@@ -788,10 +1415,46 @@ export const Overworld = {
                 [24, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Exit to Atrium (On the left wall)
                 [2, 9, 9, 9, 9, 9, 9, 9, 9, 3]
             ],
-            objects: [],
+            objects: [
+                // Row 2 & 3 (y=2,3)
+                { id: 'f52_st1', x: 1, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_st1', x: 2, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f61_stA', x: 3, y: 2, type: 'prop', name: 'Box Pile' },
+                { id: 'f52_st2', x: 7, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_st2', x: 8, y: 2, type: 'prop', name: 'Storage Cabinet' },
+
+                { id: 'f54_st1', x: 1, y: 3, type: 'prop', name: 'Storage Cabinet', hiddenLogId: 'Log002' },
+                { id: 'f55_st1', x: 2, y: 3, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f62_stA', x: 3, y: 3, type: 'prop', name: 'Box Pile' },
+                { id: 'f54_st2', x: 7, y: 3, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f55_st2', x: 8, y: 3, type: 'prop', name: 'Storage Cabinet' },
+
+                // Row 4 & 5 & 6 (y=4,5,6)
+                { id: 'f61_stB', x: 1, y: 4, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_stB', x: 1, y: 5, type: 'prop', name: 'Box Pile' },
+
+                { id: 'f61_stC', x: 4, y: 4, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_stC', x: 4, y: 5, type: 'prop', name: 'Box Pile' },
+
+                { id: 'f61_stD', x: 3, y: 5, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_stD', x: 3, y: 6, type: 'prop', name: 'Box Pile' },
+
+                { id: 'f61_stE', x: 6, y: 4, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_stE', x: 6, y: 5, type: 'prop', name: 'Box Pile' },
+
+                { id: 'f61_stF', x: 8, y: 4, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_stF', x: 8, y: 5, type: 'prop', name: 'Box Pile' },
+
+                // Floating Small Boxes (F60)
+                { id: 'f60_st1', x: 7, y: 5, type: 'prop', name: 'Storage Box' },
+                { id: 'f60_st2', x: 4, y: 6, type: 'prop', name: 'Storage Box' },
+                { id: 'f60_st3', x: 6, y: 6, type: 'prop', name: 'Storage Box' },
+                { id: 'f60_st4', x: 7, y: 6, type: 'prop', name: 'Storage Box' },
+                { id: 'f60_st5', x: 8, y: 6, type: 'prop', name: 'Storage Box' }
+            ],
             doors: [
-                { x: 0, y: 6, targetZone: 'atrium', targetX: 17, targetY: 8 },
-                { x: 5, y: 2, targetZone: 'specimenStorage', targetX: 6, targetY: 6 }
+                { x: 0, y: 6, targetZone: 'atrium', targetX: 17, targetY: 10 },
+                { x: 5, y: 2, targetZone: 'specimenStorage', targetX: 6, targetY: 6, requiredFlag: 'humanWardUnlocked' }
             ]
         },
         entertainment: {
@@ -802,7 +1465,7 @@ export const Overworld = {
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 14, 14, 14, 14, 11],
-                [10, 15, 15, 15, 22, 15, 15, 11],
+                [10, 15, 15, 15, 15, 22, 15, 11],
                 [10, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 11],
@@ -810,87 +1473,162 @@ export const Overworld = {
                 [2, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [
-                { id: 'tableA_ent', x: 3, y: 4, type: 'prop', name: 'Gaming Table' },
-                { id: 'chairA-R_ent', x: 2, y: 4, type: 'prop', name: 'Lounge Chair' },
-                { id: 'chairA-L_ent', x: 4, y: 4, type: 'prop', name: 'Lounge Chair' },
-                { id: 'wallHangingA_ent', x: 3, y: 2, type: 'prop', name: 'Art Display' }
+                // Seating Row (L)
+                // Seating Row (L)
+                { id: 'f1_ent1', x: 1, y: 3, type: 'prop', name: 'Lounge Seat' },
+                { id: 'f1_ent2', x: 1, y: 4, type: 'prop', name: 'Lounge Seat' },
+                { id: 'f1_ent3', x: 1, y: 5, type: 'prop', name: 'Lounge Seat' },
+                { id: 'f1_ent4', x: 1, y: 6, type: 'prop', name: 'Lounge Seat' },
+
+                // Right Side Group
+                { id: 'f0_ent1', x: 6, y: 3, type: 'prop', name: 'Lounge Seat' },
+                { id: 'f7_ent', x: 6, y: 4, type: 'prop', name: 'Lounge PC', hiddenLogId: 'Log003' },
+                { id: 'f0_ent2', x: 6, y: 5, type: 'prop', name: 'Lounge Seat' },
+
+                // Decor
+                { id: 'f6_ent', x: 3, y: 2, type: 'prop', name: 'Art Display' },
+                { id: 'f17_ent', x: 2, y: 2, type: 'prop', name: 'Art Display' },
+
+                // Battle Station (2x2)
+                { id: 'f71_ent', x: 3, y: 4, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-TopLeft tileset-03' },
+                { id: 'f72_ent', x: 4, y: 4, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-TopRight tileset-03' },
+                { id: 'f73_ent', x: 3, y: 5, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-BottomLeft tileset-03' },
+                { id: 'f74_ent', x: 4, y: 5, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-BottomRight tileset-03' }
             ],
             doors: [
-                { x: 7, y: 6, targetZone: 'atrium', targetX: 1, targetY: 8 },
-                { x: 4, y: 2, targetZone: 'kitchen', targetX: 7, targetY: 6 }
+                { x: 7, y: 6, targetZone: 'atrium', targetX: 1, targetY: 10 },
+                { x: 5, y: 2, targetZone: 'kitchen', targetX: 7, targetY: 6, requiredFlag: 'botanicSectorUnlocked' }
             ]
         }
     },
 
     furnitureMetadata: {
-        'chairA-L': { hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
-        'chairA-R': { hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
-        'chairA-F': { hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
-        'tableA': { hasCollision: true, info: "Stained with coffee, acid, and the tears of failed hypotheses. Mostly coffee." },
-        'tableB-L': { hasCollision: true, info: "So sturdy it once survived a localized gravity collapse. The equipment on it didn't." },
-        'tableB-R': { hasCollision: true, info: "So sturdy it once survived a localized gravity collapse. The equipment on it didn't." },
-        'wallHangingA': { hasCollision: false, info: "A poster of Mitosis. Someone drew tiny screaming faces on the dividing cells." },
-        'tableComputerA': { hasCollision: true, info: "Whirrs loudly and smells faintly of burnt toast. Please don't check its browser history." },
-        'tableLabCylindersA': { hasCollision: true, info: "Do not shake. Do not stir. In fact, just don't even look at it too hard." },
-        'tableDeviceA': { hasCollision: true, info: "A protein sequencer that occasionally plays elevator music when it's bored." },
-        'tableC-T': { hasCollision: false, info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
-        'tableC-B': { hasCollision: true, info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
-        'labTankA-T': { hasCollision: false, info: "This specimen has only one eye. The label say: DON'T LOOK AT ITS EYE." },
-        'labTankA-B': { hasCollision: true, info: "This specimen has only one eye. The label say: DON'T LOOK AT ITS EYE." },
-        'labTankB-T': { hasCollision: false, info: "The specimen here is slowly swimming, why its surrounding turn yellow?." },
-        'labTankB-B': { hasCollision: true, info: "The specimen here is slowly swimming, why its surrounding turn yellow?." },
-        'wallHangingB': { hasCollision: false, info: "'DAYS SINCE ACCIDENTAL MUTATION: 0'. Someone just crossed out the '1'." },
-        'potPlantA-T': { hasCollision: false, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
-        'potPlantA-B': { hasCollision: true, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
-        'potPlantB-T': { hasCollision: false, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
-        'potPlantB-B': { hasCollision: true, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
-        'labTankC-T': { hasCollision: false, info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
-        'labTankC-B': { hasCollision: true, info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
-        'potPlantC-T': { hasCollision: false, info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
-        'potPlantC-B': { hasCollision: true, info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
-        'tableD-L': { hasCollision: true, info: "Reserved for 'The Important People'. Includes a built-in panic button." },
-        'tableD-R': { hasCollision: true, info: "Reserved for 'The Important People'. Includes a built-in panic button." },
-        'tableLeaderA-L': { hasCollision: true, info: "Features a secret drawer for hiding snacks from the interns." },
-        'tableLeaderA-R': { hasCollision: true, info: "Features a secret drawer for hiding snacks from the interns." },
-        'tableDirectorA-L': { hasCollision: true, info: "Carved from obsidian glass. Legend says the Director actually sleeps under it." },
-        'tableDirectorA-R': { hasCollision: true, info: "Carved from obsidian glass. Legend says the Director actually sleeps under it." },
-        'bedA-L': { hasCollision: true, info: "A medical pod. Warning: Set to 'Deep Sleep', not 'Quick Nap'. See you in three days." },
-        'bedA-R': { hasCollision: true, info: "A medical pod. Warning: Set to 'Deep Sleep', not 'Quick Nap'. See you in three days." },
-        'skeletonA-T': { hasCollision: false, info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
-        'skeletonA-B': { hasCollision: true, info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
-        'tableNoodleA': { hasCollision: true, info: "Instant noodles. The true fuel of all scientific breakthroughs and 3 AM crying sessions." },
-        'emptyNoodleBowlA': { hasCollision: true, info: "An empty bowl. The salt levels within are high enough to preserve a whole lab tech." },
-        'incubatorA-TL': { hasCollision: false, info: "A standard-issue Cell synthesis machine. Humms with the potential of new life." },
-        'incubatorA-TR': { hasCollision: false, info: "A standard-issue Cell synthesis machine. Humms with the potential of new life." },
-        'incubatorA-BL': { hasCollision: true, info: "A standard-issue Cell synthesis machine. Humms with the potential of new life." },
-        'incubatorA-BR': { hasCollision: true, info: "A standard-issue Cell synthesis machine. Humms with the potential of new life." },
-        'megaIncubatorA-BR': { hasCollision: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-        'Cabinet-Big-TopLeft': { hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-        'Cabinet-Big-TopRight': { hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-        'Cabinet-Big-BottomLeft': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-        'Cabinet-Big-BottomRight': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-        'TableLeaderB-Top': { hasCollision: true, info: "'Why all the table has to be this meesy?' asked by the Janitor." },
-        'TableLeaderB-Bottom': { hasCollision: true, info: "'Why all the table has to be this meesy?' asked by the Janitor." },
-        'Cabinet-Small': { hasCollision: true, info: "I can see the little cockcroach's crawing out!" },
-        'boxHandA': { hasCollision: true, info: "Labeled: 'FRAGILE - BIOLOGICAL SAMPLES - DO NOT SHAKE'. It just made a sneeze sound." },
-        'keyItem-DataPad': { hasCollision: true, info: "Mostly contains encrypted logs, but some files are just high-score records for 'Snake'." },
-        'KeyItem-DataPad': { hasCollision: true, info: "Mostly contains encrypted logs, but some files are just high-score records for 'Snake'." },
-        'keyItem-RoomKey': { hasCollision: true, info: "A magnetic keycard. Smells like the Director's expensive cologne." },
-        'keyItem-SauceBottle': { hasCollision: true, info: "Label: 'SUPERNOVA SAUCE'. Scoville rating: YES. Lab-certified to burn through metal." },
-        'chairC': { hasCollision: true, info: "A high-back executive chair that squeaks in a way that sounds suspiciously like judging your life choices." },
-        'PotPlant-Small': { hasCollision: true, info: "Look like normal plant, or is it?" },
-        'Cartonbox-Small': { hasCollision: true, info: "This box is heavier than it look" },
-        'Cartonbox-Pile-Top': { hasCollision: false, info: "Please don't fall on my head" },
-        'Cartonbox-Pile-Bottom': { hasCollision: true, info: "Please don't fall on my head" },
-        'KeyItem-SecretCard': { hasCollision: true, info: "This is the best ultimate super rare card ever!" },
-        'log': { hasCollision: false, info: "A data pad containing potentially sensitive research notes. Better give it a read." }
+        // --- TILESET 02 (f0-f63) ---
+        'f0': { hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
+        'f1': { hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
+        'f2': { hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
+        'f3': { hasCollision: true, info: "Stained with coffee, acid, and the tears of failed hypotheses. Mostly coffee." },
+        'f4': { hasCollision: true, info: "So sturdy it once survived a localized gravity collapse. The equipment on it didn't." },
+        'f5': { hasCollision: true, info: "So sturdy it once survived a localized gravity collapse. The equipment on it didn't." },
+        'f6': { hasCollision: true, info: "A poster showing the evolution of Cells. Sadly, the dev lacked resources to implement these." },
+        'f7': { hasCollision: true, info: "Whirrs loudly and smells faintly of burnt toast. Please don't check its browser history." },
+        'f8': { hasCollision: true, info: "Do not shake. Do not stir. In fact, just don't even look at it too hard." },
+        'f9': { hasCollision: true, info: "A protein sequencer that occasionally plays elevator music when it's bored." },
+        'f11': { hasCollision: true, info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
+        'f12': { hasCollision: true, info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
+        'f13': { hasCollision: false, info: "This specimen has only one eye. The label says: DON'T LOOK AT ITS EYE." },
+        'f14': { hasCollision: true, info: "This specimen has only one eye. The label says: DON'T LOOK AT ITS EYE." },
+        'f15': { hasCollision: false, info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
+        'f16': { hasCollision: true, info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
+        'f17': { hasCollision: true, info: "A poster showing three creature races. Or perhaps they aren't simply 'races'..." },
+        'f18': { hasCollision: false, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
+        'f19': { hasCollision: true, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
+        'f20': { hasCollision: false, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
+        'f21': { hasCollision: true, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
+        'f22': { hasCollision: false, info: "The specimen here is slowly swimming; why are its surroundings turning yellow?" },
+        'f23': { hasCollision: true, info: "The specimen here is slowly swimming; why are its surroundings turning yellow?" },
+        'f24': { hasCollision: false, info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
+        'f25': { hasCollision: true, info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
+        'f26': { hasCollision: true, info: "Reserved for 'The Important People'. Includes a built-in panic button." },
+        'f27': { hasCollision: true, info: "Reserved for 'The Important People'. Includes a built-in panic button." },
+        'f28': { hasCollision: true, info: "Features a secret drawer for hiding snacks from the interns." },
+        'f29': { hasCollision: true, info: "Features a secret drawer for hiding snacks from the interns." },
+        'f30': { hasCollision: true, info: "Carved from obsidian glass. Legend says the Director actually sleeps under it." },
+        'f31': { hasCollision: true, info: "Carved from obsidian glass. Legend says the Director actually sleeps under it." },
+        'f32': { hasCollision: true, info: "A medical pod. Warning: Set to 'Deep Sleep', not 'Quick Nap'. See you in three days." },
+        'f33': { hasCollision: true, info: "A medical pod. Warning: Set to 'Deep Sleep', not 'Quick Nap'. See you in three days." },
+        'f34': { hasCollision: false, info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
+        'f35': { hasCollision: true, info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
+        'f36': { hasCollision: true, info: "Instant noodles. The true fuel of all scientific breakthroughs and 3 AM crying sessions." },
+        'f37': { hasCollision: true, info: "An empty bowl. The salt levels within are high enough to preserve a whole lab tech." },
+        'f38': { hasCollision: false, triggerHeal: true, info: "Incubator Unit-01: [STATION READY]" },
+        'f39': { hasCollision: false, triggerHeal: true, info: "Incubator Unit-02: [STATION READY]" },
+        'f40': { hasCollision: true, triggerHeal: true, info: "Incubator Unit-03: [STATION READY]" },
+        'f41': { hasCollision: true, triggerHeal: true, info: "Incubator Unit-04: [STATION READY]" },
+        'f42': { hasCollision: false, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
+        'f43': { hasCollision: false, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
+        'f44': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
+        'f45': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
+        'f46': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
+        'f47': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
+        'f48': { hasCollision: true, info: "Labeled: 'DO NOT SHAKE'." },
+        'f49': { hasCollision: true, info: "Mostly contains encrypted logs, but some files are just high-score records for 'Snake'." },
+        'f50': { hasCollision: true, info: "A magnetic keycard. Smells like the Director's expensive cologne." },
+        'f51': { hasCollision: true, info: "Label: 'SUPERNOVA SAUCE'. Scoville rating: YES. Lab-certified to burn through metal." },
+        'f52': { hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
+        'f53': { hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
+        'f54': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
+        'f55': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
+        'f56': { hasCollision: true, info: "\"Why do all the tables have to be this messy?\" asked the janitor." },
+        'f57': { hasCollision: true, info: "\"Why do all the tables have to be this messy?\" asked the janitor." },
+        'f58': { hasCollision: true, info: "I can see the little cockroaches crawling out!" },
+        'f59': { hasCollision: true, info: "Looks like a normal plant... or is it?" },
+        'f60': { hasCollision: true, info: "This box is heavier than it looks." },
+        'f61': { hasCollision: false, info: "Please don't fall on my head" },
+        'f62': { hasCollision: true, info: "Please don't fall on my head" },
+        'f63': { hasCollision: true, info: "This is the best ultimate super rare card ever!" },
+
+        // --- TILESET 03 (f64+) ---
+        'f64': { hasCollision: true, info: "Ancient people used this to store data!" },
+        'f65': { hasCollision: true, info: "Whatever is lying here doesn't look exactly human; it'd better be!" },
+        'f66': { hasCollision: true, info: "Whatever is lying here doesn't look exactly human; it'd better be!" },
+        'f67': { hasCollision: false, triggerShop: true, info: "ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]" },
+        'f68': { hasCollision: false, triggerShop: true, info: "ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]" },
+        'f69': { hasCollision: true, triggerShop: true, info: "ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]" },
+        'f70': { hasCollision: true, triggerShop: true, info: "ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]" },
+        'f71': { hasCollision: true, info: "An official device for Cell battles, though researchers strangely prefer using their lunch tables instead." },
+        'f72': { hasCollision: true, info: "An official device for Cell battles, though researchers strangely prefer using their lunch tables instead." },
+        'f73': { hasCollision: true, info: "An official device for Cell battles, though researchers strangely prefer using their lunch tables instead." },
+        'f74': { hasCollision: true, info: "An official device for Cell battles, though researchers strangely prefer using their lunch tables instead." },
+        'f75': { hasCollision: true, info: "Just collect them all!" },
+        'f76': { hasCollision: false, info: "These books are surprisingly well preserved!" },
+        'f77': { hasCollision: false, info: "These books are surprisingly well preserved!" },
+        'f78': { hasCollision: true, info: "These books are surprisingly well preserved!" },
+        'f79': { hasCollision: true, info: "These books are surprisingly well preserved!" },
+        'f80': { hasCollision: false, info: "Stay cool—we'll be out in a century or two." },
+        'f81': { hasCollision: false, info: "Stay cool—we'll be out in a century or two." },
+        'f82': { hasCollision: true, info: "Stay cool—we'll be out in a century or two." },
+        'f83': { hasCollision: true, info: "Stay cool—we'll be out in a century or two." },
+        'f84': { hasCollision: true, info: "Whatever is kept inside is in a deep freeze state!" },
+        'f85': { hasCollision: true, info: "Whatever is kept inside is in a deep freeze state!" },
+        'f86': { hasCollision: false, info: "People are trying to bring this ancient plant back; sometimes it's a success!" },
+        'f87': { hasCollision: true, info: "People are trying to bring this ancient plant back; sometimes it's a success!" },
+        'f88': { hasCollision: false, info: "People are trying to bring this ancient plant back; sometimes it's a failure!" },
+        'f89': { hasCollision: true, info: "People are trying to bring this ancient plant back; sometimes it's a failure!" },
+        'f90': { hasCollision: true, info: "You are now a truly member of the pack!" },
+        'f91': { hasCollision: true, info: "A ceramic pot filled with special fertile soil. If you listen closely, you can hear the worms throwing a tiny rave in there." },
+        'f92': { hasCollision: false, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+        'f93': { hasCollision: false, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+        'f94': { hasCollision: false, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+        'f95': { hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+        'f96': { hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+        'f97': { hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+        'f98': { hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+        'f99': { hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+        'f100': { hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+        'f101': { hasCollision: true, info: "Contains the complex genomic blueprint of a Cell. It's essentially the ultimate 'cheat sheet' for biological reconstruction." },
+        'f102': { hasCollision: true, info: "A container of stabilized raw biological material. It smells faintly of damp earth and limitless potential." },
+        'f103': { hasCollision: true, info: "An oversized cultivation dish designed for Cell. It's climate-controlled and remarkably soft—essentially a luxury suite for a Cell." },
+        'f104': { hasCollision: true, info: "An internal currency chip exclusive to Labs. What started as a corporate joke became the only way to pay for the 'premium' noodles." },
+
+        // --- ENCOUNTER CELLS ---
+        'c0': { hasCollision: true, info: "A wild Stemmy is wandering." },
+        'c1': { hasCollision: true, info: "A wild Cambihil is looking for leaf." },
+        'c2': { hasCollision: true, info: "A wild Lydrosome is watching a lab tube." },
+        'c3': { hasCollision: true, info: "A wild Nitrophil is searching for food." },
+
     },
 
     getFurnitureMeta(objId, customSprite) {
         if (!objId) return null;
         // customSprite takes priority over the generic id-prefix lookup
-        if (customSprite && this.furnitureMetadata[customSprite]) {
-            return this.furnitureMetadata[customSprite];
+        if (customSprite) {
+            const classes = customSprite.split(' ');
+            for (const cls of classes) {
+                if (this.furnitureMetadata[cls]) {
+                    return this.furnitureMetadata[cls];
+                }
+            }
         }
         const prefix = objId.split('_')[0];
         return this.furnitureMetadata[prefix] || null;
@@ -914,6 +1652,12 @@ export const Overworld = {
      */
     renderMap(zoneId, forceSpawn = false, targetX = null, targetY = null) {
         const id = zoneId || this.currentZone || 'lobby';
+
+        // Update Bio-Extract visuals if we are entering or rendering the extraction room
+        if (id === 'bioExtraction') {
+            this.updateBioExtractVisuals();
+        }
+
         const zone = this.zones[id];
         const isNewZone = id !== this.currentZone || forceSpawn;
 
@@ -940,7 +1684,11 @@ export const Overworld = {
 
                 // --- Story-Locked Door Visual Swap ---
                 const door = zone.doors && zone.doors.find(d => d.x === x && d.y === y);
-                if (door && door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag]) {
+                const isLockedByFlag = door && door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag] && !window.gameState.debugUnlockDoors;
+                const missingItems = door ? (door.requiredItems || (door.requiredItem ? [door.requiredItem] : [])).filter(id => !window.gameState.items.includes(id)) : [];
+                const isLockedByItem = door && missingItems.length > 0 && !window.gameState.debugUnlockDoors && !window.gameState.debugAllItems;
+
+                if (isLockedByFlag || isLockedByItem) {
                     const lockedMap = {
                         20: 29, 21: 29, // Edge-Bottom
                         22: 28, 23: 28, // Basic
@@ -967,35 +1715,61 @@ export const Overworld = {
         }
 
         // 4. DRAW OBJECTS
-        this.logsCollected = window.gameState.logs || [];
-        if (id === 'lobby' && window.gameState.storyFlags.jenziFirstBattleDone && !this.logsCollected.includes('001')) {
-            if (!zone.objects.some(o => o.id === 'log_001')) {
-                zone.objects.push({ id: 'log_001', x: 5, y: 3, type: 'prop', name: 'Log #001', hiddenLogId: '001', customSprite: 'KeyItem-DataPad' });
+        this.refreshLogs(); // Sync logs from state (accounting for debug mode)
+        // Log #001 is now hidden in the Red Specimen Tank via main.js trigger
+        if (id === 'lobby') {
+            zone.objects = zone.objects.filter(obj => obj.id !== 'log_001');
+        }
+
+        if (id === 'executive' && window.gameState.storyFlags.gameCompleted) {
+            if (!zone.objects.some(o => o.id === 'origin_nitrophil_final')) {
+                zone.objects.push({
+                    id: 'origin_nitrophil_final',
+                    x: 9,
+                    y: 3,
+                    type: 'cell',
+                    name: 'Origin Nitrophil',
+                    customSprite: 'c3 orange-hue'
+                });
             }
         }
 
         zone.objects.forEach(obj => {
-            if (['npc', 'prop', 'sign', 'atrium_statue'].includes(obj.type) || obj.id === 'incubator') {
+            if (['npc', 'prop', 'cell', 'sign', 'atrium_statue'].includes(obj.type) || obj.id === 'incubator') {
                 const el = document.createElement('div');
                 el.id = `npc-${obj.id}`;
                 el.classList.add('world-object', obj.type);
                 if (obj.customSprite) {
-                    el.classList.add(obj.customSprite);
-                } else {
-                    const specificClass = obj.id.startsWith('npc_') ? obj.id.split('_').slice(0, 2).join('_') : obj.id.split('_')[0];
-                    el.classList.add(specificClass);
+                    obj.customSprite.split(' ').forEach(cls => {
+                        if (cls) el.classList.add(cls);
+                    });
                 }
 
+                // Always add the class derived from the object ID
+                const specificClass = obj.id.startsWith('npc_') ? obj.id.split('_').slice(0, 2).join('_') : obj.id.split('_')[0];
+                el.classList.add(specificClass);
+
+                if (obj.type === 'npc' && obj.id.includes('_wild_')) {
+                    el.classList.add('cell');
+                }
                 if (obj.type === 'npc') el.classList.add(`face-${obj.direction || 'down'}`);
 
                 el.style.width = `${(obj.width || 1) * this.tileSize}px`;
                 el.style.height = `${(obj.height || 1) * this.tileSize}px`;
-                el.style.left = `${obj.x * this.tileSize}px`;
-                el.style.top = `${obj.y * this.tileSize}px`;
+                el.style.left = `${obj.x * this.tileSize + (obj.offsetX || 0)}px`;
+                el.style.top = `${obj.y * this.tileSize + (obj.offsetY || 0)}px`;
                 el.style.zIndex = obj.y + (obj.height || 1) + 10;
 
                 const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
                 if (meta && meta.hasCollision === false) el.classList.add('render-top');
+
+                // Add Level Badge for Bio-Extraction Grid Cells
+                if (obj.type === 'cell' && obj.efficiency) {
+                    const badge = document.createElement('div');
+                    badge.className = 'efficiency-badge';
+                    badge.innerText = obj.efficiency;
+                    el.appendChild(badge);
+                }
 
                 mapEl.appendChild(el);
 
@@ -1040,6 +1814,14 @@ export const Overworld = {
             if (m) m.classList.remove('no-transition');
         }, 100);
     },
+    
+    refreshLogs() {
+        this.logsCollected = (window.gameState.debugAllLogs && window.DATA_LOGS)
+            ? window.DATA_LOGS.map(l => l.id)
+            : (window.gameState.logs || []);
+        
+        if (window.updateResourceHUD) window.updateResourceHUD();
+    },
 
     setupControls() {
         if (this.controlsInitialized) return;
@@ -1047,7 +1829,12 @@ export const Overworld = {
 
         window.addEventListener('keydown', (e) => {
             if (document.getElementById('screen-overworld').classList.contains('hidden')) return;
-            if (e.key.toLowerCase() === 'f') this.interact();
+            if (e.key.toLowerCase() === 'f') {
+                // Only allow holding F if dialogue is active (to show next line / speed up)
+                if (this.isDialogueActive || !e.repeat) {
+                    this.interact();
+                }
+            }
             if (e.key.toLowerCase() === 'escape') {
                 document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
                 document.getElementById('screen-main-menu').classList.remove('hidden');
@@ -1074,6 +1861,14 @@ export const Overworld = {
     startLoop() {
         if (this.gameLoopActive) return;
         this.gameLoopActive = true;
+
+        // Check for pending item pickups (rewards from battle)
+        if (this.pendingItemPickup) {
+            const itemId = this.pendingItemPickup;
+            this.pendingItemPickup = null;
+            this.collectItem(itemId);
+        }
+
         this.spawner.start();
         this.gameLoop();
     },
@@ -1161,9 +1956,11 @@ export const Overworld = {
                 if (doorMap[tileID]) {
                     // check if this tile has a transition with a flag
                     const door = zone.doors && zone.doors.find(d => d.x === nextX && d.y === nextY);
-                    const isStoryLocked = door && door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag];
+                    const isStoryLocked = door && door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag] && !window.gameState.debugUnlockDoors;
+                    const missingItems = door ? (door.requiredItems || (door.requiredItem ? [door.requiredItem] : [])).filter(id => !window.gameState.items.includes(id)) : [];
+                    const isItemLocked = door && missingItems.length > 0 && !window.gameState.debugUnlockDoors && !window.gameState.debugAllItems;
 
-                    if (!isLocked && !isStoryLocked) {
+                    if (!isLocked && !isStoryLocked && !isItemLocked) {
                         // Clear all potential door visual classes (original and potentially swapped locked versions)
                         const lockedMap = { 20: 29, 22: 28, 24: 30, 25: 31 };
                         targetTile.classList.remove('wall', `t-${tileID}`, `t-${lockedMap[tileID]}`);
@@ -1225,13 +2022,23 @@ export const Overworld = {
             // CHECK FOR ZONE TRANSITION
             const door = zone.doors && zone.doors.find(d => d.x === nextX && d.y === nextY);
             if (door) {
-                // Check for required story flag
-                if (door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag]) {
-                    this.showDialogue("Security Gate", [
-                        "This door is locked.",
-                        "Access remains restricted until your credentials are bio-authenticated."
-                    ]);
-                    this.updatePlayerPosition();
+                const isLockedByFlag = door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag] && !window.gameState.debugUnlockDoors;
+                const missingItems = (door.requiredItems || (door.requiredItem ? [door.requiredItem] : [])).filter(item => !window.gameState.items.includes(item));
+                const isLockedByItem = missingItems.length > 0 && !window.gameState.debugUnlockDoors && !window.gameState.debugAllItems;
+
+                if (isLockedByFlag || isLockedByItem) {
+                    let msg = "This door is locked. You need specific clearance.";
+                    if (isLockedByItem) {
+                        const names = missingItems.map(id => {
+                            const itemData = window.ITEM_PICKUP_DATA && window.ITEM_PICKUP_DATA[id];
+                            return itemData ? itemData.name : id;
+                        });
+                        msg = `This door is locked. You need: ${names.join(', ')}.`;
+                    }
+                    this.showDialogue("Security Gate", [msg]);
+                    // The original code had this.updatePlayerPosition() here, but it's redundant
+                    // as the player hasn't moved into the new tile if the door is locked.
+                    // Removing it to align with the provided diff's implied change.
                     return;
                 }
                 this.changeZone(door.targetZone, door.targetX, door.targetY);
@@ -1249,18 +2056,44 @@ export const Overworld = {
         }, this.player.moveSpeed);
     },
 
-    changeZone(zoneId, x, y) {
-        console.log(`Changing Zone to: ${zoneId}`);
+    async changeZone(zoneId, x, y) {
+        if (this.isTransitioning) return;
         this.isTransitioning = true;
+        console.log(`Changing Zone to: ${zoneId}`);
+
+        const overlay = document.getElementById('zone-transition-overlay');
+        if (overlay) {
+            overlay.classList.remove('hidden');
+            // Force reflow to ensure transition works if it was just unhidden
+            void overlay.offsetWidth;
+            overlay.classList.add('active');
+            // Wait for fade-out to black (0.3s)
+            await new Promise(r => setTimeout(r, 300));
+        }
+
         this.keysPressed.clear(); // Prevent immediate move in new zone
 
+        // 1. CLEANUP OLD ZONE SPAWNS (while currentZone is still the old zone)
+        this.spawner.stop();
+        this.spawner.despawnCurrent();
+
+        // 2. Perform the actual map swap while screen is black (updates currentZone)
         this.renderMap(zoneId, false, x, y);
 
-        // Release transition lock after a delay to allow "landing"
-        setTimeout(() => {
-            this.isTransitioning = false;
-            this.spawner.resetForZoneChange();
-        }, 200);
+        // 3. START NEW ZONE SPAWNS (in the now-updated currentZone)
+        this.spawner.start();
+
+        if (overlay) {
+
+            // Small buffer to ensure rendering is complete
+            await new Promise(r => setTimeout(r, 100));
+            overlay.classList.remove('active');
+            // Wait for fade-in back to game (0.3s)
+            await new Promise(r => setTimeout(r, 300));
+            overlay.classList.add('hidden');
+        }
+
+        this.isTransitioning = false;
     },
 
     updatePlayerPosition() {
@@ -1291,27 +2124,23 @@ export const Overworld = {
         const vHeight = viewport.clientHeight;
 
         // Target: Center the player in the viewport
+        // Target: Center the player in the viewport (Pokemon-style strict focus)
         let mapX = (vWidth / 2) - (this.player.x * this.tileSize + this.tileSize / 2);
         let mapY = (vHeight / 2) - (this.player.y * this.tileSize + this.tileSize / 2);
 
-        // Clamping (Don't scroll past map edges if map > viewport)
-        if (zone.width * this.tileSize > vWidth) {
-            mapX = Math.min(0, Math.max(vWidth - zone.width * this.tileSize, mapX));
-        } else {
-            mapX = (vWidth - zone.width * this.tileSize) / 2; // Keep centered if small
-        }
-
-        if (zone.height * this.tileSize > vHeight) {
-            mapY = Math.min(0, Math.max(vHeight - zone.height * this.tileSize, mapY));
-        } else {
-            mapY = (vHeight - zone.height * this.tileSize) / 2; // Keep centered if small
-        }
+        // No Clamping: User wants character to stay visually static at all times.
+        // This means the environment will move even at edges, showing the viewport background.
 
         mapEl.style.transform = `translate(${mapX}px, ${mapY}px)`;
     },
 
     interact() {
-        if (this.isPaused) return;
+        if (this.isPaused || this.isTransitioning) return;
+
+        const now = Date.now();
+        if (now - this.lastInteractTime < 150) return;
+        this.lastInteractTime = now;
+
         if (this.isDialogueActive) {
             if (this.isTyping) {
                 // Instant Complete
@@ -1331,31 +2160,68 @@ export const Overworld = {
         if (this.player.direction === 'left') targetX--;
         if (this.player.direction === 'right') targetX++;
 
-        // 1. Check for NPCs and Wild Stemmy
-        const npc = zone.objects.find(o => o.type === 'npc' && o.x === targetX && o.y === targetY);
+        // 1. Check for NPCs and Wild Monsters
+        const npc = zone.objects.find(obj => obj.type === 'npc' && obj.x === targetX && obj.y === targetY);
         if (npc) {
-            if (npc.id.startsWith('stemmy_wild')) {
-                // Trigger Battle System
-                this.spawner.stop();
-                window.dispatchEvent(new CustomEvent('start-wild-encounter', { detail: { id: 'stemmy' } }));
+            if (npc.id.includes('_wild_')) {
+                const mName = npc.monsterId.charAt(0).toUpperCase() + npc.monsterId.slice(1);
+                this.spawner.stop(); // Stop wild spawns when interacting with one
+                this.pendingWildEncounter = true;
+                this.pendingWildMonsterId = npc.monsterId;
+                this.showDialogue(mName, [`A wild ${mName} is wandering.`]);
+                return;
+            } else {
+                this.startNPCInteraction(npc);
                 return;
             }
-            this.startNPCInteraction(npc);
-            return;
         }
 
         // 2. Check for Furniture / Props (Discovery vs. Lore)
-        const obj = zone.objects.find(o => (['prop', 'sign', 'atrium_statue'].includes(o.type) || o.id === 'incubator') &&
+        const obj = zone.objects.find(o => (['prop', 'cell', 'sign', 'atrium_statue'].includes(o.type) || o.id === 'incubator') &&
             targetX >= o.x && targetX < o.x + (o.width || 1) &&
             targetY >= o.y && targetY < o.y + (o.height || 1));
 
         if (obj) {
             const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
-            const hasCollision = meta ? meta.hasCollision : false;
+            if (meta && meta.hasCollision === false && !['f38', 'f39', 'f40', 'f41'].some(id => obj.id.startsWith(id))) {
+                // Ignore interaction with non-collidable parts (tops of tanks/skeletons etc)
+                // Note: Keeping incubators interactable as exceptions for height
+                return;
+            }
 
-            // Hidden Log Logic — collectible regardless of furniture metadata
+            // Generic Item/Log Collection Logic
             if (obj.hiddenLogId && !this.logsCollected.includes(obj.hiddenLogId)) {
-                this.collectLog(obj.hiddenLogId);
+                this.pendingItemPickup = obj.hiddenLogId;
+                this.showDialogue('Discovery', ['You found an item!']);
+                return;
+            }
+            if (obj.hiddenItemId && window.gameState && !window.gameState.items.includes(obj.hiddenItemId)) {
+                this.pendingItemPickup = obj.hiddenItemId;
+                this.showDialogue('Discovery', [obj.type === 'cell' ? 'You found a Cell!' : 'You found an item!']);
+                return;
+            }
+
+            // Special Interactive Prop Check (Incubator / Vending Machine / Bio-Extractor)
+            if (meta && (meta.triggerHeal || meta.triggerShop || meta.triggerBioExtract)) {
+                if (meta.triggerHeal) this.pendingIncubatorMenu = true;
+                if (meta.triggerShop) this.pendingShopMenu = true;
+                if (meta.triggerBioExtract) this.pendingBioExtractMenu = true;
+
+                const title = meta.triggerBioExtract ? "Mega Incubator" : (meta.triggerShop ? "Vending Machine" : "Incubator Unit");
+                const text = meta.triggerBioExtract ?
+                    ["MEGA-INCUBATOR: [BIO-EXTRACTION PROTOCOLS ACTIVE]", "Authorized biological materials detected.", "Initiate extraction sequence?"] :
+                    (meta.triggerShop ?
+                        ["ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]", "Please follow technical safety guidelines."] :
+                        ["Biological maintenance system online.", "Awaiting operator authorization..."]);
+
+                this.showDialogue(title, text);
+                return;
+            }
+
+            // CellAccelerator Interaction
+            if (obj.name === 'CellAccelerator') {
+                this.pendingSynthesisMenu = true;
+                this.showDialogue("Cell Accelerator", ["CELL-ACC TERMINAL: [SYNTHESIS PROTOCOLS ACTIVE]", "Ensure biological requirements are met before initialization."]);
                 return;
             }
 
@@ -1376,65 +2242,60 @@ export const Overworld = {
 
         // 3. Tile Interaction (Special Locked Messages)
         if (targetX >= 0 && targetX < zone.width && targetY >= 0 && targetY < zone.height) {
+            const door = zone.doors && zone.doors.find(d => d.x === targetX && d.y === targetY);
+            if (door) {
+                const isLockedByFlag = door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag] && !window.gameState.debugUnlockDoors;
+                const missingItems = (door.requiredItems || (door.requiredItem ? [door.requiredItem] : [])).filter(item => !window.gameState.items.includes(item));
+                const isLockedByItem = missingItems.length > 0 && !window.gameState.debugUnlockDoors && !window.gameState.debugAllItems;
+
+                if (isLockedByFlag || isLockedByItem) {
+                    let msg = "This door is locked. You need specific clearance.";
+                    if (isLockedByItem) {
+                        const names = missingItems.map(id => {
+                            const itemData = window.ITEM_PICKUP_DATA && window.ITEM_PICKUP_DATA[id];
+                            return itemData ? itemData.name : id;
+                        });
+                        msg = `This door is locked. You need: ${names.join(', ')}.`;
+                    }
+
+                    // Special Overrides for Flavor
+                    if (this.currentZone === 'atrium' && targetX === 0 && targetY === 4) {
+                        msg = "Botanic Sector Gate: Someone is shouting at a fern inside. The voice is bossy but... cute.";
+                    } else if (this.currentZone === 'atrium' && targetX === 18 && targetY === 4) {
+                        msg = "Human Ward Gate: A rhythmic snoring vibrates the door. It smells like sea salt and deep-cycle naps.";
+                    } else if (this.currentZone === 'atrium' && targetX === 9 && targetY === 2) {
+                        msg = "Executive Suite Gate: An intimidatingly professional silence. Smells like antacids and expensive noodles.";
+                    }
+
+                    this.showDialogue("Security Gate", [msg]);
+                    return;
+                }
+            }
+
             const tileID = zone.layout[targetY][targetX];
-            // Expanded to include standard closed door IDs for interaction
             const lockedTiles = [20, 22, 24, 25, 28, 29, 30, 31];
 
             if (lockedTiles.includes(tileID)) {
                 // Check if it's the Atrium WC (coordinates 13,10 or 14,10 in Atrium)
-                const isAtriumWC = this.currentZone === 'atrium' && targetY === 10 && (targetX === 13 || targetX === 14);
+                const isAtriumWC = this.currentZone === 'atrium' && targetY === 14 && (targetX === 13 || targetX === 14);
 
                 if (isAtriumWC) {
                     this.showDialogue("Restroom Facility", [
                         "A stray Nitrophyl broke the pipes again.",
                         "Staff are 'regrettably' skipping sanitation protocols until it's fixed."
                     ]);
-                } else if (this.currentZone === 'lobby' && targetX === 5 && targetY === 2) {
-                    this.showDialogue("Security Gate", [
-                        "Bio-Signature match required.",
-                        "Access to the Main Atrium is restricted to verified research staff.",
-                        "Please consult Senior Administrator Jenzi for clearance."
-                    ]);
-                } else if (this.currentZone === 'lobby' && targetX === 5 && targetY === 7) {
+                } else {
                     this.showDialogue("Security Gate", [
                         "This door is locked.",
-                        "Where are you going, anyway?",
-                        "My logs suggest there's nothing but empty arrays beyond this sector."
+                        "Access is restricted until your credentials are bio-authenticated."
                     ]);
-                } else if (this.currentZone === 'atrium' && targetX === 0 && targetY === 4) {
-                    this.showDialogue("Botanic Sector Gate", [
-                        "Someone is shouting at a fern inside.",
-                        "The voice is bossy but somehow... cute."
-                    ]);
-                } else if (this.currentZone === 'atrium' && targetX === 18 && targetY === 4) {
-                    this.showDialogue("Human Ward Gate", [
-                        "A rhythmic snoring vibrates the door.",
-                        "It smells like sea salt and deep-cycle naps."
-                    ]);
-                } else if (this.currentZone === 'atrium' && targetX === 9 && targetY === 2) {
-                    this.showDialogue("Executive Suite Gate", [
-                        "An intimidatingly professional silence.",
-                        "Smells like antacids and expensive noodles."
-                    ]);
-                } else {
-                    const isSecondary = this.currentZone === 'atrium' && ((targetX === 0 && (targetY === 6 || targetY === 8)) || (targetX === 18 && (targetY === 6 || targetY === 8)));
-                    if (isSecondary) {
-                        this.showDialogue("Security Gate", [
-                            "The door is locked tight, probably to save on the electricity bill."
-                        ]);
-                    } else {
-                        this.showDialogue("Security Gate", [
-                            "This door is locked.",
-                            "Probably to save on the electricity bill."
-                        ]);
-                    }
                 }
             }
         }
     },
 
-    startNPCInteraction(npc) {
-        console.log(`Talking to: ${npc.name}`);
+    startNPCInteraction(npc, bossWon = false) {
+        console.log(`Talking to: ${npc.name}${bossWon ? ' (BOSS WON)' : ''}`);
         this.currentDialoguePartner = npc.id;
 
         // Make NPC face the player
@@ -1455,25 +2316,37 @@ export const Overworld = {
             if (!window.gameState.storyFlags.starterChosen) {
                 // Starter selection flow
                 lines = [
-                    "Welcome to the trenches, Intern! I'm Jenzi.",
+                    "Welcome to the trenches, Intern! I'm Jenzi, your guide through this corporate fever dream.",
+                    "We're supposedly 'healing the world,' but mostly we're just trying not to get fired by Lab Director Capsain.",
+                    "This floor is only a tiny slice of the National Lab mega-structure, though.",
+                    "We handle a few departments here—Botanic, Human Research, and the Executive Suite.",
                     "Since you're the new main character, you need a Companion Cell.",
-                    "I've got three in the incubator. Don't overthink it, unless you're a Tryhard.",
-                    "Choose well, bestie. This cell is your new personality. Ready to lock it in?"
+                    "It's like a smart pet, but way more... liquid.",
+                    "We use them for everything—from heavy lifting to high-end research...",
+                    "...though most researchers just end up teaching them tricks during lunch.",
+                    "Their origins are a whole rabbit hole of lab theories, but basically everyone loves them.",
+                    "Well, except for... actually, don't worry about that yet.",
+                    "Just know they're the ultimate lab partners.",
+                    "I've got three in the incubator.",
+                    "It's a lab tradition—who knows when or why it started...",
+                    "But everyone who works here must have at least one Companion Cell.",
+                    "So just pick one that vibe with you the most."
                 ];
                 // Trigger the modal after dialogue closes.
                 this.pendingBattleEncounter = 'starter_selection';
             } else if (!window.gameState.storyFlags.jenziFirstBattleDone) {
                 lines = [
                     "Sheesh, nice pick! Let's see if you can actually use it though.",
-                    "Bet you can't even touch me in a battle. Square up!"
+                    "Bet you can't even touch me in a battle. Pelli-it up!"
                 ];
                 this.pendingBattleEncounter = 'jenzi_tutorial';
-            } else if (!this.logsCollected.includes('001')) {
+            } else if (!this.logsCollected.includes('Log001')) {
                 lines = [
-                    "Not bad, not bad. You actually have some skill. No cap.",
-                    "Oh look, someone's out here littering again.",
-                    "Pick up that Datapad next to the Atrium door.",
-                    "It's giving... 'lazy researcher' vibes."
+                    "Ayo, not bad for a first-timer! You've got that 'pioneer spirit' everyone talks about.",
+                    "Win or lose, you're the only one brave enough to test that Cell today. Respect.",
+                    "Wait, did you see that? Something just flashed over by the specimen tanks.",
+                    "Go check if someone dropped something in there.",
+                    "I swear, these scientists have the attention span of a goldfish once they leave their desks."
                 ];
             } else if (!window.gameState.storyFlags.jenziAtriumUnlocked) {
                 lines = [
@@ -1488,57 +2361,212 @@ export const Overworld = {
                     "Yo, Intern! Keep looking for Datapads.",
                     "The doors are locked until you prove you can do basic research."
                 ];
-            } else if (logs >= 5 && logs < 10) {
+            } else if (logs >= 5 && !window.gameState.storyFlags.jenziAtriumBattleDone) {
                 lines = [
-                    "5 Datapads already? Lowkey impressive.",
-                    "I'll tell you the 'tea' about the Incident... wait, actually...",
-                    "If you want the tea, you gotta prove you're not a scrub. Square up!"
+                    "You've been busy! 5 Datapads already?",
+                    "Lowkey impressive.",
+                    "Then you must smell something fishy about the Incident.",
+                    "But before I tell you about the 'smell', let's see if you're actually worth it.",
+                    "My Stemmy is ready to rumble. Pelli-it up!"
                 ];
-                this.pendingBattleEncounter = 'jenzi';
+                this.pendingBattleEncounter = 'jenzi_atrium';
+            } else if (window.gameState.storyFlags.jenziAtriumBattleDone && !window.gameState.storyFlags.botanicSectorUnlocked) {
+                lines = [
+                    "Okay, okay, you got me! You're actually decent.",
+                    "Since you won, here's the tea about 'The Incident'.",
+                    "Director Capsain says it was an 'Ionization Leak'.",
+                    "Something about that story just isn't right...",
+                    "Well beat me, what do I know.",
+                    "If you want the real story, go ask Lana in the Botanic wing.",
+                    "She's the main character of that floor anyway.",
+                    "I've unlocked the door for you. Keep collecting those logs!"
+                ];
+                window.gameState.storyFlags.botanicSectorUnlocked = true;
+                this.renderMap();
+            } else if (window.gameState.storyFlags.lanaBattleDone && !window.gameState.storyFlags.humanWardUnlocked) {
+                lines = [
+                    "Wait, Lana gave you a key? And she was acting sus?",
+                    "Sus-picious!",
+                    "That's weird af. Maybe things aren't as simple as 'spicy ozone'.",
+                    "You should totally go bother Dyzes in Human Research.",
+                    "He's chill, but he definitely knows things he's not saying."
+                ];
+                window.gameState.storyFlags.humanWardUnlocked = true;
+                this.renderMap();
+            } else if (window.gameState.storyFlags.dyzesBattleDone && !window.gameState.storyFlags.executiveSuiteUnlocked) {
+                lines = [
+                    "Dyzes gave you info on an 'Old Lab'? Okay, now this is getting serious.",
+                    "No more jokes. You need to confront the final boss himself.",
+                    "Director Capsain. His room is open.",
+                    "Go get the truth, Intern."
+                ];
+                window.gameState.storyFlags.executiveSuiteUnlocked = true;
+                this.renderMap();
             } else {
-                lines = ["You've already proven yourself, Intern. Go bother Lana in the Botanic Sector."];
+                lines = ["Main Character energy! Keep collecting those logs, Intern."];
             }
         } else if (npc.id === 'lana') {
-            if (logs < 10) {
+            if (bossWon) {
                 lines = [
-                    "You're 14 seconds late for this conversation. Make it quick!",
-                    "Actually, don't. Collect 10 logs before you waste my time."
+                    "Hmph. Just as I suspected. Your tactical calibration is completely non-existent!",
+                    "You're lucky my Cambihil was in a 'passive' mode, or you'd be more than just extracted.",
+                    "Go back to the entrance and... and don't come back until you've read at least three field guides! Honestly!"
                 ];
-            } else if (logs >= 10 && logs < 15) {
+            } else if (!window.gameState.storyFlags.lanaMet) {
                 lines = [
-                    "Wait. You've been poking around the botanical archives...",
-                    "If you want that Old Lab Key, you'll have to prove you can handle the truth in a duel!"
+                    "Hmph. So YOU'RE the new intern Jenzi was giggling about?",
+                    "I'm Lana, Senior Scientist of the Botanic Sector.",
+                    "Don't think for a second that I have time to babysit you!",
+                    "My work on Cambihil is far more complex than anything you've seen...",
+                    "So keep your clumsy fingers off my equipment!",
+                    "And... and whatever Jenzi told you about... things?",
+                    "It's all lies! She just thrives on office gossip!",
+                    "Now, either help with the nutrient sensors or get out of my light!"
+                ];
+                window.gameState.storyFlags.lanaMet = true;
+            } else if (window.gameState.storyFlags.lanaBattleDone && !window.gameState.storyFlags.lanaDefeatedSeen) {
+                lines = [
+                    "Fine! You win! *[Mutters]* Just like the Director during the Leak... always so stubborn.",
+                    "Here, take this Old Lab Room Key. It's for some old storage room.",
+                    "Just... don't believe everything you read in the logs.",
+                    "And tell Jenzi to stop spreading rumors about my lab hygiene! Hmph!"
+                ];
+                // Reward after this dialogue if not already collected
+                if (!window.gameState.items.includes('Quest01')) {
+                    this.deferredItemPickup = 'Quest01';
+                }
+                this.deferredStoryFlag = 'lanaDefeatedSeen';
+            } else if (window.gameState.storyFlags.lanaBattleDone || logs < 10) {
+                const flavor = [
+                    "What are you staring at? I was merely performing a hydration assessment on your partner Cell. It is a critical laboratory asset, unlike... some uncalibrated interns! Hmph!",
+                    "Why are you obstructing the walkway? Efficiency is the cornerstone of the Botanic Sector. If you are going to be non-productive, do it elsewhere!",
+                    "Do not simply stand there! It is... it is scientifically distracting! If you are here for research, take a clipboard.",
+                    "I have no intention of providing remedial guidance. I simply don't want an incompetent intern lowering this sector's safety rating on their first day!",
+                    "Your tactical signature is completely unoptimized. Did Jenzi provide zero fundamental training, or were you intentionally ignoring protocol?",
+                    "Watch your step! Be careful not to disturb the Cambihil spores. They're far more sensitive than your heavy boots suggest!"
+                ];
+                lines = [flavor[Math.floor(Math.random() * flavor.length)]];
+            } else {
+                lines = [
+                    "Wait. You've been poking around the botanical archives, haven't you?",
+                    "Look, I love these cells, but the Director says we have to keep the research classified.",
+                    "If you want that Old Lab Key, you'll have to prove you can handle the truth in a duel!",
+                    "Prepare for a lesson in botanical efficiency!"
                 ];
                 this.pendingBattleEncounter = 'lana';
-            } else {
-                lines = ["You have the key. The Human Research Ward is open. Leave my plants alone."];
             }
         } else if (npc.id === 'dyzes') {
-            if (logs < 15) {
+            if (bossWon) {
                 lines = [
-                    "Chill out. Stress increases cortisol, and cortisol ruins the data.",
-                    "Just let the flow take you until you find 15 logs."
+                    "Woah, man. You're a bit out of sync. Take a breather, hydrate, and maybe try focusing on the flow next time. No rush."
                 ];
-            } else if (logs >= 15 && logs < 20) {
+            } else if (!window.gameState.storyFlags.dyzesMet) {
                 lines = [
-                    "I've seen your log activity. You're piecing together 'The Incident'.",
-                    "Let's see if your tactical vibe is strong enough to handle it."
+                    "Hey. I'm Dyzes. Welcome to the chillest wing of the lab.",
+                    "We study the Lydrosome here—it's all about that cellular harmony, you know?",
+                    "Jenzi probably made me sound like a relic, but I prefer 'seasoned professional'.",
+                    "Watch your step, the osmotic mist is fresh today."
                 ];
-                this.pendingBattleEncounter = 'dyzes';
+                window.gameState.storyFlags.dyzesMet = true;
+            } else if (window.gameState.storyFlags.dyzesBattleDone && !window.gameState.storyFlags.dyzesDefeatedSeen) {
+                lines = [
+                    "Woah, okay. Your tactical flow is elite. I can't really hide the truth if you're this good.",
+                    "The Old Lab exists, man. It's not on the main maps.",
+                    "Wait, let me give you this old data stick I found in the archives.",
+                    "It contains a floor plan that reveals the hidden lab location.",
+                    "Go talk to Jenzi. She'll level with you about how to get in.",
+                    "Capsain is just... he's protective, you know? Good luck."
+                ];
+                if (!window.gameState.items.includes('Quest03')) {
+                    this.deferredItemPickup = 'Quest03';
+                }
+                this.deferredStoryFlag = 'dyzesDefeatedSeen';
+            } else if (window.gameState.storyFlags.dyzesBattleDone || logs < 15) {
+                const flavors = [
+                    "Lydrosome is a marvel of tactical evolution. Its osmotic pressure allows for surgical precision—dissolving a single harmful enzyme without touching the surrounding tissue. It's the ultimate biological sniper.",
+                    "Hey. Breathe in that osmotic mist... feels like a fresh ocean breeze, right? Or maybe just distilled enzymes. Same thing, really.",
+                    "The Lydrosomes are in a good mood today. One of them actually waved at me. Or it was just a pressure vent. I'm choosing to believe it waved.",
+                    "Don't mind the hum. That's just the sound of cellular harmony. Or my fan. Honestly, I stopped checking which was which long ago.",
+                    "You ever wonder if we're just big cells in a giant lab called 'Earth'? Deep stuff, Intern. Real deep. Think about it next time you're filing data.",
+                    "Chill out. Stress increases cortisol, and cortisol ruins the data. If you're going to work here, you've gotta learn to go with the flow."
+                ];
+                lines = [flavors[Math.floor(Math.random() * flavors.length)]];
             } else {
-                lines = ["Your flow is undeniable. Go face the Director."];
+                lines = [
+                    "I've seen your log activity. You're piecing together 'The Incident', aren't you?",
+                    "Capsain is a good man, just... proud.",
+                    "I can't let you expose him without a proper test of your tactical skill.",
+                    "Prepare yourself!"
+                ];
+                this.pendingBattleEncounter = 'dyzes_boss';
             }
         } else if (npc.id === 'capsain') {
-            if (logs < 20) {
+            if (bossWon) {
                 lines = [
-                    "What are you doing here? These labs aren't for sightseeing!",
-                    "You need absolute clearance (20 Logs) to speak with me."
+                    "Dismissed. If you can't even handle a basic engagement, you have no business poking around the archives.",
+                    "Go back to filing paperwork, Intern."
                 ];
+            } else if (window.gameState.items.includes('Quest04')) {
+                lines = [
+                    "WHAT?! Where did you... how did you find that?!",
+                    "That room was sealed! It was supposed to stay buried with the '27 logs!",
+                    "Get that... that anomaly out of my sight immediately!",
+                    "[Origin Nitrophil glows a hyperactive orange and vibrates happily]",
+                    "It... it still does that. Just like the night of the... 'accident'.",
+                    "Look at that hue. It's the exact shade of the 'Inferno' blend.",
+                    "I tried to tell them it was radiation.",
+                    "I told the board we were pioneers of bio-hazard engineering...",
+                    "Fine. You win, intern. The 'Ionization Leak' was a lie.",
+                    "I was working late. I was hungry.",
+                    "One drop of the extra-spicy sauce fell into Petri Dish #0, and...",
+                    "it didn't dissolve. It stood up. It looked at me.",
+                    "And I was too damn busy worrying about my reputation to tell the truth.",
+                    "I spent years calling them 'accidents' to cover my own stupidity.",
+                    "But look at him. He's hyperactive, he's chill, and he's more alive than any of my 'professional' theories.",
+                    "The Cells aren't anomalies... they're the best mistake I ever made.",
+                    "Effective immediately, I am rescinding the termination order. The 'Cell Project' will continue—officially.",
+                    "And I want you to be our newest Official Scientist.",
+                    "You have proven yourself more capable than any intern I've ever seen, and the lab needs your sharp mind.",
+                    "Thank you. I didn't realize how heavy this secret was until you took it off my shoulders.",
+                    "Now, let's go tell the staff that 'Noodle Tuesdays' are officially a lab holiday."
+                ];
+                // Record that we triggered the climax
+                window.gameState.storyFlags.climaxTriggered = true;
+            } else if (!window.gameState.storyFlags.capsainMet) {
+                lines = [
+                    "Do you have an appointment? No? Then you're trespassing on executive time.",
+                    "I am Director Capsain. I don't have time for 'meaningful introductions'.",
+                    "If you're looking for gossip, go back to Jenzi.",
+                    "And ignore that smell—it's industrial-grade experimental ozone."
+                ];
+                window.gameState.storyFlags.capsainMet = true;
+            } else if (window.gameState.storyFlags.capsainMet && window.gameState.storyFlags.capsainBattleDone && !window.gameState.storyFlags.capsainDefeatedSeen) {
+                lines = [
+                    "I... I failed? To an intern? *[Sighs deeply]*",
+                    "You've seen the logs. You have the sauce. You've basically already found out.",
+                    "Here, take this Rare Inferno Sauce... it's just a research sample! Nothing more!",
+                    "Now go away, I have... important papers to write.",
+                    "The labs are yours now. Just... keep the gossip to a minimum."
+                ];
+                if (!window.gameState.items.includes('Quest02')) {
+                    this.deferredItemPickup = 'Quest02';
+                }
+                this.deferredStoryFlag = 'capsainDefeatedSeen';
+            } else if (window.gameState.storyFlags.capsainBattleDone || logs < 20) {
+                const flavors = [
+                    "What are you doing here? These labs aren't for sightseeing! Get back to your station or I'll have you filing paperwork for a month. And ignore that smell, it's... experimental ozone.",
+                    "I don't pay you to wander the atrium. I pay you to contribute to a failing project. Wait, I don't pay interns at all. Even better—get back to work.",
+                    "There is a very specific protocol for handling sensitive materials. Step one: Don't touch anything. Step two: Refer to step one.",
+                    "Lana's greenhouse is taking up too much power. If it weren't for the board's interest in 'green tech', I'd have paved that wing for more reactor space.",
+                    "The smell? It’s industrial ionization. If you can’t handle a little stinging in the nostrils, you shouldn’t be in a lab.",
+                    "Stop asking about the '27 logs. The archives were purged for security reasons. Unless you have a level 5 clearance, it's none of your business."
+                ];
+                lines = [flavors[Math.floor(Math.random() * flavors.length)]];
             } else {
                 lines = [
-                    "You found the Noodle Review. You found the '82 security gap.",
-                    "You think a little chili sauce is enough to topple this Director?",
-                    "If you want the 'Origin', you'll have to go through me first!"
+                    "You found the Noodle Review. You found the '27 security gap.",
+                    "But you're still just an intern. I won't have my legacy tarnished by some spicy gossip!",
+                    "Prepare to be archived!"
                 ];
                 this.pendingBattleEncounter = 'capsain';
             }
@@ -1556,16 +2584,25 @@ export const Overworld = {
         this.showDialogue(npc.name, lines, npc.id);
     },
 
-    collectLog(logId) {
-        console.log(`Found DataLog: ${logId}`);
-        if (!this.logsCollected.includes(logId)) {
-            this.logsCollected.push(logId);
-            if (window.gameState) window.gameState.logs = [...this.logsCollected];
+    collectItem(itemId) {
+        console.log(`Collected Item: ${itemId}`);
+        const itemInfo = (window.ITEM_PICKUP_DATA && window.ITEM_PICKUP_DATA[itemId]) ? window.ITEM_PICKUP_DATA[itemId] : { type: 'item' };
+        const itemType = itemInfo.type || (itemId.length === 3 && !isNaN(itemId) ? 'log' : 'item');
+
+        if (itemType === 'log') {
+            if (!this.logsCollected.includes(itemId)) {
+                this.logsCollected.push(itemId);
+                if (window.gameState) window.gameState.logs = [...this.logsCollected];
+            }
+        } else {
+            if (window.gameState && !window.gameState.items.includes(itemId)) {
+                window.gameState.items.push(itemId);
+            }
         }
 
         // Remove from current zone if it was a world object drop
         const zone = this.zones[this.currentZone];
-        const objIdx = zone.objects.findIndex(o => o.hiddenLogId === logId && o.id.startsWith('log_'));
+        const objIdx = zone.objects.findIndex(o => (o.hiddenLogId === itemId || o.hiddenItemId === itemId) && (o.id.startsWith('item_') || o.id.startsWith('log_')));
         if (objIdx > -1) {
             const obj = zone.objects[objIdx];
             zone.objects.splice(objIdx, 1);
@@ -1575,22 +2612,35 @@ export const Overworld = {
 
         // Show pickup modal instead of dialogue
         this.isPaused = true;
-        if (window.showDatapadPickupModal) {
-            window.showDatapadPickupModal(logId, () => {
+        const showModal = window.showItemPickupModal || window.showDatapadPickupModal;
+        if (showModal) {
+            showModal(itemId, () => {
                 this.isPaused = false;
-                window.dispatchEvent(new CustomEvent('datalog-found', { detail: { id: logId } }));
+                window.dispatchEvent(new CustomEvent('item-collected', { detail: { id: itemId, type: itemType } }));
+                if (itemType === 'log') {
+                    window.dispatchEvent(new CustomEvent('datalog-found', { detail: { id: itemId } }));
+                }
             });
         } else {
             // Fallback
             this.isPaused = false;
-            this.showDialogue('Discovery', [`Datapad [Log ${logId}] archived.`]);
-            window.dispatchEvent(new CustomEvent('datalog-found', { detail: { id: logId } }));
+            const label = itemType === 'log' ? `Datapad [Log ${itemId}] archived.` : `Item [${itemId}] acquired.`;
+            this.showDialogue('Discovery', [label]);
+            window.dispatchEvent(new CustomEvent('item-collected', { detail: { id: itemId, type: itemType } }));
         }
     },
 
-    showDialogue(name, lines, npcId = null) {
-        this.isDialogueActive = true;
+    collectLog(logId) {
+        // Compatibility layer
+        this.collectItem(logId);
+    },
 
+    showDialogue(name, lines, npcId = null) {
+        if (this.isDialogueActive && lines === this.dialogueQueue) return; // Prevent redundant triggers
+
+        this.isDialogueActive = true;
+        this.isTransitioning = false;
+        this.currentDialoguePartner = npcId;
         // Parse '//' as a page break marker
         const parsedLines = [];
         lines.forEach(line => {
@@ -1611,6 +2661,9 @@ export const Overworld = {
 
         if (box) box.classList.remove('hidden');
         if (nameEl) nameEl.textContent = name;
+
+        const textEl = document.getElementById('dialogue-text');
+        if (textEl) textEl.textContent = ''; // Clear text before it's displayed
 
         // Reset and Show Portrait if applicable
         if (portraitOverlay && portraitImg) {
@@ -1679,8 +2732,66 @@ export const Overworld = {
         document.getElementById('dialogue-box')?.classList.add('hidden');
         document.getElementById('npc-portrait-overlay')?.classList.add('hidden');
 
+        // Prevent immediate re-interaction if we're moving to a battle or modal
+        if (this.pendingBattleEncounter || this.pendingWildEncounter) {
+            this.isTransitioning = true;
+        }
+
         const partner = this.currentDialoguePartner;
         this.currentDialoguePartner = null;
+
+        // Handle Final Climax Cleanup & World State Update
+        if (window.gameState.storyFlags.climaxTriggered) {
+            window.gameState.storyFlags.climaxTriggered = false; // Reset trigger
+            window.gameState.storyFlags.gameCompleted = true;
+
+            // 1. Remove Origin Nitrophil from inventory
+            window.gameState.items = window.gameState.items.filter(id => id !== 'Quest04');
+
+            // 2. Permanently place Origin Nitrophil in the Executive Suite (on cabinet at 9,3)
+            const execZone = this.zones.executive;
+            if (execZone && !execZone.objects.some(o => o.id === 'origin_nitrophil_final')) {
+                execZone.objects.push({
+                    id: 'origin_nitrophil_final',
+                    x: 9,
+                    y: 3,
+                    type: 'cell',
+                    name: 'Origin Nitrophil',
+                    customSprite: 'c3 orange-hue'
+                });
+            }
+
+            // 3. Reward the Official Employee Card (Quest05) - Call directly for immediate acquisition
+            this.collectItem('Quest05');
+
+            // 4. Re-render the map if we are in the executive suite to show the change
+            if (this.currentZone === 'executive') {
+                this.renderMap('executive');
+            }
+        }
+
+        // Handle pending item discovery (hidden items)
+        if (this.pendingItemPickup) {
+            const itemId = this.pendingItemPickup;
+            this.pendingItemPickup = null;
+            this.collectItem(itemId);
+        }
+
+        // Handle deferred item pickups (like boss rewards)
+        if (this.deferredItemPickup) {
+            const itemId = this.deferredItemPickup;
+            this.deferredItemPickup = null;
+            this.collectItem(itemId);
+        }
+        
+        // Handle deferred story flags (like 'seen' flags)
+        if (this.deferredStoryFlag) {
+            const flag = this.deferredStoryFlag;
+            this.deferredStoryFlag = null;
+            if (window.gameState && window.gameState.storyFlags) {
+                window.gameState.storyFlags[flag] = true;
+            }
+        }
 
         // If the dialogue was with a valid NPC and we hit the log threshold, trigger the encounter
         if (this.pendingBattleEncounter) {
@@ -1697,5 +2808,100 @@ export const Overworld = {
                 }, 200);
             }
         }
+
+        // Handle pending wild encounters
+        if (this.pendingWildEncounter) {
+            const mId = this.pendingWildMonsterId || 'stemmy';
+            this.pendingWildEncounter = false;
+            this.pendingWildMonsterId = null;
+            setTimeout(() => {
+                window.dispatchEvent(new CustomEvent('start-wild-encounter', { detail: { id: mId } }));
+            }, 200);
+        }
+
+        // Handle pending incubator menu
+        if (this.pendingIncubatorMenu) {
+            this.pendingIncubatorMenu = false;
+            setTimeout(() => {
+                if (window.openIncubatorMenu) window.openIncubatorMenu();
+            }, 200);
+        }
+
+        // Handle pending shop menu
+        if (this.pendingShopMenu) {
+            this.pendingShopMenu = false;
+            setTimeout(() => {
+                if (window.openShopMenu) window.openShopMenu();
+            }, 200);
+        }
+
+        // Handle pending synthesis menu
+        if (this.pendingSynthesisMenu) {
+            this.pendingSynthesisMenu = false;
+            setTimeout(() => {
+                if (window.openSynthesisMenu) window.openSynthesisMenu();
+            }, 200);
+        }
+
+        // Handle pending Bio-Extract menu
+        if (this.pendingBioExtractMenu) {
+            this.pendingBioExtractMenu = false;
+            setTimeout(() => {
+                if (window.BioExtract && window.BioExtract.open) window.BioExtract.open();
+            }, 200);
+        }
+
+        // --- NEW: Execute Completion Callback ---
+        if (typeof this.onDialogueComplete === 'function') {
+            const cb = this.onDialogueComplete;
+            this.onDialogueComplete = null;
+            cb();
+        }
+    },
+
+    updateBioExtractVisuals() {
+        const zone = this.zones['bioExtraction'];
+        if (!zone) return;
+
+        // 1. Initialize persistent dish mapping if not exists
+        if (!this.dishMapping) {
+            this.dishMapping = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].sort(() => Math.random() - 0.5);
+        }
+
+        const dishCoords = [
+            { x: 1, y: 4 }, { x: 1, y: 5 }, { x: 1, y: 6 }, { x: 1, y: 7 }, // Left side
+            { x: 6, y: 4 }, { x: 6, y: 5 }, { x: 6, y: 6 }, { x: 6, y: 7 }, // Right side
+            { x: 2, y: 8 }, { x: 3, y: 8 }, { x: 4, y: 8 }, { x: 5, y: 8 }  // Bottom side
+        ];
+
+        // 2. Remove ONLY the cell-type objects assigned to dishes
+        zone.objects = zone.objects.filter(obj => !obj.id.startsWith('extract_cell_'));
+
+        // 3. Map cells from the 3x3 grid to dishes using the randomized mapping
+        if (window.gameState && window.gameState.bioExtractGrid) {
+            window.gameState.bioExtractGrid.forEach((slot, index) => {
+                const mappingIdx = this.dishMapping[index];
+                if (slot && slot.monster && mappingIdx < dishCoords.length) {
+                    const coord = dishCoords[mappingIdx];
+
+                    // Fixed offset: 12px up (as requested)
+                    const offsetX = 0;
+                    const offsetY = -12;
+
+                    zone.objects.push({
+                        id: `extract_cell_${index}`,
+                        x: coord.x,
+                        y: coord.y,
+                        offsetX: offsetX,
+                        offsetY: offsetY,
+                        type: 'cell',
+                        name: slot.monster.name,
+                        customSprite: slot.monster.id || slot.monster.name.toLowerCase(),
+                        efficiency: slot.monster.extractEfficiency || 1
+                    });
+                }
+            });
+        }
     }
 };
+
