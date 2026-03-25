@@ -69,7 +69,14 @@ export const gameState = {
     debugAllItems: false,  // DEBUG: Toggle all items visibility
     debugUnlockDoors: false, // DEBUG: Toggle all doors status
     unseenLogs: [], // Track newly found logs that haven't been viewed yet
-    bioExtractGrid: new Array(9).fill(null) // 3x3 grid for bio extraction [monster, biomassStored, lastTick]
+    bioExtractGrid: new Array(9).fill(null), // 3x3 grid for bio extraction [monster, biomassStored, lastTick]
+    
+    // Persistent Session Tracking
+    lastOverworldPos: {
+        zone: null,
+        x: null,
+        y: null
+    }
 };
 
 export function applySkipTutorial(isSkip) {

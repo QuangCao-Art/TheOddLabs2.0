@@ -7,11 +7,15 @@ export const Overworld = {
     randomPools: {
         lobby: [
             ["Welcome to Odd Labs!", "Please keep your badge visible at all times and avoid the bio-hazard chutes."],
-            ["The Incubation Chamber is just ahead.", "Have you picked your signature cell yet? Career paths depend on it!"],
-            ["Don't mind the security guards.", "They're mostly here for... aesthetic compliance and to keep the cells in check."],
-            ["If you're looking for the Director, he's usually in the Executive Suite.", "Or hiding in the cafeteria during 'Noodle Tuesday'."],
-            ["Stay sharp, Intern.", "This lobby might look peaceful, but the research floors are quite the tactical maze."],
-            ["I'm heading to the breakroom.", "Apparently, the coffee machine finally stopped dispensing blue sludge."]
+            ["New here? Try to interact with computers, furniture, and people.", "It's the only way to uncover hidden data logs and gossip about the Director's lunch habits."],
+            ["Keep your eye on the prize! Open your Cell-Inventory and Squad menu to manage your team.", "You can swap your active Cells and check their current membrane health there."],
+            ["Your Research Grade (RG) is the primary measure of your scientific standing.", "Every time your RG level increases, you'll receive a new tactical C-Card to upgrade your Cell's combat capabilities."],
+            ["The Main Atrium is the heart of Odd Labs—most wings connect right back to it.", "If you ever feel lost, just head toward the largest machine in the center of the facility."],
+            ["Check every corner! Some of our best research logs are tucked away in abandoned desks or old test tanks.", "If it looks interesting, it probably has a story to tell."],
+            ["If your Cells are looking a bit sluggish, take them to an Incubator unit.", "A quick session in the restorative mist will have them back to full strength in no time."],
+            ["You can find Incubators in most breakrooms and research wards.", "They're the only way to fully stabilize a Cell's membrane after a tough encounter."],
+            ["The Bio-Extractor is located in the dedicated Extraction Room wing.", "It's the only machine powerful enough to process the Biomass you collect into something useful."],
+            ["The Cell-Accelerator is that massive machine standing in the center of the lab!", "If you have a recipe and enough materials, you can use it to grow entirely new Cells to join your squad."]
         ],
         atrium: [
             ["Have you seen the latest readings on the Nitrophils?", "They seem to have a higher metabolic rate whenever it's Noodle Tuesday.", "Strange correlation."],
@@ -52,7 +56,37 @@ export const Overworld = {
             ["I heard the Scavenger team in the basement is working on Chlarob.", "It's based on Chlamydia, but instead of making you sick, it's programmed to thieve energy from enemy cells.", "Tactical, but a bit creepy."],
             ["Micro-tactical data is coming in fast today.", "Dyzes is going to be pleased with the latest Lydrosome stats."],
             ["I asked Dyzes for a Band-Aid after a papercut.", "He tried to give me a 'Lydrosome-infused regenerating patch' that cost more than my monthly salary.", "I just used a napkin instead."],
-            ["Dyzes says the human-cell interface is 98% stable.", "I'm just wondering about what happens with that last 2%."]
+            ["Dyzes says the human-cell interface is 99.3% stable.", "I'm just wondering about what happens with that last 0.7%."]
+        ],
+        kitchen: [
+            ["The vending machines are out of Spicy Peanuts again.", "Director Capsain must have bought the whole stock."],
+            ["Is it 'Noodle Tuesday' yet?", "The kitchen smells like salt and ambition today."],
+            ["Looking to trade? The Vending Machines in the common areas are your best friend.", "You can sell your extra Biomass for credits and buy the new blueprints you need to grow your collection."],
+            ["If you're short on credits, try offloading some Biomass at the vending terminal.", "We're always in need of raw biological samples for the synthesis floor."],
+            ["Chef Theo says the secret to a good lab lunch is properly calibrated salinity.", "I think he just likes playing with the digital scales."]
+        ],
+        entertainment: [
+            ["The new Battle Machine in the lounge is always occupied.", "I can't even get a turn on my lunch break!"],
+            ["Did you see the high score on the lounge PC?", "Someone named 'DIRECTOR' has 9999 points. Sus-picious!"],
+            ["In a battle, try to place your attack node as close to the target as possible.", "The more accurate your sync is, the harder you hit and the more Pellicle Points (PP) you generate."],
+            ["Watch your PP levels during a duel.", "Using your specialized skills costs Pellicle Points, but simple defensive moves are always available to keep you safe."],
+            ["You can actually spend more PP than you currently have to land a big hit for a high cost.", "This puts your Cell into a 'negative' state, which is powerful but leaves you very vulnerable to the next attack."],
+            ["Try to keep your PP in the positive range for a stable defense.", "If you drop too far into the negatives, your Cell's membrane will weaken, and you'll take much more damage from any incoming hits."]
+        ],
+        storage: [
+            ["Boxes, more boxes...", "I think I saw a Nitrophil hiding in one of these crates."],
+            ["Why do we store so many 'Adhesive Residue' samples?", "Storage duty is the worst."],
+            ["The lab is full of history, but not all of it is in the main database.", "Keep an eye out for unique furniture or abandoned test tanks—you might find a hidden data log or a rare item."],
+            ["Curiosity is a researcher's greatest tool.", "If you see something that looks out of place, try interacting with it. You never know what secrets might be tucked away in the corners."],
+            ["Research Cards are the culmination of our tactical data.", "Equipping these C-Card enhancements to your Cells allows for significant upgrades to their ability to survive any tactical engagement."],
+            ["I saw Lana looking for something here recently.", "She seemed... unusually tense."]
+        ],
+        specimenStorage: [
+            ["When you defeat a wild Cell, it leaves behind biological traces called Biomass.", "You can take this to the Bio-Extractor machine to acquire the raw materials needed for synthesis."],
+            ["Don't forget to check the vending machines for new synthesis recipes.", "You can't grow a specific species until you've unlocked its genetic blueprint first."],
+            ["The specimens in these tanks are kept in 'suspended animation'.", "It's the only way to study them without them trying to synthesize a snack out of our clipboards."],
+            ["Notice the color variations in the tanks?", "Red, Blue, Green... we're testing how different nutrient hues affect Pellicle density."],
+            ["Don't tap on the glass!", "The Red Specimens are especially sensitive to vibrations. They're not aggressive, just... easily startled into a thermal burst."]
         ]
     },
     tileSize: 64,
@@ -101,6 +135,16 @@ export const Overworld = {
         this.gameLoopActive = false;
     },
 
+    savePosition() {
+        if (window.gameState) {
+            window.gameState.lastOverworldPos = {
+                zone: this.currentZone,
+                x: this.player.x,
+                y: this.player.y
+            };
+        }
+    },
+
     checkActiveSquad() {
         if (!window.gameState || !window.gameState.profiles || !window.gameState.profiles.player) return false;
         const playerProfile = window.gameState.profiles.player;
@@ -119,6 +163,22 @@ export const Overworld = {
 
         start() {
             if (!this.allowedZones.includes(Overworld.currentZone)) return;
+
+            // 1. Orphaned Spawn Recovery: If we have an active spawn that isn't in the current zone's objects, clear it
+            const zone = Overworld.zones[Overworld.currentZone];
+            if (this.activeSpawn && zone && !zone.objects.some(o => o.id === this.activeSpawn.id)) {
+                this.activeSpawn = null;
+                if (this.spawnTimer) clearTimeout(this.spawnTimer);
+                this.spawnTimer = null;
+            }
+
+            // 2. Lifespan Resume: If there's an active spawn but no timer (e.g. stopped during interaction/menu), resume its lifespan
+            if (this.activeSpawn && !this.spawnTimer) {
+                const lifespan = Math.floor(Math.random() * 5000) + 5000; // Residual lifespan
+                this.spawnTimer = setTimeout(() => this.despawnCurrent(), lifespan);
+                return;
+            }
+
             if (this.activeSpawn || this.cooldownTimer || this.spawnTimer) return;
             this.scheduleSpawn();
         },
@@ -228,13 +288,19 @@ export const Overworld = {
                 const mapEl = document.getElementById('overworld-map');
                 const el = document.createElement('div');
                 el.id = `npc-${wildObj.id}`;
-                el.className = `world-object cell ${monsterId} anim-monster-pop anim-monster-breathing`;
+                el.className = `world-object cell ${monsterId} anim-monster-pop`;
                 el.style.width = `${Overworld.tileSize}px`;
                 el.style.height = `${Overworld.tileSize}px`;
                 el.style.left = `${spot.x * Overworld.tileSize}px`;
                 el.style.top = `${spot.y * Overworld.tileSize}px`;
                 el.style.zIndex = spot.y + 11;
                 mapEl.appendChild(el);
+
+                // Add breathing after pop animation (400ms)
+                setTimeout(() => {
+                    const checkEl = document.getElementById(`npc-${wildObj.id}`);
+                    if (checkEl) checkEl.classList.add('anim-monster-breathing');
+                }, 400);
 
                 // Monster stays for ~10 to 20 seconds before despawning
                 const lifespan = Math.floor(Math.random() * 10000) + 10000;
@@ -255,7 +321,7 @@ export const Overworld = {
             const el = document.getElementById(`npc-${spawnId}`);
             if (el) {
                 // Clear any existing animation classes and force reflow to ensure it plays
-                el.classList.remove('anim-monster-pop', 'anim-recall-exit');
+                el.classList.remove('anim-monster-pop', 'anim-monster-breathing', 'anim-recall-exit');
                 void el.offsetWidth;
 
                 el.classList.add('anim-recall-exit');
@@ -287,7 +353,7 @@ export const Overworld = {
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
-                [10, 15, 15, 15, 15, 22, 15, 15, 15, 15, 11],
+                [10, 32, 15, 15, 15, 22, 15, 15, 15, 32, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
@@ -295,32 +361,37 @@ export const Overworld = {
                 [2, 9, 9, 9, 9, 29, 9, 9, 9, 9, 3]
             ],
             objects: [
-                { id: 'f38_lob', x: 1, y: 2, type: 'prop', name: 'Incubation Chamber' },
-                { id: 'f39_lob', x: 2, y: 2, type: 'prop', name: 'Incubation Chamber' },
-                { id: 'f40_lob', x: 1, y: 3, type: 'prop', name: 'Incubation Chamber' },
-                { id: 'f41_lob', x: 2, y: 3, type: 'prop', name: 'Incubation Chamber' },
-                // Diversified Corner Tank Arrays
+                { id: 'f38_lob', x: 2, y: 2, type: 'prop', name: 'Incubation Chamber' },
+                { id: 'f39_lob', x: 3, y: 2, type: 'prop', name: 'Incubation Chamber' },
+                { id: 'f40_lob', x: 2, y: 3, type: 'prop', name: 'Incubation Chamber' },
+                { id: 'f41_lob', x: 3, y: 3, type: 'prop', name: 'Incubation Chamber' },
+                // Corner Tank Arrays (Same as layout)
+                { id: 'f15_lob_n1', x: 7, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_lob_n1', x: 7, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_lob_n2', x: 8, y: 2, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_lob_br', x: 8, y: 3, type: 'prop', name: 'Red Specimen Tank' },
                 { id: 'f13_lob_tr', x: 9, y: 2, type: 'prop', name: 'Green Specimen Tank' },
                 { id: 'f14_lob_tr', x: 9, y: 3, type: 'prop', name: 'Green Specimen Tank' },
-                // Shifted Lower Tanks to North Wall per user request
-                { id: 'f15_lob_bl', x: 7, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f16_lob_bl', x: 7, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f22_lob_br', x: 8, y: 2, type: 'prop', name: 'Red Specimen Tank' },
-                { id: 'f23_lob_br', x: 8, y: 3, type: 'prop', name: 'Red Specimen Tank' },
+                
                 { id: 'jenzi', x: 4, y: 4, type: 'npc', name: 'Jenzi' },
-                { id: 'f1_lobby_wait1', x: 1, y: 5, type: 'prop', name: 'Lab Chair' },
-                { id: 'f1_lobby_wait2', x: 1, y: 6, type: 'prop', name: 'Lab Chair' },
-                // Reception Desk
+                
+                // Wait Chairs at x=1 (Refined)
+                { id: 'f59_lob_nw', x: 1, y: 3, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f1_lobby_wait1', x: 1, y: 4, type: 'prop', name: 'Lab Chair' },
+                { id: 'f1_lobby_wait2', x: 1, y: 5, type: 'prop', name: 'Lab Chair' },
+                
+                // Reception Desk (Same)
                 { id: 'f56_reception', x: 8, y: 5, type: 'prop', name: 'Leader Desk' },
                 { id: 'f57_reception', x: 8, y: 6, type: 'prop', name: 'Leader Desk' },
                 { id: 'f0_reception_desk', x: 9, y: 5, type: 'prop', name: 'Lab Chair' },
-                // Storage & Decor
-                // PotPlants instead of cylinder tables
-                { id: 'f20_lob1', x: 4, y: 2, type: 'prop', name: 'Decorative Fern' },
-                { id: 'f21_lob1', x: 4, y: 3, type: 'prop', name: 'Decorative Fern' },
-                { id: 'f20_lob2', x: 6, y: 2, type: 'prop', name: 'Decorative Fern' },
-                { id: 'f21_lob2', x: 6, y: 3, type: 'prop', name: 'Decorative Fern' },
-                { id: 'f6_lob1', x: 3, y: 2, type: 'prop', name: 'Lab Protocol' },
+                
+                // Accents and Decor
+                { id: 'f6_lob1', x: 4, y: 2, type: 'prop', name: 'Lab Protocol' },
+                { id: 'f17_lob1', x: 6, y: 2, type: 'prop', name: 'Wall Protocol' },
+                { id: 'f59_lob1', x: 4, y: 3, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_lob2', x: 6, y: 3, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_lob3', x: 1, y: 6, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_lob4', x: 9, y: 6, type: 'prop', name: 'Decorative Bush' },
                 { id: 'npc_male_lob1', x: 7, y: 5, type: 'npc', name: 'Researcher Mark' }
             ],
             doors: [
@@ -405,9 +476,9 @@ export const Overworld = {
                 { id: 'f14_at_acc', x: 8, y: 6, type: 'prop', name: 'Specimen Tank' },
                 { id: 'f16_at_acc', x: 9, y: 6, type: 'prop', name: 'Specimen Tank' },
                 { id: 'f23_at_acc', x: 10, y: 6, type: 'prop', name: 'Bio-Reactor' },
-                { id: 'f92_acc', x: 8, y: 6, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
-                { id: 'f93_acc', x: 9, y: 6, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
-                { id: 'f94_acc', x: 10, y: 6, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
+                { id: 'f92_acc', x: 8, y: 6, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f93_acc', x: 9, y: 6, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f94_acc', x: 10, y: 6, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
                 { id: 'f1_at_ne2', x: 12, y: 6, type: 'prop', name: 'Lab Chair' },
                 { id: 'f12_at_ne', x: 13, y: 6, type: 'prop', name: 'Atrium Core Table' },
                 { id: 'f12_at_e', x: 15, y: 6, type: 'prop', name: 'Atrium Core Table' },
@@ -415,9 +486,9 @@ export const Overworld = {
 
                 // Row 7 (Tom, Kevin, CellAccelerator Mid Row)
                 { id: 'npc_male_at3', x: 4, y: 6, type: 'npc', name: 'Biologist Tom', dialogue: ["Hello! I'm Tom.", "Processing the new cells..."] },
-                { id: 'f95_acc', x: 8, y: 7, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
-                { id: 'f96_acc', x: 9, y: 7, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
-                { id: 'f97_acc', x: 10, y: 7, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
+                { id: 'f95_acc', x: 8, y: 7, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f96_acc', x: 9, y: 7, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f97_acc', x: 10, y: 7, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
                 { id: 'npc_male_at1', x: 14, y: 8, type: 'npc', name: 'Researcher Kevin' },
 
                 // Row 8 (Analysis Tables, Leader Table, CellAccelerator Bottom Row, Lab Cylinders)
@@ -425,9 +496,9 @@ export const Overworld = {
                 { id: 'f27_at_nw_s', x: 3, y: 8, type: 'prop', name: 'Analysis Table' },
                 { id: 'f26_at1_s', x: 5, y: 8, type: 'prop', name: 'Analysis Table' },
                 { id: 'f27_at1_s', x: 6, y: 8, type: 'prop', name: 'Analysis Table' },
-                { id: 'f98_acc', x: 8, y: 8, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
-                { id: 'f99_acc', x: 9, y: 8, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
-                { id: 'f100_acc', x: 10, y: 8, type: 'prop', name: 'CellAccelerator', customSprite: 'tileset-03' },
+                { id: 'f98_acc', x: 8, y: 8, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f99_acc', x: 9, y: 8, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f100_acc', x: 10, y: 8, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
                 { id: 'f8_at_s1', x: 12, y: 8, type: 'prop', name: 'Lab Equipment' },
                 { id: 'f9_at_s1', x: 13, y: 8, type: 'prop', name: 'Lab Device' },
                 { id: 'f28_at_s1', x: 15, y: 8, type: 'prop', name: 'Executive Desk' },
@@ -470,7 +541,7 @@ export const Overworld = {
                     dialogueLoss: [
                         "Incredible! Your placement was precise.", 
                         "That's the secret to the MAP system—it's not just about power, it's about the proximity of your attack nodes.", 
-                        "Think of it like a puzzle: the closer you are to the target, the more damage you deal and the more energy (PP) you gain.", 
+                        "Think of it like a puzzle: the closer you are to the target, the more damage you deal and the more Pellicle Points (PP) you gain.", 
                         "It's all about finding that sweet spot!"
                     ]
                 },
@@ -501,7 +572,7 @@ export const Overworld = {
                 { x: 9, y: 14, targetZone: 'lobby', targetX: 5, targetY: 3 },
                 { x: 4, y: 14, targetZone: 'bioExtraction', targetX: 5, targetY: 3 },
                 { x: 0, y: 7, targetZone: 'kitchen', targetX: 9, targetY: 4, requiredFlag: 'botanicSectorUnlocked' },
-                { x: 0, y: 10, targetZone: 'entertainment', targetX: 6, targetY: 6 },
+                { x: 0, y: 10, targetZone: 'entertainment', targetX: 8, targetY: 6 },
                 { x: 18, y: 10, targetZone: 'storage', targetX: 1, targetY: 6 },
                 { x: 0, y: 4, targetZone: 'botanic', targetX: 13, targetY: 13, requiredFlag: 'botanicSectorUnlocked' },
                 { x: 18, y: 4, targetZone: 'human', targetX: 1, targetY: 13, requiredFlag: 'humanWardUnlocked' },
@@ -527,14 +598,14 @@ export const Overworld = {
                 [2, 9, 9, 9, 9, 9, 9, 3]  // Row 9
             ],
             objects: [
-                // Mega Incubator centered in 8x10 room
+                // Bio-Extractor centered in 8x10 room
                 // Horizontal: indices 3, 4 | Vertical: indices 4, 5, 6
-                { id: 'f42_bio', x: 3, y: 4, type: 'prop', name: 'Mega Incubator' },
-                { id: 'f43_bio', x: 4, y: 4, type: 'prop', name: 'Mega Incubator' },
-                { id: 'f44_bio', x: 3, y: 5, type: 'prop', name: 'Mega Incubator' },
-                { id: 'f45_bio', x: 4, y: 5, type: 'prop', name: 'Mega Incubator' },
-                { id: 'f46_bio', x: 3, y: 6, type: 'prop', name: 'Mega Incubator' },
-                { id: 'f47_bio', x: 4, y: 6, type: 'prop', name: 'Mega Incubator' },
+                { id: 'f42_bio', x: 3, y: 4, type: 'prop', name: 'Bio-Extractor' },
+                { id: 'f43_bio', x: 4, y: 4, type: 'prop', name: 'Bio-Extractor' },
+                { id: 'f44_bio', x: 3, y: 5, type: 'prop', name: 'Bio-Extractor' },
+                { id: 'f45_bio', x: 4, y: 5, type: 'prop', name: 'Bio-Extractor' },
+                { id: 'f46_bio', x: 3, y: 6, type: 'prop', name: 'Bio-Extractor' },
+                { id: 'f47_bio', x: 4, y: 6, type: 'prop', name: 'Bio-Extractor' },
                 // Decorative Plants
                 { id: 'f59_bio_nw', x: 1, y: 3, type: 'prop', name: 'Potted Plant' },
                 { id: 'f4_bio_n', x: 2, y: 3, type: 'prop', name: 'Research Table' },
@@ -564,16 +635,17 @@ export const Overworld = {
         specimenStorage: {
             name: 'SPECIMEN STORAGE',
             width: 20,
-            height: 7,
+            height: 8,
             spawn: { x: 1, y: 4 },
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1], // Row 0
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11], // Row 1
-                [10, 15, 15, 15, 15, 15, 22, 15, 15, 15, 15, 15, 15, 22, 15, 15, 15, 15, 15, 11], // Row 2 (Unlocked Door to Human Ward)
+                [10, 15, 15, 15, 15, 15, 22, 15, 15, 15, 15, 15, 15, 22, 15, 15, 15, 15, 15, 11], // Row 2
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 3
-                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Row 4
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 5
-                [2, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 3] // Row 6 (Doors at x=6 and x=13)
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Row 4 (Doors moved up)
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 5 (Shifted wall back)
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 6
+                [2, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 3] // Row 7 (Bottom Wall)
             ],
             objects: [
                 // Top Row of Tanks (Varied)
@@ -609,48 +681,51 @@ export const Overworld = {
                 { id: 'f16_spec17', x: 17, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
                 { id: 'f22_spec18', x: 18, y: 2, type: 'prop', name: 'Red Specimen Tank' },
                 { id: 'f23_spec18', x: 18, y: 3, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'npc_male_white', x: 11, y: 4, type: 'npc', name: 'Researcher White', direction: 'down' },
+                { id: 'npc_female_cherry', x: 15, y: 4, type: 'npc', name: 'Researcher Cherry', direction: 'down' },
+                { id: 'npc_male_eli', x: 5, y: 5, type: 'npc', name: 'Assistant Eli', direction: 'down' },
 
                 // Bottom Row of Tanks (Varied)
-                { id: 'f13_spec19', x: 1, y: 4, type: 'prop', name: 'Green Specimen Tank' },
-                { id: 'f14_spec19', x: 1, y: 5, type: 'prop', name: 'Green Specimen Tank' },
-                { id: 'f15_spec20', x: 2, y: 4, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f16_spec20', x: 2, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f22_spec21', x: 3, y: 4, type: 'prop', name: 'Red Specimen Tank' },
-                { id: 'f23_spec21', x: 3, y: 5, type: 'prop', name: 'Red Specimen Tank' },
-                { id: 'f13_spec22', x: 4, y: 4, type: 'prop', name: 'Green Specimen Tank' },
-                { id: 'f14_spec22', x: 4, y: 5, type: 'prop', name: 'Green Specimen Tank' },
-                { id: 'f15_spec23', x: 5, y: 4, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f16_spec23', x: 5, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f22_spec24', x: 9, y: 4, type: 'prop', name: 'Red Specimen Tank' },
-                { id: 'f23_spec24', x: 9, y: 5, type: 'prop', name: 'Red Specimen Tank' },
-                { id: 'f13_spec25', x: 7, y: 4, type: 'prop', name: 'Green Specimen Tank' },
-                { id: 'f14_spec25', x: 7, y: 5, type: 'prop', name: 'Green Specimen Tank' },
-                { id: 'f15_spec26', x: 8, y: 4, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f16_spec26', x: 8, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f13_spec28', x: 10, y: 4, type: 'prop', name: 'Green Specimen Tank' },
-                { id: 'f14_spec28', x: 10, y: 5, type: 'prop', name: 'Green Specimen Tank' },
-                { id: 'f15_spec29', x: 11, y: 4, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f16_spec29', x: 11, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f22_spec30', x: 12, y: 4, type: 'prop', name: 'Red Specimen Tank' },
-                { id: 'f23_spec30', x: 12, y: 5, type: 'prop', name: 'Red Specimen Tank' },
-                { id: 'f15_spec32', x: 14, y: 4, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f16_spec32', x: 14, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f22_spec33', x: 15, y: 4, type: 'prop', name: 'Red Specimen Tank' },
-                { id: 'f23_spec33', x: 15, y: 5, type: 'prop', name: 'Red Specimen Tank' },
-                { id: 'f13_spec34', x: 16, y: 4, type: 'prop', name: 'Green Specimen Tank' },
-                { id: 'f14_spec34', x: 16, y: 5, type: 'prop', name: 'Green Specimen Tank' },
-                { id: 'f15_spec35', x: 17, y: 4, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f16_spec35', x: 17, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
-                { id: 'f22_spec36', x: 18, y: 4, type: 'prop', name: 'Red Specimen Tank' },
-                { id: 'f23_spec36', x: 18, y: 5, type: 'prop', name: 'Red Specimen Tank' }
+                { id: 'f13_spec19', x: 1, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec19', x: 1, y: 6, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec20', x: 2, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec20', x: 2, y: 6, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec21', x: 3, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec21', x: 3, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec22', x: 4, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec22', x: 4, y: 6, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec23', x: 5, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec23', x: 5, y: 6, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec24', x: 9, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec24', x: 9, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec25', x: 7, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec25', x: 7, y: 6, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec26', x: 8, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec26', x: 8, y: 6, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f13_spec28', x: 10, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec28', x: 10, y: 6, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec29', x: 11, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec29', x: 11, y: 6, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec30', x: 12, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec30', x: 12, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f15_spec32', x: 14, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec32', x: 14, y: 6, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec33', x: 15, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec33', x: 15, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec34', x: 16, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec34', x: 16, y: 6, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec35', x: 17, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec35', x: 17, y: 6, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec36', x: 18, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec36', x: 18, y: 6, type: 'prop', name: 'Red Specimen Tank' }
             ],
             doors: [
                 { x: 0, y: 4, targetZone: 'atrium', targetX: 17, targetY: 7 },
-                { x: 6, y: 6, targetZone: 'storage', targetX: 5, targetY: 3, requiredFlag: 'humanWardUnlocked' },
+                { x: 6, y: 7, targetZone: 'storage', targetX: 5, targetY: 3, requiredFlag: 'humanWardUnlocked' },
                 { x: 6, y: 2, targetZone: 'human', targetX: 7, targetY: 14 },
                 { x: 19, y: 4, targetZone: 'old_lab', targetX: 1, targetY: 4, requiredItems: ['Quest01', 'Quest02', 'Quest03'] },
                 { x: 13, y: 2, targetZone: 'executive', targetX: 18, targetY: 7, requiredFlag: 'executiveSuiteUnlocked' },
-                { x: 13, y: 6, targetZone: 'truth_room', targetX: 5, targetY: 3, requiredItem: 'Quest05' }
+                { x: 13, y: 7, targetZone: 'truth_room', targetX: 5, targetY: 3, requiredItem: 'Quest05' }
             ]
         },
         truth_room: {
@@ -670,7 +745,7 @@ export const Overworld = {
             ],
             objects: [],
             doors: [
-                { x: 5, y: 2, targetZone: 'specimenStorage', targetX: 13, targetY: 5 }
+                { x: 5, y: 2, targetZone: 'specimenStorage', targetX: 13, targetY: 6 }
             ]
         },
         old_lab: {
@@ -732,7 +807,7 @@ export const Overworld = {
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
-                [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
+                [10, 15, 15, 15, 15, 15, 32, 32, 32, 15, 15, 15, 15, 15, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
@@ -752,12 +827,20 @@ export const Overworld = {
                 // North Storage Row (y=3 with y=2 tops)
                 { id: 'f52_bot1', x: 1, y: 2, type: 'prop', name: 'Storage Unit' },
                 { id: 'f53_bot1', x: 2, y: 2, type: 'prop', name: 'Storage Unit' },
-                { id: 'f54_bot1', x: 1, y: 3, type: 'prop', name: 'Storage Unit', hiddenLogId: 'Log007' },
-                { id: 'f55_bot1', x: 2, y: 3, type: 'prop', name: 'Storage Unit' },
-                { id: 'f58_bot1', x: 3, y: 3, type: 'prop', name: 'Supply Cabinet' },
-                { id: 'f58_bot2', x: 11, y: 3, type: 'prop', name: 'Supply Cabinet' },
+                { id: 'f13_lanaTank1B', x: 3, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f20_lanaTop1', x: 10, y: 2, type: 'prop', name: 'Fern Specimen' },
+                { id: 'f13_lanaTank1', x: 11, y: 2, type: 'prop', name: 'Green Specimen Tank' },
                 { id: 'f52_bot2', x: 12, y: 2, type: 'prop', name: 'Storage Unit' },
                 { id: 'f53_bot2', x: 13, y: 2, type: 'prop', name: 'Storage Unit' },
+ 
+                { id: 'f54_bot1', x: 1, y: 3, type: 'prop', name: 'Storage Unit', hiddenLogId: 'Log007' },
+                { id: 'f55_bot1', x: 2, y: 3, type: 'prop', name: 'Storage Unit' },
+                { id: 'f14_lanaTank1B', x: 3, y: 3, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f91_bot2', x: 4, y: 3, type: 'prop', name: 'Empty Pot' },
+                { id: 'f59_lanaBush1', x: 5, y: 3, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_lanaBush2', x: 9, y: 3, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f21_lanaBot1', x: 10, y: 3, type: 'prop', name: 'Fern Specimen' },
+                { id: 'f14_lanaTank1', x: 11, y: 3, type: 'prop', name: 'Green Specimen Tank' },
                 { id: 'f54_bot2', x: 12, y: 3, type: 'prop', name: 'Storage Unit' },
                 { id: 'f55_bot2', x: 13, y: 3, type: 'prop', name: 'Storage Unit' },
                 // Upper Garden Cluster (y=4,5,6,7) - STACK at x=4
@@ -790,17 +873,17 @@ export const Overworld = {
                 { id: 'f59_bot2', x: 2, y: 8, type: 'prop', name: 'Decorative Bush' },
                 { id: 'f59_bot3', x: 3, y: 8, type: 'prop', name: 'Decorative Bush' },
                 { id: 'f59_bot4', x: 4, y: 8, type: 'prop', name: 'Decorative Bush' },
-                { id: 'f59_bot5', x: 5, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f91_bot5', x: 5, y: 8, type: 'prop', name: 'Empty Pot' },
                 { id: 'f59_bot6', x: 6, y: 8, type: 'prop', name: 'Decorative Bush' },
                 // Path at x=7
                 { id: 'f59_bot7', x: 8, y: 8, type: 'prop', name: 'Decorative Bush' },
                 { id: 'f59_bot8', x: 9, y: 8, type: 'prop', name: 'Decorative Bush' },
-                { id: 'f59_bot9', x: 10, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f91_bot9', x: 10, y: 8, type: 'prop', name: 'Empty Pot' },
                 { id: 'f59_bot10', x: 11, y: 8, type: 'prop', name: 'Decorative Bush' },
                 { id: 'f59_bot11', x: 12, y: 8, type: 'prop', name: 'Decorative Bush' },
                 { id: 'f59_bot12', x: 13, y: 8, type: 'prop', name: 'Decorative Bush' },
                 // Expanded Lower Garden Rows (y=9-12) - STACKS at x=4 and x=10
-                { id: 'f20_botA1', x: 2, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA1', x: 2, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f91_botA1', x: 2, y: 10, type: 'prop', name: 'Empty Pot' },
                 { id: 'f20_botA2', x: 3, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA2', x: 3, y: 10, type: 'prop', name: 'Scented Specimen' },
                 { id: 'f20_botA3a', x: 4, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA3a', x: 4, y: 10, type: 'prop', name: 'Scented Specimen' },
                 { id: 'f20_botA3b', x: 4, y: 10, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA3b', x: 4, y: 11, type: 'prop', name: 'Scented Specimen' },
@@ -821,13 +904,13 @@ export const Overworld = {
                 { id: 'f20_bot6', x: 8, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot6', x: 8, y: 12, type: 'prop', name: 'Specimen Fern' },
                 { id: 'f20_bot7', x: 9, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot7', x: 9, y: 12, type: 'prop', name: 'Specimen Fern' },
                 { id: 'f20_bot9', x: 11, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot9', x: 11, y: 12, type: 'prop', name: 'Specimen Fern' },
-                { id: 'f20_bot10', x: 12, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot10', x: 12, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f91_bot10', x: 12, y: 12, type: 'prop', name: 'Empty Pot' },
                 // Final Station Wall (y=13,14)
                 { id: 'f61_bot3', x: 1, y: 13, type: 'prop', name: 'Stacked Boxes' }, { id: 'f62_bot3', x: 1, y: 14, type: 'prop', name: 'Stacked Boxes' },
                 { id: 'f26_bot1', x: 2, y: 14, type: 'prop', name: 'Research Station' },
                 { id: 'f27_bot1', x: 3, y: 14, type: 'prop', name: 'Research Station' },
                 { id: 'f60_bot2', x: 4, y: 14, type: 'prop', name: 'Archived Samples' },
-                { id: 'f60_bot3', x: 5, y: 14, type: 'prop', name: 'Archived Samples' },
+                { id: 'f91_bot3', x: 5, y: 14, type: 'prop', name: 'Empty Pot' },
                 { id: 'f9_bot1', x: 6, y: 14, type: 'prop', name: 'Protein Sequencer' },
                 { id: 'f8_bot1', x: 8, y: 14, type: 'prop', name: 'Lab Cylinders' },
                 { id: 'f60_bot5', x: 9, y: 14, type: 'prop', name: 'Archived Samples' },
@@ -1028,7 +1111,7 @@ export const Overworld = {
                 // --- Row 6 (Bottoms/Tops overlap) ---
                 { id: 'f82_6_3', x: 3, y: 6, type: 'prop' }, { id: 'f61_6_3', x: 3, y: 6, type: 'prop' }, // Overlap f82/f61 for f62 at (3,7)
                 { id: 'f83_6_4', x: 4, y: 6, type: 'prop' },
-                { id: 'f15_6_5', x: 5, y: 6, type: 'prop' }, // Top for Tank at (5,7)
+                { id: 'f15_6_5', x: 5, y: 6, type: 'prop', name: 'Tank Top' }, // Top for Tank at (5,7)
                 { id: 'f82_6_6', x: 6, y: 6, type: 'prop' },
                 { id: 'f83_6_7', x: 7, y: 6, type: 'prop' }, { id: 'f61_6_7', x: 7, y: 6, type: 'prop' }, // Overlap f83/f61 for f62 at (7,7)
                 { id: 'f62_6_8', x: 8, y: 6, type: 'prop' },
@@ -1036,7 +1119,7 @@ export const Overworld = {
                 { id: 'f82_6_12', x: 12, y: 6, type: 'prop' }, { id: 'f83_6_13', x: 13, y: 6, type: 'prop' },
                 { id: 'f82_6_15', x: 15, y: 6, type: 'prop' },
                 { id: 'f83_6_16', x: 16, y: 6, type: 'prop' },
-                { id: 'f7_6_17', x: 17, y: 6, type: 'prop' }, // Revision 4: Added PC Terminal
+                { id: 'f7_6_17', x: 17, y: 6, type: 'prop', name: 'PC Terminal' }, // Revision 4: Added PC Terminal
                 { id: 'f82_6_18', x: 18, y: 6, type: 'prop' }, { id: 'f83_6_19', x: 19, y: 6, type: 'prop' },
                 { id: 'f82_6_21', x: 21, y: 6, type: 'prop' }, { id: 'f83_6_22', x: 22, y: 6, type: 'prop' },
                 { id: 'f82_6_24', x: 24, y: 6, type: 'prop' }, { id: 'f61_6_24', x: 24, y: 6, type: 'prop' }, // Overlap f82/f61 for f62 at (24,7)
@@ -1079,7 +1162,7 @@ export const Overworld = {
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
-                [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
+                [10, 15, 15, 15, 15, 15, 32, 32, 32, 15, 15, 15, 15, 15, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
@@ -1096,21 +1179,29 @@ export const Overworld = {
             ],
             objects: [
                 { id: 'dyzes', x: 7, y: 3, type: 'npc', name: 'Dyzes' },
-                { id: 'npc_female_hum1', x: 6, y: 7, type: 'npc', name: 'Researcher Maya' },
+                { id: 'npc_female_hum1', x: 7, y: 8, type: 'npc', name: 'Researcher Maya' },
                 { id: 'npc_female_hum2', x: 10, y: 11, type: 'npc', name: 'Researcher Elena' },
+                { id: 'npc_male_silas', x: 2, y: 11, type: 'npc', name: 'Researcher Silas' },
+                { id: 'npc_male_finn', x: 12, y: 7, type: 'npc', name: 'Researcher Finn' },
+
+
 
                 // Row 2
                 { id: 'f52_r2a', x: 1, y: 2, type: 'prop', name: 'Archive' }, { id: 'f53_r2a', x: 2, y: 2, type: 'prop', name: 'Archive' },
-                { id: 'f52_r2b', x: 3, y: 2, type: 'prop', name: 'Archive' }, { id: 'f53_r2b', x: 4, y: 2, type: 'prop', name: 'Archive' },
-                { id: 'f52_r2c', x: 10, y: 2, type: 'prop', name: 'Archive' }, { id: 'f53_r2c', x: 11, y: 2, type: 'prop', name: 'Archive' },
+                { id: 'f15_r2a', x: 3, y: 2, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f34_r2a', x: 4, y: 2, type: 'prop', name: 'Skeleton' },
+                { id: 'f34_r2b', x: 10, y: 2, type: 'prop', name: 'Skeleton' },
+                { id: 'f15_r2b', x: 11, y: 2, type: 'prop', name: 'Stasis Tank' },
                 { id: 'f52_r2d', x: 12, y: 2, type: 'prop', name: 'Archive' }, { id: 'f53_r2d', x: 13, y: 2, type: 'prop', name: 'Archive' },
-
+ 
                 // Row 3
                 { id: 'f54_r3a', x: 1, y: 3, type: 'prop', name: 'Archive' }, { id: 'f55_r3a', x: 2, y: 3, type: 'prop', name: 'Archive' },
-                { id: 'f54_r3b', x: 3, y: 3, type: 'prop', name: 'Archive', hiddenLogId: 'Log011' }, { id: 'f55_r3b', x: 4, y: 3, type: 'prop', name: 'Archive' },
+                { id: 'f16_r3a', x: 3, y: 3, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f35_r3a', x: 4, y: 3, type: 'prop', name: 'Skeleton' },
                 { id: 'f48_r3a', x: 5, y: 3, type: 'prop', name: 'Hand Box' },
                 { id: 'f48_r3b', x: 9, y: 3, type: 'prop', name: 'Hand Box' },
-                { id: 'f54_r3c', x: 10, y: 3, type: 'prop', name: 'Archive' }, { id: 'f55_r3c', x: 11, y: 3, type: 'prop', name: 'Archive' },
+                { id: 'f35_r3b', x: 10, y: 3, type: 'prop', name: 'Skeleton' },
+                { id: 'f16_r3b', x: 11, y: 3, type: 'prop', name: 'Stasis Tank' },
                 { id: 'f54_r3d', x: 12, y: 3, type: 'prop', name: 'Archive' }, { id: 'f55_r3d', x: 13, y: 3, type: 'prop', name: 'Archive' },
 
                 // Row 4 (Empty in new grid)
@@ -1151,7 +1242,7 @@ export const Overworld = {
                 { id: 'f35_r10a', x: 1, y: 10, type: 'prop', name: 'Skeleton' },
                 { id: 'f65_r10a', x: 2, y: 10, type: 'prop', name: 'CryoPod' }, { id: 'f66_r10a', x: 3, y: 10, type: 'prop', name: 'CryoPod' },
                 { id: 'f4_r10a', x: 5, y: 10, type: 'prop', name: 'Table' }, { id: 'f5_r10a', x: 6, y: 10, type: 'prop', name: 'Table' },
-                { id: 'f58_r10a', x: 7, y: 10, type: 'prop', name: 'Small Cabinet' },
+                { id: 'f8_r10a', x: 7, y: 10, type: 'prop', name: 'Lab Cylinders' },
                 { id: 'f40_r10a', x: 8, y: 10, type: 'prop', name: 'Incubator' }, { id: 'f41_r10a', x: 9, y: 10, type: 'prop', name: 'Incubator' },
                 { id: 'f65_r10b', x: 11, y: 10, type: 'prop', name: 'CryoPod' }, { id: 'f66_r10b', x: 12, y: 10, type: 'prop', name: 'CryoPod' },
                 { id: 'f35_r10b', x: 13, y: 10, type: 'prop', name: 'Skeleton' },
@@ -1174,7 +1265,7 @@ export const Overworld = {
                 // Row 14
                 { id: 'f9_r14a', x: 1, y: 14, type: 'prop', name: 'Device' },
                 { id: 'f8_r14a', x: 2, y: 14, type: 'prop', name: 'Cylinders' },
-                { id: 'f2_r14a', x: 3, y: 14, type: 'prop', name: 'Table' },
+                { id: 'f60_r14c', x: 3, y: 14, type: 'prop', name: 'Storage Box' },
                 { id: 'f36_r14a', x: 4, y: 14, type: 'prop', name: 'Noodles' },
                 { id: 'f9_r14d', x: 5, y: 14, type: 'prop', name: 'Device' },
                 { id: 'f60_r14a', x: 6, y: 14, type: 'prop', name: 'Box' },
@@ -1199,7 +1290,7 @@ export const Overworld = {
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1, 0, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 5, 4, 14, 14, 14, 14, 14, 11],
-                [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 18, 16, 15, 15, 22, 15, 15, 11],
+                [10, 15, 15, 32, 15, 32, 15, 32, 15, 32, 15, 32, 15, 32, 18, 16, 32, 15, 22, 15, 32, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 19, 17, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
@@ -1210,7 +1301,7 @@ export const Overworld = {
             objects: [
                 { id: 'capsain', x: 7, y: 4, type: 'npc', name: 'Director Capsain' },
                 { id: 'npc_male_exec1', x: 3, y: 5, type: 'npc', name: 'Assistant James' },
-                { id: 'npc_male_exec2', x: 10, y: 7, type: 'npc', name: 'Assistant Robert' },
+                { id: 'npc_male_exec2', x: 9, y: 7, type: 'npc', name: 'Assistant Robert' },
 
                 // Director Desk (F30, F31) - Moved to y=5
                 { id: 'f30_director', x: 7, y: 5, type: 'prop', name: 'Director Desk', hiddenLogId: 'Log016' },
@@ -1219,9 +1310,11 @@ export const Overworld = {
                 // Central Bookshelf Cluster (F76-F79) and Cabinets (F58)
                 { id: 'f76_execMid', x: 7, y: 2, type: 'prop', name: 'Executive Bookshelf' },
                 { id: 'f77_execMid', x: 8, y: 2, type: 'prop', name: 'Executive Bookshelf' },
+                { id: 'f17_execWall1', x: 17, y: 2, type: 'prop', name: 'Wall Hanging' },
+                { id: 'f17_execWall2', x: 19, y: 2, type: 'prop', name: 'Wall Hanging' },
                 { id: 'f78_execMid', x: 7, y: 3, type: 'prop', name: 'Executive Bookshelf' },
                 { id: 'f79_execMid', x: 8, y: 3, type: 'prop', name: 'Executive Bookshelf' },
-                { id: 'f58_execMidL', x: 6, y: 3, type: 'prop', name: 'Small Cabinet' },
+                { id: 'f103_execMidL', x: 6, y: 3, type: 'prop', name: 'Huge Petri Dish' },
                 { id: 'f58_execMidR', x: 9, y: 3, type: 'prop', name: 'Small Cabinet' },
 
                 // Noodle Snacks (F36)
@@ -1287,11 +1380,14 @@ export const Overworld = {
                 { id: 'f61_execTop1', x: 10, y: 2, type: 'prop', name: 'Box Pile' },
                 { id: 'f62_execBot1', x: 10, y: 3, type: 'prop', name: 'Box Pile' },
                 { id: 'f61_execTop2', x: 3, y: 6, type: 'prop', name: 'Box Pile' },
+                { id: 'f61_execTop3', x: 11, y: 6, type: 'prop', name: 'Box Pile' },
                 { id: 'f62_execBot2', x: 3, y: 7, type: 'prop', name: 'Box Pile' },
 
                 { id: 'f60_exec1', x: 2, y: 7, type: 'prop', name: 'Storage Box' },
                 { id: 'f60_exec2', x: 4, y: 7, type: 'prop', name: 'Storage Box' },
-                { id: 'f60_exec3', x: 11, y: 7, type: 'prop', name: 'Storage Box' },
+                { id: 'f8_exec7a', x: 5, y: 7, type: 'prop', name: 'Lab Cylinders' },
+                { id: 'f8_exec7b', x: 10, y: 7, type: 'prop', name: 'Lab Cylinders' },
+                { id: 'f62_execBot3', x: 11, y: 7, type: 'prop', name: 'Box Pile' },
                 { id: 'f60_exec4', x: 12, y: 7, type: 'prop', name: 'Storage Box' }
             ],
             doors: [
@@ -1415,12 +1511,14 @@ export const Overworld = {
                 { id: 'f60_kit1', x: 2, y: 6, type: 'prop', name: 'Supplies' },
                 { id: 'f59_kit3', x: 3, y: 6, type: 'prop', name: 'Kitchen Fern' },
                 { id: 'f36_kit3', x: 4, y: 6, type: 'prop', name: 'Abandoned Snack' },
-                { id: 'f59_kit2', x: 5, y: 6, type: 'prop', name: 'Kitchen Fern' }
+                { id: 'f59_kit2', x: 5, y: 6, type: 'prop', name: 'Kitchen Fern' },
+                { id: 'npc_male_theo', x: 4, y: 5, type: 'npc', name: 'Chef Theo', direction: 'down' },
+                { id: 'npc_female_mia', x: 9, y: 5, type: 'npc', name: 'Researcher Mia', direction: 'down' }
             ],
             doors: [
                 { x: 10, y: 4, targetZone: 'atrium', targetX: 1, targetY: 7 },
                 { x: 7, y: 2, targetZone: 'botanic', targetX: 7, targetY: 14 },
-                { x: 7, y: 7, targetZone: 'entertainment', targetX: 5, targetY: 3, requiredFlag: 'botanicSectorUnlocked' }
+                { x: 7, y: 7, targetZone: 'entertainment', targetX: 7, targetY: 3, requiredFlag: 'botanicSectorUnlocked' }
             ]
         },
         storage: {
@@ -1473,7 +1571,8 @@ export const Overworld = {
                 { id: 'f60_st2', x: 4, y: 6, type: 'prop', name: 'Storage Box' },
                 { id: 'f60_st3', x: 6, y: 6, type: 'prop', name: 'Storage Box' },
                 { id: 'f60_st4', x: 7, y: 6, type: 'prop', name: 'Storage Box' },
-                { id: 'f60_st5', x: 8, y: 6, type: 'prop', name: 'Storage Box' }
+                { id: 'f60_st5', x: 8, y: 6, type: 'prop', name: 'Storage Box' },
+                { id: 'npc_male_jax', x: 5, y: 6, type: 'npc', name: 'Quartermaster Jax', direction: 'down' }
             ],
             doors: [
                 { x: 0, y: 6, targetZone: 'atrium', targetX: 17, targetY: 10 },
@@ -1482,21 +1581,20 @@ export const Overworld = {
         },
         entertainment: {
             name: 'ENTERTAINMENT LOUNGE',
-            width: 8,
+            width: 10,
             height: 8,
-            spawn: { x: 6, y: 6 },
+            spawn: { x: 8, y: 6 },
             layout: [
-                [0, 8, 8, 8, 8, 8, 8, 1],
-                [10, 14, 14, 14, 14, 14, 14, 11],
-                [10, 15, 15, 15, 15, 22, 15, 11],
-                [10, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 25], // Exit to Atrium (On the right wall)
-                [2, 9, 9, 9, 9, 9, 9, 3]
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 15, 22, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Exit to Atrium (On the right wall)
+                [2, 9, 9, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [
-                // Seating Row (L)
                 // Seating Row (L)
                 { id: 'f1_ent1', x: 1, y: 3, type: 'prop', name: 'Lounge Seat' },
                 { id: 'f1_ent2', x: 1, y: 4, type: 'prop', name: 'Lounge Seat' },
@@ -1504,23 +1602,26 @@ export const Overworld = {
                 { id: 'f1_ent4', x: 1, y: 6, type: 'prop', name: 'Lounge Seat' },
 
                 // Right Side Group
-                { id: 'f0_ent1', x: 6, y: 3, type: 'prop', name: 'Lounge Seat' },
-                { id: 'f7_ent', x: 6, y: 4, type: 'prop', name: 'Lounge PC', hiddenLogId: 'Log003' },
-                { id: 'f0_ent2', x: 6, y: 5, type: 'prop', name: 'Lounge Seat' },
+                { id: 'f0_ent1', x: 8, y: 3, type: 'prop', name: 'Lounge Seat' },
+                { id: 'f7_ent', x: 8, y: 4, type: 'prop', name: 'Lounge PC', hiddenLogId: 'Log003' },
+                { id: 'f0_ent2', x: 8, y: 5, type: 'prop', name: 'Lounge Seat' },
 
                 // Decor
-                { id: 'f6_ent', x: 3, y: 2, type: 'prop', name: 'Art Display' },
-                { id: 'f17_ent', x: 2, y: 2, type: 'prop', name: 'Art Display' },
+                { id: 'f6_ent1', x: 1, y: 2, type: 'prop', name: 'Art Display' },
+                { id: 'f6_ent2', x: 3, y: 2, type: 'prop', name: 'Art Display' },
+                { id: 'f6_ent3', x: 5, y: 2, type: 'prop', name: 'Art Display' },
 
                 // Battle Station (2x2)
-                { id: 'f71_ent', x: 3, y: 4, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-TopLeft tileset-03' },
-                { id: 'f72_ent', x: 4, y: 4, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-TopRight tileset-03' },
-                { id: 'f73_ent', x: 3, y: 5, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-BottomLeft tileset-03' },
-                { id: 'f74_ent', x: 4, y: 5, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-BottomRight tileset-03' }
+                { id: 'f71_ent', x: 4, y: 4, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-TopLeft tileset-03' },
+                { id: 'f72_ent', x: 5, y: 4, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-TopRight tileset-03' },
+                { id: 'f73_ent', x: 4, y: 5, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-BottomLeft tileset-03' },
+                { id: 'f74_ent', x: 5, y: 5, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-BottomRight tileset-03' },
+                { id: 'npc_male_ben', x: 2, y: 6, type: 'npc', name: 'Researcher Ben', direction: 'down' },
+                { id: 'npc_female_daisy', x: 3, y: 3, type: 'npc', name: 'Assistant Daisy', direction: 'down' }
             ],
             doors: [
-                { x: 7, y: 6, targetZone: 'atrium', targetX: 1, targetY: 10 },
-                { x: 5, y: 2, targetZone: 'kitchen', targetX: 7, targetY: 6, requiredFlag: 'botanicSectorUnlocked' }
+                { x: 9, y: 6, targetZone: 'atrium', targetX: 1, targetY: 10 },
+                { x: 7, y: 2, targetZone: 'kitchen', targetX: 7, targetY: 6, requiredFlag: 'botanicSectorUnlocked' }
             ]
         }
     },
@@ -1659,8 +1760,15 @@ export const Overworld = {
 
     init() {
         console.log("Overworld Engine Starting...");
+        this.resetStates(); // Ensure clean start
         setTimeout(() => {
-            this.renderMap('lobby', true); // Fresh spawn for game start
+            const lastPos = window.gameState.lastOverworldPos;
+            if (lastPos && lastPos.zone && lastPos.x !== null && lastPos.y !== null) {
+                console.log(`Resuming at ${lastPos.zone} (${lastPos.x}, ${lastPos.y})`);
+                this.renderMap(lastPos.zone, false, lastPos.x, lastPos.y);
+            } else {
+                this.renderMap('lobby', true); // Fresh spawn for game start
+            }
             this.setupControls();
             this.startLoop();
         }, 50);
@@ -1828,6 +1936,7 @@ export const Overworld = {
         this.currentZone = id;
         document.getElementById('location-name').textContent = zone.name;
         this.updatePlayerPosition();
+        this.savePosition();
 
         // 6. UNLOCK VISUALS (Clean up transition locks after render)
         setTimeout(() => {
@@ -2051,6 +2160,7 @@ export const Overworld = {
             this.player.isMoving = false;
             this.player.stepParity = (this.player.stepParity + 1) % 2;
             this.player.currentFrame = this.player.stepParity * 2; // Next idle frame
+            this.savePosition();
 
             // CHECK FOR ZONE TRANSITION
             const door = zone.doors && zone.doors.find(d => d.x === nextX && d.y === nextY);
@@ -2245,9 +2355,9 @@ export const Overworld = {
                 if (meta.triggerShop) this.pendingShopMenu = true;
                 if (meta.triggerBioExtract) this.pendingBioExtractMenu = true;
 
-                const title = meta.triggerBioExtract ? "Mega Incubator" : (meta.triggerShop ? "Vending Machine" : "Incubator Unit");
+                const title = meta.triggerBioExtract ? "Bio-Extractor" : (meta.triggerShop ? "Vending Machine" : "Incubator Unit");
                 const text = meta.triggerBioExtract ?
-                    ["MEGA-INCUBATOR: [BIO-EXTRACTION PROTOCOLS ACTIVE]", "Authorized biological materials detected.", "Initiate extraction sequence?"] :
+                    ["BIO-EXTRACTOR: [BIO-EXTRACTION PROTOCOLS ACTIVE]", "Authorized biological materials detected.", "Initiate extraction sequence?"] :
                     (meta.triggerShop ?
                         ["ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]", "Please follow technical safety guidelines."] :
                         ["Biological maintenance system online.", "Awaiting operator authorization..."]);
@@ -2257,9 +2367,9 @@ export const Overworld = {
             }
 
             // CellAccelerator Interaction
-            if (obj.name === 'CellAccelerator') {
+            if (obj.name === 'Cell-Accelerator') {
                 this.pendingSynthesisMenu = true;
-                this.showDialogue("Cell Accelerator", ["CELL-ACC TERMINAL: [SYNTHESIS PROTOCOLS ACTIVE]", "Ensure biological requirements are met before initialization."]);
+                this.showDialogue("Cell-Accelerator", ["CELL-ACC TERMINAL: [SYNTHESIS PROTOCOLS ACTIVE]", "Ensure biological requirements are met before initialization."]);
                 return;
             }
 
@@ -2674,6 +2784,10 @@ export const Overworld = {
             if (this.currentZone === 'lobby') activePool = this.randomPools.lobby;
             if (this.currentZone === 'botanic') activePool = this.randomPools.botanic;
             if (this.currentZone === 'human') activePool = this.randomPools.human;
+            if (this.currentZone === 'kitchen') activePool = this.randomPools.kitchen;
+            if (this.currentZone === 'entertainment') activePool = this.randomPools.entertainment;
+            if (this.currentZone === 'storage') activePool = this.randomPools.storage;
+            if (this.currentZone === 'specimenStorage') activePool = this.randomPools.specimenStorage;
 
             const randomIndex = Math.floor(Math.random() * activePool.length);
             lines = activePool[randomIndex];
@@ -2978,6 +3092,11 @@ export const Overworld = {
             const cb = this.onDialogueComplete;
             this.onDialogueComplete = null;
             cb();
+        }
+
+        // Restart Spawner after Dialogue (only if not about to start a battle)
+        if (!this.pendingWildEncounter && !this.pendingBattleEncounter) {
+            this.spawner.start();
         }
     },
 

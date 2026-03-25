@@ -187,7 +187,7 @@ The truth is hidden in the digital archives. Collecting DataLogs unlocks new sec
 "Draft File (Capsain27_FinalReview): 'Inferno Brand Chili Sauce - Limited Edition Batch. Rating: 5/5. The heat is exquisite, borderline biological. Potency is perfect for late-night research sessions.'"
 
 #### [TEASE] Log #017: Official '27 Report
-"The 2027 Executive Summary: Official Cause of the Leak: A containment failure in the Mega Incubator's primary reactor, located within the Main Atrium. Note from the Ground Crew (Redacted): 'We entered the Atrium and were hit by a thick, overwhelming spicy aroma that made our eyes water through the gas masks. Management insisted it was merely the smell of oxidized metal and ozone interaction.' The logic is as thin as the Director's patience."
+"The 2027 Executive Summary: Official Cause of the Leak: A containment failure in the Cell-Accelerator's primary reactor, located within the Main Atrium. Note from the Ground Crew (Redacted): 'We entered the Atrium and were hit by a thick, overwhelming spicy aroma that made our eyes water through the gas masks. Management insisted it was merely the smell of oxidized metal and ozone interaction.' The logic is as thin as the Director's patience."
 
 #### [FLUFF] Log #018: Logistics Update
 "Logistics Requisition: Monthly order for the Executive Floor has been updated. Item: 'Inferno' Noodle Boxes (31 Cases). Reason: 'Caloric density optimization for late-night research.' Priority: Urgent. The Director has been heard grumbling about the cafeteria's 'lack of kick' while waiting for this shipment. Someone should tell him that consuming this much spice during a single work cycle isn't recommended for biological health."
@@ -400,11 +400,15 @@ These dialogue lines are randomly assigned to generic researchers based on the s
 
 #### Zone: Lab Lobby (Entrance)
 1. *"Welcome to Odd Labs!// Please keep your badge visible at all times and avoid the bio-hazard chutes."*
-2. *"The Incubation Chamber is just ahead.// Have you picked your signature cell yet? Career paths depend on it!"*
-3. *"Don't mind the security guards.// They're mostly here for... aesthetic compliance and to keep the cells in check."*
-4. *"If you're looking for the Director, he's usually in the Executive Suite.// Or hiding in the cafeteria during 'Noodle Tuesday'."*
-5. *"Stay sharp, Intern.// This lobby might look peaceful, but the research floors are quite the tactical maze."*
-6. *"I'm heading to the breakroom.// Apparently, the coffee machine finally stopped dispensing blue sludge."*
+2. *"New here? Try to interact with computers, furniture, and people.// It's the only way to uncover hidden data logs and gossip about the Director's lunch habits."*
+3. *"Keep your eye on the prize! Open your Cell-Inventory and Squad menu to manage your team.// You can swap your active Cells and check their current membrane health there."*
+4. *"Your Research Grade (RG) is the primary measure of your scientific standing.// Every time your RG level increases, you'll receive a new tactical C-Card to upgrade your Cell's combat capabilities."*
+5. *"The Main Atrium is the heart of Odd Labs—most wings connect right back to it.// If you ever feel lost, just head toward the largest machine in the center of the facility."*
+6. *"Check every corner! Some of our best research logs are tucked away in abandoned desks or old test tanks.// If it looks interesting, it probably has a story to tell."*
+7. *"If your Cells are looking a bit sluggish, take them to an Incubator unit.// A quick session in the restorative mist will have them back to full strength in no time."*
+8. *"You can find Incubators in most breakrooms and research wards.// They're the only way to fully stabilize a Cell's membrane after a tough encounter."*
+9. *"The Bio-Extractor is located in the dedicated Extraction Room wing.// It's the only machine powerful enough to process the Biomass you collect into something useful."*
+10. *"The Cell-Accelerator is that massive machine standing in the center of the lab!// If you have a recipe and enough materials, you can use it to grow entirely new Cells to join your squad."*
 
 #### Zone: Main Atrium (The Hub)
 1. *"Have you seen the latest readings on the Nitrophils?// They seem to have a higher metabolic rate whenever it's Noodle Tuesday.// Strange correlation."*
@@ -427,6 +431,37 @@ These dialogue lines are randomly assigned to generic researchers based on the s
 18. *"I asked the Nitrophils if they knew any jokes about thermal dynamics.// They acts like they're too 'hot' to handle.// I really need to stop talking to the thermogenic specimens."*
 19. *"I've been calculating the trajectory of a Nitrophil launched from a high-pressure bio-chute.// If we get the angle right, we could technically deliver spicy noodles across the entire lab in 0.7 seconds.// The Director's office is right in the flight path, though."*
 20. *"Did you know the 'anti-slip' coating on the stairs is actually a layer of modified adhesive cells that 'lick' your shoes to keep them in place?// It works wonders, but the feeling of a thousand tiny tongues tasting your sneakers is... technically questionable.// And remarkably loud on quiet shifts."*
+
+#### Zone: Specimen Storage
+1. *"When you defeat a wild Cell, it leaves behind biological traces called Biomass.// You can take this to the Bio-Extractor machine to acquire the raw materials needed for synthesis."*
+2. *"Don't forget to check the vending machines for new synthesis recipes.// You can't grow a specific species until you've unlocked its genetic blueprint first."*
+3. *"The specimens in these tanks are kept in 'suspended animation'.// It's the only way to study them without them trying to synthesize a snack out of our clipboards."*
+4. *"Notice the color variations in the tanks?// Red, Blue, Green... we're testing how different nutrient hues affect Pellicle density."*
+5. *"Don't tap on the glass!// The Red Specimens are especially sensitive to vibrations. They're not aggressive, just... easily startled into a thermal burst."*
+
+#### Zone: Staff Kitchen
+1. *"The vending machines are out of Spicy Peanuts again.// Director Capsain must have bought the whole stock."*
+2. *"Is it 'Noodle Tuesday' yet?// The kitchen smells like salt and ambition today."*
+3. *"Looking to trade? The Vending Machines in the common areas are your best friend.// You can sell your extra Biomass for credits and buy the new blueprints you need to grow your collection."*
+4. *"If you're short on credits, try offloading some Biomass at the vending terminal.// We're always in need of raw biological samples for the synthesis floor."*
+5. *"Chef Theo says the secret to a good lab lunch is properly calibrated salinity.// I think he just likes playing with the digital scales."*
+
+#### Zone: Entertainment Lounge
+1. *"The new Battle Machine in the lounge is always occupied.// I can't even get a turn on my lunch break!"*
+2. *"Did you see the high score on the lounge PC?// Someone named 'DIRECTOR' has 9999 points. Sus-picious!"*
+3. *"In a battle, try to place your attack node as close to the target as possible.// The more accurate your sync is, the harder you hit and the more Pellicle Points (PP) you generate."*
+4. *"Watch your PP levels during a duel.// Using your specialized skills costs Pellicle Points, but simple defensive moves are always available to keep you safe."*
+5. *"You can actually spend more PP than you currently have to land a big hit for a high cost.// This puts your Cell into a 'negative' state, which is powerful but leaves you very vulnerable to the next attack."*
+6. *"Try to keep your PP in the positive range for a stable defense.// If you drop too far into the negatives, your Cell's membrane will weaken, and you'll take much more damage from any incoming hits."*
+
+#### Zone: Storage Bay
+1. *"Boxes, more boxes...// I think I saw a Nitrophil hiding in one of these crates."*
+2. *"Why do we store so many 'Adhesive Residue' samples?// Storage duty is the worst."*
+3. *"The lab is full of history, but not all of it is in the main database.// Keep an eye out for unique furniture or abandoned test tanks—you might find a hidden data log or a rare item."*
+4. *"Curiosity is a researcher's greatest tool.// If you see something that looks out of place, try interacting with it. You never know what secrets might be tucked away in the corners."*
+5. *"Research Cards are the culmination of our tactical data.// Equipping these C-Card enhancements to your Cells allows for significant upgrades to their ability to survive any tactical engagement."*
+6. *"I saw Lana looking for something here recently.// She seemed... unusually tense."*
+
 
 #### Zone: Botanic Sector (Lana's Wing)
 1. *"Lana is brilliant with those Cambihils, but she has to hide them when the Director walks by.// He calls them 'invasive weeds' and says they're a disgrace to the department."*

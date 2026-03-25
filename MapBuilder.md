@@ -92,16 +92,16 @@ Used for atmospheric decoration via the `objects` system. Props follow the class
 | **f35** | SkeletonA-Bottom | 1536px | 1024px | Yes | A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised. |
 | **f36** | TableNoodleA | 1024px | 1280px | Yes | Instant noodles. The true fuel of all scientific breakthroughs and 3 AM crying sessions. |
 | **f37** | EmptyNoodleBowlA | 1280px | 1280px | Yes | An empty bowl. The salt levels within are high enough to preserve a whole lab tech. |
-| **f38** | IncubatorA-TopLeft | 0px | 1024px | No | A standard-issue Cell synthesis machine. Humms with the potential of new life. |
-| **f39** | IncubatorA-TopRight | 256px | 1024px | No | A standard-issue Cell synthesis machine. Humms with the potential of new life. |
-| **f40** | IncubatorA-BottomLeft | 0px | 1280px | Yes | A standard-issue Cell synthesis machine. Humms with the potential of new life. |
-| **f41** | IncubatorA-BottomRight | 256px | 1280px | Yes | A standard-issue Cell synthesis machine. Humms with the potential of new life. |
-| **f42** | MegaIncubatorA-TopLeft | 512px | 1024px | No | The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber. |
-| **f43** | MegaIncubatorA-TopRight | 768px | 1024px | No | The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber. |
-| **f44** | MegaIncubatorA-MidLeft | 512px | 1280px | Yes | The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber. |
-| **f45** | MegaIncubatorA-MidRight | 768px | 1280px | Yes | The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber. |
-| **f46** | MegaIncubatorA-BottomLeft | 512px | 1536px | Yes | The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber. |
-| **f47** | MegaIncubatorA-BottomRight | 768px | 1536px | Yes | The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber. |
+| **f38** | IncubatorA-TopLeft | 0px | 1024px | No | A biological maintenance pod. Restores Cell health through concentrated nutrient mists. |
+| **f39** | IncubatorA-TopRight | 256px | 1024px | No | A biological maintenance pod. Restores Cell health through concentrated nutrient mists. |
+| **f40** | IncubatorA-BottomLeft | 0px | 1280px | Yes | A biological maintenance pod. Restores Cell health through concentrated nutrient mists. |
+| **f41** | IncubatorA-BottomRight | 256px | 1280px | Yes | A biological maintenance pod. Restores Cell health through concentrated nutrient mists. |
+| **f42** | BioExtractorA-TopLeft | 512px | 1024px | No | A high-precision industrial centrifuge. Extracts pure biological traces from raw biomass. |
+| **f43** | BioExtractorA-TopRight | 768px | 1024px | No | A high-precision industrial centrifuge. Extracts pure biological traces from raw biomass. |
+| **f44** | BioExtractorA-MidLeft | 512px | 1280px | Yes | A high-precision industrial centrifuge. Extracts pure biological traces from raw biomass. |
+| **f45** | BioExtractorA-MidRight | 768px | 1280px | Yes | A high-precision industrial centrifuge. Extracts pure biological traces from raw biomass. |
+| **f46** | BioExtractorA-BottomLeft | 512px | 1536px | Yes | A high-precision industrial centrifuge. Extracts pure biological traces from raw biomass. |
+| **f47** | BioExtractorA-BottomRight | 768px | 1536px | Yes | A high-precision industrial centrifuge. Extracts pure biological traces from raw biomass. |
 | **f48** | BoxHandA | 768px | 768px | Yes | Labeled: 'DO NOT SHAKE'. |
 | **f49** | KeyItem-DataPad | 1280px | 1792px | Yes | Mostly contains encrypted logs, but some files are just high-score records for 'Snake'. |
 | **f50** | KeyItem-RoomKey | 1536px | 1792px | Yes | A magnetic keycard. Smells like the Director's expensive cologne. |

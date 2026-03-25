@@ -352,7 +352,7 @@ window.DATA_LOGS = [
     { id: 'Log014', tag: 'TEASE', title: 'Point Zero', text: "Recovery Log: While cleaning out an old terminal, Dyzes recovered a corrupted data fragment referencing something called 'Point Zero'. According to the notes, it’s a location within the facility that isn't listed on any current blueprints or structural maps. Before we could cross-reference the coordinates, Director Capsain remotely accessed the terminal and deleted the remaining metadata. He looked remarkably pale during the staff meeting later." },
     { id: 'Log015', tag: 'INFO', title: 'Cellular Harmony', text: "Staff Observation: Dyzes has officially gone off the deep end. He firmly believes the Cells are attempting primitive communication through fluctuating osmotic pressure. He spent three full hours today talking to a Lydrosome about 'the nature of the soul.' The terrifying part? The Lydrosome actually waved back with a localized pressure jet. Dyzes didn't even look surprised. He just said, 'I know, buddy. I know.'" },
     { id: 'Log016', tag: 'FUN', title: 'Noodle Review (Draft)', text: "Draft File (Capsain27_FinalReview): 'Inferno Brand Chili Sauce - Limited Edition Batch. Rating: 5/5. The heat is exquisite, borderline biological. Potency is perfect for late-night research sessions.'" },
-    { id: 'Log017', tag: 'TEASE', title: "Official '27 Report", text: "The 2027 Executive Summary: Official Cause of the Leak: A containment failure in the Mega Incubator's primary reactor, located within the Main Atrium. Note from the Ground Crew (Redacted): 'We entered the Atrium and were hit by a thick, overwhelming spicy aroma that made our eyes water through the gas masks. Management insisted it was merely the smell of oxidized metal and ozone interaction.' The logic is as thin as the Director's patience." },
+    { id: 'Log017', tag: 'TEASE', title: "Official '27 Report", text: "The 2027 Executive Summary: Official Cause of the Leak: A containment failure in the Cell-Accelerator's primary reactor, located within the Main Atrium. Note from the Ground Crew (Redacted): 'We entered the Atrium and were hit by a thick, overwhelming spicy aroma that made our eyes water through the gas masks. Management insisted it was merely the smell of oxidized metal and ozone interaction.' The logic is as thin as the Director's patience." },
     { id: 'Log018', tag: 'FLUFF', title: 'Logistics Update', text: "Logistics Requisition: Monthly order for the Executive Floor has been updated. Item: 'Inferno' Noodle Boxes (31 Cases). Reason: 'Caloric density optimization for late-night research.' Priority: Urgent. The Director has been heard grumbling about the cafeteria's 'lack of kick' while waiting for this shipment. Someone should tell him that consuming this much spice during a single work cycle isn't recommended for biological health." },
     { id: 'Log019', tag: 'TEASE', title: "Director's Secret Folder", text: "SYSTEM ALERT: Access Denied to restricted sub-directory. Folder Name: [Petri Dish #0 - My Little Accident]. Password Hint: 'The ingredient that makes life better.' I tried 'Science,' 'Knowledge,' and 'Efficiency.' All failed. I have a hunch that if I tried 'Extra Spicy Sauce' or 'Chili,' I might get in. What is Capsain hiding in there? It sounds less like a failure and more like a confession." },
     { id: 'Log020', tag: 'CLIMAX', title: "The Director's Private Note", text: "Private Encryption (Director Only): Origin is now 15.3cm in diameter. Its orange glow has become so bright it's visible through the lead-lined containment. It’s remarkably hyperactive whenever it detects capsaicin in the air. If the board ever discovers that the crowning achievement of this lab—the very first sentient cell—was born from a clumsy noodle accident and a splash of chili sauce, my career is over. I'm ruined. But... he's so chill." },
@@ -944,7 +944,7 @@ function setupEventListeners() {
             gameState.profiles[opponentProfileId] = {
                 id: opponentProfileId,
                 name: enc.name,
-                level: enc.rg === 'auto' ? (gameState.profiles.player.level || 1) : enc.rg,
+                level: enc.rg === 'auto' ? (gameState.profiles.player.level ?? 1) : enc.rg,
                 party: enc.team.map(id => {
                     if (!id || !MONSTERS[id]) return null;
                     const mon = createMonsterInstance(id);
@@ -1111,7 +1111,7 @@ function setupEventListeners() {
                 });
 
                 // --- CLEANUP WILD SPAWNER ---
-                if (catalystState.battleOpponentId && catalystState.battleOpponentId.endsWith('_wild')) {
+                if (catalystState.battleOpponentId && catalystState.battleOpponentId.includes('_wild')) {
                     Overworld.spawner.despawnCurrent();
                 }
 
@@ -1124,7 +1124,7 @@ function setupEventListeners() {
                 btn.innerText = 'CONTINUE TO GAME'; // Reset for next time
             } else {
                 // --- WILD ENCOUNTER CLEANUP ---
-                if (catalystState.battleOpponentId && catalystState.battleOpponentId.endsWith('_wild')) {
+                if (catalystState.battleOpponentId && catalystState.battleOpponentId.includes('_wild')) {
                     Overworld.spawner.despawnCurrent();
                 }
             }
@@ -4051,9 +4051,9 @@ function resetGame() {
     // Robust level lookup: profile -> encounter data -> default 1
     let enemyLevel = oProfile.level;
     if (enemyLevel === undefined && typeof NPC_ENCOUNTERS !== 'undefined' && NPC_ENCOUNTERS[opponentId]) {
-        enemyLevel = NPC_ENCOUNTERS[opponentId].rg === 'auto' ? (gameState.playerLevel || 1) : NPC_ENCOUNTERS[opponentId].rg;
+        enemyLevel = NPC_ENCOUNTERS[opponentId].rg === 'auto' ? (gameState.playerLevel ?? 1) : NPC_ENCOUNTERS[opponentId].rg;
     }
-    gameState.enemyLevel = enemyLevel || 1;
+    gameState.enemyLevel = (enemyLevel ?? 1);
 
     syncCardsToLevel(opponentId, gameState.enemyLevel);
 
@@ -5607,7 +5607,7 @@ window.updateResourceHUD = function () {
 
     if (lcVal) lcVal.innerText = gameState.credits || 0;
     if (bmVal) bmVal.innerText = gameState.biomass || 0;
-    if (rgVal) rgVal.innerText = gameState.playerLevel || (gameState.profiles && gameState.profiles.player ? gameState.profiles.player.level : 1);
+    if (rgVal) rgVal.innerText = (gameState.playerLevel ?? (gameState.profiles && gameState.profiles.player ? gameState.profiles.player.level : 1));
 
     if (logCount && typeof Overworld !== 'undefined') {
         logCount.innerText = Overworld.logsCollected.length;
