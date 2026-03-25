@@ -111,8 +111,8 @@ The final damage resolved against HP follows this hierarchy:
 
 ### 4.3 Pellicle Overload (Discharge)
 To prevent "Pellicle Camping," monsters are subject to an energy limit:
-- **Max Limit**: 10 PP.
-- **Discharge Penalty**: Starting a turn with 10 PP triggers a **Pellicle Discharge**. 
+- **Max Limit**: Varies by Cell species (modifiable by C-Cards).
+- **Discharge Penalty**: Starting a turn with Max PP triggers a **Pellicle Discharge (25% Max HP Damage)**. 
 - **Effect**: The monster suffers **30 HP damage** and resets to **0 PP** before the next phase begins.
 
 ### 4.1 Multipliers

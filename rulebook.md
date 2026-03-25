@@ -73,14 +73,20 @@ A fundamental expansion of the **Matching Attack Placement (MAP)** system.
 - Only the **Attacker** deals damage.
 - When it's your **Defense Turn**, your skills swap to **Defense Moves**.
 
+### 🛡️ Pellicle Shield (Positive Mitigation)
+- **The Charge**: While you have positive Pellicle Points (PP), your cell generates a kinetic shield.
+- **The Benefit**: Each point of positive PP provides **5% Damage Reduction**.
+- **The Scale**: At **Max PP**, your shield is at its strongest (e.g., 50% Reduction if Max PP is 10).
+- **UI**: The PP bar glows **Blue** and floating damage displays a 🛡️ shield icon.
+
 ### ⚡ PP Overload (Pellicle Discharge)
-- **The Limit**: Maximum of **10 PP**.
-- **The Penalty**: Starting a turn with 10 PP triggers a **Pellicle Discharge**, dealing **30 HP damage** and discharging all PP. 
+- **The Risk**: If you start your turn with your **Pellicle Points at Max**, your cell cannot contain the energy.
+- **The Penalty**: Triggers a **Pellicle Discharge**, dealing **25% Max HP damage** to yourself and resetting all PP. 
 
 ### 🧪 Lysis State (Structural Failure)
-- **The Debt**: You can use Pellicle Skills even if you have 0 PP, over-exerting your cell into negative values (up to **-10 PP**).
+- **The Debt**: You can use Pellicle Skills even if you have 0 PP, over-exerting your cell into negative values (up to your **negative Max PP** limit).
 - **The Penalty**: While in Lysis (Negative PP), incoming damage is **increased**.
-- **The Scale**: Each point of negative PP adds **+3 HP damage** per hit.
+- **The Scale**: Each point of negative PP increases incoming damage by **+10%**. (e.g. at -10 PP, you take **Double Damage**).
 - **UI**: The PP bar turns **Orangish-Red** and floating damage displays a ⚡ broken shield icon.
 
 ### 🧪 Elemental Advantage

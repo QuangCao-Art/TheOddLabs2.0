@@ -15,7 +15,7 @@ This document serves as a technical log and handover guide for "The Odd Labs 2.0
 ### 1.2 Pellicle Points (PP) & HP
 - **Passive Shield**: Damage taken is reduced by `PP * 3`.
 - **PP Generation**: Gained every turn based on MAP distance (even on defense).
-- **Pellicle Discharge (Overload)**: Starting a turn with **10 PP** (Max) causes an immediate **30 HP Pellicle Discharge**. This prevents "PP Camping" and forces tactical resource rotation.
+- **Pellicle Discharge (Overload)**: Starting a turn with **Max PP** causes an immediate **25% Max HP Pellicle Discharge**. This prevents "PP Camping" and forces tactical resource rotation.
 - **Asymmetric Turns**: To clarify combat, only the **Attacker** deals damage. The **Defender** only gains/uses PP and mitigates damage.
 
 ## 2. Major Updates & Fixes
@@ -50,7 +50,7 @@ This document serves as a technical log and handover guide for "The Odd Labs 2.0
 - **State Clearing**: Hardened the selection clearing logic. Visuals are scrubbed immediately, but `currentNode` state is preserved until after the jump animation to ensure correct positioning for sprites, ghosts, and VFX.
 
 ### 2.8 Tactical UI/UX Polish
-- **Overload Alert**: The PP bar and text now pulse bright red when a combatant reaches 10 PP, signaling immediate "Overload Recall" danger.
+- **Overload Alert**: The PP bar and text now pulse bright red when a combatant reaches Max PP, signaling immediate "Overload Recall" danger.
 - **Move Validation**: Technique buttons (e.g., Nitric Burst) are automatically grayed out and disabled if the player lacks the required PP.
 - **Pellicle VFX**: Small Pellicle tokens pop upwards and arc across the screen from the **opponent's side** to the **attacker's portrait** after every successful action, visualizing the "harvesting" of energy from the foe.
 
@@ -205,7 +205,7 @@ To improve phase clarity, the tactic pentagon now uses dedicated high-fidelity a
 - **Timing**: Integrated a **1.8s cinematic pause** in the `checkGameOver` loop to allow the play to witness the heavy impact and bounce.
 
 ### 2.37 Overload (Pellicle Discharge) Overhaul
-- **High-Stakes Penalty**: Re-tooled the legacy recoil into a critical "Pellicle Discharge." Reaching the 10 PP limit now deals **30 HP damage** (up from 10).
+- **High-Stakes Penalty**: Re-tooled the legacy recoil into a critical "Pellicle Discharge." Reaching the Max PP limit now deals **25% Max HP damage**.
 - **Universal Logic**: The system now checks **both** combatants during turn transitions, ensuring that a fully-charged defender also suffers the penalty before the board reset.
 - **Diagnostic Feedback**: Added a specific `[OVERLOAD]` log entry and a `flash-red` portrait animation to emphasize the danger of the discharge.
 
@@ -263,7 +263,7 @@ To improve phase clarity, the tactic pentagon now uses dedicated high-fidelity a
 - **Stats Synchronization**: The system now deep-clones the leader's stats (HP, PP, Moveset) into the active player state, ensuring the correct tactical profile is loaded into the arena.
 - **UI Refresh**: Portraits and names in the battle arena are now dynamically pulled from the deployed monster's assets during the `updateUI` pass.
 ### 2.47 System Integrity Check (Audit & Hardening)
-- **PP limit Unification**: Resolved a discrepancy between monster data and the rulebook. All monsters are now capped at **10 PP**, synchronized with the "Overload Recall" penalty threshold.
+- **PP scaling Unification**: All monsters now use their dynamic `maxPp` for the "Overload Recall" penalty threshold.
 - **Architectural Cleanup**: Purged legacy JavaScript listeners and redundant CSS associated with the old modal-style monster card.
 - **Persistence Verification**: Confirmed that the new sidebar remains stable and persistent across all user interaction paths.
 
@@ -374,3 +374,21 @@ Implemented a series of visual and logical refinements to the wild encounter sys
 - **Autonomous Scaling & Equipment**: 
     - **Randomized RG Logic**: Implemented a dynamic leveling system where wild monsters are assigned a Research Grade **1 to 5 levels lower** than the player (min RG-0). 
     - **Automated Calibration**: The system now silently executes a `syncCardsToLevel` and a **Balanced Quick-Equip** pass during encounter initialization. Wild monsters start with 1 PP and a full set of tier-appropriate modules, ensuring they are challenging but fair adversaries.
+
+### 2.58 Dynamic Scaling Overhaul & Combat Robustness
+Transitioned the game's core battle penalties and mitigation from static values to dynamic, percentage-based scaling to ensure consistency across all Research Grades and Cell configurations.
+
+- **Pellicle Shield (Positive PP)**:
+    - **Logic**: Replaced the fixed -3 HP reduction per PP with a **5% Damage Reduction per PP**.
+    - **Cap**: Mitigation is now capped at **Max PP** (e.g., 50% at 10 PP).
+    - **Robustness**: Implemented a damage floor at **0** in `combat.js` to prevent "Shield Overflow" (where reduction > 100% would cause the monster to heal).
+- **Lysis State (Negative PP)**:
+    - **Logic**: Replaced the fixed +3 HP damage per negative PP with a **10% multiplicative damage increase** per point. 
+    - **Result**: At -10 PP, the defender takes **2.0x Double Damage**, making deep "PP Debt" extremely dangerous at high levels.
+- **Infinite Stat Stacking Fix**:
+    - **The Snapshot System**: Implemented a "Base Stat Snapshot" in `main.js` and `getModifiedStats`. 
+    - **Problem**: Previously, monsters without database IDs could accidentally use their already-boosted stats as the base for new calculations every turn, leading to exponential power growth.
+    - **Resolution**: The system now takes a one-time snapshot of `baseHp`, `baseAtk`, etc., ensuring card bonuses are always calculated from a clean starting point.
+- **Visual & Logging Fidelity**:
+    - **Shield Visibility**: Lowered the visual threshold for damage numbers and logs from **>= 5** to **> 0**. This ensures that even the starting 1 PP (-1 HP) shield is visible to the player as floating feedback and a combat log entry.
+    - **Clear Log Syntax**: Standardized `[SHIELDED]` and `[LYSIS]` log categories for immediate tactical recognition.

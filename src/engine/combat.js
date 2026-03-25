@@ -1,5 +1,6 @@
 import { CARDS } from '../data/cards.js';
 import { gameState } from './state.js';
+import { MONSTERS } from '../data/monsters.js';
 
 export const ELEMENTAL_TABLE = {
     THERMOGENIC: { BOTANIC: 1.5, KERATINIZED: 1.5, OSMOTIC: 0.75 },
@@ -65,15 +66,25 @@ export function calculateDamage(attacker, defender, move, dist) {
     let shieldAbsorbed = 0;
     let lysisPenalty = 0;
 
-    if (defender.pp >= 0) {
-        // POSITIVE PP: Passive Mitigation (3 reduction per PP)
-        shieldAbsorbed = Math.min(baseDamage - 1, defender.pp * 3);
-        finalDamage = Math.max(1, baseDamage - (defender.pp * 3));
+    if (defender.pp > 0) {
+        // POSITIVE PP: Pellicle Shield (5% reduction per PP)
+        // At Max PP (e.g. 10), damage is reduced by 50%.
+        const shieldMult = defender.pp * 0.05;
+        shieldAbsorbed = baseDamage * shieldMult;
+        
+        // BUG FIX: Floor damage to 0 to prevent "Healing Shield" overflow at > 20 PP
+        finalDamage = Math.max(0, baseDamage - shieldAbsorbed);
+        
+        console.log(`[SHIELD] Pellicle Shield active! -${Math.round(shieldAbsorbed)} damage absorbed (${Math.round(shieldMult * 100)}% reduction). 🛡️💙`);
+    } else if (defender.pp < 0) {
+        // NEGATIVE PP: Lysis State (10% extra damage per -PP)
+        const lysisMult = 1 + (Math.abs(defender.pp) * 0.1);
+        finalDamage = baseDamage * lysisMult;
+        lysisPenalty = finalDamage - baseDamage;
+        console.log(`[LYSIS] Structural Failure! +${Math.round(lysisPenalty)} damage taken (${Math.round((lysisMult - 1) * 100)}% increase). 🧪🔴`);
     } else {
-        // NEGATIVE PP: Lysis State (3 extra damage per -PP)
-        lysisPenalty = Math.abs(defender.pp) * 3;
-        finalDamage = baseDamage + lysisPenalty;
-        console.log(`[LYSIS] Broken Shield! Additional ${lysisPenalty} damage taken. 🧪🔴`);
+        // NEUTRAL PP (0): No shield, no lysis
+        finalDamage = baseDamage;
     }
 
     return {
@@ -221,24 +232,40 @@ export function resolveTurn(state) {
 
 export function checkOverload(cell) {
     if (cell.pp >= cell.maxPp) {
-        return 30; // Pellicle Discharge damage
+        const stats = getModifiedStats(cell);
+        return Math.floor(stats.maxHp * 0.25); // 25% of modified Max HP
     }
     return 0;
 }
 
 export function getModifiedStats(monster, playerLevel = 1) {
-    // 1. Efficiency Bonus (3% per level to ATK and DEF)
+    // 1. Identify the Clean Base Stats
+    // BUG FIX: If monster.id is missing or invalid, we use a deep-copy of the instance 
+    // BUT we must ensure we aren't using already-boosted 'maxHp/maxPp' as the base 
+    // to prevent infinite stacking in applyBonuses loops.
+    const lookup = MONSTERS[monster.id];
+    
+    const base = lookup ? lookup : {
+        maxHp: monster.baseHp || monster.hp || 100,
+        atk: monster.baseAtk || monster.atk || 10,
+        def: monster.baseDef || monster.def || 10,
+        spd: monster.baseSpd || monster.spd || 10,
+        crit: monster.baseCrit || monster.crit || 5,
+        maxPp: monster.baseMaxPp || monster.maxPp || 10
+    };
+
+    // 2. Efficiency Bonus (3% per level to ATK and DEF)
     const effLevel = monster.extractEfficiency || 0;
     const effMult = 1 + (effLevel * 0.03);
 
     const stats = {
-        maxHp: monster.maxHp,
-        atk: Math.floor(monster.atk * effMult),
-        def: Math.floor(monster.def * effMult),
-        spd: monster.spd,
-        crit: monster.crit,
+        maxHp: base.maxHp,
+        atk: Math.floor(base.atk * effMult),
+        def: Math.floor(base.def * effMult),
+        spd: base.spd,
+        crit: base.crit,
         pp: monster.pp,
-        maxPp: monster.maxPp,
+        maxPp: base.maxPp,
         slots: 3 // Base slots
     };
 

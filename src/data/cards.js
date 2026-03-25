@@ -140,10 +140,34 @@ export const NPC_PRESETS = {
 };
 
 export const NPC_ENCOUNTERS = {
-    'jenzi': { name: "Jenzi (Atrium Quest)", rg: 5, team: ['stemmy'], style: 'balanced' },
-    'lana': { name: "Lana (Botanic Quest)", rg: 10, team: ['cambihil'], style: 'survival' },
-    'dyzes': { name: "Dyzes (Human Quest)", rg: 15, team: ['lydrosome', 'lydrosome'], style: 'utility' },
-    'capsain': { name: "Capsain (Director Quest)", rg: 20, team: ['nitrophil', 'nitrophil', 'nitrophil'], style: 'aggressive' },
+    'jenzi': { 
+        name: "Jenzi (Atrium Quest)", 
+        rg: 5, 
+        team: ['stemmy'], 
+        style: 'balanced',
+        reward: { exp: 400, biomass: 15, credits: 300 }
+    },
+    'lana': { 
+        name: "Lana (Botanic Quest)", 
+        rg: 10, 
+        team: ['cambihil'], 
+        style: 'survival',
+        reward: { exp: 800, biomass: 50, credits: 1000 }
+    },
+    'dyzes': { 
+        name: "Dyzes (Human Quest)", 
+        rg: 15, 
+        team: ['lydrosome', 'lydrosome'], 
+        style: 'utility',
+        reward: { exp: 1200, biomass: 100, credits: 2000 }
+    },
+    'capsain': { 
+        name: "Capsain (Director Quest)", 
+        rg: 20, 
+        team: ['nitrophil', 'nitrophil', 'nitrophil'], 
+        style: 'aggressive',
+        reward: { exp: 2500, biomass: 200, credits: 5000 }
+    },
     'npc01': { name: "NPC Male", rg: 5, team: ['stemmy'], style: 'balanced' },
     'npc02': { name: "NPC Female", rg: 5, team: ['stemmy'], style: 'balanced' },
     'julia': { 
@@ -151,7 +175,56 @@ export const NPC_ENCOUNTERS = {
         rg: 1, 
         team: ['stemmy'], 
         style: 'balanced',
-        reward: { exp: 50, biomass: 5, credits: 60 }
+        reward: { exp: 100, biomass: 5, credits: 60 }
+    },
+    'tom': { 
+        name: "Biologist Tom", 
+        rg: 2, 
+        team: ['cambihil'], 
+        style: 'balanced',
+        reward: { exp: 120, biomass: 6, credits: 80 }
+    },
+    'kevin': { 
+        name: "Researcher Kevin", 
+        rg: 2, 
+        team: ['lydrosome'], 
+        style: 'balanced',
+        reward: { exp: 120, biomass: 6, credits: 80 }
+    },
+    'daisy': { 
+        name: "Assistant Daisy", 
+        rg: 3, 
+        team: ['nitrophil'], 
+        style: 'balanced',
+        reward: { exp: 150, biomass: 10, credits: 150 }
+    },
+    'clara': {
+        name: "Scientist Clara",
+        rg: 5,
+        team: ['cambihil'],
+        style: 'balanced',
+        reward: { exp: 400, biomass: 20, credits: 300 }
+    },
+    'leo': {
+        name: "Tech Leo",
+        rg: 6,
+        team: ['stemmy'],
+        style: 'utility',
+        reward: { exp: 500, biomass: 25, credits: 400 }
+    },
+    'rose': {
+        name: "Researcher Rose",
+        rg: 7,
+        team: ['nitrophil'],
+        style: 'aggressive',
+        reward: { exp: 500, biomass: 30, credits: 500 }
+    },
+    'theo': {
+        name: "Chef Theo",
+        rg: 7,
+        team: ['stemmy', 'nitrophil'],
+        style: 'aggressive',
+        reward: { exp: 700, biomass: 30, credits: 600 }
     },
     'stemmy_wild': { name: "Wild Stemmy", rg: 'auto', team: ['stemmy'], style: 'balanced' }
 };

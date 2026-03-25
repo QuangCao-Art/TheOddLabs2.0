@@ -63,6 +63,88 @@ Maximized Tier 1 stat cards, introduction of **Slot+2** cards, and heavy tactica
 - **RG 12-14**: Advanced PP generation and vascular scaling.
 - **RG 15**: Unlock **Oxidative Energy Burst** (Elite Leader Perk).
 
+---
+
+### Senior Jenzi (Atrium Quest Boss)
+
+### 1. Dialogue
+- **Before Battle**: "You've been busy! 5 Datapads already? Lowkey impressive. // Then you must smell something fishy about the Incident. // But before I tell you about the 'smell', let's see if you've actually worth it. // My Stemmy is ready to rumble. Pelli-it up!"
+- **Pre-battle**: "Pelli-it up, Intern! Let's see what you've got."
+- **NPC Defeated (Player Wins)**: "Okay, okay, you got me! You're actually decent. // Since you won, here's the tea about 'The Incident'. Director Capsain says it was an 'Ionization Leak'. // Something about that story just isn't right... Well beat me, what do I know. // If you want the real story, go ask Lana in the Botanic wing."
+- **NPC Victorious (Player Loses)**: "Ayo, not bad for a first-timer! // You've got that 'pioneer spirit' everyone talks about. // Go back, recalibrate, and try me again when you're feeling less 'NPC'."
+
+### 2. Monster Team (NPC_ENCOUNTERS)
+- **Monster IDs**: [1 stemmy]
+- **Opponent RG Level**: [5]
+- **AI Combat Style**: [balanced]
+
+### 3. Rewards
+- **EXP**: [400]
+- **Biomass**: [15]
+- **Credits (LC)**: [300]
+
+---
+
+### Scientist Lana (Botanic Sector Boss)
+
+### 1. Dialogue
+- **Before Battle**: "Wait. You've been poking around the botanical archives, haven't you? // Look, I love these cells, but the Director says we have to keep the research classified. // If you want that Old Lab Key, you'll have to prove you can handle the truth in a duel!"
+- **Pre-battle**: "Prepare for a lesson in botanical efficiency!"
+- **NPC Defeated (Player Wins)**: "Fine! You win! [Mutters] Just like the Director during the Leak... always so stubborn. // Here, take this Old Lab Room Key. It's for some old storage room. // Just... don't believe everything you read in the logs."
+- **NPC Victorious (Player Loses)**: "Hmph. Just as I suspected. // Your tactical calibration is completely non-existent! // You're lucky my Cambihil was in a 'passive' mode, or you'd be more than just extracted."
+
+### 2. Monster Team (NPC_ENCOUNTERS)
+- **Monster IDs**: [1 cambihil]
+- **Opponent RG Level**: [10]
+- **AI Combat Style**: [survival]
+
+### 3. Rewards
+- **EXP**: [800]
+- **Biomass**: [50]
+- **Credits (LC)**: [1000]
+
+---
+
+### Scientist Dyzes (Human Ward Boss)
+
+### 1. Dialogue
+- **Before Battle**: "I've seen your log activity. You're piecing together 'The Incident', aren't you? // Capsain is a good man, just... proud. // I can't let you expose him without a proper test of your tactical skill. Prepare yourself!"
+- **Pre-battle**: "Let's see if your tactical vibe is strong enough."
+- **NPC Defeated (Player Wins)**: "Woah, okay. Your tactical flow is elite. // I can't really hide the truth if you're this good. The Old Lab exists, man. It's not on the main maps. // Here, take this Old Data Stick I found in the archives."
+- **NPC Victorious (Player Loses)**: "Woah, man. You're a bit out of sync. // Take a breather, hydrate, and maybe try focusing on the flow next time. No rush."
+
+### 2. Monster Team (NPC_ENCOUNTERS)
+- **Monster IDs**: [2 lydrosome]
+- **Opponent RG Level**: [15]
+- **AI Combat Style**: [utility]
+
+### 3. Rewards
+- **EXP**: [1200]
+- **Biomass**: [100]
+- **Credits (LC)**: [2000]
+
+---
+
+### Director Capsain (Executive Suite Boss)
+
+### 1. Dialogue
+- **Before Battle**: "So. You found the Noodle Review. You found the '27 security gap. // You think a little chili sauce is enough to topple this Director? // Fine. If you want the 'Origin', you'll have to go through me and my strongest Nitrophil first!"
+- **Pre-battle**: "I won't have my legacy tarnished by some spicy gossip!"
+- **NPC Defeated (Player Wins)**: "I... I failed? To an intern? [Sighs deeply] // You've seen the logs. You have the sauce. You've basically already found out. // Here, take this Rare Inferno Sauce... it's just a research sample! Nothing more!"
+- **NPC Victorious (Player Loses)**: "Dismissed. If you can't even handle a basic engagement, you have no business poking around the archives. // Go back to filing paperwork, Intern."
+
+### 2. Monster Team (NPC_ENCOUNTERS)
+- **Monster IDs**: [3 nitrophil]
+- **Opponent RG Level**: [20]
+- **AI Combat Style**: [aggressive]
+
+### 3. Rewards
+- **EXP**: [2500]
+- **Biomass**: [200]
+- **Credits (LC)**: [5000]
+
+---
+
 ### Tier 4: Pinnacle Engineering (RG 16-20)
 The absolute peak of cellular enhancement. Maximum efficiency.
 - **RG 16-19**: The final MAX upgrades (+5 PP, +5% Crit, +20 SPD).
@@ -111,11 +193,11 @@ Interacting with a Vending Machine opens a simple Buy/Sell interface:
 ### Battle Rewards & Scaling
 Victory in battle rewards players with both LC and Biomass. The amount scales slightly based on the player's **Research Grade (RG)**.
 
-| Encounter | Base LC | Base Biomass | RG Scaling |
-|:---|:---|:---|:---|
-| **Wild Monster** | 10 - 25 | 1 - 5 | +5% per RG |
-| **Human NPC** | 120 | 9 | +5% per RG |
-| **Sector Boss** | 350 | 15 | +5% per RG |
+| Encounter | Base LC | Base Biomass | EXP Reward | RG Scaling |
+|:---|:---|:---|:---|:---|
+| **Wild Monster** | 10 - 25 | 1 - 5 | 25 | +5% per RG |
+| **Human NPC** | Modular | Modular | Modular | **NONE (Fixed)** |
+| **Sector Boss** | Modular | Modular | Modular | **NONE (Fixed)** |
 
 ## Progression: The DataLog System
 The truth is hidden in the digital archives. Collecting DataLogs unlocks new sectors and reveals the real history of the Lab.
@@ -232,16 +314,16 @@ Characters respond differently based on the number of DataLogs you have archived
 ### Lana (Botanic Expert)
 - **First Meeting**: *"Hmph. So YOU'RE the new intern Jenzi was giggling about? I'm Lana, Senior Scientist of the Botanic Sector. Don't think for a second that I have time to babysit you! My work on Cambihil is far more complex than anything you've seen, so keep your clumsy fingers off my equipment! And... and whatever Jenzi told you about... things? It's all lies! She just thrives on office gossip! Now, either help with the nutrient sensors or get out of my light!"*
 - **Random Lines (Anytime)**:
-    - *"What are you staring at? I was merely performing a hydration assessment on your partner Cell. It is a critical laboratory asset, unlike... some uncalibrated interns! Hmph!"*
-    - *"Why are you obstructing the walkway? Efficiency is the cornerstone of the Botanic Sector. If you are going to be non-productive, do it elsewhere! ...But, I suppose you can observe the nutrient cycles from over there. Just don't touch anything!"*
-    - *"Do not simply stand there! It is... it is scientifically distracting! If you are here for research, take a clipboard. If you are here to gawk at the flora, do it silently. Honestly, the lack of focus in new recruits these days..."*
-    - *"I have no intention of providing remedial guidance. I simply don't want an incompetent intern lowering this sector's safety rating on their first day! It would be a stain on my professional record, that's all! Don't get the wrong idea!"*
-    - *"Your tactical signature is completely unoptimized. Did Jenzi provide zero fundamental training, or were you intentionally ignoring protocol? Honestly... hand me your device. I am only recalibrating it because its current state is an affront to efficiency, understood?"*
-    - *"Watch your step! Be careful not to disturb the Cambihil spores. They're far more sensitive than your heavy boots suggest! ...Are your boots properly sealed? I mean—the spores! Worry about the spores!"*
+    - *"What are you staring at? // I was merely performing a hydration assessment on your partner Cell. // It is a critical laboratory asset, unlike... some uncalibrated interns! Hmph!"*
+    - *"Why are you obstructing the walkway? // Efficiency is the cornerstone of the Botanic Sector. // If you are going to be non-productive, do it elsewhere! ...But, I suppose you can observe the nutrient cycles from over there. Just don't touch anything!"*
+    - *"Do not simply stand there! // It is... it is scientifically distracting! // If you are here for research, take a clipboard. If you are here to gawk at the flora, do it silently. Honestly, the lack of focus in new recruits these days..."*
+    - *"I have no intention of providing remedial guidance. // I simply don't want an incompetent intern lowering this sector's safety rating on their first day! It would be a stain on my professional record, that's all! Don't get the wrong idea!"*
+    - *"Your tactical signature is completely unoptimized. // Did Jenzi provide zero fundamental training, or were you intentionally ignoring protocol? Honestly... hand me your device. I am only recalibrating it because its current state is an affront to efficiency, understood?"*
+    - *"Watch your step! // Be careful not to disturb the Cambihil spores. // They're far more sensitive than your heavy boots suggest! ...Are your boots properly sealed? I mean—the spores! Worry about the spores!"*
 - **Boss (>= 5 Logs)**: *"Wait. You've been poking around the botanical archives, haven't you? Look, I love these cells, but the Director says we have to keep the research classified. If you want that Old Lab Key, you'll have to prove you can handle the truth in a duel!"*
 - **Before Battle**: *"Prepare for a lesson in botanical efficiency!"*
 - **Defeated**: *"Fine! You win! *[Mutters]* Just like the Director during the Leak... always so stubborn. Here, take this Old Lab Room Key. It's for some old storage room. Just... don't believe everything you read in the logs. "*
-- **Won**: *"Hmph. Just as I suspected. Your tactical calibration is completely non-existent! You're lucky my Cambihil was in a 'passive' mode, or you'd be more than just extracted. Go back to the entrance and... and don't come back until you've read at least three field guides! Honestly!"*
+- **Won**: *"Hmph. Just as I suspected. // Your tactical calibration is completely non-existent! // You're lucky my Cambihil was in a 'passive' mode, or you'd be more than just extracted. // Go back to the entrance and... and don't come back until you've read at least three field guides! Honestly!"*
 
 ### Dyzes (Human Cell Expert)
 - **First Meeting**: *"Hey. I'm Dyzes. Welcome to the chillest wing of the lab. We study the Lydrosome here—it's all about that cellular harmony, you know? Jenzi probably made me sound like a relic, but I prefer 'seasoned professional'. Watch your step, the osmotic mist is fresh today."*
@@ -346,6 +428,7 @@ This template ensures one-time, bug-free battle encounters for generic or quest 
 2.  **Missing Post-Battle Flag**: `startNPCInteraction` MUST be called with `isPostBattle = true` in `showGameOver` to prevent infinite loops.
 3.  **Result Tracking**: `battleDone` is not enough. You MUST set `battleWon_[id]` and `battleLost_[id]` in `main.js` to show the correct permanent dialogue later.
 4.  **ID Resolution**: Always ensure the `opponentId` from the battle engine matches the `battleEncounterId` in the overworld object.
+5.  **Pre-Battle Character Art (main.js)**: You MUST add the `battleEncounterId` to the `PRE_BATTLE_DATA` mapping in `main.js`. Failure to do so will result in the pre-battle sequence displaying the wrong character art (e.g., using Female art for a Male NPC).
 
 ### 📋 NPC Data Format
 Use this format when defining a new NPC encounter (like Julia).
@@ -353,8 +436,8 @@ Use this format when defining a new NPC encounter (like Julia).
 #### 1. Dialogue
 - **Before Battle**: [Lines said when interaction starts in Overworld]
 - **Pre-battle**: [Short line said in the VS/Portrait sequence]
-- **Defeated (Player Wins)**: [Lines said after player victory]
-- **Won (Player Loses)**: [Lines said after player defeat]
+- **NPC Victorious (Player Loses)**: [npcWinDialogue]
+- **NPC Defeated (Player Wins)**: [npcLossDialogue]
 
 #### 2. Monster Team (NPC_ENCOUNTERS)
 - **Monster IDs**: [e.g., stemmy, nitrophil]
@@ -371,7 +454,7 @@ Use this format when defining a new NPC encounter (like Julia).
     - Set `rg`, `team`, `style`, and `reward` using the format above.
 2.  **Setup NPC Object** (`src/engine/overworld.js`):
     - Add `battleEncounterId` (matches the key in step 1).
-    - Add `dialogue`, `dialogueWin`, and `dialogueLoss` arrays.
+    - Add `dialogue`, `npcWinDialogue`, and `npcLossDialogue` arrays.
 3.  **Result Persistence**: The system automatically handles flags (`battleDone`, `battleWon`, `battleLost`) to ensure the encounter is one-time and outcome-accurate.
 
 ---
@@ -393,6 +476,148 @@ Use this format when defining a new NPC encounter (like Julia).
 - **EXP**: [50]
 - **Biomass**: [5]
 - **Credits (LC)**: [60]
+
+---
+
+### Biologist Tom (Atrium)
+
+### 1. Dialogue
+- **Before Battle**: "Hey there. Have you noticed how the Pellicle Point system works? // Most focus on attacks, but PP management is where you see real results. // Spar with me? I'll show you the 'Positive Shield' effect. Ready?"
+- **Pre-battle**: "Processing synchronous feedback. Prepare for engagement."
+- **Defeated (Player Wins)**: "Nice job! You've got a good handle on the tactical flow. // Tip: positive PP creates a kinetic shield, softening incoming hits. // Just don't hit Max PP—that'll cause a Pellicle Discharge, dealing 25% of your Max HP in damage! // Later, you'll unlock skills to 'vent' those Pellicle Points for massive damage. Keep it up!"
+- **Won (Player Loses)**: "Don't sweat it. The Pellicle Point system is all about balance. // You'll eventually turn your Pellicle Points into an advantage, but avoid that nasty 25% HP Overload discharge for now. // Take a breather and we'll try again later."
+
+### 2. Monster Team (NPC_ENCOUNTERS)
+- **Monster IDs**: [1 cambihil]
+- **Opponent RG Level**: [2]
+- **AI Combat Style**: [survival]
+
+### 3. Rewards
+- **EXP**: [60]
+- **Biomass**: [6]
+- **Credits (LC)**: [80]
+
+---
+
+### Researcher Kevin (Atrium)
+
+### 1. Dialogue
+- **Before Battle**: "Salutations! I'm Biologist Kevin. Have you heard of the C-Card system? // They're bio-synthetic boosters that significantly enhance your Cell's stats and unlock powerful new skills and effects. // Slotting them into your Catalyst Box is essential for maximizing your tactical advantage in battle. // Ready to see how much of a difference a good build makes?"
+- **Pre-battle**: "Simulation initialized. Error margin: 0.01%."
+- **Defeated (Player Wins)**: "Inquiry! How did you bypass my dermal bio-ceramics? A high-frequency sync? Fascinating. // Pro-tip: Check your Catalyst Box in the Inventory menu to slot your rewards and boost your stats. // Increasing your Research Grade will unlock even more slots for skills and passive effects. Truly revolutionary!"
+- **Won (Player Loses)**: "Predictable. You won't win without using a calibrated Catalyst Box to boost your stats. // You lacked the tactical effects needed to penetrate my defense. // Access your Inventory to slot new cards and see the results in your next battle. It's the best part of the job!"
+
+### 2. Monster Team (NPC_ENCOUNTERS)
+- **Monster IDs**: [1 lydrosome]
+- **Opponent RG Level**: [2]
+- **AI Combat Style**: [utility]
+
+### 3. Rewards
+- **EXP**: [60]
+- **Biomass**: [6]
+- **Credits (LC)**: [80]
+
+---
+
+### Assistant Daisy (Entertainment Lounge)
+
+### 1. Dialogue
+- **Before Battle**: "Oh, you're looking for Tom and Kevin's lost datapads? // I might have seen them... but I won't tell you for free! // Let's have a quick Cell battle. If you win, I'll give you a hint!"
+- **Pre-battle**: "Ready to lose? I won't go easy on you, Intern!"
+- **NPC Victory (Player Loses)**: "Better luck next time! // Since I'm nice, here's a tip: There's a Console Station in the Atrium near the north wall... it's humming a bit strangely. Check the ports, maybe someone left a datapad plugged in!"
+- **NPC Defeat (Player Wins)**: "Fine, you're better than you look! // Check the Atrium. There's a pile of boxes near the south exit... something shiny is tucked inside one of them. Happy hunting!"
+
+### 2. Monster Team (NPC_ENCOUNTERS)
+- **Monster IDs**: [1 nitrophil]
+- **Opponent RG Level**: [3]
+- **AI Combat Style**: [balanced]
+
+### 3. Rewards
+- **EXP**: [100]
+- **Biomass**: [10]
+- **Credits (LC)**: [150]
+
+---
+
+### Scientist Clara (Botanic Sector)
+
+### 1. Dialogue
+- **Before Battle**: "The Botanic Sector is a delicate ecosystem. You can't just barge in without a plan! // Have you analyzed the elemental spectrum? // Every organism here has a specific nature that can be countered. // If you don't know your types, this will be a very short lesson."
+- **Pre-battle**: "Watch the reaction when types collide!"
+- **NPC Defeated (Player Wins)**: "Incredible! Identifying the elemental nature of your opponent is the first step toward mastery. // Each type has a counter: Thermal melts Botanic, Botanic absorbs Osmotic, and Osmotic cools Thermal. // These 1.5x multipliers are the only way to survive the deeper wards."
+- **NPC Victorious (Player Loses)**: "Efficiency is the cornerstone of research. // To succeed, one must master elemental counters: Thermal melts Botanic, Botanic absorbs Osmotic, and Osmotic cools Thermal. // Always analyze the nature of your target before initiating a sync."
+
+### 2. Monster Team (NPC_ENCOUNTERS)
+- **Monster IDs**: [1 cambihil]
+- **Opponent RG Level**: [5]
+- **AI Combat Style**: [balanced]
+
+### 3. Rewards
+- **EXP**: [400]
+- **Biomass**: [20]
+- **Credits (LC)**: [300]
+
+---
+
+### Tech Leo (Botanic Sector)
+
+### 1. Dialogue
+- **Before Battle**: "New intern, right? You're entering a sector where one Basic skill just isn't enough to manage the tactical load. // Have you heard of the 'Second Brain'? // It's a special card that unlocks an additional skill slot just by being in your squad's Catalyst Box. // Let's see if you're ready for that kind of growth!"
+- **Pre-battle**: "Processing multiple tactical frequencies... Now!"
+- **NPC Defeated (Player Wins)**: "Solid processing speed! // Remember, the Second Brain card's presence alone grants you that extra Pellicle slot. // It allows you to equip a second active skill, giving you much more control over your Pellicle Points (PP) in battle."
+- **NPC Victorious (Player Loses)**: "Lagging behind? // If a Second Brain isn't enough to save you, maybe you should start looking for a third!"
+
+### 2. Monster Team (NPC_ENCOUNTERS)
+- **Monster IDs**: [1 stemmy]
+- **Opponent RG Level**: [6]
+- **AI Combat Style**: [utility]
+
+### 3. Rewards
+- **EXP**: [500]
+- **Biomass**: [25]
+- **Credits (LC)**: [400]
+
+---
+
+### Researcher Rose (Botanic Sector)
+
+### 1. Dialogue
+- **Before Battle**: "Be careful—if you push your Cell too hard, it'll literally fall apart. // Most interns think Negative PP is just a number, but it's a structural failure waiting to happen. // Want to see what 'Lysis' looks like up close?"
+- **Pre-battle**: "Warning: Bio-membrane destabilization detected!"
+- **Defeated (Player Wins)**: "Risky, but effective! You managed to 'vent' your PP just before your membrane collapsed. // Remember: every point below zero increases incoming damage by 10%. // If you hit your debt limit (your negative Max PP), you're taking DOUBLE damage from every hit! // It's called the 'Lysis State'—your cell's structural integrity is compromised."
+- **Won (Player Loses)**: "See that extra damage? That's the Lysis Penalty. // For every point of Negative PP, you take 10% more damage from every hit. // It's like fighting without a skin!"
+
+### 2. Monster Team (NPC_ENCOUNTERS)
+- **Monster IDs**: [1 nitrophil]
+- **Opponent RG Level**: [7]
+- **AI Combat Style**: [aggressive]
+
+### 3. Rewards
+- **EXP**: [500]
+- **Biomass**: [30]
+- **Credits (LC)**: [500]
+
+---
+
+### Chef Theo (Staff Kitchen)
+
+### 1. Dialogue
+- **Before Battle**: "Hungry for progress, Intern? Cooking's all about preparation. // Have you used the Vending Machine here in the Kitchen? // It’s not just for snacks like noodles; it’s essential for trading Biomass and acquiring Blueprints. // Let me show you why stayin' stocked is stayin' alive!"
+- **Pre-battle**: "Order up! Let's see if you can handle the heat!"
+- **NPC Defeated (Player Wins)**: "Delicious work! You've got the hunger. // The Vending Machine here is more than just furniture. // It’s not just for grabbing a quick bite like noodles; use your Lab credits to get stock! // So remember to visit it to stock up sometime."
+- **NPC Victorious (Player Loses)**: "Sloppy! You came in underprepared. // Make sure to stop by the Vending Machine. // It sells more than just food; you can trade in your excess Biomass for Lab credits, then use those credits to buy Blueprints for advanced Cells."
+
+### 2. Monster Team (NPC_ENCOUNTERS)
+- **Monster IDs**: [1 stemmy, 1 nitrophil]
+- **Opponent RG Level**: [7]
+- **AI Combat Style**: [aggressive]
+
+### 3. Rewards
+- **EXP**: [700]
+- **Biomass**: [30]
+- **Credits (LC)**: [600]
+
+---
 
 ### Background Scientist Dialogue (Random NPCs)
 
@@ -466,7 +691,7 @@ These dialogue lines are randomly assigned to generic researchers based on the s
 #### Zone: Botanic Sector (Lana's Wing)
 1. *"Lana is brilliant with those Cambihils, but she has to hide them when the Director walks by.// He calls them 'invasive weeds' and says they're a disgrace to the department."*
 2. *"Fun fact: Cambihils actually photosynthetic at a 15% higher efficiency rate when they're near a window.// They're basically high-speed solar panels with leaves."*
-3. *"Watch out for the 'Canobolus' project in the Fungal Ward.// It’s a Ballistospore with a catapult mechanism.// They say it roots itself into the floor and just starts peppering its target with high-pressure spores like a machine gun."*
+3. *"Watch out for the 'Canobolus' project in the Fungal Ward.// It's a Ballistospore with a catapult mechanism.// They say it roots itself into the floor and just starts peppering its target with high-pressure spores like a machine gun."*
 4. *"The humidity in here is great for the ferns, but it's murder on my paperwork."*
 5. *"Did you see the glowing hedge move?// Lana says it's just 'bio-active curiosity', but I'm not so sure."*
 6. *"Lana spends more time talking to the plants than most of us.// Can't blame her, really. At least the plants don't complain about data entry."*
@@ -490,13 +715,16 @@ These dialogue lines are randomly assigned to generic researchers based on the s
 - **Behavior**: Most scientists are busy holding clipboards or looking at tablets. They will stop to gossip if the player has collected enough DataLogs, but otherwise, they are focused on their task of "cleaning up" or "monitoring" the Cells.
 
 ## NPC Distribution
-The lab's 19 residents are distributed as follows:
+The lab's 23 residents are distributed as follows:
 
-- **Lab Entrance (Lobby)**: **Jenzi** (The Senior Gatekeeper) and 1 Staff member (Mark).
-- **Main Atrium (The Hub)**: 5 Researchers (Sarah, Mark, Paul, Julia, Tom).
-- **Botanic Sector**: 3 Researchers (Evan, Clara, Leo) + **Lana**.
-- **Human Research Ward**: 2 Female Researchers (Maya, Elena) + **Dyzes**.
-- **Executive Suite**: 2 Male Assistants (James, Robert) + **Director Capsain**.
+- **Lab Entrance (Lobby)**: **Jenzi** (The Senior Gatekeeper).
+- **Main Atrium (The Hub)**: 2 Researchers (Kevin, Tom).
+- **Staff Kitchen**: 2 Staff Members (Chef Theo, Mia).
+- **Entertainment Lounge**: 1 Resident (Assistant Daisy).
+- **Botanic Sector**: 4 Researchers (Evan, Clara, Leo, Rose) + **Lana**.
+- **Human Research Ward**: 4 Researchers (Maya, Elena, Silas, Finn) + **Dyzes**.
+- **Specimen Storage**: 3 Researchers (Eli, White, Cherry).
+- **Executive Suite**: 2 Assistants (James, Robert) + **Director Capsain**.
 - **The Secret Old Lab**: 1 Resident (The **Origin Nitrophil**).
 
 ## Starter Monster: Your Bio-Signature

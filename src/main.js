@@ -916,6 +916,13 @@ function setupEventListeners() {
         'npc02': { art: 'Character_FullArt_NPC_Female', dialogue: "Bio-signature match confirmed. Initiating test." },
         'npc03': { art: 'Character_FullArt_NPC_Male', dialogue: "Deploying tactical cells. Readiness check." },
         'julia': { art: 'Character_FullArt_NPC_Female', dialogue: "Let's see what you got!" },
+        'tom': { art: 'Character_FullArt_NPC_Male', dialogue: "Processing synchronous feedback. Prepare for engagement." },
+        'kevin': { art: 'Character_FullArt_NPC_Male', dialogue: "Simulation initialized. Error margin: 0.01%." },
+        'daisy': { art: 'Character_FullArt_NPC_Female', dialogue: "Ready to lose? I won't go easy on you, Intern!" },
+        'clara': { art: 'Character_FullArt_NPC_Female', dialogue: "Watch the reaction when types collide!" },
+        'leo': { art: 'Character_FullArt_NPC_Male', dialogue: "Processing multiple tactical frequencies... Now!" },
+        'rose': { art: 'Character_FullArt_NPC_Female', dialogue: "Warning: Bio-membrane destabilization detected!" },
+        'theo': { art: 'Character_FullArt_NPC_Male', dialogue: "Order up! Let's see if you can handle the heat!" },
         'stemmy_wild': { art: 'Cell_FullArt_Stemmy', dialogue: "*A wild Stemmy aggressively bumps into you!*" },
         'nitrophil_wild': { art: 'Cell_FullArt_Nitrophil', dialogue: "*A wild Nitrophil aggressively bumps into you!*" },
         'cambihil_wild': { art: 'Cell_FullArt_Cambihil', dialogue: "*A wild Cambihil aggressively bumps into you!*" },
@@ -3006,7 +3013,8 @@ async function resolvePhase() {
                     enemyContainer.style.setProperty('--shield-opacity', ppRatio.toFixed(2));
                     enemyContainer.classList.add('anim-shield-pulse');
 
-                    if (results.hitResult.shieldAbsorbed >= 5) {
+                    // BUG FIX: Lowered threshold from 5 to 0.5 to show even -1 mitigations
+                    if (results.hitResult.shieldAbsorbed > 0) {
                         addLog(`[SHIELDED] Pellicle blocked ${results.hitResult.shieldAbsorbed} DMG!`, 'shield-mitigation');
                         spawnShieldNumber(enemyContainer, results.hitResult.shieldAbsorbed);
                     }
@@ -3021,6 +3029,7 @@ async function resolvePhase() {
                     spawnDamageNumber(enemyContainer, results.hitResult.damage, results.hitResult.isCrit, results.typeMultiplier);
 
                     if (results.isLysis) {
+                        addLog(`[LYSIS] Structural failure increased damage by ${results.hitResult.lysisPenalty}!`, 'lysis-penalty');
                         spawnLysisNumber(enemyContainer, results.hitResult.lysisPenalty);
                     }
 
@@ -3051,7 +3060,8 @@ async function resolvePhase() {
                     playerContainer.style.setProperty('--shield-opacity', ppRatio.toFixed(2));
                     playerContainer.classList.add('anim-shield-pulse');
 
-                    if (results.hitResult.shieldAbsorbed >= 5) {
+                    // BUG FIX: Lowered threshold to show even small mitigations
+                    if (results.hitResult.shieldAbsorbed > 0) {
                         addLog(`[SHIELDED] Pellicle blocked ${results.hitResult.shieldAbsorbed} DMG!`, 'shield-mitigation');
                         spawnShieldNumber(playerContainer, results.hitResult.shieldAbsorbed);
                     }
@@ -3066,6 +3076,7 @@ async function resolvePhase() {
                     spawnDamageNumber(playerContainer, results.hitResult.damage, results.hitResult.isCrit, results.typeMultiplier);
 
                     if (results.isLysis) {
+                        addLog(`[LYSIS] Structural failure increased damage!`, 'lysis-penalty');
                         spawnLysisNumber(playerContainer, results.hitResult.lysisPenalty);
                     }
 
@@ -3854,28 +3865,22 @@ function showGameOver(isFailure, forceOverlay = false) {
 
                 creditsEarned = Math.round(baseLC * rgScaling);
                 biomassEarned = Math.round(baseBM * rgScaling);
-                expEarned = Math.round(15 * rgScaling);
-            } else if (opponentId === 'lana_boss' || opponentId === 'dyzes_boss' || opponentId === 'capsain_boss') {
-                // Sector Boss: 350 LC, 15 Biomass
-                creditsEarned = Math.round(350 * rgScaling);
-                biomassEarned = Math.round(15 * rgScaling);
-                expEarned = Math.round(250 * rgScaling);
-
-                if (opponentId === 'lana_boss') gameState.storyFlags.lanaBattleDone = true;
-                if (opponentId === 'dyzes_boss') gameState.storyFlags.dyzesBattleDone = true;
-                if (opponentId === 'capsain_boss') gameState.storyFlags.capsainBattleDone = true;
+                expEarned = Math.round(25 * rgScaling);
+            } else if (opponentId === 'jenzi_atrium') {
+                // Keep story flag but allow reward to fall through to NPC_ENCOUNTERS logic
+                gameState.storyFlags.jenziAtriumBattleDone = true;
             } else if (typeof NPC_ENCOUNTERS !== 'undefined' && NPC_ENCOUNTERS[opponentId]) {
                 // Custom Modular Reward from cards.js (e.g., Julia)
                 const enc = NPC_ENCOUNTERS[opponentId];
                 if (enc.reward) {
-                    creditsEarned = Math.round((enc.reward.credits || 50) * rgScaling);
-                    biomassEarned = Math.round((enc.reward.biomass || 5) * rgScaling);
-                    expEarned = Math.round((enc.reward.exp || 15) * rgScaling);
+                    creditsEarned = enc.reward.credits || 50;
+                    biomassEarned = enc.reward.biomass || 5;
+                    expEarned = enc.reward.exp || 15;
                 } else {
                     // Default custom reward
-                    creditsEarned = Math.round(50 * rgScaling);
-                    biomassEarned = Math.round(5 * rgScaling);
-                    expEarned = Math.round(25 * rgScaling);
+                    creditsEarned = 50;
+                    biomassEarned = 5;
+                    expEarned = 25;
                 }
 
                 // Mark battle as completed for custom NPCs
@@ -3887,7 +3892,7 @@ function showGameOver(isFailure, forceOverlay = false) {
                         gameState.storyFlags[`battleWon_${opponentId}`] = true;
                     }
                 }
-            } else if (opponentId === 'jenzi' || opponentId.startsWith('npc')) {
+            } else if (opponentId.startsWith('jenzi') || opponentId.startsWith('npc')) {
                 // Human NPC: 120 LC, 9 Biomass
                 creditsEarned = Math.round(120 * rgScaling);
                 biomassEarned = Math.round(9 * rgScaling);
@@ -3914,7 +3919,6 @@ function showGameOver(isFailure, forceOverlay = false) {
         // Log the rewards
         if (expEarned > 0 || creditsEarned > 0) {
             console.log(`Battle Rewards: ${creditsEarned} LC, ${biomassEarned} Biomass, ${expEarned} EXP`);
-            updateResourceHUD();
         }
 
         if (expContainer) expContainer.classList.remove('hidden');
@@ -3983,7 +3987,7 @@ function showGameOver(isFailure, forceOverlay = false) {
                 }
             }, 500);
         }
-
+        updateResourceHUD();
         updateOverworldEXPBar();
         overlay.classList.remove('hidden');
 
@@ -5436,10 +5440,22 @@ document.getElementById('card-detail-modal')?.addEventListener('click', (e) => {
  */
 function applyBonuses(party, level, forceHeal = true) {
     if (!party) return;
-    // Only apply to first 3 (active team) for efficiency if needed, 
-    // but usually safe for the whole party.
     party.forEach(monster => {
         if (!monster) return;
+
+        // BUG FIX: Create a snapshot of 'base' stats if they don't exist 
+        // This ensures getModifiedStats has a static starting point for non-registered monsters.
+        if (monster.id && !MONSTERS[monster.id]) {
+            if (monster.baseHp === undefined) {
+                monster.baseHp = monster.hp || 100;
+                monster.baseAtk = monster.atk || 10;
+                monster.baseDef = monster.def || 10;
+                monster.baseSpd = monster.spd || 10;
+                monster.baseCrit = monster.crit || 5;
+                monster.baseMaxPp = monster.maxPp || 10;
+            }
+        }
+
         const mod = getModifiedStats(monster, level);
 
         // Conditional heal based on modified max HP
@@ -5451,8 +5467,9 @@ function applyBonuses(party, level, forceHeal = true) {
             if (monster.hp > mod.maxHp) monster.hp = mod.maxHp;
         }
 
-        // Always ensure PP is clamped to maxPp
-        monster.maxPp = mod.maxPp; // Ensure maxPp is synced
+        // Sync limits to instance for UI display, but don't overwrite base stats
+        monster.maxHp = mod.maxHp; 
+        monster.maxPp = mod.maxPp;
         if (monster.pp > mod.maxPp) monster.pp = mod.maxPp;
     });
 }

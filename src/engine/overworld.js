@@ -42,7 +42,7 @@ export const Overworld = {
         botanic: [
             ["Lana is brilliant with those Cambihils, but she has to hide them when the Director walks by.", "He calls them 'invasive weeds' and says they're a disgrace to the department."],
             ["Fun fact: Cambihils actually photosynthetic at a 15% higher efficiency rate when they're near a window.", "They're basically high-speed solar panels with leaves."],
-            ["Watch out for the 'Canobolus' project in the Fungal Ward.", "Itâ€™s a Ballistospore with a catapult mechanism.", "They say it roots itself into the floor and just starts peppering its target with high-pressure spores like a machine gun."],
+            ["Watch out for the 'Canobolus' project in the Fungal Ward.", "It's a Ballistospore with a catapult mechanism.", "They say it roots itself into the floor and just starts peppering its target with high-pressure spores like a machine gun."],
             ["The humidity in here is great for the ferns, but it's murder on my paperwork."],
             ["Did you see the glowing hedge move?", "Lana says it's just 'bio-active curiosity', but I'm not so sure."],
             ["Lana spends more time talking to the plants than most of us.", "Can't blame her, really. At least the plants don't complain about data entry."],
@@ -70,8 +70,8 @@ export const Overworld = {
             ["Did you see the high score on the lounge PC?", "Someone named 'DIRECTOR' has 9999 points. Sus-picious!"],
             ["In a battle, try to place your attack node as close to the target as possible.", "The more accurate your sync is, the harder you hit and the more Pellicle Points (PP) you generate."],
             ["Watch your PP levels during a duel.", "Using your specialized skills costs Pellicle Points, but simple defensive moves are always available to keep you safe."],
-            ["You can actually spend more PP than you currently have to land a big hit for a high cost.", "This puts your Cell into a 'negative' state, which is powerful but leaves you very vulnerable to the next attack."],
-            ["Try to keep your PP in the positive range for a stable defense.", "If you drop too far into the negatives, your Cell's membrane will weaken, and you'll take much more damage from any incoming hits."]
+            ["You can actually spend more PP than you currently have to land a big hit for a high cost.", "This puts your Cell into a 'negative' debt state—you'll hit harder now, but expect to take much more damage next turn!"],
+            ["Try to keep your PP in the positive range for a stable defense.", "If you drop into the negatives, every point of debt increases incoming damage by 10%. (e.g. at -10 PP, you're taking double damage!)"]
         ],
         storage: [
             ["Boxes, more boxes...", "I think I saw a Nitrophil hiding in one of these crates."],
@@ -372,19 +372,19 @@ export const Overworld = {
                 { id: 'f23_lob_br', x: 8, y: 3, type: 'prop', name: 'Red Specimen Tank' },
                 { id: 'f13_lob_tr', x: 9, y: 2, type: 'prop', name: 'Green Specimen Tank' },
                 { id: 'f14_lob_tr', x: 9, y: 3, type: 'prop', name: 'Green Specimen Tank' },
-                
+
                 { id: 'jenzi', x: 4, y: 4, type: 'npc', name: 'Jenzi' },
-                
+
                 // Wait Chairs at x=1 (Refined)
                 { id: 'f59_lob_nw', x: 1, y: 3, type: 'prop', name: 'Decorative Bush' },
                 { id: 'f1_lobby_wait1', x: 1, y: 4, type: 'prop', name: 'Lab Chair' },
                 { id: 'f1_lobby_wait2', x: 1, y: 5, type: 'prop', name: 'Lab Chair' },
-                
+
                 // Reception Desk (Same)
                 { id: 'f56_reception', x: 8, y: 5, type: 'prop', name: 'Leader Desk' },
                 { id: 'f57_reception', x: 8, y: 6, type: 'prop', name: 'Leader Desk' },
                 { id: 'f0_reception_desk', x: 9, y: 5, type: 'prop', name: 'Lab Chair' },
-                
+
                 // Accents and Decor
                 { id: 'f6_lob1', x: 4, y: 2, type: 'prop', name: 'Lab Protocol' },
                 { id: 'f17_lob1', x: 6, y: 2, type: 'prop', name: 'Wall Protocol' },
@@ -485,11 +485,49 @@ export const Overworld = {
                 { id: 'f0_at2_b', x: 16, y: 6, type: 'prop', name: 'Reception Desk' },
 
                 // Row 7 (Tom, Kevin, CellAccelerator Mid Row)
-                { id: 'npc_male_at3', x: 4, y: 6, type: 'npc', name: 'Biologist Tom', dialogue: ["Hello! I'm Tom.", "Processing the new cells..."] },
+                {
+                    id: 'npc_male_at3', x: 4, y: 6, type: 'npc', name: 'Biologist Tom',
+                    battleEncounterId: 'tom',
+                    dialogue: [
+                        "Hey there. Have you noticed how the Pellicle Point system works?",
+                        "Most focus on attacks, but PP management is where you see real results.",
+                        "Spar with me? I'll show you the 'Positive Shield' effect. Ready?"
+                    ],
+                    npcWinDialogue: [
+                        "Don't sweat it. The Pellicle Point system is all about balance.",
+                        "You'll eventually turn your Pellicle Points into an advantage, but avoid that nasty 25% HP Overload discharge for now.",
+                        "Take a breather and we'll try again later."
+                    ],
+                    npcLossDialogue: [
+                        "Nice job! You've got a good handle on the tactical flow.",
+                        "Tip: positive PP creates a kinetic shield, softening incoming hits.",
+                        "Just don't hit Max PP—that'll cause a Pellicle Discharge, dealing 25% of your Max HP in damage!",
+                        "Later, you'll unlock skills to 'vent' those Pellicle Points for massive damage. Keep it up!"
+                    ]
+                },
                 { id: 'f95_acc', x: 8, y: 7, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
                 { id: 'f96_acc', x: 9, y: 7, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
                 { id: 'f97_acc', x: 10, y: 7, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
-                { id: 'npc_male_at1', x: 14, y: 8, type: 'npc', name: 'Researcher Kevin' },
+                {
+                    id: 'npc_male_at1', x: 14, y: 8, type: 'npc', name: 'Researcher Kevin',
+                    battleEncounterId: 'kevin',
+                    dialogue: [
+                        "Salutations! I'm Biologist Kevin. Have you heard of the C-Card system?",
+                        "They're bio-synthetic boosters that significantly enhance your Cell's stats and unlock powerful new skills and effects.",
+                        "Slotting them into your Catalyst Box is essential for maximizing your tactical advantage in battle.",
+                        "Ready to see how much of a difference a good build makes?"
+                    ],
+                    npcWinDialogue: [
+                        "Predictable. You won't win without using a calibrated Catalyst Box to boost your stats.",
+                        "You lacked the tactical effects needed to penetrate my defense.",
+                        "Access your Inventory to slot new cards and see the results in your next battle. It's the best part of the job!"
+                    ],
+                    npcLossDialogue: [
+                        "Inquiry! How did you bypass my dermal bio-ceramics? A high-frequency sync? Fascinating.",
+                        "Pro-tip: Check your Catalyst Box in the Inventory menu to slot your rewards and boost your stats.",
+                        "Increasing your Research Grade will unlock even more slots for skills and passive effects. Truly revolutionary!"
+                    ]
+                },
 
                 // Row 8 (Analysis Tables, Leader Table, CellAccelerator Bottom Row, Lab Cylinders)
                 { id: 'f26_at_nw_s', x: 2, y: 8, type: 'prop', name: 'Analysis Table' },
@@ -529,19 +567,19 @@ export const Overworld = {
                 { id: 'f55_at_w1', x: 3, y: 11, type: 'prop', name: 'Storage Cabinet' },
                 { id: 'f54_at_w2', x: 5, y: 11, type: 'prop', name: 'Storage Cabinet' },
                 { id: 'f55_at_w2', x: 6, y: 11, type: 'prop', name: 'Storage Cabinet' },
-                { 
-                    id: 'npc_female_at2', x: 11, y: 11, type: 'npc', name: 'Scientist Julia', 
-                    battleEncounterId: 'julia', 
+                {
+                    id: 'npc_female_at2', x: 11, y: 11, type: 'npc', name: 'Scientist Julia',
+                    battleEncounterId: 'julia',
                     dialogue: [
-                        "Excuse me, Intern! Have you mastered the Matching Attack Placement (MAP) system yet?", 
-                        "It's the core of our tactical research.", 
+                        "Excuse me, Intern! Have you mastered the Matching Attack Placement (MAP) system yet?",
+                        "It's the core of our tactical research.",
                         "If you can prove your proficiency, I'll share some insights on the finer points of MAP."
                     ],
-                    dialogueWin: ["Don't be discouraged! Sometimes a bit of luck helps with the final sync, but skill is the foundation!", "Just keep practicing your placement."],
-                    dialogueLoss: [
-                        "Incredible! Your placement was precise.", 
-                        "That's the secret to the MAP system—it's not just about power, it's about the proximity of your attack nodes.", 
-                        "Think of it like a puzzle: the closer you are to the target, the more damage you deal and the more Pellicle Points (PP) you gain.", 
+                    npcWinDialogue: ["Don't be discouraged! Sometimes a bit of luck helps with the final sync, but skill is the foundation!", "Just keep practicing your placement."],
+                    npcLossDialogue: [
+                        "Incredible! Your placement was precise.",
+                        "That's the secret to the MAP system—it's not just about power, it's about the proximity of your attack nodes.",
+                        "Think of it like a puzzle: the closer you are to the target, the more damage you deal and the more Pellicle Points (PP) you gain.",
                         "It's all about finding that sweet spot!"
                     ]
                 },
@@ -832,7 +870,7 @@ export const Overworld = {
                 { id: 'f13_lanaTank1', x: 11, y: 2, type: 'prop', name: 'Green Specimen Tank' },
                 { id: 'f52_bot2', x: 12, y: 2, type: 'prop', name: 'Storage Unit' },
                 { id: 'f53_bot2', x: 13, y: 2, type: 'prop', name: 'Storage Unit' },
- 
+
                 { id: 'f54_bot1', x: 1, y: 3, type: 'prop', name: 'Storage Unit', hiddenLogId: 'Log007' },
                 { id: 'f55_bot1', x: 2, y: 3, type: 'prop', name: 'Storage Unit' },
                 { id: 'f14_lanaTank1B', x: 3, y: 3, type: 'prop', name: 'Green Specimen Tank' },
@@ -844,14 +882,14 @@ export const Overworld = {
                 { id: 'f54_bot2', x: 12, y: 3, type: 'prop', name: 'Storage Unit' },
                 { id: 'f55_bot2', x: 13, y: 3, type: 'prop', name: 'Storage Unit' },
                 // Upper Garden Cluster (y=4,5,6,7) - STACK at x=4
-                { id: 'f24_bot1', x: 2, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot1', x: 2, y: 5, type: 'prop', name: 'Bioluminescent Bush', hiddenLogId: 'Log008' },
+                { id: 'f24_bot1', x: 2, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot1', x: 2, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
                 { id: 'f24_bot2', x: 3, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot2', x: 3, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
                 { id: 'f24_bot3a', x: 4, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot3a', x: 4, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
                 { id: 'f24_bot3b', x: 4, y: 5, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot3b', x: 4, y: 6, type: 'prop', name: 'Bioluminescent Bush' },
                 { id: 'f24_bot3c', x: 4, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot3c', x: 4, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
                 { id: 'f24_bot4', x: 5, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot4', x: 5, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
                 { id: 'f24_bot5', x: 6, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot5', x: 6, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
-                { id: 'f13_bot1', x: 8, y: 4, type: 'prop', name: 'Green Specimen Tank' }, { id: 'f14_bot1', x: 8, y: 5, type: 'prop', name: 'Green Specimen Tank', hiddenLogId: 'Log006' },
+                { id: 'f13_bot1', x: 8, y: 4, type: 'prop', name: 'Green Specimen Tank' }, { id: 'f14_bot1', x: 8, y: 5, type: 'prop', name: 'Green Specimen Tank' },
                 { id: 'f13_bot2', x: 9, y: 4, type: 'prop', name: 'Green Specimen Tank' }, { id: 'f14_bot2', x: 9, y: 5, type: 'prop', name: 'Green Specimen Tank' },
                 { id: 'f38_bot1', x: 10, y: 4, type: 'prop', name: 'Incubation Chamber' }, { id: 'f39_bot1', x: 11, y: 4, type: 'prop', name: 'Incubation Chamber' },
                 { id: 'f40_bot1', x: 10, y: 5, type: 'prop', name: 'Incubation Chamber' }, { id: 'f41_bot1', x: 11, y: 5, type: 'prop', name: 'Incubation Chamber' },
@@ -865,7 +903,7 @@ export const Overworld = {
                 { id: 'f60_bot1', x: 8, y: 7, type: 'prop', name: 'Archived Samples' },
                 { id: 'f28_bot1', x: 9, y: 7, type: 'prop', name: 'Lead Analysis Desk', hiddenLogId: 'Log010' },
                 { id: 'f29_bot1', x: 10, y: 7, type: 'prop', name: 'Lead Analysis Desk' },
-                { id: 'f61_bot1', x: 11, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'f62_bot1', x: 11, y: 7, type: 'prop', name: 'Stacked Boxes', hiddenLogId: 'Log009' },
+                { id: 'f61_bot1', x: 11, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'f62_bot1', x: 11, y: 7, type: 'prop', name: 'Stacked Boxes' },
                 { id: 'KeyItem-SecretCard_bot1', x: 12, y: 7, type: 'prop', name: 'Access Key' },
                 { id: 'f61_bot2', x: 13, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'f62_bot2', x: 13, y: 7, type: 'prop', name: 'Stacked Boxes' },
                 // Refined Hedge Row (y=8) with Column 7 Path
@@ -902,12 +940,12 @@ export const Overworld = {
                 { id: 'f20_botA9', x: 5, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA9', x: 5, y: 12, type: 'prop', name: 'Scented Specimen' },
                 { id: 'f20_botA10', x: 6, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA10', x: 6, y: 12, type: 'prop', name: 'Scented Specimen' },
                 { id: 'f20_bot6', x: 8, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot6', x: 8, y: 12, type: 'prop', name: 'Specimen Fern' },
-                { id: 'f20_bot7', x: 9, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot7', x: 9, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f91_bot7', x: 9, y: 12, type: 'prop', name: 'Empty Pot' },
                 { id: 'f20_bot9', x: 11, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot9', x: 11, y: 12, type: 'prop', name: 'Specimen Fern' },
                 { id: 'f91_bot10', x: 12, y: 12, type: 'prop', name: 'Empty Pot' },
                 // Final Station Wall (y=13,14)
                 { id: 'f61_bot3', x: 1, y: 13, type: 'prop', name: 'Stacked Boxes' }, { id: 'f62_bot3', x: 1, y: 14, type: 'prop', name: 'Stacked Boxes' },
-                { id: 'f26_bot1', x: 2, y: 14, type: 'prop', name: 'Research Station' },
+                { id: 'f26_bot1', x: 2, y: 14, type: 'prop', name: 'Research Station', hiddenLogId: 'Log006' },
                 { id: 'f27_bot1', x: 3, y: 14, type: 'prop', name: 'Research Station' },
                 { id: 'f60_bot2', x: 4, y: 14, type: 'prop', name: 'Archived Samples' },
                 { id: 'f91_bot3', x: 5, y: 14, type: 'prop', name: 'Empty Pot' },
@@ -920,8 +958,57 @@ export const Overworld = {
                 { id: 'f27_bot2', x: 13, y: 14, type: 'prop', name: 'Research Station' },
                 // Staff NPCs
                 { id: 'npc_male_bot1', x: 2, y: 9, type: 'npc', name: 'Researcher Evan' },
-                { id: 'npc_female_bot1', x: 1, y: 5, type: 'npc', name: 'Scientist Clara' },
-                { id: 'npc_male_bot2', x: 13, y: 9, type: 'npc', name: 'Tech Leo' },
+                { 
+                    id: 'npc_female_bot1', x: 1, y: 5, type: 'npc', name: 'Scientist Clara',
+                    battleEncounterId: 'clara',
+                    dialogue: [
+                        "The Botanic Sector is a delicate ecosystem. You can't just barge in without a plan!",
+                        "Have you analyzed the elemental spectrum? Every organism here has a specific nature that can be countered.",
+                        "If you don't know your types, this will be a very short lesson."
+                    ],
+                    npcWinDialogue: [
+                        "Efficiency is the cornerstone of research. To succeed, one must master elemental counters: Thermal melts Botanic, Botanic absorbs Osmotic, and Osmotic cools Thermal.",
+                        "Always analyze the nature of your target before initiating a sync."
+                    ],
+                    npcLossDialogue: [
+                        "Incredible! Identifying the elemental nature of your opponent is the first step toward mastery.",
+                        "Each type has a counter: Thermal melts Botanic, Botanic absorbs Osmotic, and Osmotic cools Thermal. These 1.5x multipliers are the only way to survive the deeper wards."
+                    ]
+                },
+                { 
+                    id: 'npc_male_bot2', x: 13, y: 9, type: 'npc', name: 'Tech Leo',
+                    battleEncounterId: 'leo',
+                    dialogue: [
+                        "New intern, right? You're entering a sector where one Basic skill just isn't enough to manage the tactical load.",
+                        "Have you heard of the 'Second Brain'? It's a special card that unlocks an additional skill slot just by being in your squad's Catalyst Box.",
+                        "Let's see if you're ready for that kind of growth!"
+                    ],
+                    npcWinDialogue: [
+                        "Lagging behind? If a Second Brain isn't enough to save you, maybe you should start looking for a third!"
+                    ],
+                    npcLossDialogue: [
+                        "Solid processing speed! Remember, the Second Brain card's presence alone grants you that extra Pellicle slot.",
+                        "It allows you to equip a second active skill, giving you much more control over your Pellicle Points (PP) in battle."
+                    ]
+                },
+                { 
+                    id: 'npc_female_bot2', x: 9, y: 11, type: 'npc', name: 'Researcher Rose',
+                    battleEncounterId: 'rose',
+                    dialogue: [
+                        "Be careful—if you push your Cell too hard, it'll literally fall apart.",
+                        "Most interns think Negative PP is just a number, but it's a structural failure waiting to happen.",
+                        "Want to see what 'Lysis' looks like up close?"
+                    ],
+                    npcWinDialogue: [
+                        "See that extra damage? That's the Lysis Penalty.",
+                        "For every point of Negative PP, you take 10% more damage from every hit. It's like fighting without a skin!"
+                    ],
+                    npcLossDialogue: [
+                        "Risky, but effective! You managed to 'vent' your PP just before your membrane collapsed.",
+                        "Remember: every point below zero increases incoming damage by 10%. If you hit your debt limit (your negative Max PP), you're taking DOUBLE damage!",
+                        "It's called the 'Lysis State'—your cell's structural integrity is compromised."
+                    ]
+                },
             ],
             doors: [
                 { x: 14, y: 13, targetZone: 'atrium', targetX: 1, targetY: 4 },
@@ -988,7 +1075,7 @@ export const Overworld = {
 
                 // Row 5: SCATTERED EQUIPMENT & BOTTOMS & SOME TOPS for row 6
                 { id: 'f13', x: 1, y: 5, type: 'prop' }, // Tank Top (Bottom at 1,6)
-                { id: 'f87', x: 3, y: 5, type: 'prop', customSprite: 'tileset-03' }, // Healthy Bottom (Top at 3,4)
+                { id: 'f87', x: 3, y: 5, type: 'prop', customSprite: 'tileset-03', hiddenLogId: 'Log009' }, // Healthy Bottom (Top at 3,4)
                 { id: 'f13', x: 5, y: 5, type: 'prop' }, // Tank Top (Bottom at 5,6)
                 { id: 'f60', x: 14, y: 5, type: 'prop' }, // Box
                 { id: 'f7', x: 15, y: 5, type: 'prop' }, // Computer
@@ -1193,7 +1280,7 @@ export const Overworld = {
                 { id: 'f34_r2b', x: 10, y: 2, type: 'prop', name: 'Skeleton' },
                 { id: 'f15_r2b', x: 11, y: 2, type: 'prop', name: 'Stasis Tank' },
                 { id: 'f52_r2d', x: 12, y: 2, type: 'prop', name: 'Archive' }, { id: 'f53_r2d', x: 13, y: 2, type: 'prop', name: 'Archive' },
- 
+
                 // Row 3
                 { id: 'f54_r3a', x: 1, y: 3, type: 'prop', name: 'Archive' }, { id: 'f55_r3a', x: 2, y: 3, type: 'prop', name: 'Archive' },
                 { id: 'f16_r3a', x: 3, y: 3, type: 'prop', name: 'Stasis Tank' },
@@ -1491,7 +1578,7 @@ export const Overworld = {
                 { id: 'f70_kitR', x: 9, y: 3, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-BottomRight tileset-03' },
 
                 // snacks and trash (Y=3)
-                { id: 'f36_kit1', x: 3, y: 3, type: 'prop', name: 'Quick Bite' },
+                { id: 'f36_kit1', x: 3, y: 3, type: 'prop', name: 'Quick Bite', hiddenLogId: 'Log008' },
                 { id: 'f36_kit2', x: 4, y: 3, type: 'prop', name: 'Forgotten Lunch' },
                 { id: 'f60_kit_trash', x: 5, y: 3, type: 'prop', name: 'Trash Box' },
                 { id: 'f37_kit1', x: 6, y: 3, type: 'prop', name: 'Empty Bowl' },
@@ -1512,7 +1599,27 @@ export const Overworld = {
                 { id: 'f59_kit3', x: 3, y: 6, type: 'prop', name: 'Kitchen Fern' },
                 { id: 'f36_kit3', x: 4, y: 6, type: 'prop', name: 'Abandoned Snack' },
                 { id: 'f59_kit2', x: 5, y: 6, type: 'prop', name: 'Kitchen Fern' },
-                { id: 'npc_male_theo', x: 4, y: 5, type: 'npc', name: 'Chef Theo', direction: 'down' },
+                { 
+                    id: 'npc_male_theo', x: 4, y: 5, type: 'npc', name: 'Chef Theo', direction: 'down',
+                    battleEncounterId: 'theo',
+                    dialogue: [
+                        "Hungry for progress, Intern? Cooking's all about preparation.",
+                        "Have you used the Vending Machine here in the Kitchen?",
+                        "It’s not just for snacks like noodles; it’s essential for trading Biomass and acquiring Blueprints.",
+                        "Let me show you why stayin' stocked is stayin' alive!"
+                    ],
+                    npcWinDialogue: [
+                        "Sloppy! You came in underprepared.",
+                        "Make sure to stop by the Vending Machine.",
+                        "It sells more than just food; you can trade in your excess Biomass for Lab credits, then use those credits to buy Blueprints for advanced Cells."
+                    ],
+                    npcLossDialogue: [
+                        "Delicious work! You've got the hunger.",
+                        "The Vending Machine here is more than just furniture.",
+                        "It’s not just for grabbing a quick bite like noodles; use your Lab credits to get stock!",
+                        "So remember to visit it to stock up sometime."
+                    ]
+                },
                 { id: 'npc_female_mia', x: 9, y: 5, type: 'npc', name: 'Researcher Mia', direction: 'down' }
             ],
             doors: [
@@ -1617,7 +1724,13 @@ export const Overworld = {
                 { id: 'f73_ent', x: 4, y: 5, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-BottomLeft tileset-03' },
                 { id: 'f74_ent', x: 5, y: 5, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-BottomRight tileset-03' },
                 { id: 'npc_male_ben', x: 2, y: 6, type: 'npc', name: 'Researcher Ben', direction: 'down' },
-                { id: 'npc_female_daisy', x: 3, y: 3, type: 'npc', name: 'Assistant Daisy', direction: 'down' }
+                {
+                    id: 'npc_female_daisy', x: 3, y: 3, type: 'npc', name: 'Assistant Daisy', direction: 'down',
+                    battleEncounterId: 'daisy',
+                    dialogue: ["Oh, you're looking for Tom and Kevin's lost datapads?", "I might have seen them... but I won't tell you for free!", "Let's have a quick Cell battle. If you win, I'll give you a hint!"],
+                    npcWinDialogue: ["Better luck next time!", "Since I'm nice, here's a tip: There's a Console Station in the Atrium near the north wall...", "It's humming a bit strangely. Check the ports, maybe someone left a datapad plugged in!"],
+                    npcLossDialogue: ["Fine, you're better than you look!", "Check the Atrium. There's a pile of boxes near the south exit...", "Something shiny is tucked inside one of them. Happy hunting!"]
+                }
             ],
             doors: [
                 { x: 9, y: 6, targetZone: 'atrium', targetX: 1, targetY: 10 },
@@ -1946,12 +2059,12 @@ export const Overworld = {
             if (m) m.classList.remove('no-transition');
         }, 100);
     },
-    
+
     refreshLogs() {
         this.logsCollected = (window.gameState.debugAllLogs && window.DATA_LOGS)
             ? window.DATA_LOGS.map(l => l.id)
             : (window.gameState.logs || []);
-        
+
         if (window.updateResourceHUD) window.updateResourceHUD();
     },
 
@@ -2309,7 +2422,7 @@ export const Overworld = {
             if (npc.id.includes('_wild_')) {
                 const mName = npc.monsterId.charAt(0).toUpperCase() + npc.monsterId.slice(1);
                 this.spawner.stop(); // Stop wild spawns when interacting with one
-                
+
                 if (this.checkActiveSquad()) {
                     this.pendingWildEncounter = true;
                     this.pendingWildMonsterId = npc.monsterId;
@@ -2502,14 +2615,14 @@ export const Overworld = {
 
             if (isNpcVictory) {
                 // NPC WON (Player lost)
-                if (npc.dialogueWin) {
-                    this.showDialogue(npc.name, npc.dialogueWin, npc.id);
+                if (npc.npcWinDialogue) {
+                    this.showDialogue(npc.name, npc.npcWinDialogue, npc.id);
                     return;
                 }
             } else {
                 // NPC LOST (Player won)
-                if (npc.dialogueLoss) {
-                    this.showDialogue(npc.name, npc.dialogueLoss, npc.id);
+                if (npc.npcLossDialogue) {
+                    this.showDialogue(npc.name, npc.npcLossDialogue, npc.id);
                     return;
                 }
             }
@@ -2616,9 +2729,9 @@ export const Overworld = {
         } else if (npc.id === 'lana') {
             if (bossWon) {
                 lines = [
-                    "Hmph. Just as I suspected. Your tactical calibration is completely non-existent!",
-                    "You're lucky my Cambihil was in a 'passive' mode, or you'd be more than just extracted.",
-                    "Go back to the entrance and... and don't come back until you've read at least three field guides! Honestly!"
+                    "Hmph. Just as I suspected. // Your tactical calibration is completely non-existent!",
+                    "You're lucky my Cambihil was in a 'passive' mode, // or you'd be more than just extracted.",
+                    "Go back to the entrance and... // and don't come back until you've read at least three field guides! Honestly!"
                 ];
             } else if (!window.gameState.storyFlags.lanaMet) {
                 lines = [
@@ -2646,12 +2759,12 @@ export const Overworld = {
                 this.deferredStoryFlag = 'lanaDefeatedSeen';
             } else if (window.gameState.storyFlags.lanaBattleDone || logs < 10) {
                 const flavor = [
-                    "What are you staring at? I was merely performing a hydration assessment on your partner Cell. It is a critical laboratory asset, unlike... some uncalibrated interns! Hmph!",
-                    "Why are you obstructing the walkway? Efficiency is the cornerstone of the Botanic Sector. If you are going to be non-productive, do it elsewhere!",
-                    "Do not simply stand there! It is... it is scientifically distracting! If you are here for research, take a clipboard.",
-                    "I have no intention of providing remedial guidance. I simply don't want an incompetent intern lowering this sector's safety rating on their first day!",
-                    "Your tactical signature is completely unoptimized. Did Jenzi provide zero fundamental training, or were you intentionally ignoring protocol?",
-                    "Watch your step! Be careful not to disturb the Cambihil spores. They're far more sensitive than your heavy boots suggest!"
+                    "What are you staring at? // I was merely performing a hydration assessment on your partner Cell. // It is a critical laboratory asset, unlike... some uncalibrated interns! Hmph!",
+                    "Why are you obstructing the walkway? // Efficiency is the cornerstone of the Botanic Sector. // If you are going to be non-productive, do it elsewhere!",
+                    "Do not simply stand there! // It is... it is scientifically distracting! // If you are here for research, take a clipboard.",
+                    "I have no intention of providing remedial guidance. // I simply don't want an incompetent intern lowering this sector's safety rating on their first day!",
+                    "Your tactical signature is completely unoptimized. // Did Jenzi provide zero fundamental training, or were you intentionally ignoring protocol?",
+                    "Watch your step! // Be careful not to disturb the Cambihil spores. // They're far more sensitive than your heavy boots suggest!"
                 ];
                 lines = [flavor[Math.floor(Math.random() * flavor.length)]];
             } else if (!isPostBattle) {
@@ -3010,7 +3123,7 @@ export const Overworld = {
             this.deferredItemPickup = null;
             this.collectItem(itemId);
         }
-        
+
         // Handle deferred story flags (like 'seen' flags)
         if (this.deferredStoryFlag) {
             const flag = this.deferredStoryFlag;
@@ -3035,11 +3148,11 @@ export const Overworld = {
                     // We need to find the NPC object to get its battleEncounterId if it wasn't already in encounterId
                     // Actually, pendingBattleEncounter IS already the battleEncounterId if it exists.
                     // But to be safe for main.js logic, let's pass it explicitly.
-                    window.dispatchEvent(new CustomEvent('start-npc-encounter', { 
-                        detail: { 
+                    window.dispatchEvent(new CustomEvent('start-npc-encounter', {
+                        detail: {
                             id: encounterId,
                             battleEncounterId: encounterId // In our new system, encounterId is the battleEncounterId
-                        } 
+                        }
                     }));
                 }, 200);
             }
