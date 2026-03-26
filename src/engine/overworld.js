@@ -3,6 +3,9 @@
  * Handles grid-based movement, collisions, and zone transitions.
  */
 
+import { gameState, saveGameState } from './state.js';
+import { QUESTS } from '../data/quests.js';
+
 export const Overworld = {
     randomPools: {
         lobby: [
@@ -1871,6 +1874,53 @@ export const Overworld = {
         return this.furnitureMetadata[prefix] || null;
     },
 
+    updateQuestProgress(type, id) {
+        let changed = false;
+        Object.keys(gameState.quests).forEach(questId => {
+            const progressObj = gameState.quests[questId];
+            const questData = QUESTS[questId];
+            
+            if (progressObj.status === 'started' && questData.type === type && questData.target === id) {
+                progressObj.progress++;
+                changed = true;
+                
+                if (progressObj.progress >= questData.amount) {
+                    progressObj.status = 'completed';
+                    console.log(`Quest [${questData.title}] marked as COMPLETED!`);
+                }
+            }
+        });
+        
+        if (changed) {
+            saveGameState();
+        }
+    },
+
+    giveQuestReward(questId) {
+        const questData = QUESTS[questId];
+        if (!questData || !questData.reward) return;
+
+        const reward = questData.reward;
+        let msg = "";
+
+        if (reward.type === 'log') {
+            this.collectItem(reward.id);
+            msg = `Acquired ${reward.id}.`;
+        } else if (reward.type === 'item') {
+            if (window.gameState) window.gameState.items.push(reward.id);
+            msg = `Acquired Item: ${reward.id}.`;
+        } else if (reward.type === 'resource') {
+            if (window.gameState) {
+                if (reward.id === 'credits') window.gameState.credits += (reward.amount || 0);
+                if (reward.id === 'biomass') window.gameState.biomass += (reward.amount || 0);
+                if (window.updateResourceHUD) window.updateResourceHUD();
+            }
+            msg = `Acquired ${reward.amount} ${reward.id.toUpperCase()}.`;
+        }
+
+        console.log(`Quest Reward given: ${msg}`);
+    },
+
     init() {
         console.log("Overworld Engine Starting...");
         this.resetStates(); // Ensure clean start
@@ -2601,6 +2651,61 @@ export const Overworld = {
         let lines = ["..."];
         this.pendingBattleEncounter = null; // Clean slate
 
+        // --- NEW: SIDE QUEST BRANCHING ---
+        if (npc.sideQuestId && window.gameState && window.gameState.quests) {
+            const qId = npc.sideQuestId;
+            const qData = QUESTS[qId];
+            
+            if (qData) {
+                // Initialize if not exists
+                if (!window.gameState.quests[qId]) {
+                    window.gameState.quests[qId] = { status: 'started', progress: 0 };
+                    saveGameState();
+                    this.showDialogue(npc.name, qData.dialogue.offer, npc.id);
+                    return;
+                }
+
+                const qProgress = window.gameState.quests[qId];
+
+                // Case 1: Quest is ready to be turned in (Sequential priority)
+                if (qProgress.status === 'completed') {
+                    // Item Consumption Logic
+                    if (qData.consume && qData.type === 'collect') {
+                        const idx = window.gameState.items.indexOf(qData.target);
+                        if (idx > -1) window.gameState.items.splice(idx, 1);
+                    }
+
+                    this.giveQuestReward(qId);
+                    qProgress.status = 'finished';
+                    saveGameState();
+                    this.showDialogue(npc.name, qData.dialogue.complete, npc.id);
+                    return;
+                }
+
+                // Case 2: Quest is ongoing
+                if (qProgress.status === 'started') {
+                    let progressLines = qData.dialogue.progress.map(line => 
+                        line.replace('{progress}', qProgress.progress)
+                    );
+                    this.showDialogue(npc.name, progressLines, npc.id);
+                    
+                    // If the quest target is this specific NPC, don't return so the battle can trigger
+                    if (qData.type === 'defeat' && qData.target === (npc.battleEncounterId || npc.id)) {
+                        // Continue to battle logic
+                    } else {
+                        return;
+                    }
+                }
+
+                // Case 3: Quest is finished - allow story dialogue to resume
+                if (qProgress.status === 'finished') {
+                    if (qData.dialogue.finished && qData.dialogue.finished.length > 0) {
+                        lines = qData.dialogue.finished;
+                    }
+                }
+            }
+        }
+
         // --- NEW: ONE-TIME BATTLE CHECK ---
         const encounterId = npc.battleEncounterId || npc.id;
         const isBattleDone = window.gameState && window.gameState.storyFlags && window.gameState.storyFlags[`battleDone_${encounterId}`];
@@ -2629,7 +2734,7 @@ export const Overworld = {
             // Fallthrough to regular lines if no specialized dialogue found
         }
 
-        if (npc.id === 'jenzi') {
+        if (npc.id === 'jenzi' && (lines.length === 1 && lines[0] === "...")) {
             if (!window.gameState.storyFlags.starterChosen) {
                 // Starter selection flow
                 lines = [
@@ -2726,7 +2831,7 @@ export const Overworld = {
             } else {
                 lines = ["Main Character energy! Keep collecting those logs, Intern."];
             }
-        } else if (npc.id === 'lana') {
+        } else if (npc.id === 'lana' && (lines.length === 1 && lines[0] === "...")) {
             if (bossWon) {
                 lines = [
                     "Hmph. Just as I suspected. // Your tactical calibration is completely non-existent!",
@@ -2776,7 +2881,7 @@ export const Overworld = {
                 ];
                 this.pendingBattleEncounter = 'lana';
             }
-        } else if (npc.id === 'dyzes') {
+        } else if (npc.id === 'dyzes' && (lines.length === 1 && lines[0] === "...")) {
             if (bossWon) {
                 lines = [
                     "Woah, man. You're a bit out of sync. Take a breather, hydrate, and maybe try focusing on the flow next time. No rush."
@@ -2821,7 +2926,7 @@ export const Overworld = {
                 ];
                 this.pendingBattleEncounter = 'dyzes_boss';
             }
-        } else if (npc.id === 'capsain') {
+        } else if (npc.id === 'capsain' && (lines.length === 1 && lines[0] === "...")) {
             if (bossWon) {
                 lines = [
                     "Dismissed. If you can't even handle a basic engagement, you have no business poking around the archives.",
@@ -2891,7 +2996,7 @@ export const Overworld = {
                 ];
                 this.pendingBattleEncounter = 'capsain';
             }
-        } else {
+        } else if (lines.length === 1 && lines[0] === "...") {
             // Generic Staff Randomizer
             let activePool = this.randomPools.atrium;
             if (this.currentZone === 'lobby') activePool = this.randomPools.lobby;
@@ -2926,6 +3031,7 @@ export const Overworld = {
 
     collectItem(itemId) {
         console.log(`Collected Item: ${itemId}`);
+        this.updateQuestProgress('collect', itemId);
         const itemInfo = (window.ITEM_PICKUP_DATA && window.ITEM_PICKUP_DATA[itemId]) ? window.ITEM_PICKUP_DATA[itemId] : { type: 'item' };
         const itemType = itemInfo.type || (itemId.length === 3 && !isNaN(itemId) ? 'log' : 'item');
 
@@ -2951,6 +3057,7 @@ export const Overworld = {
         }
 
         // Show pickup modal instead of dialogue
+        this.saveGameState(); // Auto-save after pickup
         this.isPaused = true;
         const showModal = window.showItemPickupModal || window.showDatapadPickupModal;
         if (showModal) {

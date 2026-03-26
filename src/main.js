@@ -1,4 +1,4 @@
-import { gameState, applySkipTutorial, applyFullCellDebug, SKIP_TUTORIAL, FULL_CELL_DEBUG } from './engine/state.js';
+import { gameState, applySkipTutorial, applyFullCellDebug, SKIP_TUTORIAL, FULL_CELL_DEBUG, saveGameState, loadGameState, resetGameState } from './engine/state.js';
 import { resolveTurn, getDistance, checkOverload, getModifiedStats } from './engine/combat.js';
 import { AI } from './engine/ai.js';
 import { MONSTERS } from './data/monsters.js';
@@ -6,6 +6,7 @@ import { Overworld } from './engine/overworld.js';
 import { CARDS, LEVEL_REWARDS, NPC_PRESETS, NPC_ENCOUNTERS } from './data/cards.js';
 import { SHOP_ITEMS, shopState } from './data/shop.js';
 import { SYNTHESIS_RECIPES } from './data/synthesis.js';
+import { QUESTS } from './data/quests.js';
 import { BioExtract } from './ui/bio_extract.js';
 
 // Initialize UI Modules
@@ -109,7 +110,7 @@ let battleLogHistory = [];
 let previousScreen = 'screen-main-menu';
 
 // Inventory Navigation State
-const INVENTORY_TABS = ['logs', 'items', 'cards', 'status', 'catalyst'];
+const INVENTORY_TABS = ['logs', 'items', 'cards', 'status', 'quests', 'catalyst'];
 let invNav = {
     active: false,
     tabIndex: 0, // Maps to INVENTORY_TABS
@@ -445,6 +446,45 @@ window.showItemPickupModal = (itemId, onClose) => {
     window.addEventListener('keydown', keyHandler);
 };
 
+/**
+ * Custom Game-Themed Confirmation Modal
+ * @param {string} title - Header text (e.g. WARNING)
+ * @param {string} message - The question/body text
+ * @param {function} onConfirm - Callback if "Yes" is clicked
+ */
+window.showConfirmModal = (title, message, onConfirm) => {
+    const screen = document.getElementById('screen-confirm');
+    const titleEl = document.getElementById('confirm-title');
+    const msgEl = document.getElementById('confirm-message');
+    const btnYes = document.getElementById('btn-confirm-yes');
+    const btnNo = document.getElementById('btn-confirm-no');
+
+    if (!screen || !titleEl || !msgEl || !btnYes || !btnNo) return;
+
+    titleEl.innerText = (title || "WARNING").toUpperCase();
+    msgEl.innerText = message || "Proceed with operation?";
+
+    screen.classList.remove('hidden');
+
+    const handleYes = () => {
+        cleanup();
+        if (onConfirm) onConfirm();
+    };
+
+    const handleNo = () => {
+        cleanup();
+    };
+
+    const cleanup = () => {
+        screen.classList.add('hidden');
+        btnYes.removeEventListener('click', handleYes);
+        btnNo.removeEventListener('click', handleNo);
+    };
+
+    btnYes.onclick = handleYes;
+    btnNo.onclick = handleNo;
+};
+
 // --- STARTER SELECTION LOGIC ---
 let selectedStarterId = null;
 
@@ -740,13 +780,46 @@ function setupEventListeners() {
             }
         });
     });
+    document.getElementById('btn-continue-game')?.addEventListener('click', () => {
+        if (loadGameState()) {
+            startOverworld();
+        }
+    });
 
-    // Menu Controls
     document.getElementById('btn-start-overworld')?.addEventListener('click', () => {
-        showScreen('screen-overworld');
-        resetGame(); // Ensure parties/stats are initialized for inventory
-        Overworld.init();
-        updateOverworldEXPBar();
+        const hasSave = localStorage.getItem('oddlabs_save_data');
+        if (hasSave) {
+            window.showConfirmModal(
+                "CRITICAL WARNING",
+                "STARTING A NEW EXPERIMENT WILL ERASE ALL CURRENT DATA LOGS, CELLS, AND PROGRESS. ARE YOU READY TO INITIALIZE?",
+                () => {
+                    resetGameState();
+                    location.reload(); // Hard reset to initial state
+                }
+            );
+        } else {
+            startOverworld();
+        }
+    });
+
+    document.getElementById('btn-save-game')?.addEventListener('click', () => {
+        window.showConfirmModal(
+            "SECURE PROGRESS", 
+            "Initializing manual data backup. This will overwrite your existing experiment log. // Note: The game automatically saves after major discoveries and quest updates.",
+            () => {
+                saveGameState();
+                const btn = document.getElementById('btn-save-game');
+                if (btn) {
+                    const originalText = btn.innerText;
+                    btn.innerText = "DATA SECURED";
+                    btn.classList.add('success');
+                    setTimeout(() => {
+                        btn.innerText = originalText;
+                        btn.classList.remove('success');
+                    }, 2000);
+                }
+            }
+        );
     });
 
     document.getElementById('btn-start-battle')?.addEventListener('click', () => {
@@ -923,6 +996,14 @@ function setupEventListeners() {
         'leo': { art: 'Character_FullArt_NPC_Male', dialogue: "Processing multiple tactical frequencies... Now!" },
         'rose': { art: 'Character_FullArt_NPC_Female', dialogue: "Warning: Bio-membrane destabilization detected!" },
         'theo': { art: 'Character_FullArt_NPC_Male', dialogue: "Order up! Let's see if you can handle the heat!" },
+        'silas': { art: 'Character_FullArt_NPC_Male', dialogue: "Accelerating cellular output now!" },
+        'elena': { art: 'Character_FullArt_NPC_Female', dialogue: "Initiating utility sync test." },
+        'finn': { art: 'Character_FullArt_NPC_Male', dialogue: "Deploying MAP Effects field!" },
+        'white': { art: 'Character_FullArt_NPC_Male', dialogue: "Efficiency over luck, every time!" },
+        'cherry': { art: 'Character_FullArt_NPC_Female', dialogue: "It's all in the placement!" },
+        'james': { art: 'Character_FullArt_NPC_Male', dialogue: "Initiating interference protocols." },
+        'robert': { art: 'Character_FullArt_NPC_Male', dialogue: "Crunching the numbers. Engagement imminent." },
+        'quinn': { art: 'Character_FullArt_NPC_Female', dialogue: "Activating Leader Perk: Strategic Supremacy." },
         'stemmy_wild': { art: 'Cell_FullArt_Stemmy', dialogue: "*A wild Stemmy aggressively bumps into you!*" },
         'nitrophil_wild': { art: 'Cell_FullArt_Nitrophil', dialogue: "*A wild Nitrophil aggressively bumps into you!*" },
         'cambihil_wild': { art: 'Cell_FullArt_Cambihil', dialogue: "*A wild Cambihil aggressively bumps into you!*" },
@@ -2575,11 +2656,12 @@ function renderInventory() {
     const logList = document.getElementById('inventory-log-list');
     const itemGrid = document.getElementById('inventory-item-grid');
     const statusList = document.getElementById('inventory-status-list');
+    const questList = document.getElementById('inventory-quest-list');
     const detailTitle = document.getElementById('inventory-detail-title');
     const detailDesc = document.getElementById('inventory-detail-desc');
     const detailCard = document.getElementById('inventory-detail-card');
 
-    if (!logList || !itemGrid || !statusList) return;
+    if (!logList || !itemGrid || !statusList || !questList) return;
 
     // Helper to update the detail panel
     const updateDetail = (title, desc, imgSrc, statsGridHtml = "") => {
@@ -2797,7 +2879,7 @@ function renderInventory() {
             // Dynamically compute stats including any C-Cards equipped
             const stats = getModifiedStats(cell, playerLevel);
             const maxHp = stats.maxHp;
-            const maxPp = stats.maxPp;
+            const maxPp = stats.pp;
 
             // Avoid NaN if maxHp is 0 somehow
             const hpPercent = maxHp > 0 ? (cell.hp / maxHp) * 100 : 0;
@@ -2892,6 +2974,68 @@ function renderInventory() {
             };
             statusList.appendChild(item);
         });
+    }
+
+    // 4. Populate Quests
+    renderQuestMenu();
+}
+
+function renderQuestMenu() {
+    const questList = document.getElementById('inventory-quest-list');
+    if (!questList) return;
+    questList.innerHTML = '';
+
+    const quests = gameState.quests;
+    const activeQuests = Object.keys(quests).filter(id => quests[id].status !== 'finished');
+    const completedQuests = Object.keys(quests).filter(id => quests[id].status === 'finished');
+
+    const renderCategory = (title, ids) => {
+        if (ids.length === 0) return;
+        
+        const header = document.createElement('div');
+        header.className = 'quest-category-header';
+        header.innerText = title;
+        questList.appendChild(header);
+
+        ids.forEach(id => {
+            const qData = QUESTS[id];
+            const qProgress = quests[id];
+            if (!qData) return;
+
+            const item = document.createElement('div');
+            item.className = `quest-item ${qProgress.status}`;
+            
+            const progressText = qData.type === 'collect' 
+                ? (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'DONE' : 'LOOKING...')
+                : `${qProgress.progress}/${qData.amount}`;
+
+            item.innerHTML = `
+                <div class="quest-main">
+                    <span class="quest-title">${qData.title}</span>
+                    <span class="quest-progress">${progressText}</span>
+                </div>
+                <div class="quest-desc">${qData.description}</div>
+            `;
+            
+            item.onclick = () => {
+                const detailTitle = document.getElementById('inventory-detail-title');
+                const detailDesc = document.getElementById('inventory-detail-desc');
+                if (detailTitle) detailTitle.innerHTML = qData.title.toUpperCase();
+                if (detailDesc) detailDesc.innerText = qData.description + "\n\nReward: " + qData.reward.id + (qData.reward.amount ? " x" + qData.reward.amount : "");
+                
+                document.querySelectorAll('.quest-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            };
+
+            questList.appendChild(item);
+        });
+    };
+
+    renderCategory('ACTIVE MISSIONS', activeQuests);
+    renderCategory('COMPLETED ARCHIVE', completedQuests);
+
+    if (activeQuests.length === 0 && completedQuests.length === 0) {
+        questList.innerHTML = '<div class="empty-state">No missions initialized. Consult with laboratory staff for assignments.</div>';
     }
 }
 
@@ -3120,7 +3264,6 @@ async function resolvePhase() {
             attackerPortrait.appendChild(reflectEl);
             setTimeout(() => reflectEl.remove(), 1000);
 
-            // Log it
             console.log(`[VFX] Reflected ${results.reflectDamage} damage.`);
         }, 700);
     }
@@ -3700,13 +3843,34 @@ function checkGameOver() {
     return false;
 }
 
-// Formula: Total EXP Required for Next RG = Math.floor(30 * (Current RG + 1)^1.5)
+// Hardcoded Rounded Research Grade EXP Thresholds for easier follow & balancing (+10% Grind Factor)
+const EXP_THRESHOLDS = {
+    0: 0,
+    1: 60,
+    2: 170,
+    3: 350,
+    4: 550,
+    5: 900,
+    6: 1350,
+    7: 1900,
+    8: 2550,
+    9: 3300,
+    10: 4200,
+    11: 5200,
+    12: 6300,
+    13: 7500,
+    14: 8800,
+    15: 10250,
+    16: 11800,
+    17: 13450,
+    18: 15200,
+    19: 17100,
+    20: 19100
+};
+
 const getExpReqForLevel = (level) => {
-    let total = 0;
-    for (let i = 0; i < level; i++) {
-        total += Math.floor(30 * Math.pow(i + 1, 1.5));
-    }
-    return total;
+    if (EXP_THRESHOLDS[level] !== undefined) return EXP_THRESHOLDS[level];
+    return EXP_THRESHOLDS[20] + (level - 20) * 3000;
 };
 
 function updateOverworldEXPBar() {
@@ -3845,6 +4009,11 @@ function showGameOver(isFailure, forceOverlay = false) {
         const currentRg = gameState.profiles.player.level || 0;
         const playerRG = gameState.profiles.player.level || 0;
         const rgScaling = 1 + (playerRG * 0.05);
+
+        // --- QUEST PROGRESSION HOOK ---
+        if (!isFailure && typeof Overworld !== 'undefined' && opponentId) {
+            Overworld.updateQuestProgress('defeat', opponentId);
+        }
 
         // Only calculate typical rewards if not a generic failure
         if (!isFailure || isTutorialLoss) {
@@ -3999,6 +4168,22 @@ function showGameOver(isFailure, forceOverlay = false) {
             }
         }
     }
+}
+
+function checkExistingSave() {
+    const hasSave = localStorage.getItem('oddlabs_save_data');
+    if (hasSave) {
+        document.getElementById('btn-continue-game')?.classList.remove('hidden');
+        const startBtn = document.getElementById('btn-start-overworld');
+        if (startBtn) startBtn.innerText = "START NEW EXPERIMENT";
+    }
+}
+
+function startOverworld() {
+    showScreen('screen-overworld');
+    resetGame(); // Ensure parties/stats are initialized for inventory
+    Overworld.init();
+    updateOverworldEXPBar();
 }
 
 function showScreen(screenId) {
@@ -5829,6 +6014,11 @@ async function handleSynthesis(monsterId) {
     pProfile.party.push(newMonster);
     pProfile.team.push(monsterId);
 
+    // --- QUEST PROGRESSION HOOK ---
+    if (typeof Overworld !== 'undefined') {
+        Overworld.updateQuestProgress('synthesis', monsterId);
+    }
+
     // Animation
     await startSynthesisAnimation(monsterId, destination);
 }
@@ -6211,3 +6401,6 @@ function initShopEventListeners() {
 // Ensure listeners are initialized
 initShopEventListeners();
 updateResourceHUD();
+
+// Initial boat-up logic for save system
+checkExistingSave();

@@ -226,5 +226,61 @@ export const NPC_ENCOUNTERS = {
         style: 'aggressive',
         reward: { exp: 700, biomass: 30, credits: 600 }
     },
+    'silas': {
+        name: "Researcher Silas",
+        rg: 11,
+        team: ['stemmy', 'stemmy'],
+        style: 'aggressive',
+        reward: { exp: 800, biomass: 40, credits: 600 }
+    },
+    'elena': {
+        name: "Researcher Elena",
+        rg: 12,
+        team: ['stemmy', 'nitrophil'],
+        style: 'utility',
+        reward: { exp: 900, biomass: 45, credits: 700 }
+    },
+    'finn': {
+        name: "Researcher Finn",
+        rg: 13,
+        team: ['lydrosome', 'stemmy'],
+        style: 'utility',
+        reward: { exp: 1000, biomass: 50, credits: 800 }
+    },
+    'white': {
+        name: "Researcher White",
+        rg: 13,
+        team: ['lydrosome', 'nitrophil'],
+        style: 'aggressive',
+        reward: { exp: 1000, biomass: 50, credits: 800 }
+    },
+    'cherry': {
+        name: "Researcher Cherry",
+        rg: 13,
+        team: ['cambihil', 'lydrosome'],
+        style: 'utility',
+        reward: { exp: 1000, biomass: 50, credits: 800 }
+    },
+    'james': {
+        name: "Assistant James",
+        rg: 17,
+        team: ['lydrosome', 'cambihil'],
+        style: 'balanced',
+        reward: { exp: 1500, biomass: 80, credits: 1500 }
+    },
+    'robert': {
+        name: "Assistant Robert",
+        rg: 17,
+        team: ['cambihil', 'nitrophil'],
+        style: 'balanced',
+        reward: { exp: 1500, biomass: 80, credits: 1500 }
+    },
+    'quinn': {
+        name: "Assistant Quinn",
+        rg: 18,
+        team: ['stemmy', 'stemmy', 'nitrophil'],
+        style: 'balanced',
+        reward: { exp: 1800, biomass: 100, credits: 2000 }
+    },
     'stemmy_wild': { name: "Wild Stemmy", rg: 'auto', team: ['stemmy'], style: 'balanced' }
 };

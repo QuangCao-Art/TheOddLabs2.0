@@ -21,7 +21,8 @@
         <div id="screen-main-menu" class="screen">
             <h1 class="game-title">THE ODD <span class="neon-text">LABS 2.0</span></h1>
             <div class="menu-options">
-                <button id="btn-start-overworld" class="btn-neon">START GAME</button>
+                <button id="btn-continue-game" class="btn-neon hidden">CONTINUE EXPERIMENT</button>
+                <button id="btn-start-overworld" class="btn-neon">START NEW EXPERIMENT</button>
                 <button id="btn-start-battle" class="btn-neon hidden">DEBUG BATTLE</button>
                 <button id="btn-open-inventory" class="btn-neon hidden">PLAYER INVENTORY</button>
                 <button id="btn-open-rulebook" class="btn-neon">RULEBOOK</button>
@@ -522,6 +523,7 @@
                         <button class="tab-btn" data-tab="items">ITEMS</button>
                         <button class="tab-btn" data-tab="cards">COLLECTIBLE CARDS</button>
                         <button class="tab-btn" data-tab="status">CELL STATUS</button>
+                        <button class="tab-btn" data-tab="quests">QUESTS</button>
                         <button class="tab-btn" data-tab="catalyst">CATALYST BOX</button>
                     </div>
                 </div>
@@ -553,6 +555,13 @@
                         <!-- Status Section -->
                         <div id="tab-status" class="inventory-tab hidden">
                             <div class="status-list" id="inventory-status-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Quests Section -->
+                        <div id="tab-quests" class="inventory-tab hidden">
+                            <div class="quest-list" id="inventory-quest-list">
                                 <!-- Populated by JS -->
                             </div>
                         </div>
@@ -684,8 +693,11 @@
                         <span><b>CLICK IMG</b> Full-Screen</span>
                         <span><b>ESC</b> PREV</span>
                     </div>
-                    <button id="btn-inventory-back" class="btn-neon">BACK TO LAB</button>
-                    <button id="id-inventory-main-menu" class="btn-neon inventory-main-menu-btn">MAIN MENU</button>
+                    <div class="inv-footer-actions">
+                        <button id="btn-inventory-back" class="btn-neon">BACK TO LAB</button>
+                        <button id="btn-save-game" class="btn-neon" style="--glow-color: #00ff66; border-color: #00ff66;">SAVE PROGRESS</button>
+                        <button id="id-inventory-main-menu" class="btn-neon inventory-main-menu-btn">MAIN MENU</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1292,6 +1304,19 @@
 
     <!-- Zone Transition Overlay -->
     <div id="zone-transition-overlay" class="hidden"></div>
+
+    <!-- UI Modal Layer: Generic Confirmation -->
+    <div id="screen-confirm" class="overlay hidden">
+        <div id="confirm-panel" class="glass-panel">
+            <h2 id="confirm-title" class="neon-text outline-text">WARNING</h2>
+            <div class="header-line"></div>
+            <p id="confirm-message" class="confirm-body-text">This action cannot be undone. Proceed?</p>
+            <div class="confirm-buttons">
+                <button id="btn-confirm-yes" class="btn-neon alert-btn">PROCEED</button>
+                <button id="btn-confirm-no" class="btn-neon">CANCEL</button>
+            </div>
+        </div>
+    </div>
 
     <script type="module" src="src/main.js"></script>
 </body>

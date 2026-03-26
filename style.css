@@ -2386,8 +2386,8 @@ body {
 
 /* Inventory Footer & Controls Guide */
 #inventory-panel .rulebook-footer {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     width: 100%;
 }
@@ -2401,10 +2401,11 @@ body {
     letter-spacing: 0.5px;
 }
 
-.inventory-main-menu-btn {
-    justify-self: end;
+.inv-footer-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
-
 .inv-controls-guide b {
     color: var(--color-player);
     margin-right: 3px;
@@ -2496,6 +2497,102 @@ body {
 .detail-text-content {
     width: 100%;
     text-align: center;
+}
+
+/* Quest System UI */
+.quest-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 10px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.quest-category-header {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    color: var(--neon-cyan);
+    letter-spacing: 2px;
+    padding: 15px 0 5px 5px;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.quest-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+}
+
+.quest-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.quest-item.active {
+    background: rgba(0, 243, 255, 0.05);
+    border-color: var(--neon-cyan);
+    box-shadow: inset 0 0 15px rgba(0, 243, 255, 0.1);
+}
+
+.quest-item.completed {
+    border-left: 4px solid var(--color-bio);
+}
+
+.quest-item.finished {
+    opacity: 0.7;
+    border-left: 4px solid #888;
+}
+
+.quest-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.quest-title {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #fff;
+}
+
+.quest-progress {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--neon-cyan);
+    background: rgba(0, 243, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.quest-desc {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.3;
+}
+
+.quest-item.finished .quest-title {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.empty-state {
+    padding: 40px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.3);
+    font-style: italic;
+    font-size: 0.9rem;
 }
 
 #inventory-detail-title {
@@ -7476,4 +7573,52 @@ body {
 #zone-transition-overlay.active {
     opacity: 1;
     pointer-events: all;
+}
+/* Custom Confirmation Modal */
+#screen-confirm {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 5, 10, 0.85);
+    backdrop-filter: blur(8px);
+}
+
+#confirm-panel {
+    max-width: 450px;
+    width: 90%;
+    padding: 40px;
+    text-align: center;
+    border-radius: 12px;
+}
+
+.confirm-body-text {
+    margin: 25px 0;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #e0e0e0;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.btn-neon.alert-btn {
+    --glow-color: #ff3333 !important;
+    border-color: #ff3333 !important;
+    color: #ffcccc !important;
+}
+
+.btn-neon.alert-btn:hover {
+    background: rgba(255, 51, 51, 0.2) !important;
+    box-shadow: 0 0 20px rgba(255, 51, 51, 0.4) !important;
 }

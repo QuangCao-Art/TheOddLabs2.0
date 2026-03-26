@@ -70,6 +70,7 @@ export const gameState = {
     debugUnlockDoors: false, // DEBUG: Toggle all doors status
     unseenLogs: [], // Track newly found logs that haven't been viewed yet
     bioExtractGrid: new Array(9).fill(null), // 3x3 grid for bio extraction [monster, biomassStored, lastTick]
+    quests: {}, // Track active and completed quests
     
     // Persistent Session Tracking
     lastOverworldPos: {
@@ -131,4 +132,75 @@ export function applyFullCellDebug(isFull) {
         gameState.profiles[key].team = isFull ? [...fullRoster] : [];
         gameState.profiles[key].party = []; // Reset party so resetGame rebuilds it
     });
+}
+
+// --- SAVE & LOAD SYSTEM ---
+const SAVE_KEY = 'oddlabs_save_data';
+
+export function saveGameState() {
+    // We only save raw data, not the full live Party objects (which are rebuilt on load)
+    const saveData = {
+        exp: gameState.exp,
+        credits: gameState.credits,
+        biomass: gameState.biomass,
+        playerLevel: gameState.profiles.player.level,
+        playerTeam: gameState.profiles.player.team,
+        storyFlags: gameState.storyFlags,
+        items: gameState.items,
+        logs: gameState.logs,
+        unseenLogs: gameState.unseenLogs,
+        quests: gameState.quests,
+        bioExtractGrid: gameState.bioExtractGrid,
+        lastOverworldPos: gameState.lastOverworldPos
+    };
+    
+    localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+    console.log("Game Saved Successfully.");
+}
+
+export function loadGameState() {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+
+    try {
+        const saved = JSON.parse(raw);
+        
+        // Merge into current gameState
+        gameState.exp = saved.exp || 0;
+        gameState.credits = saved.credits || 0;
+        gameState.biomass = saved.biomass || 0;
+        
+        if (saved.playerLevel !== undefined) {
+            gameState.profiles.player.level = saved.playerLevel;
+            gameState.playerLevel = saved.playerLevel;
+        }
+        
+        if (saved.playerTeam) {
+            gameState.profiles.player.team = [...saved.playerTeam];
+        }
+        
+        if (saved.storyFlags) {
+            gameState.storyFlags = { ...gameState.storyFlags, ...saved.storyFlags };
+        }
+        
+        if (saved.items) gameState.items = [...saved.items];
+        if (saved.logs) gameState.logs = [...saved.logs];
+        if (saved.unseenLogs) gameState.unseenLogs = [...saved.unseenLogs];
+        if (saved.quests) gameState.quests = { ...saved.quests };
+        if (saved.bioExtractGrid) gameState.bioExtractGrid = [...saved.bioExtractGrid];
+        if (saved.lastOverworldPos) gameState.lastOverworldPos = { ...saved.lastOverworldPos };
+        
+        console.log("Game Loaded Successfully.");
+        return true;
+    } catch (e) {
+        console.error("Failed to load game state:", e);
+        return false;
+    }
+}
+
+export function resetGameState() {
+    localStorage.removeItem(SAVE_KEY);
+    // Note: Actual memory reset should be handled by a page reload 
+    // or by manually resetting columns to initial state values.
+    console.log("Save Data Cleared.");
 }
