@@ -200,7 +200,52 @@ export function loadGameState() {
 
 export function resetGameState() {
     localStorage.removeItem(SAVE_KEY);
-    // Note: Actual memory reset should be handled by a page reload 
-    // or by manually resetting columns to initial state values.
     console.log("Save Data Cleared.");
+}
+
+export function fullResetGameState() {
+    // Reset primitives
+    gameState.exp = 0;
+    gameState.credits = 0;
+    gameState.biomass = 0;
+    
+    // Reset teams and Dex
+    gameState.playerTeam = [];
+    gameState.enemyTeam = [];
+    gameState.cellDex = [];
+    gameState.playerParty = [];
+    gameState.enemyParty = [];
+    gameState.player = null;
+    gameState.enemy = null;
+
+    // Reset Profiles
+    Object.keys(gameState.profiles).forEach(key => {
+        const p = gameState.profiles[key];
+        p.level = 0;
+        p.cardBox = [];
+        p.party = [];
+        // Keep the original team defaults if needed, but for player it starts empty
+        if (key === 'player') p.team = [];
+    });
+
+    // Reset story flags
+    Object.keys(gameState.storyFlags).forEach(key => {
+        gameState.storyFlags[key] = false;
+    });
+
+    // Reset items and logs
+    gameState.items = [];
+    gameState.logs = [];
+    gameState.unseenLogs = [];
+    gameState.quests = {};
+    gameState.bioExtractGrid = new Array(9).fill(null);
+    
+    gameState.lastOverworldPos = {
+        zone: null,
+        x: null,
+        y: null
+    };
+
+    localStorage.removeItem(SAVE_KEY);
+    console.log("Full Game State Reset (In-Memory).");
 }

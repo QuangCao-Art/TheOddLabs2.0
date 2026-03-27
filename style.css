@@ -2387,9 +2387,10 @@ body {
 /* Inventory Footer & Controls Guide */
 #inventory-panel .rulebook-footer {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
     width: 100%;
+    gap: 15px;
 }
 
 .inv-controls-guide {
@@ -2405,6 +2406,8 @@ body {
     display: flex;
     gap: 12px;
     align-items: center;
+    width: 100%;
+    justify-content: space-between;
 }
 .inv-controls-guide b {
     color: var(--color-player);
@@ -7574,6 +7577,10 @@ body {
     opacity: 1;
     pointer-events: all;
 }
+
+#zone-transition-overlay.slow-transition {
+    transition: opacity 0.6s ease-in-out;
+}
 /* Custom Confirmation Modal */
 #screen-confirm {
     position: fixed;
@@ -7581,12 +7588,16 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 10000;
+    z-index: 12000;
     display: flex;
     justify-content: center;
     align-items: center;
     background: rgba(0, 5, 10, 0.85);
     backdrop-filter: blur(8px);
+}
+
+#item-pickup-modal {
+    z-index: 11000;
 }
 
 #confirm-panel {

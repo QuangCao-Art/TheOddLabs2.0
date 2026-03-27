@@ -2141,8 +2141,17 @@ export const Overworld = {
                 const hasOverlay = document.querySelector('.overlay:not(.hidden), .modal-overlay:not(.hidden), .modal-overlay.active');
                 if (hasOverlay) return;
 
-                document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-                document.getElementById('screen-main-menu').classList.remove('hidden');
+                if (window.triggerSlowTransition) {
+                    window.triggerSlowTransition(() => {
+                        this.stopLoop();
+                        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+                        document.getElementById('screen-main-menu').classList.remove('hidden');
+                    });
+                } else {
+                    this.stopLoop();
+                    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+                    document.getElementById('screen-main-menu').classList.remove('hidden');
+                }
             }
         });
 
@@ -3057,7 +3066,7 @@ export const Overworld = {
         }
 
         // Show pickup modal instead of dialogue
-        this.saveGameState(); // Auto-save after pickup
+        saveGameState(); // Auto-save after pickup
         this.isPaused = true;
         const showModal = window.showItemPickupModal || window.showDatapadPickupModal;
         if (showModal) {

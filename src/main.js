@@ -782,7 +782,7 @@ function setupEventListeners() {
     });
     document.getElementById('btn-continue-game')?.addEventListener('click', () => {
         if (loadGameState()) {
-            startOverworld();
+            triggerSlowTransition(() => startOverworld());
         }
     });
 
@@ -793,12 +793,22 @@ function setupEventListeners() {
                 "CRITICAL WARNING",
                 "STARTING A NEW EXPERIMENT WILL ERASE ALL CURRENT DATA LOGS, CELLS, AND PROGRESS. ARE YOU READY TO INITIALIZE?",
                 () => {
-                    resetGameState();
-                    location.reload(); // Hard reset to initial state
+                    triggerSlowTransition(() => {
+                        import('./engine/state.js').then(m => {
+                            if (m.fullResetGameState) {
+                                m.fullResetGameState();
+                                startOverworld();
+                            } else {
+                                // Fallback if module import fails or function missing
+                                resetGameState();
+                                location.reload();
+                            }
+                        });
+                    });
                 }
             );
         } else {
-            startOverworld();
+            triggerSlowTransition(() => startOverworld());
         }
     });
 
@@ -1177,64 +1187,67 @@ function setupEventListeners() {
     });
 
     document.getElementById('btn-return-menu')?.addEventListener('click', () => {
-        document.getElementById('game-over-overlay').classList.add('hidden');
-        showScreen('screen-main-menu');
+        triggerSlowTransition(() => {
+            document.getElementById('game-over-overlay').classList.add('hidden');
+            showScreen('screen-main-menu');
+        });
     });
 
     document.getElementById('btn-continue-overworld')?.addEventListener('click', () => {
         const btn = document.getElementById('btn-continue-overworld');
         const isRecovery = btn.innerText === 'RECOVER AT LOBBY';
 
-        document.getElementById('game-over-overlay').classList.add('hidden');
-        showScreen('screen-overworld');
+        triggerSlowTransition(() => {
+            document.getElementById('game-over-overlay').classList.add('hidden');
+            showScreen('screen-overworld');
 
-        if (typeof Overworld !== 'undefined') {
-            // Reset any stuck flags (movement, dialogue) before resuming
-            Overworld.resetStates();
+            if (typeof Overworld !== 'undefined') {
+                // Reset any stuck flags (movement, dialogue) before resuming
+                Overworld.resetStates();
 
-            if (isRecovery) {
-                // Faint System: Set party to 1 HP and teleport to lobby
-                gameState.profiles.player.party.forEach(mon => {
-                    if (mon) mon.currentHp = 1;
-                });
+                if (isRecovery) {
+                    // Faint System: Set party to 1 HP and teleport to lobby
+                    gameState.profiles.player.party.forEach(mon => {
+                        if (mon) mon.currentHp = 1;
+                    });
 
-                // --- CLEANUP WILD SPAWNER ---
-                if (catalystState.battleOpponentId && catalystState.battleOpponentId.includes('_wild')) {
-                    Overworld.spawner.despawnCurrent();
+                    // --- CLEANUP WILD SPAWNER ---
+                    if (catalystState.battleOpponentId && catalystState.battleOpponentId.includes('_wild')) {
+                        Overworld.spawner.despawnCurrent();
+                    }
+
+                    // Force load lobby and set safe position (center-ish)
+                    Overworld.renderMap('lobby', true, 5, 5);
+                    gameState.playerPos = { x: 5, y: 5 }; // Safe entrance coords
+                    Overworld.playerX = 5;
+                    Overworld.playerY = 5;
+
+                    btn.innerText = 'CONTINUE TO GAME'; // Reset for next time
+                } else {
+                    // --- WILD ENCOUNTER CLEANUP ---
+                    if (catalystState.battleOpponentId && catalystState.battleOpponentId.includes('_wild')) {
+                        Overworld.spawner.despawnCurrent();
+                    }
                 }
 
-                // Force load lobby and set safe position (center-ish)
-                Overworld.renderMap('lobby', true, 5, 5);
-                gameState.playerPos = { x: 5, y: 5 }; // Safe entrance coords
-                Overworld.playerX = 5;
-                Overworld.playerY = 5;
+                Overworld.startLoop();
 
-                btn.innerText = 'CONTINUE TO GAME'; // Reset for next time
-            } else {
-                // --- WILD ENCOUNTER CLEANUP ---
-                if (catalystState.battleOpponentId && catalystState.battleOpponentId.includes('_wild')) {
-                    Overworld.spawner.despawnCurrent();
+                // --- STORY HOOK: Jenzi post-battle dialogue ---
+                const opponentId = catalystState.battleOpponentId;
+                if ((window.gameState.storyFlags.jenziFirstBattleDone || opponentId === 'jenzi_tutorial') && !window.gameState.logs.includes('Log001')) {
+                    // Hide Log #001 in the Red Specimen Tank instead of spawning on floor
+                    const lobbyZone = Overworld.zones['lobby'];
+
+                    // DEFENSIVE: Ensure the old floor-log object is removed if it persisted from a previous render
+                    lobbyZone.objects = lobbyZone.objects.filter(obj => obj.id !== 'log_001');
+
+                    const redTank = lobbyZone.objects.find(o => o.id === 'f23_lob_br');
+                    if (redTank && !redTank.hiddenLogId) {
+                        redTank.hiddenLogId = 'Log001';
+                    }
                 }
             }
-
-            Overworld.startLoop();
-
-
-            // --- STORY HOOK: Jenzi post-battle dialogue ---
-            const opponentId = catalystState.battleOpponentId;
-            if ((window.gameState.storyFlags.jenziFirstBattleDone || opponentId === 'jenzi_tutorial') && !window.gameState.logs.includes('Log001')) {
-                // Hide Log #001 in the Red Specimen Tank instead of spawning on floor
-                const lobbyZone = Overworld.zones['lobby'];
-
-                // DEFENSIVE: Ensure the old floor-log object is removed if it persisted from a previous render
-                lobbyZone.objects = lobbyZone.objects.filter(obj => obj.id !== 'log_001');
-
-                const redTank = lobbyZone.objects.find(o => o.id === 'f23_lob_br');
-                if (redTank && !redTank.hiddenLogId) {
-                    redTank.hiddenLogId = 'Log001';
-                }
-            }
-        }
+        });
     });
 
     document.getElementById('btn-battle-back')?.addEventListener('click', () => {
@@ -1350,9 +1363,17 @@ function setupEventListeners() {
     });
 
     document.getElementById('id-inventory-main-menu')?.addEventListener('click', () => {
-        document.getElementById('screen-inventory').classList.add('hidden');
-        invNav.active = false;
-        showScreen('screen-main-menu');
+        window.showConfirmModal(
+            "ABORT EXPERIMENT",
+            "Returning to the Main Menu will result in the loss of any unsaved tactical progress. Proceed with extraction?",
+            () => {
+                triggerSlowTransition(() => {
+                    document.getElementById('screen-inventory').classList.add('hidden');
+                    if (typeof invNav !== 'undefined') invNav.active = false;
+                    showScreen('screen-main-menu');
+                });
+            }
+        );
     });
 
     // Card Preview Controls
@@ -1710,16 +1731,7 @@ function setupEventListeners() {
                 }
             }
 
-            // Universal Continue for Pickup/Dialogues
             if (key === 'f') {
-                const pickupBtn = document.getElementById('btn-pickup-continue');
-                const isPickupVisible = pickupBtn && !document.getElementById('item-pickup-modal').classList.contains('hidden');
-                if (isPickupVisible) {
-                    e.stopImmediatePropagation();
-                    pickupBtn.click();
-                    return;
-                }
-
                 // Treat F as generic "Back/Continue" for modals/screens
                 const invBtn = document.getElementById('btn-inventory-back');
                 if (isInvOpen && invBtn) {
@@ -4184,6 +4196,43 @@ function startOverworld() {
     resetGame(); // Ensure parties/stats are initialized for inventory
     Overworld.init();
     updateOverworldEXPBar();
+}
+
+window.triggerSlowTransition = triggerSlowTransition;
+/**
+ * Common utility for 0.6s slow fade transitions between major game states
+ * @param {function} callback - Logic to execute while the screen is black
+ */
+async function triggerSlowTransition(callback) {
+    const overlay = document.getElementById('zone-transition-overlay');
+    if (!overlay) {
+        if (callback) await callback();
+        return;
+    }
+
+    // 1. Setup Slow Mode
+    overlay.classList.add('slow-transition');
+    overlay.classList.remove('hidden');
+    void overlay.offsetWidth; // Force reflow
+    overlay.classList.add('active');
+
+    // 2. Wait for Fade-Out (0.6s)
+    await new Promise(r => setTimeout(r, 600));
+
+    // 3. Execute State Change
+    if (callback) await callback();
+
+    // 4. Buffer for rendering
+    // Overworld.init has a 50ms timeout, so we wait 200ms total to be safe
+    await new Promise(r => setTimeout(r, 200));
+
+    // 5. Fade-In
+    overlay.classList.remove('active');
+    await new Promise(r => setTimeout(r, 600));
+
+    // 6. Cleanup
+    overlay.classList.add('hidden');
+    overlay.classList.remove('slow-transition');
 }
 
 function showScreen(screenId) {
