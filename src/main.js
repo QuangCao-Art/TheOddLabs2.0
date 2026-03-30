@@ -2933,12 +2933,34 @@ function renderInventory() {
                                 <span class="bar-value ${isLysis ? 'lysis' : ''}">${cell.pp} / ${maxPp}</span>
                             </div>
                         </div>
-                        <div class="status-mini-stats">
-                            <div class="mini-stat">ATK ${stats.atk}</div>
-                            <div class="mini-stat">DEF ${stats.def}</div>
-                            <div class="mini-stat">SPD ${stats.spd}</div>
-                            <div class="mini-stat">CRIT ${stats.crit}%</div>
-                        </div>
+                    </div>
+                </div>
+                <div class="status-mini-stats">
+                    <div class="mini-stat">
+                        <span class="stat-label">ATTACK</span>
+                        <span class="stat-total">${stats.atk}</span>
+                        ${stats.breakdown.atk.card > 0 ? `<span class="stat-bonus card">[+${stats.breakdown.atk.card}]</span>` : ''}
+                        ${stats.breakdown.atk.eff > 0 ? `<span class="stat-bonus eff">[+${stats.breakdown.atk.eff}]</span>` : ''}
+                    </div>
+                    <div class="mini-stat">
+                        <span class="stat-label">DEFENSE</span>
+                        <span class="stat-total">${stats.def}</span>
+                        ${stats.breakdown.def.card > 0 ? `<span class="stat-bonus card">[+${stats.breakdown.def.card}]</span>` : ''}
+                        ${stats.breakdown.def.eff > 0 ? `<span class="stat-bonus eff">[+${stats.breakdown.def.eff}]</span>` : ''}
+                    </div>
+                    <div class="mini-stat">
+                        <span class="stat-label">SPEED</span>
+                        <span class="stat-total">${stats.spd}</span>
+                        ${stats.breakdown.spd.card > 0 ? `<span class="stat-bonus card">[+${stats.breakdown.spd.card}]</span>` : ''}
+                    </div>
+                    <div class="mini-stat">
+                        <span class="stat-label">CRIT</span>
+                        <span class="stat-total">${stats.crit}%</span>
+                        ${stats.breakdown.crit.card > 0 ? `<span class="stat-bonus card">[+${stats.breakdown.crit.card}%]</span>` : ''}
+                    </div>
+                    <div class="mini-stat efficiency-stat">
+                        <span class="stat-label">EFFICIENCY</span>
+                        <span class="stat-total">LV.${Math.min(5, cell.extractEfficiency || 0)}</span>
                     </div>
                 </div>
             `;

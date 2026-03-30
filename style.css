@@ -2409,6 +2409,7 @@ body {
     width: 100%;
     justify-content: space-between;
 }
+
 .inv-controls-guide b {
     color: var(--color-player);
     margin-right: 3px;
@@ -2625,14 +2626,20 @@ body {
     display: flex;
     flex-direction: row !important;
     align-items: center;
-    gap: 20px;
-    padding: 15px 20px 15px 15px;
+    gap: 30px;
+    /* Increased gap from icon to info */
+    padding: 40px 60px;
+    /* Expanded main box padding for a high-end, spacious aesthetic */
+    /* Increased padding for the main container box */
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    border-radius: 16px;
+    /* Slightly softer corners for the larger card */
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    min-width: 1100px;
+    /* Increased to 1100px to solve the overlap issue */
 }
 
 .status-item:hover {
@@ -2728,34 +2735,80 @@ body {
 .status-main-row {
     display: flex;
     align-items: center;
-    gap: 30px;
+    width: 100%;
+    /* Ensure row spans full available width */
 }
 
 .status-bars {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    width: 320px; /* Provides ample space for horizontal vitals-row layout */
+    width: 320px;
+    flex-shrink: 0;
+    /* Keep bars on the left */
 }
 
-/* Legacy status bars replaced by vitals-row layout */
-
 .status-mini-stats {
+    position: absolute;
+    left: 68%;
+    /* Centered precisely within the available right-hand information area */
+    top: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
-    gap: 15px;
-    padding: 4px 12px;
-    background: rgba(0, 243, 255, 0.05);
+    gap: 30px;
+    padding: 20px 40px;
+    /* Increased padding for a more spacious box */
+    background: rgba(0, 10, 20, 0.4);
     border: 1px solid rgba(0, 243, 255, 0.1);
-    border-radius: 4px;
+    border-radius: 8px;
+    align-items: flex-start;
+    z-index: 5;
 }
 
 .mini-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 70px;
+}
+
+.mini-stat .stat-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    /* Increased from 0.55rem for better legibility */
+    color: var(--color-player);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.mini-stat .stat-total {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    color: #fff;
+    font-weight: 800;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.mini-stat .stat-bonus {
     font-family: 'Rajdhani', sans-serif;
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--neon-cyan);
-    white-space: nowrap;
-    text-shadow: 0 0 8px rgba(0, 243, 255, 0.2);
+}
+
+.mini-stat .stat-bonus.card {
+    color: #00ffcc;
+    /* Bright Cyan-Green */
+}
+
+.mini-stat .stat-bonus.eff {
+    color: var(--color-near);
+    /* Gold/Yellow */
+}
+
+.efficiency-stat .stat-total {
+    color: var(--color-player);
+    text-shadow: 0 0 10px var(--color-player);
 }
 
 #inventory-detail-stats {
@@ -3030,6 +3083,7 @@ body {
 #card-preview-overlay {
     z-index: 3000;
 }
+
 .overlay {
     position: fixed;
     top: 0;
@@ -7534,6 +7588,7 @@ body {
 #zone-transition-overlay.slow-transition {
     transition: opacity 0.6s ease-in-out;
 }
+
 /* Custom Confirmation Modal */
 #screen-confirm {
     position: fixed;

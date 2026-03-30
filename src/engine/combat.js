@@ -239,12 +239,7 @@ export function checkOverload(cell) {
 }
 
 export function getModifiedStats(monster, playerLevel = 1) {
-    // 1. Identify the Clean Base Stats
-    // BUG FIX: If monster.id is missing or invalid, we use a deep-copy of the instance 
-    // BUT we must ensure we aren't using already-boosted 'maxHp/maxPp' as the base 
-    // to prevent infinite stacking in applyBonuses loops.
     const lookup = MONSTERS[monster.id];
-    
     const base = lookup ? lookup : {
         maxHp: monster.baseHp || monster.hp || 100,
         atk: monster.baseAtk || monster.atk || 10,
@@ -254,19 +249,25 @@ export function getModifiedStats(monster, playerLevel = 1) {
         maxPp: monster.baseMaxPp || monster.maxPp || 10
     };
 
-    // 2. Efficiency Bonus (3% per level to ATK and DEF)
-    const effLevel = monster.extractEfficiency || 0;
-    const effMult = 1 + (effLevel * 0.03);
+    const effLevel = Math.min(5, monster.extractEfficiency || 0);
+    const effMulti = effLevel * 0.02;
 
     const stats = {
         maxHp: base.maxHp,
-        atk: Math.floor(base.atk * effMult),
-        def: Math.floor(base.def * effMult),
+        atk: base.atk,
+        def: base.def,
         spd: base.spd,
         crit: base.crit,
         pp: monster.pp,
         maxPp: base.maxPp,
-        slots: 3 // Base slots
+        slots: 3,
+        breakdown: {
+            atk: { base: base.atk, card: 0, eff: 0 },
+            def: { base: base.def, card: 0, eff: 0 },
+            spd: { base: base.spd, card: 0, eff: 0 },
+            crit: { base: base.crit, card: 0, eff: 0 },
+            hp: { base: base.maxHp, card: 0, eff: 0 }
+        }
     };
 
     if (monster.equippedCards) {
@@ -274,20 +275,29 @@ export function getModifiedStats(monster, playerLevel = 1) {
             const card = CARDS[slot.cardId];
             if (!card) return;
 
-            // Apply Stat Boosts
-            if (card.stats.hp) stats.maxHp += card.stats.hp;
-            if (card.stats.atk) stats.atk += card.stats.atk;
-            if (card.stats.def) stats.def += card.stats.def;
-            if (card.stats.spd) stats.spd += card.stats.spd;
-            if (card.stats.crit) stats.crit += card.stats.crit;
+            if (card.stats.hp) { stats.maxHp += card.stats.hp; stats.breakdown.hp.card += card.stats.hp; }
+            if (card.stats.atk) { stats.atk += card.stats.atk; stats.breakdown.atk.card += card.stats.atk; }
+            if (card.stats.def) { stats.def += card.stats.def; stats.breakdown.def.card += card.stats.def; }
+            if (card.stats.spd) { stats.spd += card.stats.spd; stats.breakdown.spd.card += card.stats.spd; }
+            if (card.stats.crit) { stats.crit += card.stats.crit; stats.breakdown.crit.card += card.stats.crit; }
             if (card.stats.pp) stats.maxPp += card.stats.pp;
 
-            // Apply Slot Expansions
             stats.slots += card.slots;
         });
     }
 
-    // Enforce Slot Limit
+    // Apply Efficiency Bonus (2% per level to TOTAL ATK and DEF, min +1)
+    if (effLevel > 0) {
+        const atkBonus = Math.max(1, Math.floor(stats.atk * effMulti));
+        const defBonus = Math.max(1, Math.floor(stats.def * effMulti));
+        
+        stats.atk += atkBonus;
+        stats.def += defBonus;
+        
+        stats.breakdown.atk.eff = atkBonus;
+        stats.breakdown.def.eff = defBonus;
+    }
+
     stats.slots = Math.min(10, stats.slots);
 
     return stats;
