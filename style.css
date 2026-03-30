@@ -2734,58 +2734,11 @@ body {
 .status-bars {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
+    width: 320px; /* Provides ample space for horizontal vitals-row layout */
 }
 
-.status-hp-bar,
-.status-pp-bar {
-    width: 160px;
-    /* Reduced length as requested */
-    height: 12px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
-}
-
-.status-bar-label {
-    position: absolute;
-    width: 100%;
-    text-align: center;
-    font-size: 0.65rem;
-    font-family: 'Orbitron', sans-serif;
-    color: #fff;
-    z-index: 5;
-    line-height: 12px;
-    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
-    pointer-events: none;
-}
-
-.status-bar-label.lysis {
-    color: var(--color-lysis);
-    text-shadow: 0 0 5px rgba(255, 0, 76, 0.5);
-}
-
-.hp-fill-bg,
-.pp-fill-bg {
-    width: 100%;
-    height: 100%;
-}
-
-.status-hp-bar .hp-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #00f3ff, #00ff66);
-    box-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
-    transition: width 0.3s ease;
-}
-
-.status-pp-bar .pp-fill {
-    height: 100%;
-    box-shadow: 0 0 10px rgba(0, 119, 255, 0.4);
-    transition: width 0.3s ease, background 0.3s ease;
-}
+/* Legacy status bars replaced by vitals-row layout */
 
 .status-mini-stats {
     display: flex;

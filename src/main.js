@@ -2891,11 +2891,10 @@ function renderInventory() {
             // Dynamically compute stats including any C-Cards equipped
             const stats = getModifiedStats(cell, playerLevel);
             const maxHp = stats.maxHp;
-            const maxPp = stats.pp;
+            const maxPp = stats.maxPp;
 
             // Avoid NaN if maxHp is 0 somehow
             const hpPercent = maxHp > 0 ? (cell.hp / maxHp) * 100 : 0;
-            const ppPercent = maxPp > 0 ? (cell.pp / maxPp) * 100 : 0;
 
             const iconName = cell.name.charAt(0).toUpperCase() + cell.name.slice(1);
 
@@ -2921,13 +2920,17 @@ function renderInventory() {
                     </div>
                     <div class="status-main-row">
                         <div class="status-bars">
-                            <div class="status-hp-bar">
-                                <span class="status-bar-label">HP ${cell.hp}/${maxHp}</span>
-                                <div class="hp-fill-bg"><div class="hp-fill" style="width: ${hpPercent}%"></div></div>
+                            <div class="vitals-row">
+                                <div class="bar-label">HP</div>
+                                <div class="bar-bg"><div class="bar-fill hp-fill" style="width: ${hpPercent}%"></div></div>
+                                <span class="bar-value">${cell.hp} / ${maxHp}</span>
                             </div>
-                            <div class="status-pp-bar">
-                                <span class="status-bar-label ${isLysis ? 'lysis' : ''}">PP ${cell.pp}/${maxPp}</span>
-                                <div class="pp-fill-bg"><div class="pp-fill ${isOverload ? 'overload' : ''}" style="width: ${ppFillPercent}%; background: ${ppColor};"></div></div>
+                            <div class="vitals-row">
+                                <div class="bar-label pp-label ${isLysis ? 'lysis' : ''}">PP</div>
+                                <div class="bar-bg">
+                                    <div class="bar-fill pp-fill ${isOverload ? 'overload' : ''}" style="width: ${ppFillPercent}%; background: ${ppColor};"></div>
+                                </div>
+                                <span class="bar-value ${isLysis ? 'lysis' : ''}">${cell.pp} / ${maxPp}</span>
                             </div>
                         </div>
                         <div class="status-mini-stats">
