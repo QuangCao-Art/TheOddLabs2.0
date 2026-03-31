@@ -2058,13 +2058,24 @@ function updateBattleCard(monsterOrName) {
             return bonus > 0 ? `${modified} (${base}+${bonus})` : modified;
         };
 
-        // Update Stat Grid
-        setSafe('#card-hp', 'innerText', fmt(monster.maxHp, mStats.maxHp));
-        setSafe('#card-pp', 'innerText', fmt(monster.maxPp, mStats.maxPp));
-        setSafe('#card-crit', 'innerText', mStats.crit > monster.crit ? `${mStats.crit}% (${monster.crit}%+${mStats.crit - monster.crit}%)` : `${mStats.crit}%`);
-        setSafe('#card-atk', 'innerText', fmt(monster.atk, mStats.atk));
-        setSafe('#card-def', 'innerText', fmt(monster.def, mStats.def));
-        setSafe('#card-spd', 'innerText', fmt(monster.spd, mStats.spd));
+        const updateBox = (id, key, val, isPercent = false) => {
+            const suffix = isPercent ? '%' : '';
+            setSafe(id, 'innerText', `${val}${suffix}`);
+            
+            const breakdown = mStats.breakdown ? mStats.breakdown[key] : null;
+            const cardBonus = breakdown ? breakdown.card : 0;
+            const effBonus = breakdown ? breakdown.eff : 0;
+            
+            setSafe(`${id}-card`, 'innerText', cardBonus > 0 ? `(+${cardBonus}${suffix})` : '');
+            setSafe(`${id}-eff`, 'innerText', effBonus > 0 ? `(+${effBonus}${suffix})` : '');
+        };
+
+        updateBox('#card-hp', 'hp', mStats.maxHp);
+        updateBox('#card-pp', 'pp', mStats.maxPp);
+        updateBox('#card-crit', 'crit', mStats.crit, true);
+        updateBox('#card-atk', 'atk', mStats.atk);
+        updateBox('#card-def', 'def', mStats.def);
+        updateBox('#card-spd', 'spd', mStats.spd);
     }, 400);
 
     // Monster data update triggered (Glow shifted to Arena Portraits)
@@ -2122,19 +2133,25 @@ function openMonsterCard(monsterId) {
     }
 
     // Populate Stats
-    const stats = {
-        'detail-hp': monster.hp,
-        'detail-pp': monster.maxPp,
-        'detail-atk': monster.atk,
-        'detail-def': monster.def,
-        'detail-spd': monster.spd || 10,
-        'detail-crit': (monster.crit || 5) + '%'
+    const mStats = getModifiedStats(monster);
+    const updateDetailBox = (statId, key, val, isPercent = false) => {
+        const idFull = `detail-${statId}`;
+        const suffix = isPercent ? '%' : '';
+        setSafe(`#${idFull}`, 'innerText', `${val}${suffix}`);
+        
+        const cardBonus = mStats.breakdown ? mStats.breakdown[key].card : 0;
+        const effBonus = mStats.breakdown ? mStats.breakdown[key].eff : 0;
+        
+        setSafe(`#${idFull}-card`, 'innerText', cardBonus > 0 ? `(+${cardBonus}${suffix})` : '');
+        setSafe(`#${idFull}-eff`, 'innerText', effBonus > 0 ? `(+${effBonus}${suffix})` : '');
     };
 
-    for (const [id, val] of Object.entries(stats)) {
-        const el = document.getElementById(id);
-        if (el) el.innerText = val;
-    }
+    updateDetailBox('hp', 'hp', mStats.maxHp);
+    updateDetailBox('pp', 'pp', mStats.maxPp);
+    updateDetailBox('crit', 'crit', mStats.crit, true);
+    updateDetailBox('atk', 'atk', mStats.atk);
+    updateDetailBox('def', 'def', mStats.def);
+    updateDetailBox('spd', 'spd', mStats.spd);
 
     // Populate Skills
     const renderSkills = (skills, containerId) => {
@@ -2965,37 +2982,39 @@ function renderInventory() {
                 </div>
             `;
 
-            const fmt = (base, modified) => {
-                const b = base || modified;
-                const bonus = Math.round(modified - b);
-                return bonus > 0 ? `${modified} (${b}+${bonus})` : `${modified}`;
+            const getStatBox = (label, statKey, isPercent = false) => {
+                const data = stats.breakdown[statKey];
+                const total = (statKey === 'hp') ? stats.maxHp : 
+                              (statKey === 'pp') ? stats.maxPp : stats[statKey];
+                const suffix = isPercent ? '%' : '';
+                
+                let cardBonusHtml = '';
+                if (data && data.card > 0) {
+                    cardBonusHtml = `<span class="stat-bonus card">(+${data.card}${suffix})</span>`;
+                }
+                
+                let effBonusHtml = '';
+                if (data && data.eff > 0) {
+                    effBonusHtml = `<span class="stat-bonus eff">(+${data.eff}${suffix})</span>`;
+                }
+
+                return `
+                    <div class="stat-box">
+                        <span class="stat-label">${label}</span>
+                        <span class="stat-value">${total}${suffix}</span>
+                        ${cardBonusHtml}
+                        ${effBonusHtml}
+                    </div>
+                `;
             };
 
             const statsGridHtml = `
-                <div class="stat-box">
-                    <span class="stat-label">HP</span>
-                    <span class="stat-value">${fmt(cell.maxHp, stats.maxHp)}</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">PP</span>
-                    <span class="stat-value">${fmt(cell.maxPp, stats.maxPp)}</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">ATK</span>
-                    <span class="stat-value">${fmt(cell.atk, stats.atk)}</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">DEF</span>
-                    <span class="stat-value">${fmt(cell.def, stats.def)}</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">SPD</span>
-                    <span class="stat-value">${fmt(cell.spd, stats.spd)}</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">CRIT</span>
-                    <span class="stat-value">${stats.crit}%</span>
-                </div>
+                ${getStatBox('HP', 'hp')}
+                ${getStatBox('PP', 'pp')}
+                ${getStatBox('CRIT', 'crit', true)}
+                ${getStatBox('ATK', 'atk')}
+                ${getStatBox('DEF', 'def')}
+                ${getStatBox('SPD', 'spd')}
             `;
 
             item.onclick = () => {

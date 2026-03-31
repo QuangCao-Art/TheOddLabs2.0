@@ -266,7 +266,8 @@ export function getModifiedStats(monster, playerLevel = 1) {
             def: { base: base.def, card: 0, eff: 0 },
             spd: { base: base.spd, card: 0, eff: 0 },
             crit: { base: base.crit, card: 0, eff: 0 },
-            hp: { base: base.maxHp, card: 0, eff: 0 }
+            hp: { base: base.maxHp, card: 0, eff: 0 },
+            pp: { base: base.maxPp, card: 0, eff: 0 }
         }
     };
 
@@ -280,7 +281,7 @@ export function getModifiedStats(monster, playerLevel = 1) {
             if (card.stats.def) { stats.def += card.stats.def; stats.breakdown.def.card += card.stats.def; }
             if (card.stats.spd) { stats.spd += card.stats.spd; stats.breakdown.spd.card += card.stats.spd; }
             if (card.stats.crit) { stats.crit += card.stats.crit; stats.breakdown.crit.card += card.stats.crit; }
-            if (card.stats.pp) stats.maxPp += card.stats.pp;
+            if (card.stats.pp) { stats.maxPp += card.stats.pp; stats.breakdown.pp.card += card.stats.pp; }
 
             stats.slots += card.slots;
         });
