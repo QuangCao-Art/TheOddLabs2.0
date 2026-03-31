@@ -3002,8 +3002,10 @@ function renderInventory() {
                     <div class="stat-box">
                         <span class="stat-label">${label}</span>
                         <span class="stat-value">${total}${suffix}</span>
-                        ${cardBonusHtml}
-                        ${effBonusHtml}
+                        <div class="stat-bonuses-row">
+                            ${cardBonusHtml}
+                            ${effBonusHtml}
+                        </div>
                     </div>
                 `;
             };

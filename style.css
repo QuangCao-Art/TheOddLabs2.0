@@ -97,6 +97,28 @@ body {
     align-items: center;
 }
 
+/* Custom Minimalist Scrollbar (Cyan) - Fine-Tuned Thick & Inset */
+::-webkit-scrollbar {
+    width: 32px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-player);
+    border-radius: 30px;
+    border: 12px solid transparent;
+    /* Maintains the substantial 12px cap */
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--neon-cyan);
+    background-clip: padding-box;
+}
+
 /* Universal Item Icons (256px sprites on 2048px sheet) */
 /* Universal Item Icons (256px sprites on 2048px sheet) */
 .icon-biomass,
@@ -1302,23 +1324,29 @@ body {
 .card-stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 8px;
+    /* Slightly tighter gap */
     width: 100%;
-    margin-top: 15px;
+    margin-top: 5px;
+    /* Significantly reduced margin to save space */
 }
 
 .stat-box {
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    padding: 15px 8px;
+    border-radius: 10px;
+    /* Slightly tighter radius */
+    padding: 8px 4px;
+    /* Reduced from 15px 8px */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 0px;
+    /* Removed gap for vertical density */
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    min-height: 100px;
+    min-height: 80px;
+    /* Reduced from 100px */
 }
 
 .stat-box:hover {
@@ -1329,12 +1357,13 @@ body {
 }
 
 .stat-label {
-    font-size: 0.65rem;
+    font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.4);
     letter-spacing: 2px;
     font-weight: 800;
     text-transform: uppercase;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
+    /* Reduced from 4px */
 }
 
 .stat-value {
@@ -1344,7 +1373,17 @@ body {
     font-weight: 900;
     text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
     white-space: nowrap;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
+    /* Reduced from 2px */
+}
+
+.stat-bonuses-row {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 .stat-bonus {
@@ -3739,32 +3778,11 @@ body {
     width: 100%;
 }
 
-.stat-box {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 12px;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-}
+/* Consolidated stat-box style used from line 1331 */
 
-.stat-label {
-    font-size: 0.7rem;
-    font-family: 'Orbitron', sans-serif;
-    color: var(--color-player);
-    letter-spacing: 2px;
-    opacity: 0.7;
-}
+/* Consolidated stat-label style used from line 1352 */
 
-.stat-value {
-    font-size: 0.95rem;
-    /* Reduced from 1.2rem to fit Total (Base+Bonus) */
-    font-weight: 900;
-    font-family: 'Orbitron', sans-serif;
-    white-space: nowrap;
-}
+/* Consolidated stat-value style used from line 1361 */
 
 .detail-info {
     flex: 1;
@@ -3775,26 +3793,7 @@ body {
     padding-right: 20px;
 }
 
-.detail-info::-webkit-scrollbar,
-.detail-visual::-webkit-scrollbar {
-    width: 5px;
-}
-
-.detail-info::-webkit-scrollbar-track,
-.detail-visual::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.detail-info::-webkit-scrollbar-thumb,
-.detail-visual::-webkit-scrollbar-thumb {
-    background: var(--color-player);
-    border-radius: 5px;
-}
-
-.detail-info::-webkit-scrollbar-thumb {
-    background: rgba(0, 243, 255, 0.3);
-    border-radius: 10px;
-}
+/* Component-specific scrollbar overrides removed to use global minimalist style */
 
 .info-header {
     display: flex;
@@ -3994,12 +3993,13 @@ body {
 .card-bio {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 15px;
-    border-radius: 20px;
-    height: 150px;
-    /* Further reduced height for layout stability */
+    padding: 10px;
+    /* Reduced from 15px */
+    border-radius: 15px;
+    /* Slightly tighter radius */
+    height: 110px;
+    /* Reduced from 150px to save vertical space */
     overflow-y: auto;
-    /* Handle potential text overflow gracefully */
 }
 
 .card-bio h3 {
