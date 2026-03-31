@@ -6,7 +6,7 @@ import { Overworld } from './engine/overworld.js';
 import { CARDS, LEVEL_REWARDS, NPC_PRESETS, NPC_ENCOUNTERS } from './data/cards.js';
 import { SHOP_ITEMS, shopState } from './data/shop.js';
 import { SYNTHESIS_RECIPES } from './data/synthesis.js';
-import { QUESTS } from './data/quests.js';
+import { QUESTS, MAIN_QUEST_LOGS } from './data/quests.js';
 import { BioExtract } from './ui/bio_extract.js';
 
 // Initialize UI Modules
@@ -110,8 +110,12 @@ let battleLogHistory = [];
 let previousScreen = 'screen-main-menu';
 
 // Inventory Navigation State
-const INVENTORY_TABS = ['logs', 'items', 'cards', 'status', 'quests', 'catalyst'];
-let invNav = {
+const INVENTORY_TABS = ['quests', 'logs', 'items', 'cards', 'status', 'catalyst'];
+
+/**
+ * UI State: Inventory Navigation state
+ */
+const invNav = {
     active: false,
     tabIndex: 0, // Maps to INVENTORY_TABS
     itemIndex: 0
@@ -308,7 +312,7 @@ const updateInvNav = (isKeyboardAction = false) => {
             invLayout.style.display = 'none'; // Use display none to hide flex/grid
             catalystState.activeProfile = 'player';
             renderManagementHub();
-        } else if (currentTabId === 'status') {
+        } else if (currentTabId === 'status' || currentTabId === 'logs' || currentTabId === 'quests' || currentTabId === 'items' || currentTabId === 'cards') {
             renderInventory();
             invLayout.style.display = '';
         } else {
@@ -318,7 +322,7 @@ const updateInvNav = (isKeyboardAction = false) => {
 
     // 3. Highlight selected item
     if (!activeTab || currentTabId === 'catalyst') return; // Skip item highlight logic for catalyst tab
-    const items = activeTab.querySelectorAll('.log-item, .key-item-slot, .status-item');
+    const items = activeTab.querySelectorAll('.log-item, .key-item-slot, .status-item, .quest-item');
     if (items.length === 0) return;
 
     if (invNav.itemIndex >= items.length) invNav.itemIndex = Math.max(0, items.length - 1);
@@ -814,7 +818,7 @@ function setupEventListeners() {
 
     document.getElementById('btn-save-game')?.addEventListener('click', () => {
         window.showConfirmModal(
-            "SECURE PROGRESS", 
+            "SECURE PROGRESS",
             "Initializing manual data backup. This will overwrite your existing experiment log. // Note: The game automatically saves after major discoveries and quest updates.",
             () => {
                 saveGameState();
@@ -1273,7 +1277,7 @@ function setupEventListeners() {
         setTimeout(() => { inventoryInputReady = true; }, 250);
         renderInventory();
         invNav.active = true;
-        invNav.tabIndex = 3; // Default to Catalyst Storage
+        invNav.tabIndex = 0; // Default to first tab (Quests) per user request
         invNav.itemIndex = 0;
         updateInvNav(true);
         showScreen('screen-inventory');
@@ -1671,7 +1675,7 @@ function setupEventListeners() {
             // Re-fetch items if not catalyst, otherwise items is null which is fine since catalyst handles its own clicks
             let items = null;
             if (INVENTORY_TABS[invNav.tabIndex] !== 'catalyst') {
-                items = activeTab.querySelectorAll('.log-item, .key-item-slot, .status-item');
+                items = activeTab.querySelectorAll('.log-item, .key-item-slot, .status-item, .quest-item');
             }
 
             if (key === 'q') { // Tab Left
@@ -1684,11 +1688,13 @@ function setupEventListeners() {
                 updateInvNav(true);
             } else if (key === 'w' || key === 'arrowup' || key === 'a' || key === 'arrowleft') {
                 if (items && items.length > 0) {
+                    e.preventDefault();
                     invNav.itemIndex = (invNav.itemIndex - 1 + items.length) % items.length;
                     updateInvNav(true);
                 }
             } else if (key === 's' || key === 'arrowdown' || key === 'd' || key === 'arrowright') {
                 if (items && items.length > 0) {
+                    e.preventDefault();
                     invNav.itemIndex = (invNav.itemIndex + 1) % items.length;
                     updateInvNav(true);
                 }
@@ -2061,11 +2067,11 @@ function updateBattleCard(monsterOrName) {
         const updateBox = (id, key, val, isPercent = false) => {
             const suffix = isPercent ? '%' : '';
             setSafe(id, 'innerText', `${val}${suffix}`);
-            
+
             const breakdown = mStats.breakdown ? mStats.breakdown[key] : null;
             const cardBonus = breakdown ? breakdown.card : 0;
             const effBonus = breakdown ? breakdown.eff : 0;
-            
+
             setSafe(`${id}-card`, 'innerText', cardBonus > 0 ? `(+${cardBonus}${suffix})` : '');
             setSafe(`${id}-eff`, 'innerText', effBonus > 0 ? `(+${effBonus}${suffix})` : '');
         };
@@ -2138,10 +2144,10 @@ function openMonsterCard(monsterId) {
         const idFull = `detail-${statId}`;
         const suffix = isPercent ? '%' : '';
         setSafe(`#${idFull}`, 'innerText', `${val}${suffix}`);
-        
+
         const cardBonus = mStats.breakdown ? mStats.breakdown[key].card : 0;
         const effBonus = mStats.breakdown ? mStats.breakdown[key].eff : 0;
-        
+
         setSafe(`#${idFull}-card`, 'innerText', cardBonus > 0 ? `(+${cardBonus}${suffix})` : '');
         setSafe(`#${idFull}-eff`, 'innerText', effBonus > 0 ? `(+${effBonus}${suffix})` : '');
     };
@@ -2682,6 +2688,7 @@ const setStyle = (selector, prop, val) => {
 };
 
 function renderInventory() {
+    const currentTabId = INVENTORY_TABS[invNav.tabIndex];
     const logList = document.getElementById('inventory-log-list');
     const itemGrid = document.getElementById('inventory-item-grid');
     const statusList = document.getElementById('inventory-status-list');
@@ -2736,11 +2743,11 @@ function renderInventory() {
         const emptyMsg = document.createElement('div');
         emptyMsg.className = 'log-item locked';
         emptyMsg.style.justifyContent = 'center';
-        emptyMsg.innerHTML = '<span class="log-status" style="opacity: 0.5;">No logs. Either you just started,<br>or you\'re actively avoiding knowledge.</span>';
+        emptyMsg.innerHTML = '<span class="log-status" style="opacity: 0.5;">DATABASE: THE VOID<br>Try talking to Jenzi at the Lab.</span>';
+        emptyMsg.onclick = () => {
+             updateDetail("DATABASE: THE VOID", "This log is as empty as a lab fridge on a Monday. Either your eyes are closed, or you're allergic to reading. Go pester Jenzi; she’s basically a walking encyclopedia (and way more talkative than this screen).", null);
+        };
         logList.appendChild(emptyMsg);
-        // Empty state detail panel
-        if (detailTitle) detailTitle.innerText = 'DATABASE: NONE';
-        if (detailDesc) detailDesc.innerText = 'This unit has zero logs on record. Either you\'re a speedrunner, or you just don\'t like reading. But you need datalog to progress the game you know?\n\nGo talk to Jenzi? She seems to know everything (maybe too much).';
         const cardContainer = detailCard ? detailCard.closest('.detail-card-container') : null;
         if (cardContainer) cardContainer.style.display = 'none';
     } else {
@@ -2788,25 +2795,34 @@ function renderInventory() {
             logList.appendChild(item);
         });
 
-        // Auto-select the newest (last) collected log
+        // Auto-select the newest (last) collected log if we don't have a valid selection
         const newestLog = displayLogs[displayLogs.length - 1];
         if (newestLog) {
-            invNav.itemIndex = displayLogs.length - 1;
-            updateDetail(`${newestLog.id.toUpperCase()}:<br>${newestLog.title}`, newestLog.text, null);
-            // Highlight the last item visually
-            const lastItem = logList.lastElementChild;
-            if (lastItem) {
-                lastItem.classList.add('nav-selected');
-                // If it's the auto-selected one and it's new, start the timer
-                if (gameState.unseenLogs.includes(newestLog.id)) {
-                    if (selectTimer) clearTimeout(selectTimer);
-                    selectTimer = setTimeout(() => {
-                        gameState.unseenLogs = gameState.unseenLogs.filter(id => id !== newestLog.id);
-                        lastItem.classList.remove('new');
-                        console.log(`Newest Log ${newestLog.id} marked as seen.`);
-                    }, 3000);
+            // Only force selection if at the start or out of bounds for the logs tab
+            const currentTabId = INVENTORY_TABS[invNav.tabIndex];
+            if (currentTabId === 'logs') {
+                if (invNav.itemIndex === undefined || invNav.itemIndex < 0 || invNav.itemIndex >= displayLogs.length) {
+                    invNav.itemIndex = displayLogs.length - 1;
                 }
             }
+
+            const targetLog = displayLogs[invNav.itemIndex] || newestLog;
+            if (targetLog) {
+                updateDetail(`${targetLog.id.toUpperCase()}:<br>${targetLog.title}`, targetLog.text, null);
+
+                // Highlight the correct item visually
+                const items = Array.from(logList.children).filter(el => el.classList.contains('log-item'));
+                if (items[invNav.itemIndex]) {
+                    items[invNav.itemIndex].classList.add('nav-selected');
+                    // If it's a new log, mark as seen after some time
+                    if (gameState.unseenLogs.includes(targetLog.id)) {
+                        if (selectTimer) clearTimeout(selectTimer);
+                        selectTimer = setTimeout(clearNewStatus, 3000);
+                    }
+                }
+            }
+        } else if (currentTabId === 'logs') {
+            updateDetail("DATABASE: THE VOID", "This log is as empty as a lab fridge on a Monday. Either your eyes are closed, or you're allergic to reading. Go pester Jenzi; she’s basically a walking encyclopedia (and way more talkative than this screen).", null);
         }
     }
 
@@ -2852,7 +2868,11 @@ function renderInventory() {
             if (item.isPlaceholder) {
                 slot.classList.add('empty-slot');
                 slot.innerHTML = `<div style="width: 25px; height: 25px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 50%; display: block; box-sizing: border-box;"></div>`;
-                slot.onclick = () => updateDetail("VACANT SLOT", "Maintain field operations to secure additional laboratory assets.", 'assets/images/Card_Placeholder.png');
+                const placeholderTitle = currentTabId === 'items' ? "POCKETS: VACANT" : "COLLECTION: EMPTY";
+                const placeholderDesc = currentTabId === 'items' ? 
+                    "Your bags are so empty, there's an echo in here! Maybe check the furniture? Go make some money and maybe you can afford a snack." : 
+                    "Your card collection is as empty as your lab-intern savings account. Zero cards found! It’s 'un-dealt' for someone in your position to have no cards. Keep exploring the Lab; you'll soon find something worth collecting.";
+                slot.onclick = () => updateDetail(placeholderTitle, placeholderDesc, null);
             } else {
                 const isSelectable = true; // Since we filtered foundItems above
 
@@ -2877,6 +2897,15 @@ function renderInventory() {
     populateGrid('inventory-item-grid', (id) => !id.includes('CARD'));
     populateGrid('inventory-card-grid', (id) => id.includes('CARD'));
 
+    // Update empty states for Info Panel if current tab is empty
+    if (currentTabId === 'items') {
+        const hasItems = gameState.items.some(id => !id.includes('CARD'));
+        if (!hasItems) updateDetail("POCKETS: VACANT", "Your bags are so empty, there's an echo in here! Maybe check the furniture? Go make some money and maybe you can afford a snack.", null);
+    } else if (currentTabId === 'cards') {
+        const hasCards = gameState.items.some(id => id.includes('CARD'));
+        if (!hasCards) updateDetail("COLLECTION: EMPTY", "Your card collection is as empty as your lab-intern savings account. Zero cards found! It’s 'un-dealt' for someone in your position to have no cards. Keep exploring the Lab; you'll soon find something worth collecting.", null);
+    }
+
     // 3. Populate Cell Status
     statusList.innerHTML = '';
 
@@ -2893,12 +2922,18 @@ function renderInventory() {
                 <div style="width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%;"></div>
             </div>
             <div class="status-info">
-                <div class="status-name" style="opacity: 0.5;">0% BIOLOGICAL OCCUPANCY</div>
+                <div class="status-name" style="opacity: 0.5;">OCCUPANCY: ZERO</div>
                 <div style="font-size: 0.85rem; color: rgba(255,255,255,0.4); line-height: 1.4;">
-                    This place is so sterile, even the cells are too afraid to move in. Maintain field operations to secure active specimens.
+                    Containment cell is empty. Ask Jenzi about laboratory specimens.
                 </div>
             </div>
         `;
+        if (currentTabId === 'status') {
+            updateDetail("OCCUPANCY: ZERO", "This containment unit is so clean, you could eat off the floor (please don't). It’s a literal 'G-host' town in here! Go find Jenzi; she’ll help you find something that actually has a pulse.", null);
+        }
+        placeholder.onclick = () => {
+            updateDetail("OCCUPANCY: ZERO", "This containment unit is so clean, you could eat off the floor (please don't). It’s a literal 'G-host' town in here! Go find Jenzi; she’ll help you find something that actually has a pulse.", null);
+        };
         statusList.appendChild(placeholder);
     } else {
         playerParty.forEach((cell, index) => {
@@ -2984,15 +3019,15 @@ function renderInventory() {
 
             const getStatBox = (label, statKey, isPercent = false) => {
                 const data = stats.breakdown[statKey];
-                const total = (statKey === 'hp') ? stats.maxHp : 
-                              (statKey === 'pp') ? stats.maxPp : stats[statKey];
+                const total = (statKey === 'hp') ? stats.maxHp :
+                    (statKey === 'pp') ? stats.maxPp : stats[statKey];
                 const suffix = isPercent ? '%' : '';
-                
+
                 let cardBonusHtml = '';
                 if (data && data.card > 0) {
                     cardBonusHtml = `<span class="stat-bonus card">(+${data.card}${suffix})</span>`;
                 }
-                
+
                 let effBonusHtml = '';
                 if (data && data.eff > 0) {
                     effBonusHtml = `<span class="stat-bonus eff">(+${data.eff}${suffix})</span>`;
@@ -3034,8 +3069,38 @@ function renderInventory() {
         });
     }
 
-    // 4. Populate Quests
+    // 4. Update and Populate Quests
+    syncMainQuest();
     renderQuestMenu();
+}
+
+function syncMainQuest() {
+    const flags = gameState.storyFlags;
+    const logCount = gameState.logs ? gameState.logs.length : 0;
+    let stage = 'initialization';
+
+    if (flags.capsainBattleDone) {
+        stage = 'spicy_origin';
+    } else if (flags.dyzesBattleDone) {
+        stage = 'executive_truth';
+    } else if (flags.lanaBattleDone) {
+        stage = 'osmotic_revelations';
+    } else if (flags.jenziAtriumBattleDone) {
+        stage = 'botanic_secrets';
+    } else if (logCount >= 5 && flags.jenziAtriumUnlocked) {
+        stage = 'atrium_archive';
+    } else if (flags.jenziFirstBattleDone) {
+        stage = 'atrium_threshold';
+    } else if (flags.starterChosen) {
+        stage = 'first_duel';
+    }
+
+    // Always keep the main story sync'd
+    gameState.quests['main_story'] = {
+        id: 'main_story',
+        stage: stage,
+        status: 'active'
+    };
 }
 
 function renderQuestMenu() {
@@ -3044,12 +3109,54 @@ function renderQuestMenu() {
     questList.innerHTML = '';
 
     const quests = gameState.quests;
-    const activeQuests = Object.keys(quests).filter(id => quests[id].status !== 'finished');
-    const completedQuests = Object.keys(quests).filter(id => quests[id].status === 'finished');
+    const mainQuest = quests['main_story'];
+
+    // Filter out main_story from side quests
+    const activeQuests = Object.keys(quests).filter(id => id !== 'main_story' && quests[id].status !== 'finished');
+    const completedQuests = Object.keys(quests).filter(id => id !== 'main_story' && quests[id].status === 'finished');
+
+    // 1. Render Main Narrative Diary
+    if (mainQuest && MAIN_QUEST_LOGS[mainQuest.stage]) {
+        const mData = MAIN_QUEST_LOGS[mainQuest.stage];
+        const header = document.createElement('div');
+        header.className = 'quest-category-header main-narrative';
+        header.innerText = 'RESEARCH DIARY';
+        questList.appendChild(header);
+
+        const item = document.createElement('div');
+        item.className = `quest-item main-story active-narrative`;
+        item.innerHTML = `
+            <div class="quest-main">
+                <span class="quest-title">${mData.title}</span>
+                <span class="quest-progress">ACTIVE</span>
+            </div>
+            <div class="quest-desc">${mData.objective}</div>
+        `;
+
+        item.onclick = () => {
+            invNav.itemIndex = 0;
+            // updateInvNav(false); // Removed to prevent recursion/excessive re-rendering if needed, but standard for selection
+            const detailTitle = document.getElementById('inventory-detail-title');
+            const detailDesc = document.getElementById('inventory-detail-desc');
+            if (detailTitle) detailTitle.innerHTML = mData.title.toUpperCase();
+            // Show the narrative block in details
+            if (detailDesc) detailDesc.innerHTML = `<i style="color: #88ccff; opacity: 0.8;">"${mData.narrative}"</i><br><br><b>CURRENT OBJECTIVE:</b><br>${mData.objective}`;
+
+            const detailImg = document.getElementById('inventory-detail-card');
+            if (detailImg) {
+                detailImg.src = 'assets/images/Card_Placeholder.png';
+                detailImg.closest('.detail-card-container').style.display = 'flex';
+            }
+
+            document.querySelectorAll('.quest-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+        };
+        questList.appendChild(item);
+    }
 
     const renderCategory = (title, ids) => {
         if (ids.length === 0) return;
-        
+
         const header = document.createElement('div');
         header.className = 'quest-category-header';
         header.innerText = title;
@@ -3062,8 +3169,8 @@ function renderQuestMenu() {
 
             const item = document.createElement('div');
             item.className = `quest-item ${qProgress.status}`;
-            
-            const progressText = qData.type === 'collect' 
+
+            const progressText = qData.type === 'collect'
                 ? (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'DONE' : 'LOOKING...')
                 : `${qProgress.progress}/${qData.amount}`;
 
@@ -3074,13 +3181,20 @@ function renderQuestMenu() {
                 </div>
                 <div class="quest-desc">${qData.description}</div>
             `;
-            
+
             item.onclick = () => {
+                invNav.itemIndex = Object.keys(QUESTS).indexOf(id) + 1; // +1 if main story is index 0
                 const detailTitle = document.getElementById('inventory-detail-title');
                 const detailDesc = document.getElementById('inventory-detail-desc');
                 if (detailTitle) detailTitle.innerHTML = qData.title.toUpperCase();
-                if (detailDesc) detailDesc.innerText = qData.description + "\n\nReward: " + qData.reward.id + (qData.reward.amount ? " x" + qData.reward.amount : "");
-                
+                if (detailDesc) detailDesc.innerHTML = qData.description + "<br><br><b>REWARD:</b><br>" + qData.reward.id + (qData.reward.amount ? " x" + qData.reward.amount : "");
+
+                const detailImg = document.getElementById('inventory-detail-card');
+                if (detailImg) {
+                    detailImg.src = 'assets/images/Card_Placeholder.png';
+                    detailImg.closest('.detail-card-container').style.display = 'flex';
+                }
+
                 document.querySelectorAll('.quest-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
             };
@@ -3092,7 +3206,7 @@ function renderQuestMenu() {
     renderCategory('ACTIVE MISSIONS', activeQuests);
     renderCategory('COMPLETED ARCHIVE', completedQuests);
 
-    if (activeQuests.length === 0 && completedQuests.length === 0) {
+    if (!mainQuest && activeQuests.length === 0 && completedQuests.length === 0) {
         questList.innerHTML = '<div class="empty-state">No missions initialized. Consult with laboratory staff for assignments.</div>';
     }
 }
@@ -3965,7 +4079,7 @@ function showGameOver(isFailure, forceOverlay = false) {
 
     const opponentId = catalystState.battleOpponentId;
     const isBossMatch = (opponentId === 'lana_boss' || opponentId === 'dyzes_boss' || opponentId === 'capsain_boss');
-    
+
     // NEW: Check for generic battle-able NPCs that have special post-battle dialogue needs
     const isCustomNpcMatch = opponentId && !opponentId.endsWith('_wild') && !isBossMatch;
 
@@ -3981,9 +4095,9 @@ function showGameOver(isFailure, forceOverlay = false) {
             setTimeout(() => {
                 const zone = Overworld.zones[Overworld.currentZone];
                 let npc = null;
-                
+
                 if (zone) {
-            const bossId = opponentId.replace('_boss', '').replace('_tutorial', '').replace('_atrium', '');
+                    const bossId = opponentId.replace('_boss', '').replace('_tutorial', '').replace('_atrium', '');
                     npc = zone.objects.find(o => o.id === bossId || o.battleEncounterId === opponentId);
                 }
 
@@ -4331,7 +4445,7 @@ function resetGame() {
     }
 
     gameState.enemyParty = oProfile.party.slice(0, 3).filter(m => m !== null);
-    
+
     // Robust level lookup: profile -> encounter data -> default 1
     let enemyLevel = oProfile.level;
     if (enemyLevel === undefined && typeof NPC_ENCOUNTERS !== 'undefined' && NPC_ENCOUNTERS[opponentId]) {
@@ -4471,7 +4585,7 @@ function triggerMonsterExit(displaySelector, callback) {
     // 4. Container Capture (Bypass for Wild Encounters)
     // Check for any opponentId ending in _wild
     const isWild = (catalystState.battleOpponentId && catalystState.battleOpponentId.includes('_wild')) && displaySelector.includes('enemy');
-    
+
     if (isWild) {
         setTimeout(() => {
             portrait.classList.remove('anim-recall-exit', 'death-fade');
@@ -5748,7 +5862,7 @@ function applyBonuses(party, level, forceHeal = true) {
         }
 
         // Sync limits to instance for UI display, but don't overwrite base stats
-        monster.maxHp = mod.maxHp; 
+        monster.maxHp = mod.maxHp;
         monster.maxPp = mod.maxPp;
         if (monster.pp > mod.maxPp) monster.pp = mod.maxPp;
     });

@@ -848,6 +848,23 @@ To deepen the mystery, the lab is littered with subtle clues about the Director�
 
 ---
 
+## The Main Quest Diary (Research Log)
+
+The Main Quest in *The Odd Labs* acts as an automated "Intern's Research Log." It follows the core narrative of an intern who is both fascinated by the sentient cells and suspicious of the official stories regarding "The Incident."
+
+| Progression Phase | Story Flag / Requirement | Diary Log Title & Narrative |
+| :--- | :--- | :--- |
+| **0. The Bio-Sync** | `!starterChosen` | **[MAIN] PROTOCOL: INITIALIZATION**<br>**Objective:** Pair with your first Companion Cell.<br>*"Day 1 at Odd Labs. Honestly? This place is terrifyingly beautiful. I'm supposed to 'pair' with a sentient cell today. They're way bigger than the textbooks said (15cm!), and they almost seem to be watching me back. Time to see which one wants to be my partner in this maze."* |
+| **1. The First Duel** | `!jenziFirstBattleDone` | **[MAIN] THE GATEKEEPER'S VIBE**<br>**Objective:** Survive Jenzi's introductory diagnostic.<br>*"Jenzi says I've got 'main character energy,' but she’s still making me undergo a 'diagnostic duel.' She’s cool, but she keeps teasing me about some 'weird smells' and a cover-up. If I can beat her, maybe she’ll actually tell me what she knows about the Incident."* |
+| **2. Atrium Entry** | `!jenziAtriumUnlocked` | **[MAIN] THE ATRIUM THRESHOLD**<br>**Objective:** Find Log #001 near the specimen tanks.<br>*"I’m techincally 'in.' The Atrium is massive, but it feels like the whole building is holding its breath. Jenzi hinted that someone dropped a datapad near the specimen tanks. I need to find it; the official 'Ionization Leak' story is starting to feel like a corporate fairy tale."* |
+| **3. The Tea Spill** | `!jenziAtriumBattleDone` | **[MAIN] ATRIUM ARCHIVE**<br>**Objective:** Archive 5 DataLogs and battle Jenzi again.<br>*"I've been scrounging through the Atrium desks. Mention of 'Point Zero' and 'Noodle Tuesday' is everywhere. Jenzi is ready to spill the 'tea' about the Incident, but only if I win this next duel. She says the Director's story is fishy... well, more like spicy."* |
+| **4. Botanical Secrets** | `!lanaBattleDone` | **[MAIN] PETALS AND SECRETS**<br>**Objective:** Defeat Lana to secure the Old Lab Key.<br>*"Scientist Lana is... intense. She treats her Cambihils like royalty and me like a budget virus. She’s definitely hiding something about the Director's 'private research.' If I want that key to the restricted wing, I'm going to have to out-sync her in a fight."* |
+| **5. The Fluid Truth** | `!dyzesBattleDone` | **[MAIN] OSMOTIC REVELATIONS**<br>**Objective:** Defeat Dyzes to retrieve the Old Data Stick.<br>*"Dyzes is the 'chillest' guy here, but even he looks nervous when I mention the Old Lab. He says the truth is 'fluid.' He’s got an old data stick that supposedly maps out a hidden sector. If I can stay in sync during his Lydrosome test, I might finally have a map to the truth."* |
+| **6. The Noodle Audit** | `!capsainBattleDone` | **[MAIN] THE EXECUTIVE TRUTH**<br>**Objective:** Confront Director Capsain in his suite.<br>*"I have the key. I have the map. Now I just have the Director. Capsain looks like he hasn't slept since 2027. He keeps shouting about 'anomalies,' but I found a draft of a 'Noodle Review' in his private files. Is the head of Odd Labs really hiding a portal to a chili-based disaster?"* |
+| **7. Point Zero** | `capsainBattleDone` | **[MAIN] THE SPICY ORIGIN**<br>**Objective:** Locate the Origin Nitrophil in the Old Lab.<br>*"Capsain is down. He gave me a bottle of 'Inferno Sauce' and looked like his world was ending. The secret is in the basement—the Old Lab. I'm going to find the 'Origin.' If the legend is true, this whole facility was built on a beautiful, spicy accident."* |
+
+---
+
 ## [CREATOR ONLY] Lore: The Hungry Gods & The Accidental Genesis
 **Note: This lore is for the creator's reference only. Do not use this content for in-game player-facing text or dialogue directly.**
 
