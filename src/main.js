@@ -2884,8 +2884,6 @@ function renderInventory() {
                     slot.onclick = () => {
                         invNav.itemIndex = i;
                         updateInvNav(false);
-                        grid.querySelectorAll('.key-item-slot').forEach(s => s.classList.remove('active'));
-                        slot.classList.add('active');
                         updateDetail(item.name.toUpperCase(), item.desc, item.img ? `assets/images/${item.img}` : 'assets/images/Card_Placeholder.png');
                     };
                 }
@@ -3057,10 +3055,6 @@ function renderInventory() {
             item.onclick = () => {
                 invNav.itemIndex = index;
                 updateInvNav(false);
-                // Add visual active state
-                document.querySelectorAll('.status-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-
                 const iconNameClick = cell.name.charAt(0).toUpperCase() + cell.name.slice(1);
                 const cardImg = `assets/images/Card_${iconNameClick}.png`;
                 updateDetail(cell.name.toUpperCase(), cell.lore, cardImg, statsGridHtml);
@@ -3107,6 +3101,7 @@ function renderQuestMenu() {
     const questList = document.getElementById('inventory-quest-list');
     if (!questList) return;
     questList.innerHTML = '';
+    let visualIndex = 0;
 
     const quests = gameState.quests;
     const mainQuest = quests['main_story'];
@@ -3135,23 +3130,13 @@ function renderQuestMenu() {
 
         item.onclick = () => {
             invNav.itemIndex = 0;
-            // updateInvNav(false); // Removed to prevent recursion/excessive re-rendering if needed, but standard for selection
-            const detailTitle = document.getElementById('inventory-detail-title');
-            const detailDesc = document.getElementById('inventory-detail-desc');
-            if (detailTitle) detailTitle.innerHTML = mData.title.toUpperCase();
-            // Show the narrative block in details
-            if (detailDesc) detailDesc.innerHTML = `<i style="color: #88ccff; opacity: 0.8;">"${mData.narrative}"</i><br><br><b>CURRENT OBJECTIVE:</b><br>${mData.objective}`;
-
-            const detailImg = document.getElementById('inventory-detail-card');
-            if (detailImg) {
-                detailImg.src = 'assets/images/Card_Placeholder.png';
-                detailImg.closest('.detail-card-container').style.display = 'flex';
-            }
-
-            document.querySelectorAll('.quest-item').forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
+            updateInvNav(false); 
+            const qTitle = mData.title.toUpperCase();
+            const qDesc = `<i style="color: #88ccff; opacity: 0.8;">"${mData.narrative}"</i><br><br><b>CURRENT OBJECTIVE:</b><br>${mData.objective}`;
+            updateDetail(qTitle, qDesc, 'assets/images/Card_Placeholder.png');
         };
         questList.appendChild(item);
+        visualIndex++;
     }
 
     const renderCategory = (title, ids) => {
@@ -3167,6 +3152,7 @@ function renderQuestMenu() {
             const qProgress = quests[id];
             if (!qData) return;
 
+            const currentIndex = visualIndex; // Capture the current visual index
             const item = document.createElement('div');
             item.className = `quest-item ${qProgress.status}`;
 
@@ -3183,23 +3169,14 @@ function renderQuestMenu() {
             `;
 
             item.onclick = () => {
-                invNav.itemIndex = Object.keys(QUESTS).indexOf(id) + 1; // +1 if main story is index 0
-                const detailTitle = document.getElementById('inventory-detail-title');
-                const detailDesc = document.getElementById('inventory-detail-desc');
-                if (detailTitle) detailTitle.innerHTML = qData.title.toUpperCase();
-                if (detailDesc) detailDesc.innerHTML = qData.description + "<br><br><b>REWARD:</b><br>" + qData.reward.id + (qData.reward.amount ? " x" + qData.reward.amount : "");
-
-                const detailImg = document.getElementById('inventory-detail-card');
-                if (detailImg) {
-                    detailImg.src = 'assets/images/Card_Placeholder.png';
-                    detailImg.closest('.detail-card-container').style.display = 'flex';
-                }
-
-                document.querySelectorAll('.quest-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
+                invNav.itemIndex = currentIndex;
+                updateInvNav(false);
+                const qTitle = qData.title.toUpperCase();
+                const qDesc = qData.description + "<br><br><b>REWARD:</b><br>" + qData.reward.id + (qData.reward.amount ? " x" + qData.reward.amount : "");
+                updateDetail(qTitle, qDesc, 'assets/images/Card_Placeholder.png');
             };
-
             questList.appendChild(item);
+            visualIndex++;
         });
     };
 
