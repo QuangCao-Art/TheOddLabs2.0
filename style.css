@@ -7667,6 +7667,16 @@ body {
     border-radius: 12px;
 }
 
+#confirm-subtitle {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 5px;
+    margin-bottom: 25px;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
 .confirm-body-text {
     margin: 25px 0;
     font-size: 1.2rem;
@@ -7682,13 +7692,98 @@ body {
     margin-top: 10px;
 }
 
-.btn-neon.alert-btn {
-    --glow-color: #ff3333 !important;
-    border-color: #ff3333 !important;
-    color: #ffcccc !important;
+.confirm-hint {
+    margin-top: 30px;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
-.btn-neon.alert-btn:hover {
+/* Button & Selection Synchronization */
+.confirm-buttons .btn-neon:hover,
+.confirm-buttons .btn-neon.nav-selected {
+    transform: scale(1.05) !important;
+    background: var(--color-bio) !important;
+    color: var(--bg-color) !important;
+    box-shadow: 0 0 30px var(--color-bio) !important;
+    border-color: var(--color-bio) !important;
+}
+
+.confirm-buttons .btn-neon.alert-btn:hover,
+.confirm-buttons .btn-neon.alert-btn.nav-selected {
     background: rgba(255, 51, 51, 0.2) !important;
-    box-shadow: 0 0 20px rgba(255, 51, 51, 0.4) !important;
+    color: #ffcccc !important;
+    box-shadow: 0 0 30px rgba(255, 51, 51, 0.5) !important;
+    border-color: #ff3333 !important;
+}
+
+/* Pause Menu */
+#screen-pause {
+    z-index: 10000;
+}
+
+#pause-panel {
+    max-width: 450px;
+    width: 90%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 12px;
+    box-shadow: 0 0 50px rgba(0, 243, 255, 0.1);
+}
+
+.pause-subtitle {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 5px;
+    margin-bottom: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.pause-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    margin: 30px 0;
+}
+
+.pause-buttons .btn-neon {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 35px;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    border-radius: 30px;
+    transition: all 0.2s ease-out;
+}
+
+/* Hover & Selection Harmony - Matches Image Correct Style */
+.pause-buttons .btn-neon:hover,
+.pause-buttons .btn-neon.nav-selected {
+    transform: scale(1.05) !important;
+    background: var(--color-bio) !important;
+    color: var(--bg-color) !important;
+    box-shadow: 0 0 30px var(--color-bio) !important;
+    border-color: var(--color-bio) !important;
+}
+
+/* Special case for the Red button in Pause Menu - Matches Proceed Button Hover */
+.pause-buttons .btn-neon.alert-btn:hover,
+.pause-buttons .btn-neon.alert-btn.nav-selected {
+    background: rgba(255, 51, 51, 0.2) !important;
+    color: #ffcccc !important;
+    box-shadow: 0 0 30px rgba(255, 51, 51, 0.5) !important;
+    border-color: #ff3333 !important;
+}
+
+.pause-hint {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }

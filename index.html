@@ -711,7 +711,6 @@
 
                 <div class="rulebook-footer">
                     <div class="inv-footer-actions">
-                        <button id="id-inventory-main-menu" class="btn-neon inventory-main-menu-btn">MAIN MENU</button>
                         <button id="btn-save-game" class="btn-neon" style="--glow-color: #00ff66; border-color: #00ff66;">SAVE PROGRESS</button>
                         <button id="btn-inventory-back" class="btn-neon">BACK TO LAB</button>
                     </div>
@@ -1353,16 +1352,33 @@
     <!-- Zone Transition Overlay -->
     <div id="zone-transition-overlay" class="hidden"></div>
 
+    <!-- UI Modal Layer: Overworld Pause Menu -->
+    <div id="screen-pause" class="overlay hidden">
+        <div id="pause-panel" class="glass-panel">
+            <h2 class="neon-text outline-text">NEED A REST?</h2>
+            <p class="pause-subtitle">Even Stem Cells need "sleep" too!</p>
+            <div class="header-line"></div>
+            <div class="pause-buttons">
+                <button id="btn-pause-back" class="btn-neon">BACK TO LAB</button>
+                <button id="btn-pause-settings" class="btn-neon">SYSTEM SETTINGS</button>
+                <button id="btn-pause-main-menu" class="btn-neon alert-btn">ABORT EXPERIMENT</button>
+            </div>
+            <div class="pause-hint">[W/S] Navigate | [F] Select</div>
+        </div>
+    </div>
+
     <!-- UI Modal Layer: Generic Confirmation -->
     <div id="screen-confirm" class="overlay hidden">
         <div id="confirm-panel" class="glass-panel">
             <h2 id="confirm-title" class="neon-text outline-text">WARNING</h2>
+            <p id="confirm-subtitle">SYSTEM ALERT AUTHENTICATING</p>
             <div class="header-line"></div>
             <p id="confirm-message" class="confirm-body-text">This action cannot be undone. Proceed?</p>
             <div class="confirm-buttons">
                 <button id="btn-confirm-yes" class="btn-neon alert-btn">PROCEED</button>
                 <button id="btn-confirm-no" class="btn-neon">CANCEL</button>
             </div>
+            <div class="confirm-hint">[A/D] Navigate | [F] Confirm</div>
         </div>
     </div>
 

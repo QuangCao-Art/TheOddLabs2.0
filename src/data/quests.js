@@ -50,17 +50,17 @@ export const MAIN_QUEST_LOGS = {
     'initialization': {
         title: '[MAIN] PROTOCOL: INITIALIZATION',
         objective: 'Select your first Companion Cell.',
-        narrative: 'Day 1 at Odd Labs. Honestly? This place is terrifyingly beautiful. I\'m supposed to \'pair\' with a sentient cell today. They\'re way bigger than the textbooks said (15cm!), and they almost seem to be watching me back. Time to see which one wants to be my partner in this maze.'
+        narrative: 'Day 1 at Odd Labs. Honestly? This place is terrifyingly beautiful. I\'m supposed to \'pair\' with a sentient cell today. They\'re way bigger than the textbooks said, and they almost seem to be watching me back. Time to see which one wants to be my partner in this maze.'
     },
     'first_duel': {
         title: '[MAIN] THE GATEKEEPER\'S VIBE',
         objective: 'Survive Jenzi\'s introductory diagnostic.',
-        narrative: 'Jenzi says I\'ve got \'main character energy,\' but she’s still making me undergo a \'diagnostic duel.\' She’s cool, but she keeps teasing me about some \'weird smells\' and a cover-up. If I can beat her, maybe she’ll actually tell me what she knows about the Incident.'
+        narrative: 'Jenzi’s got this refreshing, honest energy that actually makes me believe her when she says I’ve got potential. She isn’t just being nice—she’s testing me because she thinks I can handle it. If I can win this duel, I’ll know for sure that I’m not just another hire, but someone who actually belongs in this Lab.'
     },
     'atrium_threshold': {
         title: '[MAIN] THE ATRIUM THRESHOLD',
         objective: 'Find Log #001 near the specimen tanks.',
-        narrative: 'I’m techincally \'in.\' The Atrium is massive, but it feels like the whole building is holding its breath. Jenzi hinted that someone dropped a datapad near the specimen tanks. I need to find it; the official \'Ionization Leak\' story is starting to feel like a corporate fairy tale.'
+        narrative: 'Phew, what a test. The Atrium doors are still locked, and Jenzi is playing coy. She hinted that someone dropped a datapad near the specimen tanks in this wing. I need to find it.'
     },
     'atrium_archive': {
         title: '[MAIN] ATRIUM ARCHIVE',
@@ -80,7 +80,7 @@ export const MAIN_QUEST_LOGS = {
     'executive_truth': {
         title: '[MAIN] THE EXECUTIVE TRUTH',
         objective: 'Confront Director Capsain in his suite.',
-        narrative: 'I have the key. I have the map. Now I just have the Director. Capsain looks like he hasn\'t slept since 2027. He keeps shouting about \'anomalies,\' but I found a draft of a \'Noodle Review\' in his private files. Is the head of Odd Labs really hiding a portal to a chili-based disaster?'
+        narrative: 'I have the key. I have the map. Now I just have the Director. Capsain looks like he hasn\'t slept since 2027. He’s a frantic mess of high-level anxiety and corporate paranoia, acting more like a man guarding a haunted house than a scientific research facility. Something tells me he’s much closer to the edge than he lets on. Is the head of Odd Labs really hiding a portal to a chili-based disaster?'
     },
     'spicy_origin': {
         title: '[MAIN] THE SPICY ORIGIN',

@@ -456,19 +456,86 @@ window.showItemPickupModal = (itemId, onClose) => {
  * @param {string} message - The question/body text
  * @param {function} onConfirm - Callback if "Yes" is clicked
  */
+// --- PAUSE MENU LOGIC ---
+let pauseInputReady = false;
+let pauseNavIndex = 0;
+
+window.togglePauseMenu = (show) => {
+    const screen = document.getElementById('screen-pause');
+    if (!screen) return;
+
+    if (show) {
+        screen.classList.remove('hidden');
+        if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
+        pauseInputReady = false;
+        pauseNavIndex = 0;
+        updatePauseSelection();
+        setTimeout(() => { pauseInputReady = true; }, 250);
+    } else {
+        screen.classList.add('hidden');
+        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
+    }
+};
+
+function updatePauseSelection() {
+    const buttons = document.querySelectorAll('#screen-pause .btn-neon');
+    buttons.forEach((btn, idx) => {
+        btn.classList.toggle('nav-selected', idx === pauseNavIndex);
+    });
+}
+
+function initPauseMenuEvents() {
+    const buttons = document.querySelectorAll('#screen-pause .btn-neon');
+    buttons.forEach((btn, idx) => {
+        btn.addEventListener('click', () => {
+            if (btn.id === 'btn-pause-back') {
+                window.togglePauseMenu(false);
+            } else if (btn.id === 'btn-pause-settings') {
+                window.togglePauseMenu(false);
+            } else if (btn.id === 'btn-pause-main-menu') {
+                window.handleAbortExperiment();
+            }
+        });
+
+        btn.addEventListener('mouseenter', () => {
+            pauseNavIndex = idx;
+            updatePauseSelection();
+        });
+    });
+}
+
 window.showConfirmModal = (title, message, onConfirm) => {
     const screen = document.getElementById('screen-confirm');
     const titleEl = document.getElementById('confirm-title');
+    const subEl = document.getElementById('confirm-subtitle');
     const msgEl = document.getElementById('confirm-message');
     const btnYes = document.getElementById('btn-confirm-yes');
     const btnNo = document.getElementById('btn-confirm-no');
 
     if (!screen || !titleEl || !msgEl || !btnYes || !btnNo) return;
 
+    // Reset and Initialize state
+    let confirmNavIndex = 1; // Default to 'CANCEL' for safety
     titleEl.innerText = (title || "WARNING").toUpperCase();
     msgEl.innerText = message || "Proceed with operation?";
+    
+    // Dynamic subtitle flavor
+    if (subEl) {
+        if (title?.toLowerCase().includes('abort')) subEl.innerText = "EXTRACTION PROTOCOL ACTIVE";
+        else if (title?.toLowerCase().includes('secure')) subEl.innerText = "INITIALIZING MANUAL DATA BACKUP";
+        else if (title?.toLowerCase().includes('critical')) subEl.innerText = "DANGER SYSTEM OVERWRITE";
+        else if (title?.toLowerCase().includes('save')) subEl.innerText = "COMMITTING DATA TO THE VOID";
+        else subEl.innerText = "SYSTEM ALERT AUTHENTICATING";
+    }
 
     screen.classList.remove('hidden');
+
+    const updateConfirmSelection = () => {
+        btnYes.classList.toggle('nav-selected', confirmNavIndex === 0);
+        btnNo.classList.toggle('nav-selected', confirmNavIndex === 1);
+    };
+
+    updateConfirmSelection();
 
     const handleYes = () => {
         cleanup();
@@ -479,14 +546,58 @@ window.showConfirmModal = (title, message, onConfirm) => {
         cleanup();
     };
 
-    const cleanup = () => {
-        screen.classList.add('hidden');
-        btnYes.removeEventListener('click', handleYes);
-        btnNo.removeEventListener('click', handleNo);
+    const handleKeydown = (e) => {
+        const key = e.key.toLowerCase();
+        
+        // Navigation: AD, WS, or Arrows (Horizontal focus)
+        if (key === 'a' || key === 'w' || key === 'arrowleft' || key === 'arrowup') {
+            e.preventDefault();
+            confirmNavIndex = 0;
+            updateConfirmSelection();
+        } else if (key === 'd' || key === 's' || key === 'arrowright' || key === 'arrowdown') {
+            e.preventDefault();
+            confirmNavIndex = 1;
+            updateConfirmSelection();
+        } 
+        
+        // Selection
+        else if (key === 'f' || key === 'enter' || key === ' ') {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            if (confirmNavIndex === 0) handleYes();
+            else handleNo();
+        }
+        
+        // Quick Cancel
+        else if (key === 'escape') {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            handleNo();
+        }
     };
 
-    btnYes.onclick = handleYes;
-    btnNo.onclick = handleNo;
+    const handleMouseEnterYes = () => { confirmNavIndex = 0; updateConfirmSelection(); };
+    const handleMouseEnterNo = () => { confirmNavIndex = 1; updateConfirmSelection(); };
+
+    const cleanup = () => {
+        screen.classList.add('hidden');
+        window.removeEventListener('keydown', handleKeydown, true);
+        btnYes.removeEventListener('mouseenter', handleMouseEnterYes);
+        btnNo.removeEventListener('mouseenter', handleMouseEnterNo);
+        // Clear focus from buttons to prevent spacebar re-triggering
+        btnYes.blur();
+        btnNo.blur();
+    };
+
+    // Use capturing phase for keydown to ensure we catch it before other systems
+    window.addEventListener('keydown', handleKeydown, true);
+    
+    // Mouse Sync
+    btnYes.addEventListener('mouseenter', handleMouseEnterYes);
+    btnNo.addEventListener('mouseenter', handleMouseEnterNo);
+
+    btnYes.onclick = (e) => { e.stopImmediatePropagation(); handleYes(); };
+    btnNo.onclick = (e) => { e.stopImmediatePropagation(); handleNo(); };
 };
 
 // --- STARTER SELECTION LOGIC ---
@@ -649,6 +760,7 @@ function init() {
         loadCustomPresets();
         setupNodePositions();
         initStarterSelectionEvents();
+        initPauseMenuEvents();
         setupEventListeners();
 
         // Populate Debug UI
@@ -819,7 +931,7 @@ function setupEventListeners() {
     document.getElementById('btn-save-game')?.addEventListener('click', () => {
         window.showConfirmModal(
             "SECURE PROGRESS",
-            "Initializing manual data backup. This will overwrite your existing experiment log. // Note: The game automatically saves after major discoveries and quest updates.",
+            "Initializing manual data backup. This will overwrite your existing experiment log.\n\nNote: The game automatically saves after major discoveries and quest updates.",
             () => {
                 saveGameState();
                 const btn = document.getElementById('btn-save-game');
@@ -1366,19 +1478,21 @@ function setupEventListeners() {
         Overworld.isPaused = false;
     });
 
-    document.getElementById('id-inventory-main-menu')?.addEventListener('click', () => {
+    // Combined Abort Logic
+    window.handleAbortExperiment = () => {
         window.showConfirmModal(
             "ABORT EXPERIMENT",
             "Returning to the Main Menu will result in the loss of any unsaved tactical progress. Proceed with extraction?",
             () => {
                 triggerSlowTransition(() => {
-                    document.getElementById('screen-inventory').classList.add('hidden');
+                    document.getElementById('screen-inventory')?.classList.add('hidden');
+                    document.getElementById('screen-pause')?.classList.add('hidden');
                     if (typeof invNav !== 'undefined') invNav.active = false;
                     showScreen('screen-main-menu');
                 });
             }
         );
-    });
+    };
 
     // Card Preview Controls
     const previewOverlay = document.getElementById('card-preview-overlay');
@@ -1603,6 +1717,37 @@ function setupEventListeners() {
             return;
         }
 
+        // Pause Menu Terminal Navigation
+        const pauseScreen = document.getElementById('screen-pause');
+        const isPauseOpen = pauseScreen && !pauseScreen.classList.contains('hidden');
+        if (isPauseOpen && pauseInputReady) {
+            const buttons = pauseScreen.querySelectorAll('.btn-neon');
+            if (key === 'w' || key === 'arrowup') {
+                e.preventDefault();
+                pauseNavIndex = (pauseNavIndex - 1 + buttons.length) % buttons.length;
+                updatePauseSelection();
+                return;
+            }
+            if (key === 's' || key === 'arrowdown') {
+                e.preventDefault();
+                pauseNavIndex = (pauseNavIndex + 1) % buttons.length;
+                updatePauseSelection();
+                return;
+            }
+            if (key === 'f' || key === 'enter' || key === ' ') {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                buttons[pauseNavIndex]?.click();
+                return;
+            }
+            if (key === 'escape') {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                window.togglePauseMenu(false);
+                return;
+            }
+        }
+
         if (key === 'escape') {
             const previewOverlay = document.getElementById('card-preview-overlay');
             if (previewOverlay && !previewOverlay.classList.contains('hidden')) {
@@ -1613,6 +1758,7 @@ function setupEventListeners() {
             const rulebookScreen = document.getElementById('screen-rulebook');
             const inventoryOverlay = document.getElementById('screen-inventory');
             const battleScreen = document.getElementById('screen-battle');
+            const isOverworld = !document.getElementById('screen-overworld').classList.contains('hidden');
 
             if (isInvOpen) {
                 // If in inventory, ESC returns to overworld
@@ -1624,13 +1770,28 @@ function setupEventListeners() {
                 return;
             }
             if (rulebookScreen && !rulebookScreen.classList.contains('hidden')) {
-                // Return to whatever was before rulebook
                 showScreen(previousScreen || 'screen-overworld');
                 return;
             }
             if (battleScreen && !battleScreen.classList.contains('hidden')) {
-                // Return to main menu or overworld from battle result/pause if implemented
                 showScreen(previousScreen || 'screen-main-menu');
+                return;
+            }
+
+            // Universal Pause Toggle for Overworld
+            const activeOverlays = [
+                'screen-shop', 'screen-synthesis', 'screen-bio-extract',
+                'screen-incubator-menu', 'screen-incubator-heal', 'screen-settings',
+                'screen-confirm', 'starter-selection-modal', 'screen-pause'
+            ];
+            const isAnyOtherMenuOpen = activeOverlays.some(id => {
+                const el = document.getElementById(id);
+                return el && !el.classList.contains('hidden');
+            });
+
+            if (isOverworld && !isAnyOtherMenuOpen) {
+                e.preventDefault();
+                window.togglePauseMenu(true);
                 return;
             }
         }
@@ -2687,6 +2848,33 @@ const setStyle = (selector, prop, val) => {
     if (el) el.style[prop] = val;
 };
 
+// Helper to update the inventory detail panel
+const updateDetail = (title, desc, imgSrc, statsGridHtml = "") => {
+    const detailTitle = document.getElementById('inventory-detail-title');
+    const detailDesc = document.getElementById('inventory-detail-desc');
+    const detailCard = document.getElementById('inventory-detail-card');
+    const statsContainer = document.getElementById('inventory-detail-stats');
+
+    if (detailTitle) detailTitle.innerHTML = title;
+    if (detailDesc) detailDesc.innerHTML = desc; // Use innerHTML for Quest formatting
+    
+    const cardContainer = detailCard ? detailCard.closest('.detail-card-container') : null;
+    if (imgSrc) {
+        if (detailCard) {
+            detailCard.onerror = () => detailCard.src = './assets/images/Card_Placeholder.png';
+            detailCard.src = imgSrc.startsWith('assets') ? './' + imgSrc.split('?')[0] : imgSrc;
+        }
+        if (cardContainer) cardContainer.style.display = '';
+    } else {
+        if (cardContainer) cardContainer.style.display = 'none';
+    }
+
+    if (statsContainer) {
+        statsContainer.innerHTML = statsGridHtml;
+        statsContainer.style.display = statsGridHtml ? 'grid' : 'none';
+    }
+};
+
 function renderInventory() {
     const currentTabId = INVENTORY_TABS[invNav.tabIndex];
     const logList = document.getElementById('inventory-log-list');
@@ -2698,28 +2886,6 @@ function renderInventory() {
     const detailCard = document.getElementById('inventory-detail-card');
 
     if (!logList || !itemGrid || !statusList || !questList) return;
-
-    // Helper to update the detail panel
-    const updateDetail = (title, desc, imgSrc, statsGridHtml = "") => {
-        if (detailTitle) detailTitle.innerHTML = title;
-        if (detailDesc) detailDesc.innerText = desc;
-        const cardContainer = detailCard ? detailCard.closest('.detail-card-container') : null;
-        if (imgSrc) {
-            if (detailCard) {
-                detailCard.onerror = () => detailCard.src = './assets/images/Card_Placeholder.png';
-                detailCard.src = imgSrc.startsWith('assets') ? './' + imgSrc.split('?')[0] : imgSrc;
-            }
-            if (cardContainer) cardContainer.style.display = '';
-        } else {
-            if (cardContainer) cardContainer.style.display = 'none';
-        }
-
-        const statsContainer = document.getElementById('inventory-detail-stats');
-        if (statsContainer) {
-            statsContainer.innerHTML = statsGridHtml;
-            statsContainer.style.display = statsGridHtml ? 'grid' : 'none';
-        }
-    };
 
     // 1. Populate Logs (Conditional display)
     logList.innerHTML = '';
@@ -2751,6 +2917,14 @@ function renderInventory() {
         const cardContainer = detailCard ? detailCard.closest('.detail-card-container') : null;
         if (cardContainer) cardContainer.style.display = 'none';
     } else {
+        const clearLogNewStatus = (logId, element) => {
+            if (gameState.unseenLogs.includes(logId)) {
+                gameState.unseenLogs = gameState.unseenLogs.filter(id => id !== logId);
+                if (element) element.classList.remove('new');
+                console.log(`Log ${logId} marked as seen.`);
+            }
+        };
+
         displayLogs.forEach((log, i) => {
             const isCollected = Overworld.logsCollected.includes(log.id);
             const isRevealed = isCollected || gameState.debugAllLogs;
@@ -2762,14 +2936,6 @@ function renderInventory() {
                 <span class="log-id">#${log.id}</span>
                 <span class="log-status">${isRevealed ? log.title : 'ENCRYPTED DATA'}</span>
             `;
-
-            const clearNewStatus = () => {
-                if (gameState.unseenLogs.includes(log.id)) {
-                    gameState.unseenLogs = gameState.unseenLogs.filter(id => id !== log.id);
-                    item.classList.remove('new');
-                    console.log(`Log ${log.id} marked as seen.`);
-                }
-            };
 
             item.onclick = () => {
                 invNav.itemIndex = i;
@@ -2786,7 +2952,7 @@ function renderInventory() {
 
                     // Selection Timer: Clear 'new' indicator after 3 seconds of selection
                     if (isNew) {
-                        selectTimer = setTimeout(clearNewStatus, 3000);
+                        selectTimer = setTimeout(() => clearLogNewStatus(log.id, item), 3000);
                     }
                 } else {
                     updateDetail(`LOCKED LOG #${log.id}`, "DATA IS CURRENTLY ENCRYPTED. \n\nExplore furniture in the overworld to initialize decryption sequence for this memory fragment.", null);
@@ -2817,7 +2983,7 @@ function renderInventory() {
                     // If it's a new log, mark as seen after some time
                     if (gameState.unseenLogs.includes(targetLog.id)) {
                         if (selectTimer) clearTimeout(selectTimer);
-                        selectTimer = setTimeout(clearNewStatus, 3000);
+                        selectTimer = setTimeout(() => clearLogNewStatus(targetLog.id, items[invNav.itemIndex]), 3000);
                     }
                 }
             }
@@ -3081,7 +3247,7 @@ function syncMainQuest() {
         stage = 'osmotic_revelations';
     } else if (flags.jenziAtriumBattleDone) {
         stage = 'botanic_secrets';
-    } else if (logCount >= 5 && flags.jenziAtriumUnlocked) {
+    } else if (flags.jenziAtriumUnlocked) {
         stage = 'atrium_archive';
     } else if (flags.jenziFirstBattleDone) {
         stage = 'atrium_threshold';
