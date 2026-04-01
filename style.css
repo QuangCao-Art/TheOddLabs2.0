@@ -2325,8 +2325,8 @@ body {
     background-size: cover;
     background-position: center;
     pointer-events: none;
-    /* Parallax offset using variables */
-    transform: translate(calc(var(--move-x, 0) * var(--p-factor, 0)), calc(var(--move-y, 0) * var(--p-factor, 0)));
+    /* Parallax offset using combined mouse and breathing variables */
+    transform: translate(calc((var(--move-x, 0) + var(--breath-x, 0)) * var(--p-factor, 0)), calc((var(--move-y, 0) + var(--breath-y, 0)) * var(--p-factor, 0)));
 }
 
 .layer-base {

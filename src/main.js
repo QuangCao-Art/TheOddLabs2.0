@@ -6229,6 +6229,22 @@ function initMainMenuParallax() {
             menuScreen.style.setProperty('--move-y', ny.toFixed(3));
         }
     });
+
+    // --- Breathing Animation Loop ---
+    let startTime = Date.now();
+    function animateBreathing() {
+        if (!menuScreen.classList.contains('hidden')) {
+            const time = (Date.now() - startTime) / 1000;
+            // Even faster and more pronounced circular drifting motion
+            const bx = Math.sin(time / 1.0) * 0.20;
+            const by = Math.cos(time / 1.3) * 0.15;
+
+            menuScreen.style.setProperty('--breath-x', bx.toFixed(3));
+            menuScreen.style.setProperty('--breath-y', by.toFixed(3));
+        }
+        requestAnimationFrame(animateBreathing);
+    }
+    animateBreathing();
 }
 
 window.addEventListener('load', init);
