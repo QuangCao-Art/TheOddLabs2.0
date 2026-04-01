@@ -457,7 +457,7 @@ export const Overworld = {
                 { id: 'f14_at_tr', x: 17, y: 3, type: 'prop', name: 'Specimen Tank' },
 
                 // Row 5 (Sarah, Paul, Mixed Tank Tops)
-                { id: 'npc_female_at1', x: 8, y: 4, type: 'npc', name: 'Assistant Sarah' },
+                { id: 'npc_female_at1', x: 8, y: 4, type: 'npc', name: 'Assistant Sarah', sideQuestId: 'quest_sarah_firstcollection' },
                 { id: 'f1_at_nw1', x: 2, y: 5, type: 'prop', name: 'Lab Chair' },
                 { id: 'f11_at_nw', x: 3, y: 5, type: 'prop', name: 'Atrium Core Table' },
                 { id: 'f11_at1', x: 5, y: 5, type: 'prop', name: 'Atrium Core Table' },
@@ -1900,25 +1900,28 @@ export const Overworld = {
         const questData = QUESTS[questId];
         if (!questData || !questData.reward) return;
 
-        const reward = questData.reward;
-        let msg = "";
-
-        if (reward.type === 'log') {
-            this.collectItem(reward.id);
-            msg = `Acquired ${reward.id}.`;
-        } else if (reward.type === 'item') {
-            if (window.gameState) window.gameState.items.push(reward.id);
-            msg = `Acquired Item: ${reward.id}.`;
-        } else if (reward.type === 'resource') {
-            if (window.gameState) {
-                if (reward.id === 'credits') window.gameState.credits += (reward.amount || 0);
-                if (reward.id === 'biomass') window.gameState.biomass += (reward.amount || 0);
-                if (window.updateResourceHUD) window.updateResourceHUD();
+        const processReward = (reward) => {
+            let msg = "";
+            if (reward.type === 'log' || reward.type === 'item') {
+                this.collectItem(reward.id);
+                msg = `Acquired ${reward.type.toUpperCase()}: ${reward.id}.`;
+            } else if (reward.type === 'resource') {
+                if (window.gameState) {
+                    if (reward.id === 'credits') window.gameState.credits += (reward.amount || 0);
+                    if (reward.id === 'biomass') window.gameState.biomass += (reward.amount || 0);
+                    if (window.updateResourceHUD) window.updateResourceHUD();
+                }
+                msg = `Acquired ${reward.amount} ${reward.id.toUpperCase()}.`;
             }
-            msg = `Acquired ${reward.amount} ${reward.id.toUpperCase()}.`;
-        }
+            console.log(`Quest Reward given: ${msg}`);
+        };
 
-        console.log(`Quest Reward given: ${msg}`);
+        const reward = questData.reward;
+        if (reward.type === 'resource_multi' && Array.isArray(reward.rewards)) {
+            reward.rewards.forEach(r => processReward(r));
+        } else {
+            processReward(reward);
+        }
     },
 
     init() {
@@ -2684,9 +2687,12 @@ export const Overworld = {
                         if (idx > -1) window.gameState.items.splice(idx, 1);
                     }
 
-                    this.giveQuestReward(qId);
-                    qProgress.status = 'finished';
-                    saveGameState();
+                    // Defer reward and status update until dialogue ends
+                    this.onDialogueComplete = () => {
+                        this.giveQuestReward(qId);
+                        qProgress.status = 'finished';
+                        saveGameState();
+                    };
                     this.showDialogue(npc.name, qData.dialogue.complete, npc.id);
                     return;
                 }

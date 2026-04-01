@@ -2,6 +2,7 @@ export const QUESTS = {
     'quest_wild_stemmy': {
         id: 'quest_wild_stemmy',
         title: 'Wild Stemmy Hunt',
+        description: "Defeat 5 Wild Stemmies to support the lab's behavioral research.",
         type: 'defeat',
         target: 'stemmy_wild', // Matches opponentId in main.js
         amount: 5,
@@ -17,6 +18,7 @@ export const QUESTS = {
     'quest_nitrophil_synth': {
         id: 'quest_nitrophil_synth',
         title: 'Synthesis Practice',
+        description: "Synthesize a Nitrophil cell to help with specimen calibration.",
         type: 'synthesis',
         target: 'nitrophil',
         amount: 1,
@@ -32,6 +34,7 @@ export const QUESTS = {
     'quest_collect_key': {
         id: 'quest_collect_key',
         title: 'Lost Property',
+        description: "Find an old Key Card lost somewhere in the Botanic Sector.",
         type: 'collect',
         target: 'Quest01', // ID from Overworld objects/Item pickups
         amount: 1,
@@ -42,6 +45,37 @@ export const QUESTS = {
             progress: ["Any luck finding that Key Card?", "It should be near some plants."],
             complete: ["My Key Card! Thank you so much.", "Here are the credits I promised."],
             finished: ["I should really be more careful with my belongings."]
+        }
+    },
+    'quest_sarah_firstcollection': {
+        id: 'quest_sarah_firstcollection',
+        title: 'The First Collection',
+        type: 'defeat',
+        target: 'stemmy_wild',
+        amount: 2,
+        description: "Defeat 2 Wild Stemmies to help Assistant Sarah with her card research.",
+        dialogue: {
+            offer: [
+                "Hey there, Intern! Did you know the Lab has different kinds of cards?",
+                "We use C-Cards for upgrading Cells, but there are also Collectible Cards... just for the sake of collecting!",
+                "A true Lab member is one who hunts down every secret card.",
+                "Tell you what—if you can defeat 2 Wild Stemmies to help with my research, I'll give you the first spare card I have.",
+                "It's a great way to start your collection. What do you say?"
+            ],
+            progress: ["How's the hunt going? You've defeated {progress} out of 2 Wild Stemmies so far. Keep at it!"],
+            complete: [
+                "Congratulations! Stemmy is actually so cool! People say it's lame, but I find it super handy—that little guy has a lot of potential.",
+                "As promised, here is your Stemmy Collectible Card! It's super common, but hey, every legendary collection has to start somewhere.",
+                "Keep an eye out for others—they could be anywhere!"
+            ],
+            finished: ["Did you know that Jenzy actually makes all these collectible cards herself? She's really good at making stuff, isn't she?"]
+        },
+        reward: {
+            type: 'resource_multi',
+            rewards: [
+                { type: 'item', id: 'CARD00' },
+                { type: 'resource', id: 'credits', amount: 200 }
+            ]
         }
     }
 };

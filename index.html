@@ -31,10 +31,32 @@
                 <div class="parallax-layer layer-base"></div>
                 <div class="parallax-layer layer-mid ready"></div>
                 <div class="parallax-layer layer-front ready"></div>
+                <!-- Specimen Tank Bubbles -->
+                <div class="bubbles-container">
+                    <div class="bubble b1"></div>
+                    <div class="bubble b2"></div>
+                    <div class="bubble b3"></div>
+                    <div class="bubble b4"></div>
+                    <div class="bubble b5"></div>
+                    <div class="bubble b6"></div>
+                    <div class="bubble b7"></div>
+                    <div class="bubble b8"></div>
+                    <div class="bubble b9"></div>
+                    <div class="bubble b10"></div>
+                    <div class="bubble b11"></div>
+                    <div class="bubble b12"></div>
+                    <div class="bubble b13"></div>
+                    <div class="bubble b14"></div>
+                    <div class="bubble b15"></div>
+                </div>
             </div>
 
             <div id="menu-ui-container">
-                <img src="./assets/images/THE ODD LAB Title.png" class="game-title-img" alt="THE ODD LABS 2.0">
+                <div class="title-glitch-wrap">
+                    <img src="./assets/images/THE ODD LAB Title.png" class="game-title-img" alt="THE ODD LABS 2.0">
+                    <div class="glitch-layer shadow-cyan"></div>
+                    <div class="glitch-layer shadow-magenta"></div>
+                </div>
                 <div class="menu-options">
                     <button id="btn-continue-game" class="btn-neon hidden">CONTINUE EXPERIMENT</button>
                     <button id="btn-start-overworld" class="btn-neon">START NEW EXPERIMENT</button>
@@ -206,14 +228,13 @@
                                 <option value="utility">Utility</option>
                             </select>
                         </div>
-                        <button id="btn-debug-set-player" class="btn-neon"
-                            style="margin-top: 5px; padding: 10px;">🛠️
+                        <button id="btn-debug-set-player" class="btn-neon" style="margin-top: 5px; padding: 10px;">🛠️
                             SET PLAYER</button>
                     </div>
                 </div>
 
-                <div style="text-align: center;">
-                    <button id="btn-settings-back" class="btn-neon">RETURN TO BASE [ESC]</button>
+                <div class="settings-footer">
+                    <button id="btn-settings-back" class="btn-neon">EXIT MENU</button>
                 </div>
             </div>
         </div>
@@ -388,7 +409,8 @@
                             <div id="detail-defense-skills" class="skill-list"></div>
                         </div>
 
-                        <div class="keyboard-hint" style="margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(0,243,255,0.1); color: rgba(255,255,255,0.3); font-size: 0.75rem; text-align: center; font-family: 'Rajdhani', sans-serif;">
+                        <div class="keyboard-hint"
+                            style="margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(0,243,255,0.1); color: rgba(255,255,255,0.3); font-size: 0.75rem; text-align: center; font-family: 'Rajdhani', sans-serif;">
                             [ F ] OR [ ESC ] TO CLOSE
                         </div>
                     </div>
@@ -465,7 +487,8 @@
                         <h3><span class="icon">⚖️</span> CORE LAWS</h3>
                         <div class="rule-item">
                             <div class="item-title">PELLICLE OVERLOAD</div>
-                            <p>Starting a turn with your **Pellicle Points at Max** triggers a **Discharge**, dealing 25% Max HP damage.</p>
+                            <p>Starting a turn with your **Pellicle Points at Max** triggers a **Discharge**, dealing
+                                25% Max HP damage.</p>
                         </div>
                     </div>
 
@@ -838,12 +861,14 @@
                                 <!-- Populated by JS (e.g. 90/90 BioMass) -->
                             </div>
                         </div>
-                        <button id="btn-synthesis-action" class="shop-action-btn" disabled>INITIALIZE SYNTHESIS [F]</button>
+                        <button id="btn-synthesis-action" class="shop-action-btn" disabled>INITIALIZE SYNTHESIS
+                            [F]</button>
                     </div>
                 </div>
 
                 <div class="shop-footer">
-                    <div style="color: rgba(255,255,255,0.3); font-size: 0.75rem; font-family: 'Rajdhani', sans-serif; margin-bottom: 10px;">
+                    <div
+                        style="color: rgba(255,255,255,0.3); font-size: 0.75rem; font-family: 'Rajdhani', sans-serif; margin-bottom: 10px;">
                         [W/S] NAVIGATE | [F] SYNTHESIZE | [ESC] BACK
                     </div>
                     <div class="shop-balance-group">
@@ -851,7 +876,8 @@
                             <span class="label">RESERVE BIOMASS</span>
                             <span class="value" id="synthesis-bm-balance">0</span>
                         </div>
-                        <div style="color: rgba(255,255,255,0.3); font-size: 0.75rem; font-family: 'Rajdhani', sans-serif;">
+                        <div
+                            style="color: rgba(255,255,255,0.3); font-size: 0.75rem; font-family: 'Rajdhani', sans-serif;">
                             [W/S] Nav | [F] Synthesize
                         </div>
                     </div>
@@ -909,7 +935,8 @@
                             <span class="label">BIOMASS</span>
                             <span class="value" id="shop-bm-balance">0</span>
                         </div>
-                        <div style="color: rgba(255,255,255,0.3); font-size: 0.75rem; font-family: 'Rajdhani', sans-serif; margin-left: auto;">
+                        <div
+                            style="color: rgba(255,255,255,0.3); font-size: 0.75rem; font-family: 'Rajdhani', sans-serif; margin-left: auto;">
                             [W/S] Nav | [Q/E] Tabs | [F] Buy/Sell
                         </div>
                     </div>
@@ -1199,7 +1226,8 @@
                     <button id="btn-return-menu" class="btn-neon">MAIN MENU</button>
                     <button id="btn-continue-overworld" class="btn-neon hidden">CONTINUE TO GAME</button>
                 </div>
-                <div class="modal-hint" id="game-over-hint" style="text-align: center; color: rgba(255, 255, 255, 0.3); font-size: 0.8rem; margin-top: 15px;">
+                <div class="modal-hint" id="game-over-hint"
+                    style="text-align: center; color: rgba(255, 255, 255, 0.3); font-size: 0.8rem; margin-top: 15px;">
                     [F] CONTINUE
                 </div>
             </div>

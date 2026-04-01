@@ -429,7 +429,7 @@ window.showItemPickupModal = (itemId, onClose) => {
     modal.classList.remove('hidden');
 
     let inputReady = false;
-    setTimeout(() => { inputReady = true; }, 250);
+    setTimeout(() => { inputReady = true; }, 600); // Increased buffer to prevent accidental skipping
 
     function close() {
         modal.classList.add('hidden');
@@ -492,6 +492,11 @@ function initPauseMenuEvents() {
                 window.togglePauseMenu(false);
             } else if (btn.id === 'btn-pause-settings') {
                 window.togglePauseMenu(false);
+                const skipCheck = document.getElementById('toggle-skip-tutorial');
+                const debugCheck = document.getElementById('toggle-full-cell-debug');
+                if (skipCheck) skipCheck.checked = SKIP_TUTORIAL;
+                if (debugCheck) debugCheck.checked = FULL_CELL_DEBUG;
+                showScreen('screen-settings');
             } else if (btn.id === 'btn-pause-main-menu') {
                 window.handleAbortExperiment();
             }
@@ -859,7 +864,7 @@ function setupEventListeners() {
     });
 
     document.getElementById('btn-settings-back')?.addEventListener('click', () => {
-        showScreen('screen-main-menu');
+        showScreen(previousScreen || 'screen-main-menu');
     });
 
 
@@ -1778,6 +1783,13 @@ function setupEventListeners() {
                 showScreen(previousScreen || 'screen-overworld');
                 return;
             }
+            const settingsScreen = document.getElementById('screen-settings');
+            if (settingsScreen && !settingsScreen.classList.contains('hidden')) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                document.getElementById('btn-settings-back')?.click();
+                return;
+            }
             if (battleScreen && !battleScreen.classList.contains('hidden')) {
                 showScreen(previousScreen || 'screen-main-menu');
                 return;
@@ -2136,40 +2148,55 @@ function setupEventListeners() {
         const style = document.getElementById('debug-player-style').value;
         const roster = [];
         document.querySelectorAll('.debug-player-mon-select').forEach(sel => {
-            if (sel.value) roster.push(sel.value);
+            roster.push(sel.value || null);
         });
-        if (roster.length === 0) {
+
+        // Ensure at least one monster
+        const activeCount = roster.filter(id => id !== null).length;
+        if (activeCount === 0) {
             addLog("ERROR: Player roster is empty.");
             return;
         }
 
-        // Update Player Profile
+        // Update Level/Style first
         gameState.profiles.player.level = rg;
         gameState.playerLevel = rg;
+        gameState.profiles.player.style = style;
         gameState.playerStyle = style;
-        gameState.profiles.player.style = style; // Ensure it's in the profile too
 
-        gameState.playerTeam = [null, null, null];
-        roster.forEach((id, i) => { gameState.playerTeam[i] = id; });
+        // Sync Team (3-slot array of IDs)
+        gameState.playerTeam = [...roster];
+        gameState.profiles.player.team = [...roster];
 
-        // Regenerate Party Objects
-        gameState.profiles.player.party = roster.map(id => createMonsterInstance(id));
-        gameState.playerParty = gameState.profiles.player.party;
+        // Regenerate Party Objects (Ensuring 3 slots)
+        gameState.profiles.player.party = roster.map(id => id ? createMonsterInstance(id) : null);
+
+        // Update filtered active party
+        gameState.playerParty = gameState.profiles.player.party.slice(0, 3).filter(m => m !== null);
         gameState.player = gameState.playerParty[0];
 
-        // Sync Cards for the new Level
+        // 1. Sync Cards first to populate cardBox
         syncCardsToLevel('player', rg);
 
-        // APPLY STYLE TO ALL MONSTERS
+        // 2. Initialize HP/PP (applyBonuses also heals)
+        applyBonuses(gameState.playerParty, rg, true);
+
+        // 3. Apply Quick Equip (Neural Calibration)
         gameState.profiles.player.party.forEach((mon, idx) => {
             if (mon) executeQuickEquip(style, 'player', idx);
         });
 
-        // Initialize HP/PP for new squad
-        applyBonuses(gameState.profiles.player.party, rg);
-
         addLog(`[DEBUG] Player synchronized to RG-${rg} with ${style.toUpperCase()} focus.`);
-        renderManagementHub(); // Refresh UI
+        saveGameState(); // Persist for Continue logic
+
+        // Extensive UI Refresh
+        if (window.updateResourceHUD) window.updateResourceHUD();
+        renderManagementHub();
+
+        // If in overworld, refresh map to update any level-based visuals
+        if (typeof Overworld !== 'undefined' && !document.getElementById('screen-overworld').classList.contains('hidden')) {
+            Overworld.renderMap();
+        }
     });
 }
 
@@ -3343,7 +3370,17 @@ function renderQuestMenu() {
                 invNav.itemIndex = currentIndex;
                 updateInvNav(false);
                 const qTitle = qData.title.toUpperCase();
-                const qDesc = qData.description + "<br><br><b>REWARD:</b><br>" + qData.reward.id + (qData.reward.amount ? " x" + qData.reward.amount : "");
+                let rewardText = "";
+                if (qData.reward && qData.reward.type === 'resource_multi' && Array.isArray(qData.reward.rewards)) {
+                    rewardText = qData.reward.rewards.map(r => {
+                        const amt = r.amount ? ` x${r.amount}` : "";
+                        return (r.id || "Unknown").toUpperCase() + amt;
+                    }).join("<br>");
+                } else if (qData.reward) {
+                    rewardText = (qData.reward.id || "???").toUpperCase() + (qData.reward.amount ? " x" + qData.reward.amount : "");
+                }
+
+                const qDesc = qData.description + "<br><br><b>REWARD:</b><br>" + rewardText;
                 updateDetail(qTitle, qDesc, 'assets/images/Card_Placeholder.png');
             };
             questList.appendChild(item);
@@ -4578,7 +4615,15 @@ function resetGame() {
     // 3. Player and Opponent initialization
     const pProfile = gameState.profiles.player;
     if (pProfile.party.length === 0) {
-        pProfile.party = pProfile.team.map(id => createMonsterInstance(id));
+        pProfile.party = pProfile.team.map((id, idx) => {
+            if (!id) return null;
+            const mon = createMonsterInstance(id);
+            // Load equipped cards from temporary storage if available
+            if (gameState.playerPartyEquips && gameState.playerPartyEquips[idx]) {
+                mon.equippedCards = [...gameState.playerPartyEquips[idx]];
+            }
+            return mon;
+        });
     }
     // Filter active squad slice (0,3) to remove nulls left by empty slots
     gameState.playerParty = pProfile.party.slice(0, 3).filter(m => m !== null);

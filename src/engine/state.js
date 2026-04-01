@@ -77,7 +77,8 @@ export const gameState = {
         zone: null,
         x: null,
         y: null
-    }
+    },
+    playerPartyEquips: null // Temporary storage for loading
 };
 
 export function applySkipTutorial(isSkip) {
@@ -145,6 +146,8 @@ export function saveGameState() {
         biomass: gameState.biomass,
         playerLevel: gameState.profiles.player.level,
         playerTeam: gameState.profiles.player.team,
+        playerStyle: gameState.profiles.player.style || 'balanced',
+        playerPartyEquips: (gameState.profiles.player.party || []).map(mon => mon ? mon.equippedCards : []),
         storyFlags: gameState.storyFlags,
         items: gameState.items,
         logs: gameState.logs,
@@ -177,6 +180,16 @@ export function loadGameState() {
         
         if (saved.playerTeam) {
             gameState.profiles.player.team = [...saved.playerTeam];
+            gameState.playerTeam = [...saved.playerTeam];
+        }
+        
+        if (saved.playerStyle) {
+            gameState.profiles.player.style = saved.playerStyle;
+            gameState.playerStyle = saved.playerStyle;
+        }
+
+        if (saved.playerPartyEquips) {
+            gameState.playerPartyEquips = saved.playerPartyEquips;
         }
         
         if (saved.storyFlags) {
