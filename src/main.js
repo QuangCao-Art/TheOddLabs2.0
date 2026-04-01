@@ -1791,7 +1791,7 @@ function setupEventListeners() {
                 return;
             }
             if (battleScreen && !battleScreen.classList.contains('hidden')) {
-                showScreen(previousScreen || 'screen-main-menu');
+                window.togglePauseMenu(true);
                 return;
             }
 
