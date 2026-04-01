@@ -2278,13 +2278,15 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); /* Faster background fade */
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Faster background fade */
 }
 
 .splash-content {
     opacity: 0;
     transform: scale(0.9);
-    transition: all 1s cubic-bezier(0.22, 1, 0.36, 1); /* Slower logo fade */
+    transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+    /* Slower logo fade */
 }
 
 .splash-content.visible {
@@ -2315,7 +2317,8 @@ body {
 
 .parallax-layer {
     position: absolute;
-    top: -110%; /* Hidden off-screen by default to prevent flicker */
+    top: -110%;
+    /* Hidden off-screen by default to prevent flicker */
     left: -5%;
     width: 110%;
     height: 110%;
@@ -2329,8 +2332,12 @@ body {
 .layer-base {
     background-image: url('./assets/images/BG_Main_Base.png');
     z-index: 1;
-    --p-factor: 10px; /* Subtle base parallax */
-    top: -5% !important; /* Force base to stay on-screen */
+    --p-factor: 10px;
+    /* Subtle base parallax */
+    top: -5% !important;
+    /* Force base to stay on-screen */
+    opacity: 0;
+    /* Initial state for fade-in */
 }
 
 .layer-mid {
@@ -2345,17 +2352,37 @@ body {
     --p-factor: 60px;
 }
 
+#screen-main-menu.bg-active .layer-base {
+    animation: layer-fade-in 0.8s ease-out forwards;
+}
+
 #screen-main-menu.bg-active .layer-mid {
     animation: layer-slide-down 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 #screen-main-menu.bg-active .layer-front {
-    animation: layer-slide-down 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards; /* Slight stagger */
+    animation: layer-slide-down 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+    /* Slight stagger */
 }
 
 @keyframes layer-slide-down {
-    from { top: -110%; }
-    to { top: -5%; }
+    from {
+        top: -110%;
+    }
+
+    to {
+        top: -5%;
+    }
+}
+
+@keyframes layer-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /* UI Elements Container */
@@ -2364,14 +2391,18 @@ body {
     z-index: 10;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Spread elements */
+    justify-content: flex-start;
+    /* Control alignment manually with margins */
     align-items: center;
     width: 100%;
     height: 100%;
-    padding: 8vh 0 8vh 0; /* Balanced vertical padding at 8vh */
+    padding: 8vh 0 8vh 0;
+    /* Balanced vertical padding at 8vh */
     opacity: 0;
-    transform: scale(0.7) translateY(120px); /* Longer momentum distance */
-    transition: all 1s cubic-bezier(0.1, 1.8, 0.4, 1); /* Cinematic 1s entry with 1.8 overshoot */
+    transform: scale(0.7) translateY(120px);
+    /* Longer momentum distance */
+    transition: all 1s cubic-bezier(0.1, 1.8, 0.4, 1);
+    /* Cinematic 1s entry with 1.8 overshoot */
 }
 
 #menu-ui-container.show {
@@ -3229,12 +3260,14 @@ body {
 }
 
 .version {
-    position: absolute;
-    bottom: 30px;
-    right: 40px;
-    opacity: 0.4;
-    font-size: 0.8rem;
+    opacity: 0.35;
+    font-size: 0.75rem;
     letter-spacing: 2px;
+    font-family: 'Rajdhani', sans-serif;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 20px;
+    /* Space between buttons and version text */
 }
 
 .menu-options {
@@ -3242,6 +3275,8 @@ body {
     flex-direction: row;
     gap: 30px;
     justify-content: center;
+    margin-top: auto;
+    /* Pushes self and contents below to the bottom */
 }
 
 .menu-options .btn-neon {
