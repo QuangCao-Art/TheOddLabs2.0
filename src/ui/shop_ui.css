@@ -261,15 +261,15 @@
 }
 
 .shop-item-price-btn.sell {
-    border-color: #00ff66;
-    color: #00ff66;
-    background: rgba(0, 255, 102, 0.05);
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+    background: rgba(0, 243, 255, 0.05);
 }
 
 .shop-item-price-btn.sell:hover {
-    background: #00ff66;
+    background: var(--neon-cyan);
     color: #000;
-    box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
 }
 
 .shop-detail-side {

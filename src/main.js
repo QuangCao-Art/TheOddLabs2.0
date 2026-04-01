@@ -504,7 +504,7 @@ function initPauseMenuEvents() {
     });
 }
 
-window.showConfirmModal = (title, message, onConfirm) => {
+window.showConfirmModal = (title, message, onConfirm, manualCleanup = false) => {
     const screen = document.getElementById('screen-confirm');
     const titleEl = document.getElementById('confirm-title');
     const subEl = document.getElementById('confirm-subtitle');
@@ -518,7 +518,7 @@ window.showConfirmModal = (title, message, onConfirm) => {
     let confirmNavIndex = 1; // Default to 'CANCEL' for safety
     titleEl.innerText = (title || "WARNING").toUpperCase();
     msgEl.innerText = message || "Proceed with operation?";
-    
+
     // Dynamic subtitle flavor
     if (subEl) {
         if (title?.toLowerCase().includes('abort')) subEl.innerText = "EXTRACTION PROTOCOL ACTIVE";
@@ -538,7 +538,7 @@ window.showConfirmModal = (title, message, onConfirm) => {
     updateConfirmSelection();
 
     const handleYes = () => {
-        cleanup();
+        cleanup(!manualCleanup);
         if (onConfirm) onConfirm();
     };
 
@@ -548,7 +548,7 @@ window.showConfirmModal = (title, message, onConfirm) => {
 
     const handleKeydown = (e) => {
         const key = e.key.toLowerCase();
-        
+
         // Navigation: AD, WS, or Arrows (Horizontal focus)
         if (key === 'a' || key === 'w' || key === 'arrowleft' || key === 'arrowup') {
             e.preventDefault();
@@ -558,8 +558,8 @@ window.showConfirmModal = (title, message, onConfirm) => {
             e.preventDefault();
             confirmNavIndex = 1;
             updateConfirmSelection();
-        } 
-        
+        }
+
         // Selection
         else if (key === 'f' || key === 'enter' || key === ' ') {
             e.preventDefault();
@@ -567,7 +567,7 @@ window.showConfirmModal = (title, message, onConfirm) => {
             if (confirmNavIndex === 0) handleYes();
             else handleNo();
         }
-        
+
         // Quick Cancel
         else if (key === 'escape') {
             e.preventDefault();
@@ -579,8 +579,8 @@ window.showConfirmModal = (title, message, onConfirm) => {
     const handleMouseEnterYes = () => { confirmNavIndex = 0; updateConfirmSelection(); };
     const handleMouseEnterNo = () => { confirmNavIndex = 1; updateConfirmSelection(); };
 
-    const cleanup = () => {
-        screen.classList.add('hidden');
+    const cleanup = (hideUI = true) => {
+        if (hideUI) screen.classList.add('hidden');
         window.removeEventListener('keydown', handleKeydown, true);
         btnYes.removeEventListener('mouseenter', handleMouseEnterYes);
         btnNo.removeEventListener('mouseenter', handleMouseEnterNo);
@@ -591,7 +591,7 @@ window.showConfirmModal = (title, message, onConfirm) => {
 
     // Use capturing phase for keydown to ensure we catch it before other systems
     window.addEventListener('keydown', handleKeydown, true);
-    
+
     // Mouse Sync
     btnYes.addEventListener('mouseenter', handleMouseEnterYes);
     btnNo.addEventListener('mouseenter', handleMouseEnterNo);
@@ -769,7 +769,8 @@ function init() {
         // Centralized Reset handles all Profile/Preset/State initialization
         resetGame();
 
-        showScreen('screen-main-menu');
+        // Starts the premium entry sequence instead of a direct show
+        playStartupSequence();
         console.log("Initialization Complete.");
     } catch (e) {
         console.error("Initialization Failed:", e);
@@ -910,6 +911,7 @@ function setupEventListeners() {
                 "STARTING A NEW EXPERIMENT WILL ERASE ALL CURRENT DATA LOGS, CELLS, AND PROGRESS. ARE YOU READY TO INITIALIZE?",
                 () => {
                     triggerSlowTransition(() => {
+                        document.getElementById('screen-confirm')?.classList.add('hidden');
                         import('./engine/state.js').then(m => {
                             if (m.fullResetGameState) {
                                 m.fullResetGameState();
@@ -921,7 +923,8 @@ function setupEventListeners() {
                             }
                         });
                     });
-                }
+                },
+                true // manualCleanup
             );
         } else {
             triggerSlowTransition(() => startOverworld());
@@ -1487,10 +1490,12 @@ function setupEventListeners() {
                 triggerSlowTransition(() => {
                     document.getElementById('screen-inventory')?.classList.add('hidden');
                     document.getElementById('screen-pause')?.classList.add('hidden');
+                    document.getElementById('screen-confirm')?.classList.add('hidden');
                     if (typeof invNav !== 'undefined') invNav.active = false;
                     showScreen('screen-main-menu');
                 });
-            }
+            },
+            true // manualCleanup
         );
     };
 
@@ -2857,7 +2862,7 @@ const updateDetail = (title, desc, imgSrc, statsGridHtml = "") => {
 
     if (detailTitle) detailTitle.innerHTML = title;
     if (detailDesc) detailDesc.innerHTML = desc; // Use innerHTML for Quest formatting
-    
+
     const cardContainer = detailCard ? detailCard.closest('.detail-card-container') : null;
     if (imgSrc) {
         if (detailCard) {
@@ -2911,7 +2916,7 @@ function renderInventory() {
         emptyMsg.style.justifyContent = 'center';
         emptyMsg.innerHTML = '<span class="log-status" style="opacity: 0.5;">DATABASE: THE VOID<br>Try talking to Jenzi at the Lab.</span>';
         emptyMsg.onclick = () => {
-             updateDetail("DATABASE: THE VOID", "This log is as empty as a lab fridge on a Monday. Either your eyes are closed, or you're allergic to reading. Go pester Jenzi; she’s basically a walking encyclopedia (and way more talkative than this screen).", null);
+            updateDetail("DATABASE: THE VOID", "This log is as empty as a lab fridge on a Monday. Either your eyes are closed, or you're allergic to reading. Go pester Jenzi; she’s basically a walking encyclopedia (and way more talkative than this screen).", null);
         };
         logList.appendChild(emptyMsg);
         const cardContainer = detailCard ? detailCard.closest('.detail-card-container') : null;
@@ -3035,8 +3040,8 @@ function renderInventory() {
                 slot.classList.add('empty-slot');
                 slot.innerHTML = `<div style="width: 25px; height: 25px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 50%; display: block; box-sizing: border-box;"></div>`;
                 const placeholderTitle = currentTabId === 'items' ? "POCKETS: VACANT" : "COLLECTION: EMPTY";
-                const placeholderDesc = currentTabId === 'items' ? 
-                    "Your bags are so empty, there's an echo in here! Maybe check the furniture? Go make some money and maybe you can afford a snack." : 
+                const placeholderDesc = currentTabId === 'items' ?
+                    "Your bags are so empty, there's an echo in here! Maybe check the furniture? Go make some money and maybe you can afford a snack." :
                     "Your card collection is as empty as your lab-intern savings account. Zero cards found! It’s 'un-dealt' for someone in your position to have no cards. Keep exploring the Lab; you'll soon find something worth collecting.";
                 slot.onclick = () => updateDetail(placeholderTitle, placeholderDesc, null);
             } else {
@@ -3296,7 +3301,7 @@ function renderQuestMenu() {
 
         item.onclick = () => {
             invNav.itemIndex = 0;
-            updateInvNav(false); 
+            updateInvNav(false);
             const qTitle = mData.title.toUpperCase();
             const qDesc = `<i style="color: #88ccff; opacity: 0.8;">"${mData.narrative}"</i><br><br><b>CURRENT OBJECTIVE:</b><br>${mData.objective}`;
             updateDetail(qTitle, qDesc, 'assets/images/Card_Placeholder.png');
@@ -6150,6 +6155,82 @@ async function startHealSequence() {
 }
 
 // Final Initialization
+/**
+ * Executes a high-quality startup sequence for the game:
+ * 1. Shows company logo splash with fade in/out
+ * 2. Slides in background parallax layers
+ * 3. Fades in Main Menu UI
+ */
+function playStartupSequence() {
+    const splash = document.getElementById('splash-screen');
+    const splashContent = splash?.querySelector('.splash-content');
+    const menuScreen = document.getElementById('screen-main-menu');
+    const menuUI = document.getElementById('menu-ui-container');
+
+    if (!splash || !menuScreen) {
+        showScreen('screen-main-menu');
+        return;
+    }
+
+    // Phase 0: Initial State
+    splash.classList.remove('hidden');
+    splash.style.opacity = '1';
+
+    // Phase 1: Splash Logo Fade In
+    setTimeout(() => {
+        splashContent?.classList.add('visible');
+
+        // Phase 2: Fade out Logo FIRST
+        setTimeout(() => {
+            splashContent?.classList.remove('visible');
+
+            // Wait for logo to fade (200ms) before removing the black background
+            setTimeout(() => {
+                splash.style.opacity = '0';
+
+                // Overlap: Start revealing the menu behind the fading splash
+                showScreen('screen-main-menu');
+
+                // Phase 3: Immediate Background Slide-in & UI Reveal
+                setTimeout(() => {
+                    menuScreen.classList.add('bg-active');
+
+                    // Reveal UI with a longer delay (500ms) to allow BGs to start sliding
+                    setTimeout(() => {
+                        menuUI?.classList.add('show');
+                        initMainMenuParallax();
+                    }, 500);
+                }, 50);
+
+                // Phase 4: Finalize Splash Removal in background
+                setTimeout(() => {
+                    splash.classList.add('hidden');
+                }, 800);
+            }, 200);
+        }, 1800); // Time logo stays fully visible
+    }, 300); // Initial delay
+}
+
+/**
+ * Tracks mouse movement to shift parallax background layers
+ */
+function initMainMenuParallax() {
+    const menuScreen = document.getElementById('screen-main-menu');
+    if (!menuScreen || menuScreen._parallaxApplied) return;
+    menuScreen._parallaxApplied = true;
+
+    window.addEventListener('mousemove', (e) => {
+        if (!menuScreen.classList.contains('hidden')) {
+            // Normalized mouse position (-1 to 1)
+            const nx = (e.clientX / window.innerWidth - 0.5) * 2;
+            const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+
+            menuScreen.style.setProperty('--move-x', nx.toFixed(3));
+            menuScreen.style.setProperty('--move-y', ny.toFixed(3));
+        }
+    });
+}
+
 window.addEventListener('load', init);
 
 // --- RESOURCE HUD & SHOP LOGIC ---

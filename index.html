@@ -17,16 +17,32 @@
 
 <body>
     <div id="game-container">
+        <!-- Splash Screen Overlay -->
+        <div id="splash-screen" class="screen">
+            <div class="splash-content">
+                <img src="./assets/images/Logo_White_NoBG.png" id="splash-logo" alt="The Odd Labs Logo">
+            </div>
+        </div>
+
         <!-- Main Menu Screen -->
-        <div id="screen-main-menu" class="screen">
-            <h1 class="game-title">THE ODD <span class="neon-text">LABS 2.0</span></h1>
-            <div class="menu-options">
-                <button id="btn-continue-game" class="btn-neon hidden">CONTINUE EXPERIMENT</button>
-                <button id="btn-start-overworld" class="btn-neon">START NEW EXPERIMENT</button>
-                <button id="btn-start-battle" class="btn-neon hidden">DEBUG BATTLE</button>
-                <button id="btn-open-inventory" class="btn-neon hidden">PLAYER INVENTORY</button>
-                <button id="btn-open-rulebook" class="btn-neon">RULEBOOK</button>
-                <button id="btn-open-settings" class="btn-neon">SETTINGS</button>
+        <div id="screen-main-menu" class="screen hidden">
+            <!-- Parallax Background Layers -->
+            <div class="parallax-container">
+                <div class="parallax-layer layer-base"></div>
+                <div class="parallax-layer layer-mid ready"></div>
+                <div class="parallax-layer layer-front ready"></div>
+            </div>
+
+            <div id="menu-ui-container">
+                <img src="./assets/images/THE ODD LAB Title.png" class="game-title-img" alt="THE ODD LABS 2.0">
+                <div class="menu-options">
+                    <button id="btn-continue-game" class="btn-neon hidden">CONTINUE EXPERIMENT</button>
+                    <button id="btn-start-overworld" class="btn-neon">START NEW EXPERIMENT</button>
+                    <button id="btn-start-battle" class="btn-neon hidden">DEBUG BATTLE</button>
+                    <button id="btn-open-inventory" class="btn-neon hidden">PLAYER INVENTORY</button>
+                    <button id="btn-open-rulebook" class="btn-neon">RULEBOOK</button>
+                    <button id="btn-open-settings" class="btn-neon">SETTINGS</button>
+                </div>
             </div>
             <div class="version">Experimental v2.0</div>
         </div>
@@ -159,7 +175,7 @@
                     <div style="height: 1px; background: rgba(0, 243, 255, 0.15); margin: 20px 0;"></div>
 
                     <h4 class="neon-text"
-                        style="font-size: 0.8rem; margin-bottom: 12px; color: #00ff66; text-align: center; letter-spacing: 1px;">
+                        style="font-size: 0.8rem; margin-bottom: 12px; text-align: center; letter-spacing: 1px;">
                         PLAYER BUILDER</h4>
 
                     <div class="debug-builder-form" style="display: flex; flex-direction: column; gap: 10px;">
@@ -191,7 +207,7 @@
                             </select>
                         </div>
                         <button id="btn-debug-set-player" class="btn-neon"
-                            style="margin-top: 5px; padding: 10px; --glow-color: #00ff66; border-color: #00ff66;">🛠️
+                            style="margin-top: 5px; padding: 10px;">🛠️
                             SET PLAYER</button>
                     </div>
                 </div>
@@ -711,7 +727,7 @@
 
                 <div class="rulebook-footer">
                     <div class="inv-footer-actions">
-                        <button id="btn-save-game" class="btn-neon" style="--glow-color: #00ff66; border-color: #00ff66;">SAVE PROGRESS</button>
+                        <button id="btn-save-game" class="btn-neon">SAVE PROGRESS</button>
                         <button id="btn-inventory-back" class="btn-neon">BACK TO LAB</button>
                     </div>
                     <div class="inv-controls-guide">
