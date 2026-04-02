@@ -101,6 +101,9 @@ export const Overworld = {
         direction: 'down',
         isMoving: false,
         moveSpeed: 300, // ms per tile
+        moveStartedAt: 0,
+        isSprinting: false,
+        isTurning: false,
         stepParity: 0, // 0 or 1 for alternating steps
         currentFrame: 0 // 0-3 for manual frame control
     },
@@ -2201,14 +2204,45 @@ export const Overworld = {
         // Only run if overworld is visible
         const overworldVisible = !document.getElementById('screen-overworld').classList.contains('hidden');
         if (overworldVisible && !this.isPaused && !this.isTransitioning) {
+            // Update movement progress first
+            this.handleMovementProgress();
+            
+            // Check for new input
             this.handleMovementInput();
         }
 
         requestAnimationFrame(() => this.gameLoop());
     },
 
+    handleMovementProgress() {
+        if (!this.player.isMoving) return;
+
+        const now = Date.now();
+        const actualMoveSpeed = this.player.isSprinting ? 170 : this.player.moveSpeed;
+        const progress = now - this.player.moveStartedAt;
+
+        // Midpoint: Switch to step frame
+        if (progress >= actualMoveSpeed / 2 && this.player.currentFrame % 2 === 0) {
+            this.player.currentFrame = (this.player.stepParity * 2) + 1;
+            this.updatePlayerPosition();
+        }
+
+        // Logic Completion: SNAP!
+        if (progress >= actualMoveSpeed) {
+            this.player.isMoving = false;
+            this.player.stepParity = (this.player.stepParity + 1) % 2;
+            this.player.currentFrame = this.player.stepParity * 2; // Next idle frame
+            this.updatePlayerPosition();
+            this.savePosition();
+            this.handleAutomatedInteractions();
+        }
+    },
+
     handleMovementInput() {
         if (this.player.isMoving || this.isDialogueActive || this.isTransitioning || this.isPaused) return;
+
+        // Check Sprint State
+        this.player.isSprinting = this.keysPressed.has('shift');
 
         const move = { x: 0, y: 0 };
         const keys = Array.from(this.keysPressed);
@@ -2238,14 +2272,21 @@ export const Overworld = {
         if (this.player.direction !== targetDir) {
             this.player.direction = targetDir;
             this.lastTurnTime = Date.now();
+            this.player.isTurning = true;
             this.updatePlayerPosition();
+            
+            // Temporary turning visual effect (60ms for a clicky snap)
+            setTimeout(() => {
+                this.player.isTurning = false;
+                this.updatePlayerPosition();
+            }, 60);
             return;
         }
 
         // 3. Movement Delay Logic (Turn-then-Walk Smoothing)
-        // If we just turned, wait 150ms before allowing move
+        // If we just turned, wait 60ms before allowing move
         const now = Date.now();
-        if (now - this.lastTurnTime < 150) {
+        if (now - this.lastTurnTime < 60) {
             return;
         }
 
@@ -2316,6 +2357,7 @@ export const Overworld = {
 
         // 4. Perform Movement
         this.player.isMoving = true;
+        this.player.moveStartedAt = Date.now();
         this.player.x = nextX;
         this.player.y = nextY;
 
@@ -2323,55 +2365,38 @@ export const Overworld = {
         this.player.currentFrame = this.player.stepParity * 2;
         this.updatePlayerPosition();
 
-        // Midpoint Step (Handled via Timeout for perfect move sync)
-        setTimeout(() => {
-            if (this.player.isMoving) {
-                this.player.currentFrame = (this.player.stepParity * 2) + 1;
-                this.updatePlayerPosition();
-            }
-        }, this.player.moveSpeed / 2);
+        // Spawn Footstep VFX
+        this.spawnFootstep(this.player.x - dx, this.player.y - dy, this.player.isSprinting);
+    },
 
-        setTimeout(() => {
-            this.player.isMoving = false;
-            this.player.stepParity = (this.player.stepParity + 1) % 2;
-            this.player.currentFrame = this.player.stepParity * 2; // Next idle frame
-            this.savePosition();
+    handleAutomatedInteractions() {
+        const zone = this.zones[this.currentZone];
+        if (!zone) return;
 
-            // CHECK FOR ZONE TRANSITION
-            const door = zone.doors && zone.doors.find(d => d.x === nextX && d.y === nextY);
-            if (door) {
-                const isLockedByFlag = door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag] && !window.gameState.debugUnlockDoors;
-                const missingItems = (door.requiredItems || (door.requiredItem ? [door.requiredItem] : [])).filter(item => !window.gameState.items.includes(item));
-                const isLockedByItem = missingItems.length > 0 && !window.gameState.debugUnlockDoors && !window.gameState.debugAllItems;
+        const nextX = this.player.x;
+        const nextY = this.player.y;
 
-                if (isLockedByFlag || isLockedByItem) {
-                    let msg = "This door is locked. You need specific clearance.";
-                    if (isLockedByItem) {
-                        const names = missingItems.map(id => {
-                            const itemData = window.ITEM_PICKUP_DATA && window.ITEM_PICKUP_DATA[id];
-                            return itemData ? itemData.name : id;
-                        });
-                        msg = `This door is locked. You need: ${names.join(', ')}.`;
-                    }
-                    this.showDialogue("Security Gate", [msg]);
-                    // The original code had this.updatePlayerPosition() here, but it's redundant
-                    // as the player hasn't moved into the new tile if the door is locked.
-                    // Removing it to align with the provided diff's implied change.
-                    return;
+        // CHECK FOR ZONE TRANSITION
+        const door = zone.doors && zone.doors.find(d => d.x === nextX && d.y === nextY);
+        if (door) {
+            const isLockedByFlag = door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag] && !window.gameState.debugUnlockDoors;
+            const missingItems = (door.requiredItems || (door.requiredItem ? [door.requiredItem] : [])).filter(item => !window.gameState.items.includes(item));
+            const isLockedByItem = missingItems.length > 0 && !window.gameState.debugUnlockDoors && !window.gameState.debugAllItems;
+
+            if (isLockedByFlag || isLockedByItem) {
+                let msg = "This door is locked. You need specific clearance.";
+                if (isLockedByItem) {
+                    const names = missingItems.map(id => {
+                        const itemData = window.ITEM_PICKUP_DATA && window.ITEM_PICKUP_DATA[id];
+                        return itemData ? itemData.name : id;
+                    });
+                    msg = `This door is locked. You need: ${names.join(', ')}.`;
                 }
-                this.changeZone(door.targetZone, door.targetX, door.targetY);
-                return; // Stop processing further movement if switching zones
+                this.showDialogue("Security Gate", [msg]);
+                return;
             }
-
-            // Check if we continue moving
-            const stillHolding = [...this.keysPressed].some(k => ['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k));
-
-            if (stillHolding) {
-                this.handleMovementInput();
-            } else {
-                this.updatePlayerPosition();
-            }
-        }, this.player.moveSpeed);
+            this.changeZone(door.targetZone, door.targetX, door.targetY);
+        }
     },
 
     async changeZone(zoneId, x, y) {
@@ -2421,6 +2446,13 @@ export const Overworld = {
         const zone = this.zones[this.currentZone];
 
         if (playerEl) {
+            // 0. Update Visual States
+            if (this.player.isSprinting) playerEl.classList.add('is-sprinting');
+            else playerEl.classList.remove('is-sprinting');
+
+            if (this.player.isTurning) playerEl.classList.add('is-turning');
+            else playerEl.classList.remove('is-turning');
+
             // 1. Update Direction Class
             const directionClass = `face-${this.player.direction}`;
             if (!playerEl.classList.contains(directionClass)) {
@@ -2433,7 +2465,9 @@ export const Overworld = {
             playerEl.classList.add(`p-frame-${this.player.currentFrame}`);
 
             // 3. Move Player relative to Map
-            playerEl.style.transform = `translate(${this.player.x * this.tileSize}px, ${this.player.y * this.tileSize}px)`;
+            playerEl.style.translate = `${this.player.x * this.tileSize}px ${this.player.y * this.tileSize}px`;
+            playerEl.style.scale = this.player.isTurning ? '1.07' : '1';
+            playerEl.style.transformOrigin = 'center 80%'; // Center relative to feet for a grounding pop
             playerEl.style.zIndex = this.player.y + 1 + 10;
         }
 
@@ -2445,6 +2479,15 @@ export const Overworld = {
         // Target: Center the player in the viewport (Pokemon-style strict focus)
         let mapX = (vWidth / 2) - (this.player.x * this.tileSize + this.tileSize / 2);
         let mapY = (vHeight / 2) - (this.player.y * this.tileSize + this.tileSize / 2);
+
+        // Active Camera Lead (Shift focus in direction of travel)
+        if (this.player.isMoving) {
+            const leadDistance = 50; // Balanced cinematic shift
+            if (this.player.direction === 'up') mapY += leadDistance;
+            if (this.player.direction === 'down') mapY -= leadDistance;
+            if (this.player.direction === 'left') mapX += leadDistance;
+            if (this.player.direction === 'right') mapX -= leadDistance;
+        }
 
         // No Clamping: User wants character to stay visually static at all times.
         // This means the environment will move even at edges, showing the viewport background.
@@ -3378,6 +3421,41 @@ export const Overworld = {
                 }
             });
         }
+    },
+
+    spawnFootstep(x, y, isSprinting = false) {
+        const mapEl = document.getElementById('overworld-map');
+        if (!mapEl) return;
+
+        const puff = document.createElement('div');
+        puff.className = 'footstep-puff';
+        
+        // 3 Circles for Cartoon Cloud (Walking vs Sprinting)
+        const count = 3;
+        for (let i = 0; i < count; i++) {
+            const circle = document.createElement('span');
+            // Size: 8-10px for walking, 10-18px for sprinting
+            const size = isSprinting ? (Math.random() * 8 + 10) : (Math.random() * 2 + 8); 
+            circle.style.width = `${size}px`;
+            circle.style.height = `${size}px`;
+            circle.style.left = isSprinting ? `${Math.random() * 20 - 5}px` : `${Math.random() * 10 - 2}px`;
+            circle.style.top = isSprinting ? `${Math.random() * 12 - 4}px` : `${Math.random() * 8 - 2}px`;
+            puff.appendChild(circle);
+        }
+
+        // Position on the tile the player is leaving
+        puff.style.left = `${(x * this.tileSize) + 20}px`;
+        puff.style.top = `${(y * this.tileSize) + 40}px`;
+        puff.style.zIndex = this.player.y + 5; // Below player (y+11)
+
+        mapEl.appendChild(puff);
+
+        // Auto-cleanup
+        setTimeout(() => {
+            if (puff.parentNode) puff.remove();
+        }, 500);
     }
 };
+
+window.Overworld = Overworld;
 

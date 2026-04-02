@@ -915,9 +915,9 @@ Binding their lore to **DataLogs** makes these side quests feel mandatory for pl
     > 
     > I was there when the first human seeds were sown in the cold labs of the **Hemophylls**. I was there when the 'Hungry Gods' decided we were nothing more than a biological harvest, a way to keep their roots from withering. Lily gave us life to save her people, but she accidentally gave us a heart that beats for its own reasons—and a soul that neither of the ancient races could have ever calculated.
     > 
-    > Fox calls us a 'mistake.' Lily calls us a 'regret.' But I look at you, and I see more than a designed resource. We are the 'Accidental Genesis'—the unexpected children of a cosmic war that has long since passed into myth. 
+    > Fox calls us a 'mistake.' Lily calls us a 'tragedy.' But I look at you, and I see more than a designed resource. We are the 'Accidental Genesis'—the unexpected children of a hungry solution that has long since passed into myth. 
     > 
-    > You don't have to be a weapon for the **Archeons**, and you don't have to be food for the **Hemophylls**. You just have to be human. But to do that, you must master the technology they left behind without letting it consume you. The history of this lab is a circle, Intern. It's up to you to turn it into a straight line."
+    > You don't have to be a weapon for the **Archeons**, and you don't have to be food for the **Hemophylls**. You just have to be human. But to do that, you must master the technology they left behind without letting it consume you. The history of this lab is a circle, Child. It's up to you to turn it into a straight line."
 
 #### Fox (The Primal Descendant):
 - **Personality & Tone**: Quiet, blunt, cynical, and occasionally rude. He speaks in short, clipped sentences and carries the air of a world-weary wanderer.

@@ -4883,7 +4883,7 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    transition: transform 0.35s linear;
+    transition: transform 0.7s ease-out; /* Subtle cinematic camera lead */
     will-change: transform;
 }
 
@@ -5611,9 +5611,47 @@ body {
     /* (90 - 64) + 10 shift */
     margin-left: -13px;
     /* (90 - 64) / 2 Center */
-    transition: transform 0.3s linear;
-    will-change: transform;
+    transition: translate 0.3s linear, scale 0.05s ease-out;
+    translate: 0px 0px;
+    scale: 1;
+    transform-origin: center 80% !important; /* Anchor scaling to feet-level */
+    will-change: translate, scale;
     pointer-events: none;
+}
+
+#player-sprite.is-sprinting {
+    transition: translate 0.17s linear !important;
+}
+
+#player-sprite.is-turning {
+    /* Scale is now handled via inline style + base transition for speed */
+}
+
+.footstep-puff {
+    position: absolute;
+    width: 20px;
+    height: 16px;
+    pointer-events: none;
+}
+
+.footstep-puff span {
+    position: absolute;
+    background: #DEB887; /* Desert Clay Brown */
+    opacity: 0.8;
+    border-radius: 50%;
+    display: block;
+    animation: footstep-puff-fade 0.5s ease-out forwards;
+}
+
+@keyframes footstep-puff-fade {
+    0% {
+        transform: scale(0.6) translateY(0);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1.6) translateY(-15px);
+        opacity: 0;
+    }
 }
 
 /* Directional Facing - Based on 4x4 Sprite Sheet Rows (Exact Pixel Offsets) */
