@@ -90,6 +90,12 @@ export const Overworld = {
             ["The specimens in these tanks are kept in 'suspended animation'.", "It's the only way to study them without them trying to synthesize a snack out of our clipboards."],
             ["Notice the color variations in the tanks?", "Red, Blue, Green... we're testing how different nutrient hues affect Pellicle density."],
             ["Don't tap on the glass!", "The Red Specimens are especially sensitive to vibrations. They're not aggressive, just... easily startled into a thermal burst."]
+        ],
+        library: [
+            ["The junior interns avoid the lower levels because of the 'White Ghost' rumor.", "I tried to stay late to finish my report, but the chill became unbearable. // It felt like the Library itself wanted to be left alone with its ghosts."],
+            ["First I saw one white figure, then I saw two near the restricted section.", "I think our facility's history might have some... active participants."],
+            ["The Director is surprisingly hands-on here; he cleans every bookshelf himself.", "I saw him polishing the 'Genetic Heritage' spines with a silk cloth for two hours."],
+            ["Did you ever hear that old story? // About the plant that fed on a human until it took their soul for its own.", "They say when it had eaten enough, its roots became legs and it pulled itself out of the soil. // It walks the earth now... pretending to be one of us, while its heart is still made of thorns."]
         ]
     },
     tileSize: 64,
@@ -964,7 +970,7 @@ export const Overworld = {
                 { id: 'f27_bot2', x: 13, y: 14, type: 'prop', name: 'Research Station' },
                 // Staff NPCs
                 { id: 'npc_male_bot1', x: 2, y: 9, type: 'npc', name: 'Researcher Evan' },
-                { 
+                {
                     id: 'npc_female_bot1', x: 1, y: 5, type: 'npc', name: 'Scientist Clara',
                     battleEncounterId: 'clara',
                     dialogue: [
@@ -981,7 +987,7 @@ export const Overworld = {
                         "Each type has a counter: Thermal melts Botanic, Botanic absorbs Osmotic, and Osmotic cools Thermal. These 1.5x multipliers are the only way to survive the deeper wards."
                     ]
                 },
-                { 
+                {
                     id: 'npc_male_bot2', x: 13, y: 9, type: 'npc', name: 'Tech Leo',
                     battleEncounterId: 'leo',
                     dialogue: [
@@ -997,7 +1003,7 @@ export const Overworld = {
                         "It allows you to equip a second active skill, giving you much more control over your Pellicle Points (PP) in battle."
                     ]
                 },
-                { 
+                {
                     id: 'npc_female_bot2', x: 9, y: 11, type: 'npc', name: 'Researcher Rose',
                     battleEncounterId: 'rose',
                     dialogue: [
@@ -1514,6 +1520,14 @@ export const Overworld = {
                 [2, 9, 9, 20, 9, 9, 3]
             ],
             objects: [
+                {
+                    id: 'elara', x: 3, y: 3, type: 'npc', name: 'Elara',
+                    direction: 'down', customSprite: 'T_Char_Sprite_Elara_01',
+                    portrait: 'Character_FullArt_Elara',
+                    proximityTrigger: true, triggerRadius: 4,
+                    triggerY: 0, // 3 tiles up from y=3
+                    sideQuestId: 'quest_elara_ghost'
+                },
                 // Bookshelf Row (Left & Right)
                 { id: 'f76_lib1', x: 1, y: 2, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib1', x: 2, y: 2, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
                 { id: 'f76_lib2', x: 4, y: 2, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib2', x: 5, y: 2, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
@@ -1549,7 +1563,8 @@ export const Overworld = {
 
                 { id: 'f62_lib', x: 1, y: 15, type: 'prop', name: 'Stored Boxes' },
                 { id: 'f60_lib', x: 2, y: 15, type: 'prop', name: 'Reference Box' },
-                { id: 'f0_lib2', x: 5, y: 15, type: 'prop', name: 'Study Chair' }
+                { id: 'f0_lib2', x: 5, y: 15, type: 'prop', name: 'Study Chair' },
+                { id: 'npc_female_wednesday', x: 4, y: 15, type: 'npc', name: 'Wednesday', direction: 'down' }
             ],
             doors: [
                 { x: 3, y: 16, targetZone: 'executive', targetX: 18, targetY: 3 }
@@ -1605,7 +1620,7 @@ export const Overworld = {
                 { id: 'f59_kit3', x: 3, y: 6, type: 'prop', name: 'Kitchen Fern' },
                 { id: 'f36_kit3', x: 4, y: 6, type: 'prop', name: 'Abandoned Snack' },
                 { id: 'f59_kit2', x: 5, y: 6, type: 'prop', name: 'Kitchen Fern' },
-                { 
+                {
                     id: 'npc_male_theo', x: 4, y: 5, type: 'npc', name: 'Chef Theo', direction: 'down',
                     battleEncounterId: 'theo',
                     dialogue: [
@@ -1882,18 +1897,18 @@ export const Overworld = {
         Object.keys(gameState.quests).forEach(questId => {
             const progressObj = gameState.quests[questId];
             const questData = QUESTS[questId];
-            
+
             if (progressObj.status === 'started' && questData.type === type && questData.target === id) {
                 progressObj.progress++;
                 changed = true;
-                
+
                 if (progressObj.progress >= questData.amount) {
                     progressObj.status = 'completed';
                     console.log(`Quest [${questData.title}] marked as COMPLETED!`);
                 }
             }
         });
-        
+
         if (changed) {
             saveGameState();
         }
@@ -2071,6 +2086,17 @@ export const Overworld = {
                     el.appendChild(badge);
                 }
 
+                if (obj.proximityTrigger) {
+                    const tx = obj.triggerX !== undefined ? obj.triggerX : obj.x;
+                    const ty = obj.triggerY !== undefined ? obj.triggerY : obj.y;
+                    const dist = Math.sqrt(Math.pow(this.player.x - tx, 2) + Math.pow(this.player.y - ty, 2));
+                    if (dist <= (obj.triggerRadius || 3)) {
+                        el.classList.add('npc-elara-visible');
+                    } else {
+                        el.classList.add('npc-elara-faded');
+                    }
+                }
+
                 mapEl.appendChild(el);
 
                 // DEBUG: Show red X on hidden DataLogs
@@ -2206,7 +2232,7 @@ export const Overworld = {
         if (overworldVisible && !this.isPaused && !this.isTransitioning) {
             // Update movement progress first
             this.handleMovementProgress();
-            
+
             // Check for new input
             this.handleMovementInput();
         }
@@ -2234,8 +2260,35 @@ export const Overworld = {
             this.player.currentFrame = this.player.stepParity * 2; // Next idle frame
             this.updatePlayerPosition();
             this.savePosition();
+            this.checkProximityTriggers();
             this.handleAutomatedInteractions();
         }
+    },
+
+    checkProximityTriggers() {
+        const zone = this.zones[this.currentZone];
+        if (!zone || !zone.objects) return;
+
+        zone.objects.forEach(obj => {
+            if (obj.proximityTrigger) {
+                const el = document.getElementById(`npc-${obj.id}`);
+                if (!el) return;
+
+                const tx = obj.triggerX !== undefined ? obj.triggerX : obj.x;
+                const ty = obj.triggerY !== undefined ? obj.triggerY : obj.y;
+                const dx = this.player.x - tx;
+                const dy = this.player.y - ty;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist <= (obj.triggerRadius || 3)) {
+                    el.classList.remove('npc-elara-faded');
+                    el.classList.add('npc-elara-visible');
+                } else {
+                    el.classList.remove('npc-elara-visible');
+                    el.classList.add('npc-elara-faded');
+                }
+            }
+        });
     },
 
     handleMovementInput() {
@@ -2274,7 +2327,7 @@ export const Overworld = {
             this.lastTurnTime = Date.now();
             this.player.isTurning = true;
             this.updatePlayerPosition();
-            
+
             // Temporary turning visual effect (60ms for a clicky snap)
             setTimeout(() => {
                 this.player.isTurning = false;
@@ -2710,7 +2763,7 @@ export const Overworld = {
         if (npc.sideQuestId && window.gameState && window.gameState.quests) {
             const qId = npc.sideQuestId;
             const qData = QUESTS[qId];
-            
+
             if (qData) {
                 // Initialize if not exists
                 if (!window.gameState.quests[qId]) {
@@ -2742,11 +2795,29 @@ export const Overworld = {
 
                 // Case 2: Quest is ongoing
                 if (qProgress.status === 'started') {
-                    let progressLines = qData.dialogue.progress.map(line => 
+                    // Custom Check for 'show_monster' type
+                    if (qData.type === 'show_monster') {
+                        const hasMonster = gameState.profiles.player.party.some(m =>
+                            m && m.id === qData.target && (m.extractEfficiency || 0) >= (qData.minEfficiency || 0)
+                        );
+
+                        if (hasMonster) {
+                            // Turn in immediately!
+                            this.onDialogueComplete = () => {
+                                this.giveQuestReward(qId);
+                                qProgress.status = 'finished';
+                                saveGameState();
+                            };
+                            this.showDialogue(npc.name, qData.dialogue.complete, npc.id);
+                            return;
+                        }
+                    }
+
+                    let progressLines = qData.dialogue.progress.map(line =>
                         line.replace('{progress}', qProgress.progress)
                     );
                     this.showDialogue(npc.name, progressLines, npc.id);
-                    
+
                     // If the quest target is this specific NPC, don't return so the battle can trigger
                     if (qData.type === 'defeat' && qData.target === (npc.battleEncounterId || npc.id)) {
                         // Continue to battle logic
@@ -3064,6 +3135,7 @@ export const Overworld = {
             if (this.currentZone === 'entertainment') activePool = this.randomPools.entertainment;
             if (this.currentZone === 'storage') activePool = this.randomPools.storage;
             if (this.currentZone === 'specimenStorage') activePool = this.randomPools.specimenStorage;
+            if (this.currentZone === 'library') activePool = this.randomPools.library;
 
             const randomIndex = Math.floor(Math.random() * activePool.length);
             lines = activePool[randomIndex];
@@ -3181,7 +3253,8 @@ export const Overworld = {
                 'dyzes': 'Character_FullArt_Dyzes.png',
                 'capsain': 'Character_FullArt_Director.png',
                 'npc_female': 'Character_FullArt_NPC_Female.png',
-                'npc_male': 'Character_FullArt_NPC_Male.png'
+                'npc_male': 'Character_FullArt_NPC_Male.png',
+                'elara': 'Character_FullArt_Elara.png'
             };
 
             const key = npcId ? (npcId.startsWith('npc_') ? npcId.split('_').slice(0, 2).join('_') : npcId.split('_')[0]) : null;
@@ -3429,13 +3502,13 @@ export const Overworld = {
 
         const puff = document.createElement('div');
         puff.className = 'footstep-puff';
-        
+
         // 3 Circles for Cartoon Cloud (Walking vs Sprinting)
         const count = 3;
         for (let i = 0; i < count; i++) {
             const circle = document.createElement('span');
             // Size: 8-10px for walking, 10-18px for sprinting
-            const size = isSprinting ? (Math.random() * 8 + 10) : (Math.random() * 2 + 8); 
+            const size = isSprinting ? (Math.random() * 8 + 10) : (Math.random() * 2 + 8);
             circle.style.width = `${size}px`;
             circle.style.height = `${size}px`;
             circle.style.left = isSprinting ? `${Math.random() * 20 - 5}px` : `${Math.random() * 10 - 2}px`;

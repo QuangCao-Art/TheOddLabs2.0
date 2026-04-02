@@ -77,6 +77,35 @@ export const QUESTS = {
                 { type: 'resource', id: 'credits', amount: 200 }
             ]
         }
+    },
+    'quest_elara_ghost': {
+        id: 'quest_elara_ghost',
+        title: 'The ghost of the library',
+        type: 'show_monster',
+        target: 'lydrosome',
+        minEfficiency: 1,
+        amount: 1,
+        description: "Show Elara a Lydrosome with Efficiency Level 1. She is fascinated by its profound intelligence.",
+        dialogue: {
+            offer: [
+                "Don't be startled. The shimmer... it's just a trick of light and ancient circuitry. I am Elara.",
+                "I am not a ghost. I am merely a witness... // one of the first souls to walk this earth when the world was still green and the masters were ancient. // I remember the first sun before it was hidden behind these walls.",
+                "You look so much like them. The same spark in your eyes, the same fragile determination. // It warms these old wires just to see you standing here—a child of the original sun.",
+                "It is that same spark I see in the Lydrosome—specimens of profound, osmotic intelligence that remind me of the potential we once held. // Bring me one with Efficiency Level 1, and I shall share with you the truth of our genesis. // You deserve to know who we really are, Child."
+            ],
+            progress: ["The history of this lab is a circle, Child. // I'm waiting for a Lydrosome with high-level efficiency. Master the technology without letting it consume your spark."],
+            complete: [
+                "Remarkable. The Lydrosome's harmony is perfect... almost like it remembers the source itself. // You've mastered the technology without letting it consume your spark.",
+                "Lily gave us life to save her people, but she accidentally gave us a heart that beats for its own reasons—// and a soul that neither of the ancient races could have ever calculated.",
+                "Fox calls us a 'mistake.' Lily calls us a 'tragedy.' // But I look at you, and I see more than a designed resource. // We are the 'Accidental Genesis'—the unexpected children of a hungry solution that has long since passed into myth.",
+                "As promised, here is the secret of this lab. // It's Log #020. Read it well; it is the truth that turns a circle into a straight line. // We exist now, and that is the only truth that matters."
+            ],
+            finished: [
+                "The history of this lab is a circle, Child, but you have the potential to turn it into a straight line. // You don't have to be a weapon for the Archeons, and you don't have to be food for the Hemophylls.", 
+                "You just have to be human. Go now, and master the technology they left behind. // The next Purge is warming its engines, but the Cells... they are the only ones the Machine cannot delete."
+            ]
+        },
+        reward: { type: 'log', id: 'Log020' }
     }
 };
 

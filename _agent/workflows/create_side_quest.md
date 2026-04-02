@@ -23,6 +23,9 @@ This workflow guides you through the process of adding a new Side Quest to the g
 - **Complete**: ["Line 1", "Line 2"]
 - **Finished**: ["Line 1", "Line 2"]
 
+> [!TIP]
+> **Dialogue Segmentation**: Use `//` within a single string to denote a line break/panel segment (e.g., `"Hello... // How are you?"`). This helps with dialogue pacing.
+
 ##### 2. NPC Assignment
 - **NPC ID**: (e.g., npc_female_at1)
 ```
@@ -43,6 +46,15 @@ Add the new quest definition to the `QUESTS` object in [quests.js](file:///d:/An
       ]
   }
   ```
+
+- **Monster Checks (`show_monster`)**: When checking for a monster in the player's party, use the following property names:
+  - `m.id` (Species ID, e.g., 'lydrosome')
+  - `m.extractEfficiency` (Efficiency level, e.g., 1)
+  - *Mistake to Avoid*: Do NOT use `monsterId` or `efficiency`; these are deprecated or local variables only.
+
+- **Ghostly/Event NPCs (Proximity Decoupling)**: For NPCs that should "phase in" as the player approaches:
+  - Set `proximityTrigger: true`.
+  - Use `triggerX` and `triggerY` to set the center of the detection zone separate from the NPC's actual tile (e.g., place him at `y:3` but set `triggerY: 0` for a delayed reveal).
 
 ### 2. Assign to NPC
 Link the quest to the specified NPC in [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/overworld.js).
