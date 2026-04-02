@@ -1524,8 +1524,8 @@ export const Overworld = {
                     id: 'elara', x: 3, y: 3, type: 'npc', name: 'Elara',
                     direction: 'down', customSprite: 'T_Char_Sprite_Elara_01',
                     portrait: 'Character_FullArt_Elara',
-                    proximityTrigger: true, triggerRadius: 4,
-                    triggerY: 0, // 3 tiles up from y=3
+                    proximityTrigger: true, triggerRadius: 3,
+                    triggerY: 1, 
                     sideQuestId: 'quest_elara_ghost'
                 },
                 // Bookshelf Row (Left & Right)
@@ -2413,6 +2413,9 @@ export const Overworld = {
         this.player.moveStartedAt = Date.now();
         this.player.x = nextX;
         this.player.y = nextY;
+
+        // Immediate proximity check to eliminate "entry lag"
+        this.checkProximityTriggers();
 
         // Start Step Visuals (Idle Frame)
         this.player.currentFrame = this.player.stepParity * 2;
