@@ -5611,7 +5611,7 @@ body {
     /* (90 - 64) + 10 shift */
     margin-left: -13px;
     /* (90 - 64) / 2 Center */
-    transition: transform 0.35s linear;
+    transition: transform 0.3s linear;
     will-change: transform;
     pointer-events: none;
 }

@@ -100,7 +100,7 @@ export const Overworld = {
         targetY: 8,
         direction: 'down',
         isMoving: false,
-        moveSpeed: 350, // ms per tile
+        moveSpeed: 300, // ms per tile
         stepParity: 0, // 0 or 1 for alternating steps
         currentFrame: 0 // 0-3 for manual frame control
     },
