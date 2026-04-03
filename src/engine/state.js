@@ -147,7 +147,16 @@ export function saveGameState() {
         playerLevel: gameState.profiles.player.level,
         playerTeam: gameState.profiles.player.team,
         playerStyle: gameState.profiles.player.style || 'balanced',
-        playerPartyEquips: (gameState.profiles.player.party || []).map(mon => mon ? mon.equippedCards : []),
+        // Save comprehensive monster data including efficiency levels
+        playerPartyData: (gameState.profiles.player.party || []).map(mon => mon ? {
+            id: mon.id,
+            instanceId: mon.instanceId,
+            hp: mon.hp,
+            pp: mon.pp,
+            equippedCards: mon.equippedCards,
+            extractEfficiency: mon.extractEfficiency || 0,
+            currentPresetId: mon.currentPresetId
+        } : null),
         storyFlags: gameState.storyFlags,
         items: gameState.items,
         logs: gameState.logs,
@@ -158,7 +167,7 @@ export function saveGameState() {
     };
     
     localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
-    console.log("Game Saved Successfully.");
+    console.log("Game Saved Successfully (Efficiency Data included).");
 }
 
 export function loadGameState() {
@@ -188,7 +197,11 @@ export function loadGameState() {
             gameState.playerStyle = saved.playerStyle;
         }
 
-        if (saved.playerPartyEquips) {
+        // Restore complex monster data (Efficiency, IDs, Equips)
+        if (saved.playerPartyData) {
+            gameState.playerPartyData = saved.playerPartyData;
+        } else if (saved.playerPartyEquips) {
+            // Backward compatibility for older saves
             gameState.playerPartyEquips = saved.playerPartyEquips;
         }
         
@@ -210,6 +223,7 @@ export function loadGameState() {
         return false;
     }
 }
+
 
 export function resetGameState() {
     localStorage.removeItem(SAVE_KEY);

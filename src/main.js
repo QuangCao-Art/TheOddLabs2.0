@@ -4617,14 +4617,21 @@ function resetGame() {
     if (pProfile.party.length === 0) {
         pProfile.party = pProfile.team.map((id, idx) => {
             if (!id) return null;
-            const mon = createMonsterInstance(id);
-            // Load equipped cards from temporary storage if available
-            if (gameState.playerPartyEquips && gameState.playerPartyEquips[idx]) {
-                mon.equippedCards = [...gameState.playerPartyEquips[idx]];
+            
+            // Check for saved instance data (Efficiency, HP, PP, etc.)
+            let existingData = null;
+            if (gameState.playerPartyData && gameState.playerPartyData[idx]) {
+                existingData = gameState.playerPartyData[idx];
+            } else if (gameState.playerPartyEquips && gameState.playerPartyEquips[idx]) {
+                // Fallback for older saves (equips only)
+                existingData = { equippedCards: [...gameState.playerPartyEquips[idx]] };
             }
+
+            const mon = createMonsterInstance(id, existingData);
             return mon;
         });
     }
+
     // Filter active squad slice (0,3) to remove nulls left by empty slots
     gameState.playerParty = pProfile.party.slice(0, 3).filter(m => m !== null);
     gameState.playerLevel = pProfile.level;
@@ -5947,15 +5954,16 @@ function createMonsterInstance(id, existing = null) {
         currentNode: null,
         blockedNodes: [],
         equippedCards: existing ? [...existing.equippedCards] : [],
-        hp: data.hp,
-        pp: 1,
+        hp: existing && existing.hp !== undefined ? existing.hp : data.hp,
+        pp: existing && existing.pp !== undefined ? existing.pp : 1,
         turnCount: 0,
         selectedMove: data.moves[0].id,
         currentPresetId: currentPresetId,
-        extractEfficiency: 0
+        extractEfficiency: existing ? (existing.extractEfficiency || 0) : 0
     };
     return monster;
 }
+
 
 function openCardDetail(cardId) {
     const card = CARDS[cardId];

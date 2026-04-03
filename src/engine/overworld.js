@@ -165,196 +165,6 @@ export const Overworld = {
         return activeCount > 0;
     },
 
-    // --- Entity Spawner System (Wild Encounters) ---
-    spawner: {
-        activeSpawn: null,
-        spawnTimer: null,
-        cooldownTimer: null,
-        allowedZones: ['atrium', 'botanic', 'human', 'executive', 'specimenStorage', 'kitchen', 'storage', 'entertainment', 'ancientBotany', 'preservationRoom', 'library'],
-        cooldownMs: 10000, // 10 seconds cooldown between spawns
-
-        start() {
-            if (!this.allowedZones.includes(Overworld.currentZone)) return;
-
-            // 1. Orphaned Spawn Recovery: If we have an active spawn that isn't in the current zone's objects, clear it
-            const zone = Overworld.zones[Overworld.currentZone];
-            if (this.activeSpawn && zone && !zone.objects.some(o => o.id === this.activeSpawn.id)) {
-                this.activeSpawn = null;
-                if (this.spawnTimer) clearTimeout(this.spawnTimer);
-                this.spawnTimer = null;
-            }
-
-            // 2. Lifespan Resume: If there's an active spawn but no timer (e.g. stopped during interaction/menu), resume its lifespan
-            if (this.activeSpawn && !this.spawnTimer) {
-                const lifespan = Math.floor(Math.random() * 5000) + 5000; // Residual lifespan
-                this.spawnTimer = setTimeout(() => this.despawnCurrent(), lifespan);
-                return;
-            }
-
-            if (this.activeSpawn || this.cooldownTimer || this.spawnTimer) return;
-            this.scheduleSpawn();
-        },
-
-        stop() {
-            if (this.spawnTimer) clearTimeout(this.spawnTimer);
-            if (this.cooldownTimer) clearTimeout(this.cooldownTimer);
-            this.spawnTimer = null;
-            this.cooldownTimer = null;
-        },
-
-        resetForZoneChange() {
-            this.stop();
-            this.despawnCurrent();
-            this.start(); // Will abort if zone not allowed
-        },
-
-        scheduleSpawn() {
-            // Random time between 10s and 20s for next spawn
-            const delay = Math.floor(Math.random() * 10000) + 10000;
-            this.spawnTimer = setTimeout(() => this.spawnWildMonster(), delay);
-        },
-
-        spawnWildMonster() {
-            if (!this.allowedZones.includes(Overworld.currentZone)) return;
-            const zone = Overworld.zones[Overworld.currentZone];
-
-            if (!zone) return;
-
-            // 1. Determine which monster to spawn based on location
-            let monsterId = 'stemmy';
-            const roll = Math.random() * 100;
-
-            if (['botanic', 'ancientBotany'].includes(Overworld.currentZone)) {
-                if (roll < 60) monsterId = 'stemmy';
-                else if (roll < 70) monsterId = 'nitrophil';
-                else if (roll < 90) monsterId = 'cambihil';
-                else monsterId = 'lydrosome';
-            } else if (['human', 'preservationRoom'].includes(Overworld.currentZone)) {
-                if (roll < 60) monsterId = 'stemmy';
-                else if (roll < 70) monsterId = 'nitrophil';
-                else if (roll < 80) monsterId = 'cambihil';
-                else monsterId = 'lydrosome';
-            } else if (['executive', 'library'].includes(Overworld.currentZone)) {
-                if (roll < 60) monsterId = 'stemmy';
-                else if (roll < 80) monsterId = 'nitrophil';
-                else if (roll < 90) monsterId = 'cambihil';
-                else monsterId = 'lydrosome';
-            } else {
-                // Atrium and other small rooms
-                if (roll < 70) monsterId = 'stemmy';
-                else if (roll < 80) monsterId = 'nitrophil';
-                else if (roll < 90) monsterId = 'cambihil';
-                else monsterId = 'lydrosome';
-            }
-
-            const monsterName = monsterId.charAt(0).toUpperCase() + monsterId.slice(1);
-
-            // Define target radius: Spawn ~2-4 tiles away from player
-            const radius = 3;
-            let validSpots = [];
-
-            for (let y = 0; y < zone.height; y++) {
-                for (let x = 0; x < zone.width; x++) {
-                    const dist = Math.abs(x - Overworld.player.x) + Math.abs(y - Overworld.player.y);
-                    if (dist >= 2 && dist <= 5) {
-                        const tileID = zone.layout[y][x];
-                        const isGenericWall = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 32].includes(tileID);
-                        const isClosedDoor = [20, 22, 24, 25, 28, 29, 30, 31].includes(tileID);
-
-                        if (!isGenericWall && !isClosedDoor) {
-                            // Check objects collision
-                            const isOccupied = zone.objects.some(obj => {
-                                const meta = Overworld.getFurnitureMeta(obj.id, obj.customSprite);
-                                if (meta && meta.hasCollision === false) return false;
-                                const w = obj.width || 1;
-                                const h = obj.height || 1;
-                                return x >= obj.x && x < obj.x + w && y >= obj.y && y < obj.y + h;
-                            });
-
-                            if (!isOccupied) {
-                                validSpots.push({ x, y });
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (validSpots.length > 0) {
-                const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
-
-                const wildObj = {
-                    id: `${monsterId}_wild_` + Date.now(),
-                    monsterId: monsterId,
-                    x: spot.x,
-                    y: spot.y,
-                    type: 'npc',
-                    name: `Wild ${monsterName}`,
-                    direction: 'down',
-                    temp: true
-                };
-
-                zone.objects.push(wildObj);
-                this.activeSpawn = wildObj;
-
-                // Render it instantly
-                const mapEl = document.getElementById('overworld-map');
-                const el = document.createElement('div');
-                el.id = `npc-${wildObj.id}`;
-                el.className = `world-object cell ${monsterId} anim-monster-pop`;
-                el.style.width = `${Overworld.tileSize}px`;
-                el.style.height = `${Overworld.tileSize}px`;
-                el.style.left = `${spot.x * Overworld.tileSize}px`;
-                el.style.top = `${spot.y * Overworld.tileSize}px`;
-                el.style.zIndex = spot.y + 11;
-                mapEl.appendChild(el);
-
-                // Add breathing after pop animation (400ms)
-                setTimeout(() => {
-                    const checkEl = document.getElementById(`npc-${wildObj.id}`);
-                    if (checkEl) checkEl.classList.add('anim-monster-breathing');
-                }, 400);
-
-                // Monster stays for ~10 to 20 seconds before despawning
-                const lifespan = Math.floor(Math.random() * 10000) + 10000;
-                this.spawnTimer = setTimeout(() => this.despawnCurrent(), lifespan);
-            } else {
-                // Try again later if blocked
-                this.scheduleSpawn();
-            }
-        },
-
-        despawnCurrent() {
-            if (!this.activeSpawn) return;
-            const spawnId = this.activeSpawn.id; // Localize ID to prevent race condition
-            const zone = Overworld.zones[Overworld.currentZone];
-            const idx = zone.objects.findIndex(o => o.id === spawnId);
-            if (idx > -1) zone.objects.splice(idx, 1);
-
-            const el = document.getElementById(`npc-${spawnId}`);
-            if (el) {
-                // Clear any existing animation classes and force reflow to ensure it plays
-                el.classList.remove('anim-monster-pop', 'anim-monster-breathing', 'anim-recall-exit');
-                void el.offsetWidth;
-
-                el.classList.add('anim-recall-exit');
-                setTimeout(() => {
-                    // Re-verify element still exists before removing
-                    const stillExists = document.getElementById(`npc-${spawnId}`);
-                    if (stillExists) stillExists.remove();
-                }, 400);
-            }
-
-            this.activeSpawn = null;
-            if (this.spawnTimer) clearTimeout(this.spawnTimer);
-
-            // Start Cooldown for next spawn
-            this.cooldownTimer = setTimeout(() => {
-                this.cooldownTimer = null;
-                this.scheduleSpawn();
-            }, this.cooldownMs);
-        }
-    },
-
     zones: {
         lobby: {
             name: 'LAB LOBBY',
@@ -794,6 +604,7 @@ export const Overworld = {
                 [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [],
+            spawnPool: { stemmy: 60, nitrophil: 10, cambihil: 20, lydrosome: 10 },
             doors: [
                 { x: 5, y: 2, targetZone: 'specimenStorage', targetX: 13, targetY: 6 }
             ]
@@ -854,6 +665,7 @@ export const Overworld = {
             width: 15,
             height: 16,
             spawn: { x: 7, y: 13 },
+            spawnPool: { stemmy: 60, nitrophil: 10, cambihil: 20, lydrosome: 10 },
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
@@ -1258,6 +1070,7 @@ export const Overworld = {
             width: 15,
             height: 16,
             spawn: { x: 7, y: 13 },
+            spawnPool: { stemmy: 60, nitrophil: 10, cambihil: 10, lydrosome: 20 },
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
@@ -1386,6 +1199,7 @@ export const Overworld = {
             width: 22,
             height: 9,
             spawn: { x: 7, y: 7 },
+            spawnPool: { stemmy: 60, nitrophil: 20, cambihil: 10, lydrosome: 10 },
             layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1, 0, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 5, 4, 14, 14, 14, 14, 14, 11],
@@ -1779,6 +1593,10 @@ export const Overworld = {
                 [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [],
+            maxWildSpawns: 5,
+            disableBattle: true,
+            disableWildDespawn: true,
+            spawnPool: { stemmy: 25, nitrophil: 25, cambihil: 25, lydrosome: 25 },
             doors: [
                 { x: 16, y: 6, targetZone: 'entertainment', targetX: 1, targetY: 6 }
             ]
@@ -2513,7 +2331,7 @@ export const Overworld = {
 
         // 1. CLEANUP OLD ZONE SPAWNS (while currentZone is still the old zone)
         this.spawner.stop();
-        this.spawner.despawnCurrent();
+        this.spawner.cleanupTempObjects();
 
         // 2. Perform the actual map swap while screen is black (updates currentZone)
         this.renderMap(zoneId, false, x, y);
@@ -2621,8 +2439,14 @@ export const Overworld = {
         if (npc) {
             if (npc.id.includes('_wild_')) {
                 const mName = npc.monsterId.charAt(0).toUpperCase() + npc.monsterId.slice(1);
-                this.spawner.stop(); // Stop wild spawns when interacting with one
+                
+                const zone = this.zones[this.currentZone];
+                if (zone.disableBattle) {
+                    this.showDialogue(mName, [`A wild ${mName} is wandering. It seems peaceful.`]);
+                    return;
+                }
 
+                this.spawner.stop(); // Stop wild spawns when interacting with one
                 if (this.checkActiveSquad()) {
                     this.pendingWildEncounter = true;
                     this.pendingWildMonsterId = npc.monsterId;
@@ -3539,12 +3363,17 @@ export const Overworld = {
     },
 
     spawner: {
-        activeMonsters: [],
+        activeMonsters: [], // Array of { id, despawnTimer }
         spawnTimer: null,
+        allowedZones: ['atrium', 'botanic', 'human', 'executive', 'specimenStorage', 'kitchen', 'storage', 'entertainment', 'ancientBotany', 'preservationRoom', 'library', 'cellPlayGround'],
 
         start() {
+            if (!this.allowedZones.includes(Overworld.currentZone)) return;
             if (this.spawnTimer) return;
-            this.startCooldown();
+            const zone = Overworld.zones[Overworld.currentZone];
+            const maxSpawns = (zone && zone.maxWildSpawns) || 1;
+            // Immediate spawn for playgrounds/high-capacity rooms
+            this.startCooldown(maxSpawns > 1 ? 200 : null);
         },
 
         stop() {
@@ -3552,20 +3381,41 @@ export const Overworld = {
                 clearTimeout(this.spawnTimer);
                 this.spawnTimer = null;
             }
+            this.activeMonsters.forEach(m => {
+                if (m.despawnTimer) clearTimeout(m.despawnTimer);
+            });
+            this.activeMonsters = [];
         },
 
-        startCooldown() {
+        cleanupTempObjects() {
+            const zone = Overworld.zones[Overworld.currentZone];
+            if (zone && zone.objects) {
+                zone.objects = zone.objects.filter(obj => !obj.temp);
+            }
+        },
+
+        startCooldown(customDelay = null) {
             if (this.spawnTimer) clearTimeout(this.spawnTimer);
-            // 5-15s delay
-            const delay = 5000 + (Math.random() * 10000);
+            // Default 5-15s delay, or custom if provided
+            const delay = customDelay !== null ? customDelay : 5000 + (Math.random() * 10000);
             this.spawnTimer = setTimeout(() => this.spawnWildMonster(), delay);
         },
 
         spawnWildMonster() {
-            if (!Overworld.gameLoopActive) return;
+            if (!this.allowedZones.includes(Overworld.currentZone)) return;
+            if (!Overworld.gameLoopActive || Overworld.isPaused || Overworld.isDialogueActive) {
+                this.startCooldown(2000); // Retry soon if busy
+                return;
+            }
+
             const id = Overworld.currentZone;
             const zone = Overworld.zones[id];
-            if (!zone || (zone.objects && zone.objects.some(obj => obj.id && obj.id.includes('_wild_')))) {
+            if (!zone) return;
+
+            const maxSpawns = zone.maxWildSpawns || 1;
+            const currentWildCount = (zone.objects || []).filter(obj => obj.id && obj.id.includes('_wild_')).length;
+
+            if (currentWildCount >= maxSpawns) {
                 this.startCooldown();
                 return;
             }
@@ -3587,11 +3437,26 @@ export const Overworld = {
             }
 
             const pos = floorTiles[Math.floor(Math.random() * floorTiles.length)];
-            const monsterIds = ['stemmy', 'cambihil', 'lydrosome', 'nitrophil'];
-            const mId = monsterIds[Math.floor(Math.random() * monsterIds.length)];
+            
+            // --- NEW: Weighted Spawn Pool System ---
+            const monsterIds = ['stemmy', 'nitrophil', 'cambihil', 'lydrosome'];
+            let pool = zone.spawnPool || { stemmy: 70, nitrophil: 10, cambihil: 10, lydrosome: 10 };
+            
+            const roll = Math.random() * 100;
+            let current = 0;
+            let mId = 'stemmy';
+            
+            for (const id of monsterIds) {
+                current += (pool[id] || 0);
+                if (roll < current) {
+                    mId = id;
+                    break;
+                }
+            }
 
+            const monsterId = `npc_wild_${Date.now()}_${Math.round(Math.random() * 1000)}`;
             const newMonster = {
-                id: `npc_wild_${Date.now()}`,
+                id: monsterId,
                 monsterId: mId,
                 x: pos.x,
                 y: pos.y,
@@ -3604,17 +3469,15 @@ export const Overworld = {
 
             if (!zone.objects) zone.objects = [];
             zone.objects.push(newMonster);
-            this.activeMonsters.push(newMonster);
+
+            const monsterRecord = { id: monsterId, despawnTimer: null };
+            this.activeMonsters.push(monsterRecord);
 
             const mapEl = document.getElementById('overworld-map');
             if (mapEl) {
                 const el = Overworld.renderObject(newMonster, mapEl);
-                
-                // 1. Trigger Spawn Pop (Elastic arriving)
                 if (el) {
                     el.classList.add('anim-monster-pop');
-                    
-                    // 2. Hand-off to Breathing (sequential to prevent conflict)
                     setTimeout(() => {
                         if (el && el.parentNode) {
                             el.classList.remove('anim-monster-pop');
@@ -3624,35 +3487,40 @@ export const Overworld = {
                 }
             }
 
-            // 3. Robust Timer Management (prevents premature removals)
-            if (this.despawnTimer) clearTimeout(this.despawnTimer);
-            this.despawnTimer = setTimeout(() => this.despawnCurrent(), 15000 + Math.random() * 5000);
-        },
+            // Set individual despawn timer for this specific monster (unless disabled)
+            if (!zone.disableWildDespawn) {
+                monsterRecord.despawnTimer = setTimeout(() => this.despawnMonster(monsterId), 15000 + Math.random() * 10000);
+            }
 
-        despawnCurrent() {
-            if (this.activeMonsters.length > 0) {
-                const m = this.activeMonsters[0];
-                const el = document.getElementById(`npc-${m.id}`);
-
-                // Show exit animation before removal
-                if (el) {
-                    el.classList.remove('anim-monster-breathing', 'anim-monster-pop');
-                    el.classList.add('anim-recall-exit');
-                }
-
-                setTimeout(() => {
-                    const zone = Overworld.zones[Overworld.currentZone];
-                    if (zone && zone.objects) {
-                        zone.objects = zone.objects.filter(obj => obj.id !== m.id);
-                    }
-                    this.activeMonsters = this.activeMonsters.filter(obj => obj.id !== m.id);
-                    if (el && el.parentNode) el.remove();
-                    if (this.despawnTimer) clearTimeout(this.despawnTimer);
-                    this.startCooldown();
-                }, 400); // Wait for anim-recall-exit (0.4s)
+            // If we still have room for more, trigger next spawn sooner (1.5s)
+            if (currentWildCount + 1 < maxSpawns) {
+                this.startCooldown(1500);
             } else {
                 this.startCooldown();
             }
+        },
+
+        despawnMonster(monsterId) {
+            const mRecord = this.activeMonsters.find(m => m.id === monsterId);
+            if (!mRecord) return;
+
+            const el = document.getElementById(`npc-${monsterId}`);
+            if (el) {
+                el.classList.remove('anim-monster-breathing', 'anim-monster-pop');
+                el.classList.add('anim-recall-exit');
+            }
+
+            setTimeout(() => {
+                const zone = Overworld.zones[Overworld.currentZone];
+                if (zone && zone.objects) {
+                    zone.objects = zone.objects.filter(obj => obj.id !== monsterId);
+                }
+                this.activeMonsters = this.activeMonsters.filter(m => m.id !== monsterId);
+                if (el && el.parentNode) el.remove();
+                
+                // Trigger cooldown to eventually replace the despawned monster
+                this.startCooldown();
+            }, 400);
         }
     },
 
@@ -3716,7 +3584,7 @@ export const Overworld = {
             if (zone && zone.objects) {
                 zone.objects = zone.objects.filter(obj => obj.id !== monsterObj.id);
             }
-            this.spawner.activeMonsters = this.spawner.activeMonsters.filter(obj => obj.id !== monsterObj.id);
+            this.spawner.activeMonsters = this.spawner.activeMonsters.filter(m => m.id !== monsterObj.id);
 
             requestAnimationFrame(() => {
                 el.style.zIndex = 9999;
@@ -3741,12 +3609,10 @@ export const Overworld = {
 
             this.updateQuestProgress('kick', monsterObj.monsterId + '_wild');
 
-            // Clear despawn timer if kicked!
-            if (this.spawner.despawnTimer) clearTimeout(this.spawner.despawnTimer);
-
             setTimeout(() => {
                 if (el && el.parentNode) el.parentNode.removeChild(el);
-                this.spawner.startCooldown();
+                // Trigger cooldown immediately to replace the kicked monster
+                this.spawner.startCooldown(zone.maxWildSpawns > 1 ? 500 : null);
             }, 800);
         }, 300);
     },
