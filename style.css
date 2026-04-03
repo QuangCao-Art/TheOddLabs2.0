@@ -5631,6 +5631,7 @@ body {
 }
 
 #player-sprite.is-sprinting {
+    background-image: url('./assets/images/T_Char_Sprite_Player_01_Run.png') !important;
     transition: translate 0.17s linear !important;
 }
 
