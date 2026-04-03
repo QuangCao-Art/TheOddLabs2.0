@@ -1525,7 +1525,7 @@ export const Overworld = {
                     direction: 'down', customSprite: 'T_Char_Sprite_Elara_01',
                     portrait: 'Character_FullArt_Elara',
                     proximityTrigger: true, triggerRadius: 3,
-                    triggerY: 1, 
+                    triggerY: 1,
                     sideQuestId: 'quest_elara_ghost'
                 },
                 // Bookshelf Row (Left & Right)
@@ -2049,67 +2049,7 @@ export const Overworld = {
             }
         }
 
-        zone.objects.forEach(obj => {
-            if (['npc', 'prop', 'cell', 'sign', 'atrium_statue'].includes(obj.type) || obj.id === 'incubator') {
-                const el = document.createElement('div');
-                el.id = `npc-${obj.id}`;
-                el.classList.add('world-object', obj.type);
-                if (obj.customSprite) {
-                    obj.customSprite.split(' ').forEach(cls => {
-                        if (cls) el.classList.add(cls);
-                    });
-                }
-
-                // Always add the class derived from the object ID
-                const specificClass = obj.id.startsWith('npc_') ? obj.id.split('_').slice(0, 2).join('_') : obj.id.split('_')[0];
-                el.classList.add(specificClass);
-
-                if (obj.type === 'npc' && obj.id.includes('_wild_')) {
-                    el.classList.add('cell');
-                }
-                if (obj.type === 'npc') el.classList.add(`face-${obj.direction || 'down'}`);
-
-                el.style.width = `${(obj.width || 1) * this.tileSize}px`;
-                el.style.height = `${(obj.height || 1) * this.tileSize}px`;
-                el.style.left = `${obj.x * this.tileSize + (obj.offsetX || 0)}px`;
-                el.style.top = `${obj.y * this.tileSize + (obj.offsetY || 0)}px`;
-                el.style.zIndex = obj.y + (obj.height || 1) + 10;
-
-                const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
-                if (meta && meta.hasCollision === false) el.classList.add('render-top');
-
-                // Add Level Badge for Bio-Extraction Grid Cells
-                if (obj.type === 'cell' && obj.efficiency) {
-                    const badge = document.createElement('div');
-                    badge.className = 'efficiency-badge';
-                    badge.innerText = obj.efficiency;
-                    el.appendChild(badge);
-                }
-
-                if (obj.proximityTrigger) {
-                    const tx = obj.triggerX !== undefined ? obj.triggerX : obj.x;
-                    const ty = obj.triggerY !== undefined ? obj.triggerY : obj.y;
-                    const dist = Math.sqrt(Math.pow(this.player.x - tx, 2) + Math.pow(this.player.y - ty, 2));
-                    if (dist <= (obj.triggerRadius || 3)) {
-                        el.classList.add('npc-elara-visible');
-                    } else {
-                        el.classList.add('npc-elara-faded');
-                    }
-                }
-
-                mapEl.appendChild(el);
-
-                // DEBUG: Show red X on hidden DataLogs
-                if (window.gameState.showHiddenLogs && obj.hiddenLogId && !this.logsCollected.includes(obj.hiddenLogId)) {
-                    const debugIndicator = document.createElement('div');
-                    debugIndicator.className = 'debug-log-indicator';
-                    // Center the X on the object
-                    debugIndicator.style.left = `${obj.x * this.tileSize + ((obj.width || 1) * this.tileSize / 2) - 16}px`;
-                    debugIndicator.style.top = `${obj.y * this.tileSize + ((obj.height || 1) * this.tileSize / 2) - 16}px`;
-                    mapEl.appendChild(debugIndicator);
-                }
-            }
-        });
+        zone.objects.forEach(obj => this.renderObject(obj, mapEl));
 
         // 5. RE-ATTACH & COORDINATE SYNC
         if (!playerSprite) {
@@ -2140,6 +2080,69 @@ export const Overworld = {
             if (p) p.classList.remove('no-transition');
             if (m) m.classList.remove('no-transition');
         }, 100);
+    },
+
+    renderObject(obj, mapEl) {
+        if (!['npc', 'prop', 'cell', 'sign', 'atrium_statue'].includes(obj.type) && obj.id !== 'incubator') return null;
+
+        const el = document.createElement('div');
+        el.id = `npc-${obj.id}`;
+        el.classList.add('world-object', obj.type);
+        if (obj.customSprite) {
+            obj.customSprite.split(' ').forEach(cls => {
+                if (cls) el.classList.add(cls);
+            });
+        }
+
+        // Always add the class derived from the object ID
+        const specificClass = obj.id.startsWith('npc_') ? obj.id.split('_').slice(0, 2).join('_') : obj.id.split('_')[0];
+        el.classList.add(specificClass);
+
+        if (obj.type === 'npc' && obj.id.includes('_wild_')) {
+            el.classList.add('wild-cell');
+            // 'anim-monster-breathing' is now added AFTER the pop animation in spawner.spawnCurrent
+        }
+        if (obj.type === 'npc') el.classList.add(`face-${obj.direction || 'down'}`);
+
+        el.style.width = `${(obj.width || 1) * this.tileSize}px`;
+        el.style.height = `${(obj.height || 1) * this.tileSize}px`;
+        el.style.left = `${obj.x * this.tileSize + (obj.offsetX || 0)}px`;
+        el.style.top = `${obj.y * this.tileSize + (obj.offsetY || 0)}px`;
+        el.style.zIndex = obj.y + (obj.height || 1) + 10;
+
+        const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
+        if (meta && meta.hasCollision === false) el.classList.add('render-top');
+
+        // Add Level Badge for Bio-Extraction Grid Cells
+        if (obj.type === 'cell' && obj.efficiency) {
+            const badge = document.createElement('div');
+            badge.className = 'efficiency-badge';
+            badge.innerText = obj.efficiency;
+            el.appendChild(badge);
+        }
+
+        if (obj.proximityTrigger) {
+            const tx = obj.triggerX !== undefined ? obj.triggerX : obj.x;
+            const ty = obj.triggerY !== undefined ? obj.triggerY : obj.y;
+            const dist = Math.sqrt(Math.pow(this.player.x - tx, 2) + Math.pow(this.player.y - ty, 2));
+            if (dist <= (obj.triggerRadius || 3)) {
+                el.classList.add('npc-elara-visible');
+            } else {
+                el.classList.add('npc-elara-faded');
+            }
+        }
+
+        mapEl.appendChild(el);
+
+        // DEBUG: Show red X on hidden DataLogs
+        if (window.gameState.showHiddenLogs && obj.hiddenLogId && !this.logsCollected.includes(obj.hiddenLogId)) {
+            const debugIndicator = document.createElement('div');
+            debugIndicator.className = 'debug-log-indicator';
+            debugIndicator.style.left = `${obj.x * this.tileSize + ((obj.width || 1) * this.tileSize / 2) - 16}px`;
+            debugIndicator.style.top = `${obj.y * this.tileSize + ((obj.height || 1) * this.tileSize / 2) - 16}px`;
+            mapEl.appendChild(debugIndicator);
+        }
+        return el;
     },
 
     refreshLogs() {
@@ -2392,20 +2395,29 @@ export const Overworld = {
             }
         }
 
-        // Object Collision Check
-        const isOccupied = zone.objects.some(obj => {
-            // Check metadata override for collision
-            const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
-            if (meta && meta.hasCollision === false) return false;
-
+        // Object Collision Check (Prioritize Wild Specimens for Kicking)
+        const obstacle = zone.objects.find(obj => {
             const w = obj.width || 1;
             const h = obj.height || 1;
             return nextX >= obj.x && nextX < obj.x + w && nextY >= obj.y && nextY < obj.y + h;
         });
 
-        if (isOccupied) {
-            this.updatePlayerPosition();
-            return;
+        if (obstacle) {
+            const meta = this.getFurnitureMeta(obstacle.id, obstacle.customSprite);
+            const isKickable = (obstacle.temp === true || (obstacle.id && obstacle.id.includes('_wild_')));
+
+            if (isKickable && !obstacle.isKicking && this.player.isSprinting) {
+                this.kickWildMonster(obstacle, dx, dy);
+                this.updatePlayerPosition();
+                return;
+            }
+
+            if (meta && meta.hasCollision === false) {
+                // Pass through non-collidable (e.g. tank tops)
+            } else {
+                this.updatePlayerPosition();
+                return;
+            }
         }
 
         // 4. Perform Movement
@@ -3497,6 +3509,189 @@ export const Overworld = {
                 }
             });
         }
+    },
+
+    spawner: {
+        activeMonsters: [],
+        spawnTimer: null,
+
+        start() {
+            if (this.spawnTimer) return;
+            this.startCooldown();
+        },
+
+        stop() {
+            if (this.spawnTimer) {
+                clearTimeout(this.spawnTimer);
+                this.spawnTimer = null;
+            }
+        },
+
+        startCooldown() {
+            if (this.spawnTimer) clearTimeout(this.spawnTimer);
+            // 5-15s delay
+            const delay = 5000 + (Math.random() * 10000);
+            this.spawnTimer = setTimeout(() => this.spawnWildMonster(), delay);
+        },
+
+        spawnWildMonster() {
+            if (!Overworld.gameLoopActive) return;
+            const id = Overworld.currentZone;
+            const zone = Overworld.zones[id];
+            if (!zone || (zone.objects && zone.objects.some(obj => obj.id && obj.id.includes('_wild_')))) {
+                this.startCooldown();
+                return;
+            }
+
+            const floorTiles = [];
+            for (let y = 0; y < zone.height; y++) {
+                for (let x = 0; x < zone.width; x++) {
+                    if (zone.layout[y][x] === 13) {
+                        const occupied = zone.objects.some(obj => obj.x === x && obj.y === y);
+                        const playerNear = Math.abs(Overworld.player.x - x) < 3 && Math.abs(Overworld.player.y - y) < 3;
+                        if (!occupied && !playerNear) floorTiles.push({ x, y });
+                    }
+                }
+            }
+
+            if (floorTiles.length === 0) {
+                this.startCooldown();
+                return;
+            }
+
+            const pos = floorTiles[Math.floor(Math.random() * floorTiles.length)];
+            const monsterIds = ['stemmy', 'cambihil', 'lydrosome', 'nitrophil'];
+            const mId = monsterIds[Math.floor(Math.random() * monsterIds.length)];
+
+            const newMonster = {
+                id: `npc_wild_${Date.now()}`,
+                monsterId: mId,
+                x: pos.x,
+                y: pos.y,
+                type: 'npc',
+                name: mId.charAt(0).toUpperCase() + mId.slice(1),
+                direction: 'down',
+                customSprite: `c${monsterIds.indexOf(mId)}`,
+                temp: true
+            };
+
+            if (!zone.objects) zone.objects = [];
+            zone.objects.push(newMonster);
+            this.activeMonsters.push(newMonster);
+
+            const mapEl = document.getElementById('overworld-map');
+            if (mapEl) {
+                const el = Overworld.renderObject(newMonster, mapEl);
+                
+                // 1. Trigger Spawn Pop (Elastic arriving)
+                if (el) {
+                    el.classList.add('anim-monster-pop');
+                    
+                    // 2. Hand-off to Breathing (sequential to prevent conflict)
+                    setTimeout(() => {
+                        if (el && el.parentNode) {
+                            el.classList.remove('anim-monster-pop');
+                            el.classList.add('anim-monster-breathing');
+                        }
+                    }, 400);
+                }
+            }
+
+            // 3. Robust Timer Management (prevents premature removals)
+            if (this.despawnTimer) clearTimeout(this.despawnTimer);
+            this.despawnTimer = setTimeout(() => this.despawnCurrent(), 15000 + Math.random() * 5000);
+        },
+
+        despawnCurrent() {
+            if (this.activeMonsters.length > 0) {
+                const m = this.activeMonsters[0];
+                const el = document.getElementById(`npc-${m.id}`);
+
+                // Show exit animation before removal
+                if (el) {
+                    el.classList.remove('anim-monster-breathing', 'anim-monster-pop');
+                    el.classList.add('anim-recall-exit');
+                }
+
+                setTimeout(() => {
+                    const zone = Overworld.zones[Overworld.currentZone];
+                    if (zone && zone.objects) {
+                        zone.objects = zone.objects.filter(obj => obj.id !== m.id);
+                    }
+                    this.activeMonsters = this.activeMonsters.filter(obj => obj.id !== m.id);
+                    if (el && el.parentNode) el.remove();
+                    if (this.despawnTimer) clearTimeout(this.despawnTimer);
+                    this.startCooldown();
+                }, 400); // Wait for anim-recall-exit (0.4s)
+            } else {
+                this.startCooldown();
+            }
+        }
+    },
+
+    kickWildMonster(monsterObj, dx, dy) {
+        if (this.isTransitioning || this.isPaused || monsterObj.isKicking) return;
+        monsterObj.isKicking = true;
+
+        const el = document.getElementById(`npc-${monsterObj.id}`);
+        if (!el) return;
+
+        // 1. HIT STOP & SHAKE
+        const screen = document.getElementById('screen-overworld');
+        if (screen) screen.classList.add('anim-screen-shake');
+        
+        // Remove ALL visual states to prevent conflict
+        el.classList.remove('anim-monster-breathing', 'anim-monster-pop');
+        el.classList.add('anim-monster-shake');
+        this.isPaused = true;
+
+        setTimeout(() => {
+            if (!this.gameLoopActive) return;
+            this.isPaused = false;
+            if (screen) screen.classList.remove('anim-screen-shake');
+            
+            // 1. CLEAR SHAKE
+            el.classList.remove('anim-monster-shake');
+            
+            // Force a reflow to ensure the previous animation is cleared
+            void el.offsetWidth;
+            
+            requestAnimationFrame(() => {
+                el.style.zIndex = 9999;
+                el.style.willChange = 'transform, opacity';
+                
+                // 2. DIRECTION-AWARE PHYSICS
+                let possible = ['l', 'r']; 
+                if (dy < 0) possible = ['u', 'l', 'r']; 
+                else if (dy > 0) possible = ['f', 'l', 'r']; 
+                else if (dx < 0) possible = ['l', 'u', 'f']; 
+                else if (dx > 0) possible = ['r', 'u', 'f']; 
+
+                const choice = possible[Math.floor(Math.random() * possible.length)];
+                
+                // Updated Spin: 60 to 720 degrees
+                const totalSpin = (Math.random() * 660 + 60) * (choice === 'l' ? -1 : 1);
+                el.style.setProperty('--kick-spin', `${totalSpin}deg`);
+                
+                // 3. START KICK ANIMATION
+                el.classList.add(`anim-monster-kick-${choice}`);
+            });
+
+            this.updateQuestProgress('kick', monsterObj.monsterId + '_wild');
+
+            // Clear despawn timer if kicked!
+            if (this.spawner.despawnTimer) clearTimeout(this.spawner.despawnTimer);
+
+            setTimeout(() => {
+                const zone = this.zones[this.currentZone];
+                if (zone) {
+                    zone.objects = zone.objects.filter(obj => obj.id !== monsterObj.id);
+                }
+                this.spawner.activeMonsters = this.spawner.activeMonsters.filter(m => m.id !== monsterObj.id);
+                if (el.parentNode) el.parentNode.removeChild(el);
+                this.spawner.startCooldown();
+            }, 800);
+        }, 150);
     },
 
     spawnFootstep(x, y, isSprinting = false) {
