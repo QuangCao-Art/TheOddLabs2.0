@@ -8385,11 +8385,11 @@ body {
 }
 
 .anim-monster-shake {
-    animation: monster-shake-jitter 0.2s infinite !important;
+    animation: monster-shake-jitter 0.3s infinite !important;
 }
 
 .anim-screen-shake {
-    animation: screen-shake-jitter 0.05s infinite !important;
+    animation: screen-shake-jitter 0.1s infinite !important;
 }
 
 .anim-monster-kick-l {

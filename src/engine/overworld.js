@@ -3636,44 +3636,79 @@ export const Overworld = {
         const el = document.getElementById(`npc-${monsterObj.id}`);
         if (!el) return;
 
-        // 1. HIT STOP & SHAKE
+        // 0. ABORT CURRENT MOVEMENT (Prevents post-pause state conflict)
+        if (this.player.isMoving) {
+            this.player.isMoving = false;
+            this.player.x = Math.round(this.player.x);
+            this.player.y = Math.round(this.player.y);
+        }
+        
+        // 1. HIT STOP (Freeze Player Pose & Game)
         const screen = document.getElementById('screen-overworld');
+        const playerEl = document.getElementById('player-sprite');
         if (screen) screen.classList.add('anim-screen-shake');
         
-        // Remove ALL visual states to prevent conflict
+        // Force contact pose visually and internally
+        this.player.isMoving = false; // ABORT MOVEMENT IMMEDIATELY
+        this.player.currentFrame = (this.player.stepParity * 2) + 1;
+        this.updatePlayerPosition();
+        
+        // Remove ALL specimen visual states to prevent conflict
         el.classList.remove('anim-monster-breathing', 'anim-monster-pop');
         el.classList.add('anim-monster-shake');
         this.isPaused = true;
 
         setTimeout(() => {
             if (!this.gameLoopActive) return;
+            
+            // 2. RECONCILE AND UNPAUSE
             this.isPaused = false;
+            
+            // Unconditionally Reset player sprite to idle after hitstop
+            this.player.currentFrame = this.player.stepParity * 2;
+            this.player.isSprinting = [...this.keysPressed].some(k => k === 'shift'); 
+            
+            // FORCE DOM SYNC (Bypassing any potential game-loop batching)
+            if (playerEl) {
+                playerEl.classList.remove('p-frame-1', 'p-frame-3');
+                playerEl.classList.add(`p-frame-${this.player.currentFrame}`);
+            }
+            this.isPaused = false;
+            this.updatePlayerPosition();
+            
             if (screen) screen.classList.remove('anim-screen-shake');
             
-            // 1. CLEAR SHAKE
+            // 2. Clear monster shake
             el.classList.remove('anim-monster-shake');
             
             // Force a reflow to ensure the previous animation is cleared
             void el.offsetWidth;
             
+            // LOGICAL TILE FREEDOM: Remove from collision objects exactly when unpaused
+            const zone = this.zones[this.currentZone];
+            if (zone && zone.objects) {
+                zone.objects = zone.objects.filter(obj => obj.id !== monsterObj.id);
+            }
+            this.spawner.activeMonsters = this.spawner.activeMonsters.filter(obj => obj.id !== monsterObj.id);
+
             requestAnimationFrame(() => {
                 el.style.zIndex = 9999;
                 el.style.willChange = 'transform, opacity';
                 
-                // 2. DIRECTION-AWARE PHYSICS
+                // 3. DIRECTION-AWARE PHYSICS
                 let possible = ['l', 'r']; 
                 if (dy < 0) possible = ['u', 'l', 'r']; 
                 else if (dy > 0) possible = ['f', 'l', 'r']; 
                 else if (dx < 0) possible = ['l', 'u', 'f']; 
                 else if (dx > 0) possible = ['r', 'u', 'f']; 
-
+                
                 const choice = possible[Math.floor(Math.random() * possible.length)];
                 
                 // Updated Spin: 60 to 720 degrees
                 const totalSpin = (Math.random() * 660 + 60) * (choice === 'l' ? -1 : 1);
                 el.style.setProperty('--kick-spin', `${totalSpin}deg`);
                 
-                // 3. START KICK ANIMATION
+                // 4. START KICK ANIMATION
                 el.classList.add(`anim-monster-kick-${choice}`);
             });
 
@@ -3683,15 +3718,10 @@ export const Overworld = {
             if (this.spawner.despawnTimer) clearTimeout(this.spawner.despawnTimer);
 
             setTimeout(() => {
-                const zone = this.zones[this.currentZone];
-                if (zone) {
-                    zone.objects = zone.objects.filter(obj => obj.id !== monsterObj.id);
-                }
-                this.spawner.activeMonsters = this.spawner.activeMonsters.filter(m => m.id !== monsterObj.id);
-                if (el.parentNode) el.parentNode.removeChild(el);
+                if (el && el.parentNode) el.parentNode.removeChild(el);
                 this.spawner.startCooldown();
             }, 800);
-        }, 150);
+        }, 300);
     },
 
     spawnFootstep(x, y, isSprinting = false) {
