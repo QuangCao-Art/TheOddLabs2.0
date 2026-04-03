@@ -5625,9 +5625,7 @@ body {
     transition: translate 0.17s linear !important;
 }
 
-#player-sprite.is-turning {
-    /* Scale is now handled via inline style + base transition for speed */
-}
+
 
 .footstep-puff {
     position: absolute;
@@ -8284,7 +8282,8 @@ body {
 
 /* Elara Ghostly Human Effects (Layered Phantom System) */
 .npc.elara {
-    background-image: none !important; /* Base NPC is now just a container */
+    background-image: none !important;
+    /* Base NPC is now just a container */
 }
 
 /* Common Phantom Properties */
@@ -8325,10 +8324,7 @@ body {
 }
 
 /* Elara Assets */
-.npc.elara,
-.T_Char_Sprite_Elara_01 {
-    /* (Engine image logic is now handled via pseudo-elements above for stability) */
-}
+
 
 .Character_FullArt_Elara,
 [src*="Character_FullArt_Elara"] {
@@ -8336,9 +8332,25 @@ body {
 }
 
 @keyframes elara-quantum-phase {
-    0%, 100% { transform: translate(0) scale(1); filter: drop-shadow(3px 0 0 rgba(0, 255, 255, 0.6)) drop-shadow(-3px 0 0 rgba(255, 0, 255, 0.6)); }
-    25% { transform: translate(-2px, 1px) scale(1.02); filter: drop-shadow(5px 1px 0 rgba(0, 255, 255, 0.4)) drop-shadow(-2px -1px 0 rgba(255, 0, 255, 0.4)); }
-    50% { transform: translate(2px, -1px) scale(0.98); filter: drop-shadow(-3px -1px 0 rgba(0, 255, 255, 0.5)) drop-shadow(4px 2px 0 rgba(255, 0, 255, 0.5)); }
-    75% { transform: translate(-1px, -2px) scale(1.01); filter: drop-shadow(2px 2px 0 rgba(0, 255, 255, 0.3)) drop-shadow(-5px 0 0 rgba(255, 0, 255, 0.3)); }
+
+    0%,
+    100% {
+        transform: translate(0) scale(1);
+        filter: drop-shadow(3px 0 0 rgba(0, 255, 255, 0.6)) drop-shadow(-3px 0 0 rgba(255, 0, 255, 0.6));
+    }
+
+    25% {
+        transform: translate(-2px, 1px) scale(1.02);
+        filter: drop-shadow(5px 1px 0 rgba(0, 255, 255, 0.4)) drop-shadow(-2px -1px 0 rgba(255, 0, 255, 0.4));
+    }
+
+    50% {
+        transform: translate(2px, -1px) scale(0.98);
+        filter: drop-shadow(-3px -1px 0 rgba(0, 255, 255, 0.5)) drop-shadow(4px 2px 0 rgba(255, 0, 255, 0.5));
+    }
+
+    75% {
+        transform: translate(-1px, -2px) scale(1.01);
+        filter: drop-shadow(2px 2px 0 rgba(0, 255, 255, 0.3)) drop-shadow(-5px 0 0 rgba(255, 0, 255, 0.3));
+    }
 }
-
