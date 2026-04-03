@@ -8367,55 +8367,21 @@ body {
 /* --- WILD CELL KICK MECHANICS --- */
 
 @keyframes monster-shake-jitter {
-    0% {
-        translate: 0 0;
-    }
-
-    20% {
-        translate: -8px 4px;
-    }
-
-    40% {
-        translate: 8px -4px;
-    }
-
-    60% {
-        translate: -4px -8px;
-    }
-
-    80% {
-        translate: 4px 8px;
-    }
-
-    100% {
-        translate: 0 0;
-    }
+    0% { translate: 0 0; }
+    20% { translate: -9px 5px; }
+    40% { translate: 9px -5px; }
+    60% { translate: -5px -9px; }
+    80% { translate: 5px 9px; }
+    100% { translate: 0 0; }
 }
 
 @keyframes screen-shake-jitter {
-    0% {
-        translate: 0 0;
-    }
-
-    20% {
-        translate: -12px 6px;
-    }
-
-    40% {
-        translate: 12px -6px;
-    }
-
-    60% {
-        translate: -6px -12px;
-    }
-
-    80% {
-        translate: 6px 12px;
-    }
-
-    100% {
-        translate: 0 0;
-    }
+    0% { translate: 0 0; }
+    20% { translate: -5px 2.5px; }
+    40% { translate: 5px -2.5px; }
+    60% { translate: -2.5px -5px; }
+    80% { translate: 2.5px 5px; }
+    100% { translate: 0 0; }
 }
 
 .anim-monster-shake {
