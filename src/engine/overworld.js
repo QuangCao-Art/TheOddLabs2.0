@@ -1719,7 +1719,7 @@ export const Overworld = {
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Exit to Atrium (On the right wall)
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Exit to Atrium (Right) and Play Ground (Left)
                 [2, 9, 9, 9, 9, 9, 9, 9, 9, 3]
             ],
             objects: [
@@ -1727,7 +1727,6 @@ export const Overworld = {
                 { id: 'f1_ent1', x: 1, y: 3, type: 'prop', name: 'Lounge Seat' },
                 { id: 'f1_ent2', x: 1, y: 4, type: 'prop', name: 'Lounge Seat' },
                 { id: 'f1_ent3', x: 1, y: 5, type: 'prop', name: 'Lounge Seat' },
-                { id: 'f1_ent4', x: 1, y: 6, type: 'prop', name: 'Lounge Seat' },
 
                 // Right Side Group
                 { id: 'f0_ent1', x: 8, y: 3, type: 'prop', name: 'Lounge Seat' },
@@ -1744,7 +1743,7 @@ export const Overworld = {
                 { id: 'f72_ent', x: 5, y: 4, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-TopRight tileset-03' },
                 { id: 'f73_ent', x: 4, y: 5, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-BottomLeft tileset-03' },
                 { id: 'f74_ent', x: 5, y: 5, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-BottomRight tileset-03' },
-                { id: 'npc_male_ben', x: 2, y: 6, type: 'npc', name: 'Researcher Ben', direction: 'down' },
+                { id: 'npc_male_ben', x: 2, y: 5, type: 'npc', name: 'Researcher Ben', direction: 'down' },
                 {
                     id: 'npc_female_daisy', x: 3, y: 3, type: 'npc', name: 'Assistant Daisy', direction: 'down',
                     battleEncounterId: 'daisy',
@@ -1755,7 +1754,33 @@ export const Overworld = {
             ],
             doors: [
                 { x: 9, y: 6, targetZone: 'atrium', targetX: 1, targetY: 10 },
-                { x: 7, y: 2, targetZone: 'kitchen', targetX: 7, targetY: 6, requiredFlag: 'botanicSectorUnlocked' }
+                { x: 7, y: 2, targetZone: 'kitchen', targetX: 7, targetY: 6, requiredFlag: 'botanicSectorUnlocked' },
+                { x: 0, y: 6, targetZone: 'cellPlayGround', targetX: 15, targetY: 6 }
+            ]
+        },
+        cellPlayGround: {
+            name: 'CELL PLAY GROUND',
+            width: 17,
+            height: 13,
+            spawn: { x: 15, y: 6 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+            ],
+            objects: [],
+            doors: [
+                { x: 16, y: 6, targetZone: 'entertainment', targetX: 1, targetY: 6 }
             ]
         }
     },
@@ -2482,7 +2507,9 @@ export const Overworld = {
             await new Promise(r => setTimeout(r, 300));
         }
 
-        this.keysPressed.clear(); // Prevent immediate move in new zone
+
+        // (Previously this.keysPressed.clear() was here to prevent immediate move, 
+        // but it caused sprinting state to be lost. Resuming naturally is the desired behavior.)
 
         // 1. CLEANUP OLD ZONE SPAWNS (while currentZone is still the old zone)
         this.spawner.stop();
