@@ -8506,6 +8506,101 @@ body {
     will-change: transform, opacity;
 }
 
+/* Home Run "Plasma Rocket" Thruster System */
+.rocket-thruster {
+    position: absolute;
+    /* Independent sibling: no rotation inheritance from monster */
+    rotate: var(--trail-angle, 0deg);
+    pointer-events: none;
+    z-index: 9999; 
+    overflow: visible !important;
+    width: 64px;
+    height: 64px;
+}
+
+.thruster-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 52px;
+    height: 18px; /* Narrower core */
+    background: radial-gradient(ellipse at center, #fff 0%, #00f3ff 50%, transparent 80%);
+    filter: blur(2px) brightness(3.5);
+    clip-path: polygon(0% 50%, 25% 0%, 100% 15%, 100% 85%, 25% 100%);
+    animation: thruster-pulse 0.04s infinite alternate;
+}
+
+.thruster-plume {
+    position: absolute;
+    top: 50%;
+    left: 25%;
+    width: 35px; /* Narrower plume puffs */
+    height: 35px;
+    background: radial-gradient(circle at center, rgba(0, 243, 255, 0.7), rgba(0, 100, 255, 0.1) 60%, transparent 80%);
+    border-radius: 50%;
+    filter: blur(5px);
+    opacity: 0;
+    transform-origin: center;
+    /* Faster billboard speed */
+    animation: plume-billow var(--puff-duration, 0.35s) ease-out var(--puff-delay, 0s) infinite;
+}
+
+.thruster-spark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.5px;
+    height: 1.5px;
+    background: #fff;
+    box-shadow: 0 0 10px #00f3ff;
+    border-radius: 50%;
+    opacity: 0;
+    animation: spark-fly var(--spark-duration, 0.3s) ease-out var(--spark-delay, 0s) infinite;
+}
+
+@keyframes thruster-pulse {
+    from { scale: 1 0.7; opacity: 0.9; }
+    to { scale: 1.15 1.1; opacity: 1; }
+}
+
+@keyframes plume-billow {
+    0% { transform: translate(0, -50%) scale(0.2); opacity: 0.9; }
+    100% { transform: translate(var(--puff-dist, 450px), -50%) scale(2); opacity: 0; }
+}
+
+@keyframes spark-fly {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--spark-x, 220px), var(--spark-y, 40px)) scale(0); opacity: 0; }
+}
+
+/* Sibling Trail Flight Animations - Synchronized with monster scale and translate */
+.anim-trail-homerun-l { animation: trail-homerun-l 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important; }
+.anim-trail-homerun-r { animation: trail-homerun-r 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important; }
+.anim-trail-homerun-f { animation: trail-homerun-f 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important; }
+.anim-trail-homerun-u { animation: trail-homerun-u 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important; }
+
+@keyframes trail-homerun-l {
+    0% { translate: 0px 0px; scale: 1; opacity: 1; }
+    80% { opacity: 1; }
+    100% { translate: -1200px -690px; scale: 3; opacity: 0; }
+}
+@keyframes trail-homerun-r {
+    0% { translate: 0px 0px; scale: 1; opacity: 1; }
+    80% { opacity: 1; }
+    100% { translate: 1200px -690px; scale: 3; opacity: 0; }
+}
+@keyframes trail-homerun-f {
+    0% { translate: 0px 0px; scale: 1; opacity: 1; }
+    80% { opacity: 1; }
+    100% { translate: 0px 1200px; scale: 3; opacity: 0; }
+}
+@keyframes trail-homerun-u {
+    0% { translate: 0px 0px; scale: 1; opacity: 1; }
+    80% { opacity: 1; }
+    100% { translate: 0px -1200px; scale: 3; opacity: 0; }
+}
+
 @keyframes monster-kick-poof-l {
     0% {
         translate: 0px 0px;

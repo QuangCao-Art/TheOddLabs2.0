@@ -2207,13 +2207,21 @@ export const Overworld = {
     },
 
     handleMovementInput() {
-        if (this.player.isMoving || this.isDialogueActive || this.isTransitioning || this.isPaused) return;
+        if (this.isDialogueActive || this.isTransitioning || this.isPaused) return;
 
-        // Check Sprint State
+        // Check Sprint State (Update visually even while moving)
+        const wasSprinting = this.player.isSprinting;
         this.player.isSprinting = this.keysPressed.has('shift');
         if (!this.player.isSprinting) {
             this.player.sprintDistance = 0;
         }
+
+        // Force visual update if sprint state toggled mid-movement or while idle
+        if (wasSprinting !== this.player.isSprinting) {
+            this.updatePlayerPosition();
+        }
+
+        if (this.player.isMoving) return;
 
         const move = { x: 0, y: 0 };
         const keys = Array.from(this.keysPressed);
@@ -2432,8 +2440,8 @@ export const Overworld = {
         const zone = this.zones[this.currentZone];
 
         if (playerEl) {
-            // 0. Update Visual States
-            if (this.player.isSprinting) playerEl.classList.add('is-sprinting');
+            // 0. Update Visual States (Only sprint visually if both moving and holding key)
+            if (this.player.isSprinting && this.player.isMoving) playerEl.classList.add('is-sprinting');
             else playerEl.classList.remove('is-sprinting');
 
             if (this.player.isTurning) playerEl.classList.add('is-turning');
@@ -3706,7 +3714,58 @@ export const Overworld = {
                 el.style.setProperty('--kick-spin', `${totalSpin}deg`);
 
                 // 4. START KICK ANIMATION
+                let trailEl = null;
                 const animClass = isHomeRun ? `anim-monster-kick-homerun-${directionKey}` : `anim-monster-kick-${directionKey}`;
+                
+                if (isHomeRun) {
+                    let trailAngle = 0;
+                    if (directionKey === 'l') trailAngle = 30;
+                    else if (directionKey === 'r') trailAngle = 150;
+                    else if (directionKey === 'u') trailAngle = 90;
+                    else if (directionKey === 'f') trailAngle = 270;
+
+                    trailEl = document.createElement('div');
+                    trailEl.className = `rocket-thruster anim-trail-homerun-${directionKey}`;
+                    
+                    // Nozzle alignment offset (start at the monster's rear edge)
+                    let offX = 0, offY = 0;
+                    if (directionKey === 'l') { offX = 24; offY = 14; }
+                    else if (directionKey === 'r') { offX = -24; offY = 14; }
+                    else if (directionKey === 'u') { offX = 0; offY = 24; }
+                    else if (directionKey === 'f') { offX = 0; offY = -24; }
+
+                    trailEl.style.left = (parseFloat(el.style.left) + offX) + 'px';
+                    trailEl.style.top = (parseFloat(el.style.top) + offY) + 'px';
+                    trailEl.style.setProperty('--trail-angle', `${trailAngle}deg`);
+
+                    // 1. Thruster Core (Nozzle Flash)
+                    const core = document.createElement('div');
+                    core.className = 'thruster-core';
+                    trailEl.appendChild(core);
+
+                    // 2. Billowing Plume Puffs (More puffs, faster speed)
+                    for (let i = 0; i < 12; i++) {
+                        const p = document.createElement('div');
+                        p.className = 'thruster-plume';
+                        p.style.setProperty('--puff-delay', `${Math.random() * 0.5}s`);
+                        p.style.setProperty('--puff-dist', `${250 + Math.random() * 150}px`);
+                        trailEl.appendChild(p);
+                    }
+
+                    // 3. High-Speed Plasma Sparks (Narrower spray, faster velocity)
+                    for (let i = 0; i < 20; i++) {
+                        const s = document.createElement('div');
+                        s.className = 'thruster-spark';
+                        s.style.setProperty('--spark-delay', `${Math.random() * 0.3}s`);
+                        s.style.setProperty('--spark-duration', `${0.2 + Math.random() * 0.2}s`);
+                        s.style.setProperty('--spark-x', `${150 + Math.random() * 120}px`);
+                        s.style.setProperty('--spark-y', `${(Math.random() - 0.5) * 35}px`);
+                        trailEl.appendChild(s);
+                    }
+
+                    el.parentNode.appendChild(trailEl);
+                }
+
                 el.classList.add(animClass);
             });
 
@@ -3714,6 +3773,7 @@ export const Overworld = {
 
             setTimeout(() => {
                 if (el && el.parentNode) el.parentNode.removeChild(el);
+                if (trailEl && trailEl.parentNode) trailEl.parentNode.removeChild(trailEl);
                 // Trigger cooldown immediately to replace the kicked monster
                 this.spawner.startCooldown(zone.maxWildSpawns > 1 ? 500 : null);
             }, isHomeRun ? 1600 : 800);
