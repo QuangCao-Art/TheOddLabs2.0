@@ -112,7 +112,8 @@ export const Overworld = {
         isTurning: false,
         stepParity: 0, // 0 or 1 for alternating steps
         currentFrame: 0, // 0-3 for manual frame control
-        sprintDistance: 0
+        sprintDistance: 0,
+        isHitstopping: false
     },
     keysPressed: new Set(),
     currentZone: null,
@@ -2440,8 +2441,8 @@ export const Overworld = {
         const zone = this.zones[this.currentZone];
 
         if (playerEl) {
-            // 0. Update Visual States (Only sprint visually if both moving and holding key)
-            if (this.player.isSprinting && this.player.isMoving) playerEl.classList.add('is-sprinting');
+            // 0. Update Visual States (Only sprint visually if both moving and holding key, OR if locked during hitstop)
+            if (this.player.isSprinting && (this.player.isMoving || this.player.isHitstopping)) playerEl.classList.add('is-sprinting');
             else playerEl.classList.remove('is-sprinting');
 
             if (this.player.isTurning) playerEl.classList.add('is-turning');
@@ -3663,6 +3664,7 @@ export const Overworld = {
 
         // Force contact pose visually and internally
         this.player.isMoving = false; // ABORT MOVEMENT IMMEDIATELY
+        this.player.isHitstopping = true; // MAINTAIN SPRINT VISUAL DURING IMPACT
         this.player.currentFrame = (this.player.stepParity * 2) + 1;
         this.updatePlayerPosition();
 
@@ -3676,6 +3678,7 @@ export const Overworld = {
 
             // 2. RECONCILE AND UNPAUSE
             this.isPaused = false;
+            this.player.isHitstopping = false; // RELEASE SPRINT VISUAL LOCK
 
             // Unconditionally Reset player sprite to idle after hitstop
             this.player.currentFrame = this.player.stepParity * 2;
