@@ -8393,6 +8393,32 @@ body {
     }
 }
 
+@keyframes screen-shake-heavy {
+    0% {
+        translate: 0 0;
+    }
+
+    20% {
+        translate: -12px 7px;
+    }
+
+    40% {
+        translate: 12px -7px;
+    }
+
+    60% {
+        translate: -7px -12px;
+    }
+
+    80% {
+        translate: 7px 12px;
+    }
+
+    100% {
+        translate: 0 0;
+    }
+}
+
 @keyframes screen-shake-jitter {
     0% {
         translate: 0 0;
@@ -8427,6 +8453,10 @@ body {
     animation: screen-shake-jitter 0.1s infinite !important;
 }
 
+.anim-screen-shake-heavy {
+    animation: screen-shake-heavy 0.08s infinite !important;
+}
+
 .anim-monster-kick-l {
     animation: monster-kick-poof-l 0.8s linear forwards !important;
     z-index: 999 !important;
@@ -8448,6 +8478,31 @@ body {
 .anim-monster-kick-r {
     animation: monster-kick-poof-r 0.8s linear forwards !important;
     z-index: 999 !important;
+    will-change: transform, opacity;
+}
+
+/* Home Run Variants */
+.anim-monster-kick-homerun-l {
+    animation: monster-kick-homerun-l 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
+    z-index: 10000 !important;
+    will-change: transform, opacity;
+}
+
+.anim-monster-kick-homerun-r {
+    animation: monster-kick-homerun-r 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
+    z-index: 10000 !important;
+    will-change: transform, opacity;
+}
+
+.anim-monster-kick-homerun-f {
+    animation: monster-kick-homerun-f 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
+    z-index: 10000 !important;
+    will-change: transform, opacity;
+}
+
+.anim-monster-kick-homerun-u {
+    animation: monster-kick-homerun-u 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
+    z-index: 10000 !important;
     will-change: transform, opacity;
 }
 
@@ -8649,6 +8704,29 @@ body {
         filter: brightness(5) blur(20px);
         opacity: 0;
     }
+}/* Home Run Keyframes - Specialized Angles & 3x Scale */
+@keyframes monster-kick-homerun-l {
+    0% { translate: 0px 0px; rotate: 0deg; scale: 1; filter: brightness(1) blur(0px); opacity: 1; }
+    80% { opacity: 1; filter: brightness(2) blur(2px); }
+    100% { translate: -1200px -690px; rotate: var(--kick-spin); scale: 3; filter: brightness(8) blur(40px); opacity: 0; }
+}
+
+@keyframes monster-kick-homerun-r {
+    0% { translate: 0px 0px; rotate: 0deg; scale: 1; filter: brightness(1) blur(0px); opacity: 1; }
+    80% { opacity: 1; filter: brightness(2) blur(2px); }
+    100% { translate: 1200px -690px; rotate: var(--kick-spin); scale: 3; filter: brightness(8) blur(40px); opacity: 0; }
+}
+
+@keyframes monster-kick-homerun-f {
+    0% { translate: 0px 0px; rotate: 0deg; scale: 1; filter: brightness(1) blur(0px); opacity: 1; }
+    80% { opacity: 1; filter: brightness(2) blur(2px); }
+    100% { translate: 0px 1200px; rotate: var(--kick-spin); scale: 3; filter: brightness(8) blur(40px); opacity: 0; }
+}
+
+@keyframes monster-kick-homerun-u {
+    0% { translate: 0px 0px; rotate: 0deg; scale: 1; filter: brightness(1) blur(0px); opacity: 1; }
+    80% { opacity: 1; filter: brightness(2) blur(2px); }
+    100% { translate: 0px -1200px; rotate: var(--kick-spin); scale: 3; filter: brightness(8) blur(40px); opacity: 0; }
 }
 
 @keyframes monster-appear-pop {

@@ -111,7 +111,8 @@ export const Overworld = {
         isSprinting: false,
         isTurning: false,
         stepParity: 0, // 0 or 1 for alternating steps
-        currentFrame: 0 // 0-3 for manual frame control
+        currentFrame: 0, // 0-3 for manual frame control
+        sprintDistance: 0
     },
     keysPressed: new Set(),
     currentZone: null,
@@ -2164,6 +2165,14 @@ export const Overworld = {
             this.player.isMoving = false;
             this.player.stepParity = (this.player.stepParity + 1) % 2;
             this.player.currentFrame = this.player.stepParity * 2; // Next idle frame
+
+            // Track sprint distance for Home-Run mechanic
+            if (this.player.isSprinting) {
+                this.player.sprintDistance++;
+            } else {
+                this.player.sprintDistance = 0;
+            }
+
             this.updatePlayerPosition();
             this.savePosition();
             this.checkProximityTriggers();
@@ -2202,6 +2211,9 @@ export const Overworld = {
 
         // Check Sprint State
         this.player.isSprinting = this.keysPressed.has('shift');
+        if (!this.player.isSprinting) {
+            this.player.sprintDistance = 0;
+        }
 
         const move = { x: 0, y: 0 };
         const keys = Array.from(this.keysPressed);
@@ -2373,6 +2385,7 @@ export const Overworld = {
     async changeZone(zoneId, x, y) {
         if (this.isTransitioning) return;
         this.isTransitioning = true;
+        this.player.sprintDistance = 0; // Reset momentum on zone change
         console.log(`Changing Zone to: ${zoneId}`);
 
         const overlay = document.getElementById('zone-transition-overlay');
@@ -3601,7 +3614,44 @@ export const Overworld = {
         // 1. HIT STOP (Freeze Player Pose & Game)
         const screen = document.getElementById('screen-overworld');
         const playerEl = document.getElementById('player-sprite');
-        if (screen) screen.classList.add('anim-screen-shake');
+
+        // Determine Launch Type based on Sprint Distance Matrix
+        const dist = this.player.sprintDistance;
+        let roll = Math.random() * 100;
+        let choice = 'front';
+        let isHomeRun = false;
+
+        if (dist === 0) {
+            choice = roll < 50 ? 'left' : 'right';
+        } else if (dist <= 3) {
+            if (roll < 10) { isHomeRun = true; choice = 'front'; }
+            else if (roll < 40) choice = 'left';
+            else if (roll < 70) choice = 'right';
+            else choice = 'front';
+        } else if (dist <= 6) {
+            if (roll < 20) { isHomeRun = true; choice = 'front'; }
+            else if (roll < 40) choice = 'left';
+            else if (roll < 60) choice = 'right';
+            else choice = 'front';
+        } else {
+            if (roll < 90) { isHomeRun = true; choice = 'front'; }
+            else choice = 'front';
+        }
+
+        // Map choice to relative direction key
+        let dirMap = {};
+        if (dy < 0) dirMap = { front: 'u', left: 'l', right: 'r' };
+        else if (dy > 0) dirMap = { front: 'f', left: 'l', right: 'r' };
+        else if (dx < 0) dirMap = { front: 'l', left: 'u', right: 'f' };
+        else if (dx > 0) dirMap = { front: 'r', left: 'u', right: 'f' };
+
+        const directionKey = dirMap[choice];
+        const hitStopTime = isHomeRun ? 500 : 300;
+        const shakeClass = isHomeRun ? 'anim-screen-shake-heavy' : 'anim-screen-shake';
+
+        this.player.sprintDistance = 0; // RESET MOMENTUM IMMEDIATELY
+
+        if (screen) screen.classList.add(shakeClass);
 
         // Force contact pose visually and internally
         this.player.isMoving = false; // ABORT MOVEMENT IMMEDIATELY
@@ -3631,7 +3681,7 @@ export const Overworld = {
             this.isPaused = false;
             this.updatePlayerPosition();
 
-            if (screen) screen.classList.remove('anim-screen-shake');
+            if (screen) screen.classList.remove(shakeClass);
 
             // 2. Clear monster shake
             el.classList.remove('anim-monster-shake');
@@ -3650,21 +3700,14 @@ export const Overworld = {
                 el.style.zIndex = 9999;
                 el.style.willChange = 'transform, opacity';
 
-                // 3. DIRECTION-AWARE PHYSICS
-                let possible = ['l', 'r'];
-                if (dy < 0) possible = ['u', 'l', 'r'];
-                else if (dy > 0) possible = ['f', 'l', 'r'];
-                else if (dx < 0) possible = ['l', 'u', 'f'];
-                else if (dx > 0) possible = ['r', 'u', 'f'];
-
-                const choice = possible[Math.floor(Math.random() * possible.length)];
-
-                // Updated Spin: 60 to 720 degrees
-                const totalSpin = (Math.random() * 660 + 60) * (choice === 'l' ? -1 : 1);
+                // Apply Physics and Animation
+                const spinMult = isHomeRun ? 4 : 1;
+                const totalSpin = (Math.random() * 660 + 60) * spinMult * (directionKey === 'l' ? -1 : 1);
                 el.style.setProperty('--kick-spin', `${totalSpin}deg`);
 
                 // 4. START KICK ANIMATION
-                el.classList.add(`anim-monster-kick-${choice}`);
+                const animClass = isHomeRun ? `anim-monster-kick-homerun-${directionKey}` : `anim-monster-kick-${directionKey}`;
+                el.classList.add(animClass);
             });
 
             this.updateQuestProgress('kick', monsterObj.monsterId + '_wild');
@@ -3673,8 +3716,8 @@ export const Overworld = {
                 if (el && el.parentNode) el.parentNode.removeChild(el);
                 // Trigger cooldown immediately to replace the kicked monster
                 this.spawner.startCooldown(zone.maxWildSpawns > 1 ? 500 : null);
-            }, 800);
-        }, 300);
+            }, isHomeRun ? 1600 : 800);
+        }, hitStopTime);
     },
 
     spawnFootstep(x, y, isSprinting = false) {
