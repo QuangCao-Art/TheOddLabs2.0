@@ -8512,93 +8512,188 @@ body {
     /* Independent sibling: no rotation inheritance from monster */
     rotate: var(--trail-angle, 0deg);
     pointer-events: none;
-    z-index: 9999; 
+    z-index: 9999;
     overflow: visible !important;
-    width: 64px;
-    height: 64px;
+    width: 0;
+    height: 0;
 }
 
-.thruster-core {
+.thruster-smoke {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 52px;
-    height: 18px; /* Narrower core */
-    background: radial-gradient(ellipse at center, #fff 0%, #00f3ff 50%, transparent 80%);
-    filter: blur(2px) brightness(3.5);
-    clip-path: polygon(0% 50%, 25% 0%, 100% 15%, 100% 85%, 25% 100%);
-    animation: thruster-pulse 0.04s infinite alternate;
-}
-
-.thruster-plume {
-    position: absolute;
-    top: 50%;
-    left: 25%;
-    width: 35px; /* Narrower plume puffs */
-    height: 35px;
-    background: radial-gradient(circle at center, rgba(0, 243, 255, 0.7), rgba(0, 100, 255, 0.1) 60%, transparent 80%);
-    border-radius: 50%;
-    filter: blur(5px);
+    top: 0;
+    left: 0; /* Direct origin of the 0x0 container */
+    width: 0;
+    height: 0;
+    pointer-events: none;
     opacity: 0;
     transform-origin: center;
-    /* Faster billboard speed */
-    animation: plume-billow var(--puff-duration, 0.35s) ease-out var(--puff-delay, 0s) infinite;
+    /* Faster billboard speed for rocket soot */
+    animation: smoke-billow var(--smoke-duration, 0.4s) ease-out var(--smoke-delay, 0s) infinite;
+}
+
+.thruster-smoke span {
+    position: absolute;
+    background: rgba(245, 245, 245, 0.8);
+    /* Dense white-gray smoke tinted by the plasma */
+    border-radius: 50%;
+    filter: blur(1px); /* Sharper cartoon look */
+    box-shadow: 0 0 12px var(--spark-color, rgba(0, 243, 255, 0.2));
 }
 
 .thruster-spark {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 1.5px;
-    height: 1.5px;
+    width: var(--spark-size, 16px);
+    height: var(--spark-size, 16px);
     background: #fff;
-    box-shadow: 0 0 10px #00f3ff;
-    border-radius: 50%;
+    box-shadow: 0 0 25px var(--spark-color, #00f3ff), 0 0 12px #fff inset;
+    /* 5-Pointed Star Shape */
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
     opacity: 0;
-    animation: spark-fly var(--spark-duration, 0.3s) ease-out var(--spark-delay, 0s) infinite;
+    pointer-events: none;
+    z-index: 10005; /* High enough to stay above everything */
+    /* Static World-Space Billow (Matches smoke) */
+    animation: spark-plume-rgb var(--spark-duration, 0.2s) ease-out forwards;
 }
 
-@keyframes thruster-pulse {
-    from { scale: 1 0.7; opacity: 0.9; }
-    to { scale: 1.15 1.1; opacity: 1; }
+@keyframes spark-plume-rgb {
+    0% { transform: scale(1.0) translate(0, 0); opacity: 0; }
+    20% { opacity: 1; }
+    100% { 
+        transform: scale(1.5) translate(var(--drift-x, 10px), var(--drift-y, -20px)); 
+        opacity: 0; 
+    }
 }
 
-@keyframes plume-billow {
-    0% { transform: translate(0, -50%) scale(0.2); opacity: 0.9; }
-    100% { transform: translate(var(--puff-dist, 450px), -50%) scale(2); opacity: 0; }
+.smoke-plume-puff {
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 9998; /* Below monster/sparks */
+    transform-origin: center;
+    /* Expanding billow in-place */
+    animation: plume-billow-rgb var(--smoke-duration, 0.4s) ease-out forwards;
+}
+
+.smoke-plume-puff span {
+    position: absolute;
+    background: rgba(245, 245, 245, 0.9);
+    border-radius: 50%;
+    filter: blur(1px); /* Sharper cartoon look */
+    box-shadow: 0 0 12px var(--spark-color, rgba(0, 243, 255, 0.3));
+    transform: translate(-50%, -50%);
+}
+
+@keyframes plume-billow-rgb {
+    0% { transform: scale(0.3) translate(0, 0); opacity: 0; }
+    10% { opacity: 0.9; }
+    60% { opacity: 0.7; }
+    100% { 
+        /* Drifts in world-space (Momentum + Vertical Lift) */
+        transform: scale(3) translate(var(--drift-x, 20px), var(--drift-y, -20px)); 
+        opacity: 0; 
+    }
 }
 
 @keyframes spark-fly {
-    0% { transform: translate(0, 0) scale(1); opacity: 1; }
-    100% { transform: translate(var(--spark-x, 220px), var(--spark-y, 40px)) scale(0); opacity: 0; }
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(var(--spark-x, 220px), var(--spark-y, 40px)) scale(0);
+        opacity: 0;
+    }
 }
 
 /* Sibling Trail Flight Animations - Synchronized with monster scale and translate */
-.anim-trail-homerun-l { animation: trail-homerun-l 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important; }
-.anim-trail-homerun-r { animation: trail-homerun-r 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important; }
-.anim-trail-homerun-f { animation: trail-homerun-f 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important; }
-.anim-trail-homerun-u { animation: trail-homerun-u 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important; }
+.anim-trail-homerun-l {
+    animation: trail-homerun-l 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
+}
+
+.anim-trail-homerun-r {
+    animation: trail-homerun-r 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
+}
+
+.anim-trail-homerun-f {
+    animation: trail-homerun-f 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
+}
+
+.anim-trail-homerun-u {
+    animation: trail-homerun-u 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
+}
 
 @keyframes trail-homerun-l {
-    0% { translate: 0px 0px; scale: 1; opacity: 1; }
-    80% { opacity: 1; }
-    100% { translate: -1200px -690px; scale: 3; opacity: 0; }
+    0% {
+        translate: 0px 0px;
+        scale: 1;
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        translate: -1200px -690px;
+        scale: 3;
+        opacity: 0;
+    }
 }
+
 @keyframes trail-homerun-r {
-    0% { translate: 0px 0px; scale: 1; opacity: 1; }
-    80% { opacity: 1; }
-    100% { translate: 1200px -690px; scale: 3; opacity: 0; }
+    0% {
+        translate: 0px 0px;
+        scale: 1;
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        translate: 1200px -690px;
+        scale: 3;
+        opacity: 0;
+    }
 }
+
 @keyframes trail-homerun-f {
-    0% { translate: 0px 0px; scale: 1; opacity: 1; }
-    80% { opacity: 1; }
-    100% { translate: 0px 1200px; scale: 3; opacity: 0; }
+    0% {
+        translate: 0px 0px;
+        scale: 1;
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        translate: 0px 1200px;
+        scale: 3;
+        opacity: 0;
+    }
 }
+
 @keyframes trail-homerun-u {
-    0% { translate: 0px 0px; scale: 1; opacity: 1; }
-    80% { opacity: 1; }
-    100% { translate: 0px -1200px; scale: 3; opacity: 0; }
+    0% {
+        translate: 0px 0px;
+        scale: 1;
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        translate: 0px -1200px;
+        scale: 3;
+        opacity: 0;
+    }
 }
 
 @keyframes monster-kick-poof-l {
@@ -8799,29 +8894,99 @@ body {
         filter: brightness(5) blur(20px);
         opacity: 0;
     }
-}/* Home Run Keyframes - Specialized Angles & 3x Scale */
+}
+
+/* Home Run Keyframes - Specialized Angles & 3x Scale */
 @keyframes monster-kick-homerun-l {
-    0% { translate: 0px 0px; rotate: 0deg; scale: 1; filter: brightness(1) blur(0px); opacity: 1; }
-    80% { opacity: 1; filter: brightness(2) blur(2px); }
-    100% { translate: -1200px -690px; rotate: var(--kick-spin); scale: 3; filter: brightness(8) blur(40px); opacity: 0; }
+    0% {
+        translate: 0px 0px;
+        rotate: 0deg;
+        scale: 1;
+        filter: brightness(1) blur(0px);
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+        filter: brightness(2) blur(2px);
+    }
+
+    100% {
+        translate: -1200px -690px;
+        rotate: var(--kick-spin);
+        scale: 3;
+        filter: brightness(8) blur(40px);
+        opacity: 0;
+    }
 }
 
 @keyframes monster-kick-homerun-r {
-    0% { translate: 0px 0px; rotate: 0deg; scale: 1; filter: brightness(1) blur(0px); opacity: 1; }
-    80% { opacity: 1; filter: brightness(2) blur(2px); }
-    100% { translate: 1200px -690px; rotate: var(--kick-spin); scale: 3; filter: brightness(8) blur(40px); opacity: 0; }
+    0% {
+        translate: 0px 0px;
+        rotate: 0deg;
+        scale: 1;
+        filter: brightness(1) blur(0px);
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+        filter: brightness(2) blur(2px);
+    }
+
+    100% {
+        translate: 1200px -690px;
+        rotate: var(--kick-spin);
+        scale: 3;
+        filter: brightness(8) blur(40px);
+        opacity: 0;
+    }
 }
 
 @keyframes monster-kick-homerun-f {
-    0% { translate: 0px 0px; rotate: 0deg; scale: 1; filter: brightness(1) blur(0px); opacity: 1; }
-    80% { opacity: 1; filter: brightness(2) blur(2px); }
-    100% { translate: 0px 1200px; rotate: var(--kick-spin); scale: 3; filter: brightness(8) blur(40px); opacity: 0; }
+    0% {
+        translate: 0px 0px;
+        rotate: 0deg;
+        scale: 1;
+        filter: brightness(1) blur(0px);
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+        filter: brightness(2) blur(2px);
+    }
+
+    100% {
+        translate: 0px 1200px;
+        rotate: var(--kick-spin);
+        scale: 3;
+        filter: brightness(8) blur(40px);
+        opacity: 0;
+    }
 }
 
 @keyframes monster-kick-homerun-u {
-    0% { translate: 0px 0px; rotate: 0deg; scale: 1; filter: brightness(1) blur(0px); opacity: 1; }
-    80% { opacity: 1; filter: brightness(2) blur(2px); }
-    100% { translate: 0px -1200px; rotate: var(--kick-spin); scale: 3; filter: brightness(8) blur(40px); opacity: 0; }
+    0% {
+        translate: 0px 0px;
+        rotate: 0deg;
+        scale: 1;
+        filter: brightness(1) blur(0px);
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+        filter: brightness(2) blur(2px);
+    }
+
+    100% {
+        translate: 0px -1200px;
+        rotate: var(--kick-spin);
+        scale: 3;
+        filter: brightness(8) blur(40px);
+        opacity: 0;
+    }
 }
 
 @keyframes monster-appear-pop {

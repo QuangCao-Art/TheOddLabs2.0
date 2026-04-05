@@ -3719,7 +3719,7 @@ export const Overworld = {
                 // 4. START KICK ANIMATION
                 let trailEl = null;
                 const animClass = isHomeRun ? `anim-monster-kick-homerun-${directionKey}` : `anim-monster-kick-${directionKey}`;
-                
+
                 if (isHomeRun) {
                     let trailAngle = 0;
                     if (directionKey === 'l') trailAngle = 30;
@@ -3729,43 +3729,95 @@ export const Overworld = {
 
                     trailEl = document.createElement('div');
                     trailEl.className = `rocket-thruster anim-trail-homerun-${directionKey}`;
-                    
-                    // Nozzle alignment offset (start at the monster's rear edge)
+
+                    // Nozzle alignment offset (Geometric precision on the flight line)
                     let offX = 0, offY = 0;
-                    if (directionKey === 'l') { offX = 24; offY = 14; }
-                    else if (directionKey === 'r') { offX = -24; offY = 14; }
-                    else if (directionKey === 'u') { offX = 0; offY = 24; }
-                    else if (directionKey === 'f') { offX = 0; offY = -24; }
+                    if (directionKey === 'l') { offX = 60; offY = 48; } // Rear-Right-Down for Left-Up flight
+                    else if (directionKey === 'r') { offX = 4; offY = 48; } // Rear-Left-Down for Right-Up flight
+                    else if (directionKey === 'u') { offX = 32; offY = 64; } // Bottom-Center for Up flight
+                    else if (directionKey === 'f') { offX = 32; offY = 0; } // Top-Center for Down flight
 
                     trailEl.style.left = (parseFloat(el.style.left) + offX) + 'px';
                     trailEl.style.top = (parseFloat(el.style.top) + offY) + 'px';
                     trailEl.style.setProperty('--trail-angle', `${trailAngle}deg`);
+                    const energyColors = ['#ff4d4d', '#4dff88', '#4db8ff']; // Red, Green, Blue RGB Palette
+                    const mapEl = document.getElementById('overworld-map');
+                    const mapRect = mapEl.getBoundingClientRect();
+                    // 1. DYNAMIC WORLD-SPACE TRAIL (Live Tracking for BOTH Smoke & Sparks)
+                    let plumeCount = 0;
+                    const maxPlumes = 45; 
+                    const plumeInterval = setInterval(() => {
+                        if (plumeCount >= maxPlumes || !el || !el.parentNode) {
+                            clearInterval(plumeInterval);
+                            return;
+                        }
 
-                    // 1. Thruster Core (Nozzle Flash)
-                    const core = document.createElement('div');
-                    core.className = 'thruster-core';
-                    trailEl.appendChild(core);
+                        // Real-time tracking of the animating monster
+                        const rect = el.getBoundingClientRect();
+                        const curX = rect.left - mapRect.left;
+                        const curY = rect.top - mapRect.top;
+                        
+                        // Current nozzle center (accounting for scaling monster box)
+                        const monsterWidth = rect.width;
+                        const monsterHeight = rect.height;
+                        const nozzleX = curX + (monsterWidth * (offX / 64));
+                        const nozzleY = curY + (monsterHeight * (offY / 64));
+                        const curScale = monsterWidth / 64;
 
-                    // 2. Billowing Plume Puffs (More puffs, faster speed)
-                    for (let i = 0; i < 12; i++) {
-                        const p = document.createElement('div');
-                        p.className = 'thruster-plume';
-                        p.style.setProperty('--puff-delay', `${Math.random() * 0.5}s`);
-                        p.style.setProperty('--puff-dist', `${250 + Math.random() * 150}px`);
-                        trailEl.appendChild(p);
-                    }
+                        const pColor = energyColors[Math.floor(Math.random() * energyColors.length)];
+                        const driftX = (directionKey === 'l' ? -15 : (directionKey === 'r' ? 15 : 0));
+                        const driftY = (directionKey === 'u' ? -45 : (directionKey === 'f' ? 20 : -30));
 
-                    // 3. High-Speed Plasma Sparks (Narrower spray, faster velocity)
-                    for (let i = 0; i < 20; i++) {
-                        const s = document.createElement('div');
-                        s.className = 'thruster-spark';
-                        s.style.setProperty('--spark-delay', `${Math.random() * 0.3}s`);
-                        s.style.setProperty('--spark-duration', `${0.2 + Math.random() * 0.2}s`);
-                        s.style.setProperty('--spark-x', `${150 + Math.random() * 120}px`);
-                        s.style.setProperty('--spark-y', `${(Math.random() - 0.5) * 35}px`);
-                        trailEl.appendChild(s);
-                    }
+                        // --- Spawn 1 Smoke Cloud (Lingering) ---
+                        const puff = document.createElement('div');
+                        puff.className = 'smoke-plume-puff';
+                        puff.style.left = nozzleX + 'px';
+                        puff.style.top = nozzleY + 'px';
+                        puff.style.setProperty('--spark-color', pColor);
+                        puff.style.setProperty('--smoke-duration', `${0.4 + Math.random() * 0.2}s`);
+                        puff.style.setProperty('--drift-x', `${driftX}px`);
+                        puff.style.setProperty('--drift-y', `${driftY}px`);
 
+                        for (let j = 0; j < 3; j++) {
+                            const c = document.createElement('span');
+                            const size = (12 + Math.random() * 12) * curScale;
+                            c.style.width = `${size}px`;
+                            c.style.height = `${size}px`;
+                            c.style.left = `${(Math.random() * 16 - 8) * curScale}px`;
+                            c.style.top = `${(Math.random() * 12 - 6) * curScale}px`;
+                            puff.appendChild(c);
+                        }
+                        mapEl.appendChild(puff);
+
+                        // --- Spawn 3 Lingering Spark Stars (Shared logic but high density) ---
+                        for (let k = 0; k < 3; k++) {
+                            const s = document.createElement('div');
+                            s.className = 'thruster-spark';
+                            // Add chaotic "burst" offset to the spawn point
+                            s.style.left = (nozzleX + (Math.random() * 40 - 20) * curScale) + 'px';
+                            s.style.top = (nozzleY + (Math.random() * 24 - 12) * curScale) + 'px';
+                            // Random star rotation for a more organic feel
+                            s.style.transform = `rotate(${Math.random() * 360}deg)`;
+                            
+                            // Cubic bias: many small stars, few huge ones (4px to 20px)
+                            const starBase = (Math.pow(Math.random(), 3) * 16) + 4;
+                            s.style.setProperty('--spark-size', `${starBase * curScale}px`);
+                            s.style.setProperty('--spark-color', pColor);
+                            s.style.setProperty('--spark-duration', `${0.15 + Math.random() * 0.15}s`);
+                            // Widen the drift for a more "flickering" energy look
+                            s.style.setProperty('--drift-x', `${driftX * (1.5 + Math.random())}px`); 
+                            s.style.setProperty('--drift-y', `${driftY * (1 + Math.random())}px`);
+                            mapEl.appendChild(s);
+                            setTimeout(() => { if (s.parentNode) s.parentNode.removeChild(s); }, 500);
+                        }
+
+                        plumeCount++;
+                        setTimeout(() => { 
+                            if (puff.parentNode) puff.parentNode.removeChild(puff); 
+                            if (s.parentNode) s.parentNode.removeChild(s);
+                        }, 700);
+                    }, 35); 
+                } else if (trailEl) {
                     el.parentNode.appendChild(trailEl);
                 }
 
