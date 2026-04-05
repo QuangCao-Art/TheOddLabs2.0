@@ -3612,9 +3612,9 @@ export const Overworld = {
                 monsterRecord.despawnTimer = setTimeout(() => this.despawnMonster(monsterId), 15000 + Math.random() * 10000);
             }
 
-            // If we still have room for more, trigger next spawn sooner (1.5s)
+            // If we still have room for more, trigger next spawn sooner (1.0s)
             if (currentWildCount + 1 < maxSpawns) {
-                this.startCooldown(1500);
+                this.startCooldown(1000);
             } else {
                 this.startCooldown();
             }
@@ -3745,6 +3745,7 @@ export const Overworld = {
             }
             this.spawner.activeMonsters = this.spawner.activeMonsters.filter(m => m.id !== monsterObj.id);
 
+            let trailEl = null;
             requestAnimationFrame(() => {
                 el.style.zIndex = 9999;
                 el.style.willChange = 'transform, opacity';
@@ -3755,7 +3756,6 @@ export const Overworld = {
                 el.style.setProperty('--kick-spin', `${totalSpin}deg`);
 
                 // 4. START KICK ANIMATION
-                let trailEl = null;
                 const animClass = isHomeRun ? `anim-monster-kick-homerun-${directionKey}` : `anim-monster-kick-${directionKey}`;
 
                 if (isHomeRun) {
@@ -3852,7 +3852,6 @@ export const Overworld = {
                         plumeCount++;
                         setTimeout(() => { 
                             if (puff.parentNode) puff.parentNode.removeChild(puff); 
-                            if (s.parentNode) s.parentNode.removeChild(s);
                         }, 700);
                     }, 35); 
                 } else if (trailEl) {
