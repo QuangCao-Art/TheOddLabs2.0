@@ -104,9 +104,12 @@ export const Overworld = {
         y: 8,
         targetX: 10,
         targetY: 8,
+        startX: 10,
+        startY: 8,
         direction: 'down',
         isMoving: false,
         moveSpeed: 300, // ms per tile
+        currentMoveSpeed: 300,
         moveStartedAt: 0,
         isSprinting: false,
         isTurning: false,
@@ -2143,6 +2146,11 @@ export const Overworld = {
 
             // Check for new input
             this.handleMovementInput();
+
+            // Manual Position Interpolation (runs every frame during movement)
+            if (this.player.isMoving) {
+                this.updatePlayerPosition();
+            }
         }
 
         requestAnimationFrame(() => this.gameLoop());
@@ -2152,8 +2160,8 @@ export const Overworld = {
         if (!this.player.isMoving) return;
 
         const now = Date.now();
-        const actualMoveSpeed = this.player.isSprinting ? 170 : this.player.moveSpeed;
         const progress = now - this.player.moveStartedAt;
+        const actualMoveSpeed = this.player.currentMoveSpeed;
 
         // Midpoint: Switch to step frame
         if (progress >= actualMoveSpeed / 2 && this.player.currentFrame % 2 === 0) {
@@ -2220,6 +2228,18 @@ export const Overworld = {
         // Force visual update if sprint state toggled mid-movement or while idle
         if (wasSprinting !== this.player.isSprinting) {
             this.updatePlayerPosition();
+
+            // Mid-Tile Speed Recalibration (Immediate speed change without visual snap)
+            if (this.player.isMoving) {
+                const now = Date.now();
+                const oldSpeed = wasSprinting ? 170 : this.player.moveSpeed;
+                const newSpeed = this.player.isSprinting ? 170 : this.player.moveSpeed;
+                const progressPercent = (now - this.player.moveStartedAt) / oldSpeed;
+                
+                // Recalculate start time so the character stays at the same relative position
+                this.player.moveStartedAt = now - (progressPercent * newSpeed);
+                this.player.currentMoveSpeed = newSpeed;
+            }
         }
 
         if (this.player.isMoving) return;
@@ -2350,6 +2370,9 @@ export const Overworld = {
         // 4. Perform Movement
         this.player.isMoving = true;
         this.player.moveStartedAt = Date.now();
+        this.player.currentMoveSpeed = this.player.isSprinting ? 170 : this.player.moveSpeed;
+        this.player.startX = this.player.x;
+        this.player.startY = this.player.y;
         this.player.x = nextX;
         this.player.y = nextY;
 
@@ -2462,11 +2485,23 @@ export const Overworld = {
             playerEl.classList.remove('p-frame-0', 'p-frame-1', 'p-frame-2', 'p-frame-3');
             playerEl.classList.add(`p-frame-${this.player.currentFrame}`);
 
-            // 3. Move Player relative to Map
-            playerEl.style.translate = `${this.player.x * this.tileSize}px ${this.player.y * this.tileSize}px`;
+            // 3. Move Player (Manual Interpolation)
+            let visualX = this.player.x;
+            let visualY = this.player.y;
+
+            if (this.player.isMoving) {
+                const now = Date.now();
+                const p = (now - this.player.moveStartedAt) / this.player.currentMoveSpeed;
+                const progress = Math.min(Math.max(p, 0), 1);
+
+                visualX = this.player.startX + (this.player.x - this.player.startX) * progress;
+                visualY = this.player.startY + (this.player.y - this.player.startY) * progress;
+            }
+
+            playerEl.style.translate = `${visualX * this.tileSize}px ${visualY * this.tileSize}px`;
             playerEl.style.scale = this.player.isTurning ? '1.07' : '1';
             playerEl.style.transformOrigin = 'center 80%'; // Center relative to feet for a grounding pop
-            playerEl.style.zIndex = this.player.y + 1 + 10;
+            playerEl.style.zIndex = Math.round(visualY) + 1 + 10;
         }
 
         // 2. Update Map Position (Camera Follow)

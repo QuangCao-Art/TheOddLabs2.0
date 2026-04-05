@@ -5621,7 +5621,7 @@ body {
     /* (90 - 64) + 10 shift */
     margin-left: -13px;
     /* (90 - 64) / 2 Center */
-    transition: translate 0.3s linear, scale 0.05s ease-out;
+    transition: scale 0.05s ease-out;
     translate: 0px 0px;
     scale: 1;
     transform-origin: center 80% !important;
@@ -5632,7 +5632,6 @@ body {
 
 #player-sprite.is-sprinting {
     background-image: url('./assets/images/T_Char_Sprite_Player_01_Run.png') !important;
-    transition: translate 0.17s linear !important;
 }
 
 
