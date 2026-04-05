@@ -2248,6 +2248,9 @@ export const Overworld = {
         if (dy > 0) targetDir = 'down';
         if (dy < 0) targetDir = 'up';
 
+        // Dynamic Turn Delay (Reduced for sprinting to improve responsiveness)
+        const turnDelay = this.player.isSprinting ? 10 : 60;
+
         // 2. Turn-in-place Logic
         if (this.player.direction !== targetDir) {
             this.player.direction = targetDir;
@@ -2255,18 +2258,18 @@ export const Overworld = {
             this.player.isTurning = true;
             this.updatePlayerPosition();
 
-            // Temporary turning visual effect (60ms for a clicky snap)
+            // Temporary turning visual effect (matched to turnDelay)
             setTimeout(() => {
                 this.player.isTurning = false;
                 this.updatePlayerPosition();
-            }, 60);
+            }, turnDelay);
             return;
         }
 
         // 3. Movement Delay Logic (Turn-then-Walk Smoothing)
-        // If we just turned, wait 60ms before allowing move
+        // If we just turned, wait before allowing move
         const now = Date.now();
-        if (now - this.lastTurnTime < 60) {
+        if (now - this.lastTurnTime < turnDelay) {
             return;
         }
 
