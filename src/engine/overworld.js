@@ -80,8 +80,8 @@ export const Overworld = {
             ["Boxes, more boxes...", "I think I saw a Nitrophil hiding in one of these crates."],
             ["Why do we store so many 'Adhesive Residue' samples?", "Storage duty is the worst."],
             ["The lab is full of history, but not all of it is in the main database.", "Keep an eye out for unique furniture or abandoned test tanks—you might find a hidden data log or a rare item."],
-            ["Curiosity is a researcher's greatest tool.", "If you see something that looks out of place, try interacting with it. You never know what secrets might be tucked away in the corners."],
-            ["Research Cards are the culmination of our tactical data.", "Equipping these C-Card enhancements to your Cells allows for significant upgrades to their ability to survive any tactical engagement."],
+            ["Who keeps kicking the stuff all over the place?", "It's becoming a logistical nightmare to keep track of everything!"],
+            ["I'm so tired of having to put things back where they belong...", "One of these days, I WILL glue all the furniture to the floor!"],
             ["I saw Lana looking for something here recently.", "She seemed... unusually tense."]
         ],
         specimenStorage: [
@@ -864,78 +864,78 @@ export const Overworld = {
             objects: [
                 // [AI_DECORATION_PROTOCOL] START RENDER: Rows 2-7 (v4.1)
                 // Row 2: CONTINUOUS PLANT TOPS (F88) (1-31)
-                ...Array.from({ length: 31 }, (_, i) => ({ id: 'f88', x: i + 1, y: 2, type: 'prop', customSprite: 'tileset-03' })),
+                ...Array.from({ length: 31 }, (_, i) => ({ id: `f88_r2x${i+1}`, x: i + 1, y: 2, type: 'prop', customSprite: 'tileset-03' })),
 
                 // Row 3: CONTINUOUS PLANT BOTTOMS (F89) + SCATTERED TOP OVERLAPS (1-31)
                 ...Array.from({ length: 31 }, (_, i) => {
                     const x = i + 1;
-                    const items = [{ id: 'f89', x, y: 3, type: 'prop', customSprite: 'tileset-03' }];
+                    const items = [{ id: `f89_r3x${x}`, x, y: 3, type: 'prop', customSprite: 'tileset-03' }];
 
                     // LAYER_RESOLVE: Items listed later appear in front
-                    if (x === 1) items.push({ id: 'f13', x, y: 3, type: 'prop' }); // Tank Top (Bottom at 1,4)
-                    if (x === 5) items.push({ id: 'f13', x, y: 3, type: 'prop' }); // Tank Top (Bottom at 5,4)
-                    if (x === 26) items.push({ id: 'f61', x, y: 3, type: 'prop' }); // Box Top (Bottom at 26,4)
-                    if (x === 28) items.push({ id: 'f61', x, y: 3, type: 'prop' }); // Box Top (Bottom at 28,4)
+                    if (x === 1) items.push({ id: 'f13_abT1', x, y: 3, type: 'prop' }); // Tank Top (Bottom at 1,4)
+                    if (x === 5) items.push({ id: 'f13_abT2', x, y: 3, type: 'prop' }); // Tank Top (Bottom at 5,4)
+                    if (x === 26) items.push({ id: 'f61_abB1', x, y: 3, type: 'prop' }); // Box Top (Bottom at 26,4)
+                    if (x === 28) items.push({ id: 'f61_abB2', x, y: 3, type: 'prop' }); // Box Top (Bottom at 28,4)
 
                     // Add Tops of equipment below (Y=4)
-                    if (x === 8) items.push({ id: 'f88', x, y: 3, type: 'prop', customSprite: 'tileset-03' }); // Plant Top (Bottom at 8,4)
-                    if (x === 14) items.push({ id: 'f88', x, y: 3, type: 'prop', customSprite: 'tileset-03' }); // Plant Top (Bottom at 14,4)
+                    if (x === 8) items.push({ id: 'f88_abP1', x, y: 3, type: 'prop', customSprite: 'tileset-03' }); // Plant Top (Bottom at 8,4)
+                    if (x === 14) items.push({ id: 'f88_abP2', x, y: 3, type: 'prop', customSprite: 'tileset-03' }); // Plant Top (Bottom at 14,4)
 
                     return items;
                 }).flat(),
 
                 // Row 4: SCATTERED EQUIPMENT & BOTTOMS & SOME TOPS for row 5
-                { id: 'f14', x: 1, y: 4, type: 'prop' }, // Tank Bottom (Top at 1,3)
-                { id: 'f86', x: 3, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Healthy Top (Bottom at 3,5)
-                { id: 'f14', x: 5, y: 4, type: 'prop' }, // Tank Bottom (Top at 5,3)
-                { id: 'f7', x: 7, y: 4, type: 'prop' }, // Computer
-                { id: 'f89', x: 8, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Plant Bottom (Top at 8,3)
-                { id: 'f9', x: 10, y: 4, type: 'prop' }, // Sequencer
-                { id: 'f8', x: 11, y: 4, type: 'prop' }, // Cylinders
-                { id: 'f60', x: 12, y: 4, type: 'prop' }, // Box
-                { id: 'f89', x: 14, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Plant Bottom (Top at 14,3)
-                { id: 'f88', x: 16, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Plant Top (Bottom at 16,5)
-                { id: 'f61', x: 21, y: 4, type: 'prop' }, // Box Top (Bottom at 21,5)
-                { id: 'f60', x: 23, y: 4, type: 'prop' }, // Box
-                { id: 'f61', x: 25, y: 4, type: 'prop' }, // Box Top (Bottom at 25,5)
-                { id: 'f62', x: 26, y: 4, type: 'prop' }, // Box Bottom (Top at 26,3)
-                { id: 'f60', x: 27, y: 4, type: 'prop' }, // Box
-                { id: 'f62', x: 28, y: 4, type: 'prop' }, // Box Bottom (Top at 28,3)
+                { id: 'f14_abT1', x: 1, y: 4, type: 'prop' }, // Tank Bottom (Top at 1,3)
+                { id: 'f86_abH1', x: 3, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Healthy Top (Bottom at 3,5)
+                { id: 'f14_abT2', x: 5, y: 4, type: 'prop' }, // Tank Bottom (Top at 5,3)
+                { id: 'f7_abC1', x: 7, y: 4, type: 'prop' }, // Computer
+                { id: 'f89_abP1', x: 8, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Plant Bottom (Top at 8,3)
+                { id: 'f9_abS1', x: 10, y: 4, type: 'prop' }, // Sequencer
+                { id: 'f8_abL1', x: 11, y: 4, type: 'prop' }, // Cylinders
+                { id: 'f60_abX1', x: 12, y: 4, type: 'prop' }, // Box
+                { id: 'f89_abP2', x: 14, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Plant Bottom (Top at 14,3)
+                { id: 'f88_abP3', x: 16, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Plant Top (Bottom at 16,5)
+                { id: 'f61_abB3', x: 21, y: 4, type: 'prop' }, // Box Top (Bottom at 21,5)
+                { id: 'f60_abX2', x: 23, y: 4, type: 'prop' }, // Box
+                { id: 'f61_abB4', x: 25, y: 4, type: 'prop' }, // Box Top (Bottom at 25,5)
+                { id: 'f62_abB1', x: 26, y: 4, type: 'prop' }, // Box Bottom (Top at 26,3)
+                { id: 'f60_abX3', x: 27, y: 4, type: 'prop' }, // Box
+                { id: 'f62_abB2', x: 28, y: 4, type: 'prop' }, // Box Bottom (Top at 28,3)
 
                 // Row 5: SCATTERED EQUIPMENT & BOTTOMS & SOME TOPS for row 6
-                { id: 'f13', x: 1, y: 5, type: 'prop' }, // Tank Top (Bottom at 1,6)
-                { id: 'f87', x: 3, y: 5, type: 'prop', customSprite: 'tileset-03', hiddenLogId: 'Log009' }, // Healthy Bottom (Top at 3,4)
-                { id: 'f13', x: 5, y: 5, type: 'prop' }, // Tank Top (Bottom at 5,6)
-                { id: 'f60', x: 14, y: 5, type: 'prop' }, // Box
-                { id: 'f7', x: 15, y: 5, type: 'prop' }, // Computer
-                { id: 'f89', x: 16, y: 5, type: 'prop', customSprite: 'tileset-03' }, // Plant Bottom (Top at 16,4)
-                { id: 'f7', x: 17, y: 5, type: 'prop' }, // Computer
-                { id: 'f62', x: 21, y: 5, type: 'prop' }, // Box Bottom (Top at 21,4)
-                { id: 'f62', x: 25, y: 5, type: 'prop' }, // Box Bottom (Top at 25,4)
+                { id: 'f13_abT3', x: 1, y: 5, type: 'prop' }, // Tank Top (Bottom at 1,6)
+                { id: 'f87_abH1', x: 3, y: 5, type: 'prop', customSprite: 'tileset-03', hiddenLogId: 'Log009' }, // Healthy Bottom (Top at 3,4)
+                { id: 'f13_abT4', x: 5, y: 5, type: 'prop' }, // Tank Top (Bottom at 5,6)
+                { id: 'f60_abX4', x: 14, y: 5, type: 'prop' }, // Box
+                { id: 'f7_abC2', x: 15, y: 5, type: 'prop' }, // Computer
+                { id: 'f89_abP3', x: 16, y: 5, type: 'prop', customSprite: 'tileset-03' }, // Plant Bottom (Top at 16,4)
+                { id: 'f7_abC3', x: 17, y: 5, type: 'prop' }, // Computer
+                { id: 'f62_abB3', x: 21, y: 5, type: 'prop' }, // Box Bottom (Top at 21,4)
+                { id: 'f62_abB4', x: 25, y: 5, type: 'prop' }, // Box Bottom (Top at 25,4)
 
                 // Tops for row 6 per Stacking Rule
-                { id: 'f88', x: 9, y: 5, type: 'prop', customSprite: 'tileset-03' }, // Plant Top (Bottom at 9,6)
-                { id: 'f61', x: 23, y: 5, type: 'prop' }, // Box Top (Bottom at 23,6)
-                { id: 'f61', x: 27, y: 5, type: 'prop' }, // Box Top (Bottom at 27,6)
+                { id: 'f88_abP4', x: 9, y: 5, type: 'prop', customSprite: 'tileset-03' }, // Plant Top (Bottom at 9,6)
+                { id: 'f61_abB5', x: 23, y: 5, type: 'prop' }, // Box Top (Bottom at 23,6)
+                { id: 'f61_abB6', x: 27, y: 5, type: 'prop' }, // Box Top (Bottom at 27,6)
 
                 // Row 6: CONTINUOUS PLANT TOPS (F88) + SCATTERED BOTTOM OVERLAPS (1-31)
                 ...Array.from({ length: 31 }, (_, i) => {
                     const x = i + 1;
-                    const items = [{ id: 'f88', x, y: 6, type: 'prop', customSprite: 'tileset-03' }];
+                    const items = [{ id: `f88_r6x${x}`, x, y: 6, type: 'prop', customSprite: 'tileset-03' }];
 
-                    if (x === 1) items.push({ id: 'f14', x, y: 6, type: 'prop' }); // Tank Bottom (Top at 1,5)
-                    if (x === 5) items.push({ id: 'f14', x, y: 6, type: 'prop' }); // Tank Bottom (Top at 5,5)
-                    if (x === 8) items.push({ id: 'f9', x, y: 6, type: 'prop' }); // Sequencer
-                    if (x === 9) items.push({ id: 'f89', x, y: 6, type: 'prop', customSprite: 'tileset-03' }); // Plant Bottom (Top at 9,5)
-                    if (x === 21) items.push({ id: 'f7', x, y: 6, type: 'prop' }); // Computer
-                    if (x === 23) items.push({ id: 'f62', x, y: 6, type: 'prop' }); // Box Bottom (Top at 23,5)
-                    if (x === 27) items.push({ id: 'f62', x, y: 6, type: 'prop' }); // Box Bottom (Top at 27,5)
+                    if (x === 1) items.push({ id: 'f14_abT3', x, y: 6, type: 'prop' }); // Tank Bottom (Top at 1,5)
+                    if (x === 5) items.push({ id: 'f14_abT4', x, y: 6, type: 'prop' }); // Tank Bottom (Top at 5,5)
+                    if (x === 8) items.push({ id: 'f9_abS2', x, y: 6, type: 'prop' }); // Sequencer
+                    if (x === 9) items.push({ id: 'f89_abP4', x, y: 6, type: 'prop', customSprite: 'tileset-03' }); // Plant Bottom (Top at 9,5)
+                    if (x === 21) items.push({ id: 'f7_abC4', x, y: 6, type: 'prop' }); // Computer
+                    if (x === 23) items.push({ id: 'f62_abB5', x, y: 6, type: 'prop' }); // Box Bottom (Top at 23,5)
+                    if (x === 27) items.push({ id: 'f62_abB6', x, y: 6, type: 'prop' }); // Box Bottom (Top at 27,5)
 
                     return items;
                 }).flat(),
 
                 // Row 7: CONTINUOUS PLANT BOTTOMS (F89) (1-31)
-                ...Array.from({ length: 31 }, (_, i) => ({ id: 'f89', x: i + 1, y: 7, type: 'prop', customSprite: 'tileset-03' })),
+                ...Array.from({ length: 31 }, (_, i) => ({ id: `f89_r7x${i+1}`, x: i + 1, y: 7, type: 'prop', customSprite: 'tileset-03' })),
                 // [AI_DECORATION_PROTOCOL] END RENDER
             ],
             doors: [
@@ -1706,7 +1706,7 @@ export const Overworld = {
         'f34': { hasCollision: false, info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
         'f35': { hasCollision: true, info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
         'f36': { hasCollision: true, info: "Instant noodles. The true fuel of all scientific breakthroughs and 3 AM crying sessions." },
-        'f37': { hasCollision: true, info: "An empty bowl. The salt levels within are high enough to preserve a whole lab tech." },
+        'f37': { hasCollision: true, kickable: true, info: "An empty bowl. The salt levels within are high enough to preserve a whole lab tech." },
         'f38': { hasCollision: false, triggerHeal: true, info: "Incubator Unit-01: [STATION READY]" },
         'f39': { hasCollision: false, triggerHeal: true, info: "Incubator Unit-02: [STATION READY]" },
         'f40': { hasCollision: true, triggerHeal: true, info: "Incubator Unit-03: [STATION READY]" },
@@ -1717,7 +1717,7 @@ export const Overworld = {
         'f45': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
         'f46': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
         'f47': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-        'f48': { hasCollision: true, info: "Labeled: 'DO NOT SHAKE'." },
+        'f48': { hasCollision: true, kickable: true, info: "Labeled: 'DO NOT SHAKE'." },
         'f49': { hasCollision: true, info: "Mostly contains encrypted logs, but some files are just high-score records for 'Snake'." },
         'f50': { hasCollision: true, info: "A magnetic keycard. Smells like the Director's expensive cologne." },
         'f51': { hasCollision: true, info: "Label: 'SUPERNOVA SAUCE'. Scoville rating: YES. Lab-certified to burn through metal." },
@@ -1728,10 +1728,10 @@ export const Overworld = {
         'f56': { hasCollision: true, info: "\"Why do all the tables have to be this messy?\" asked the janitor." },
         'f57': { hasCollision: true, info: "\"Why do all the tables have to be this messy?\" asked the janitor." },
         'f58': { hasCollision: true, info: "I can see the little cockroaches crawling out!" },
-        'f59': { hasCollision: true, info: "Looks like a normal plant... or is it?" },
-        'f60': { hasCollision: true, info: "This box is heavier than it looks." },
+        'f59': { hasCollision: true, kickable: true, info: "Looks like a normal plant... or is it?" },
+        'f60': { hasCollision: true, kickable: true, info: "This box is heavier than it looks." },
         'f61': { hasCollision: false, info: "Please don't fall on my head" },
-        'f62': { hasCollision: true, info: "Please don't fall on my head" },
+        'f62': { hasCollision: true, kickable: true, info: "Please don't fall on my head" },
         'f63': { hasCollision: true, info: "This is the best ultimate super rare card ever!" },
 
         // --- TILESET 03 (f64+) ---
@@ -1939,6 +1939,10 @@ export const Overworld = {
 
         // 4. DRAW OBJECTS
         this.refreshLogs(); // Sync logs from state (accounting for debug mode)
+
+        // Reset kicked state for all objects whenever re-entering a room
+        zone.objects.forEach(o => { delete o.isKicking; });
+
         // Log #001 is now hidden in the Red Specimen Tank via main.js trigger
         if (id === 'lobby') {
             zone.objects = zone.objects.filter(obj => obj.id !== 'log_001');
@@ -2342,19 +2346,37 @@ export const Overworld = {
             }
         }
 
-        // Object Collision Check (Prioritize Wild Specimens for Kicking)
-        const obstacle = zone.objects.find(obj => {
+        // Object Collision Check (Priority: Kickable > Colliding > Hidden)
+        const candidates = zone.objects.filter(obj => {
+            if (obj.isKicking) return false;
             const w = obj.width || 1;
             const h = obj.height || 1;
             return nextX >= obj.x && nextX < obj.x + w && nextY >= obj.y && nextY < obj.y + h;
         });
 
+        // 1. Prefer Kickable
+        let obstacle = candidates.find(o => {
+            const m = this.getFurnitureMeta(o.id, o.customSprite);
+            return (o.temp === true || (o.id && o.id.includes('_wild_')) || (m && m.kickable === true));
+        });
+
+        // 2. If no kickable, prefer Colliding
+        if (!obstacle) {
+            obstacle = candidates.find(o => {
+                const m = this.getFurnitureMeta(o.id, o.customSprite);
+                return !m || m.hasCollision !== false;
+            });
+        }
+
+        // 3. Last fallback (anything else at the tile)
+        if (!obstacle) obstacle = candidates[0];
+
         if (obstacle) {
             const meta = this.getFurnitureMeta(obstacle.id, obstacle.customSprite);
-            const isKickable = (obstacle.temp === true || (obstacle.id && obstacle.id.includes('_wild_')));
+            const isKickable = (obstacle.temp === true || (obstacle.id && obstacle.id.includes('_wild_')) || (meta && meta.kickable === true));
 
             if (isKickable && !obstacle.isKicking && this.player.isSprinting) {
-                this.kickWildMonster(obstacle, dx, dy);
+                this.kickObject(obstacle, dx, dy);
                 this.updatePlayerPosition();
                 return;
             }
@@ -2533,6 +2555,18 @@ export const Overworld = {
 
         const now = Date.now();
         if (now - this.lastInteractTime < 150) return;
+        
+        // Safety: Don't interact with something currently being kicked (e.g. during hitstop)
+        const zone = this.zones[this.currentZone];
+        let interactX = this.player.x;
+        let interactY = this.player.y;
+        if (this.player.direction === 'up') interactY--;
+        if (this.player.direction === 'down') interactY++;
+        if (this.player.direction === 'left') interactX--;
+        if (this.player.direction === 'right') interactX++;
+        const targetObstacle = zone && zone.objects.find(o => interactX >= o.x && interactX < o.x + (o.width || 1) && interactY >= o.y && interactY < o.y + (o.height || 1));
+        if (targetObstacle && targetObstacle.isKicking) return;
+
         this.lastInteractTime = now;
 
         if (this.isDialogueActive) {
@@ -2545,7 +2579,6 @@ export const Overworld = {
             return;
         }
 
-        const zone = this.zones[this.currentZone];
         let targetX = this.player.x;
         let targetY = this.player.y;
 
@@ -3644,14 +3677,54 @@ export const Overworld = {
         }
     },
 
-    kickWildMonster(monsterObj, dx, dy) {
-        if (this.isTransitioning || this.isPaused || monsterObj.isKicking) return;
-        monsterObj.isKicking = true;
+    kickObject(obj, dx, dy) {
+        if (this.isTransitioning || this.isPaused || obj.isKicking) return;
+        obj.isKicking = true;
 
-        const el = document.getElementById(`npc-${monsterObj.id}`);
+        const el = document.getElementById(`npc-${obj.id}`);
         if (!el) return;
 
-        // 0. ABORT CURRENT MOVEMENT (Prevents post-pause state conflict)
+        const zone = this.zones[this.currentZone];
+        if (!zone) return;
+
+        // --- Proximity-Linkage for Multi-tile Furniture ---
+        const parts = [obj];
+        const suffixMatch = obj.id.match(/_([a-zA-Z0-9]+)$/);
+        if (suffixMatch && obj.type === 'prop') {
+            const suffix = suffixMatch[1];
+            const prefix = obj.id.split('_')[0];
+            
+            // Known Linked Furniture Sets (Top+Bottom or Large Multi-parts)
+            const linkedSets = [
+                ['f20', 'f21'], ['f22', 'f23'], ['f24', 'f25'],
+                ['f28', 'f29'], ['f30', 'f31'], ['f32', 'f33'],
+                ['f61', 'f62'], ['f76', 'f77', 'f78', 'f79'],
+                ['f38', 'f39', 'f40', 'f41'],
+                ['f42', 'f43', 'f44', 'f45', 'f46', 'f47'],
+                ['f52', 'f53', 'f54', 'f55']
+            ];
+            
+            const mySet = linkedSets.find(set => set.includes(prefix));
+            
+            const linked = zone.objects.filter(o => {
+                if (o.id === obj.id || !o.id.endsWith(`_${suffix}`)) return false;
+                const oPrefix = o.id.split('_')[0];
+                
+                // Only link if they are in the same known set OR share the same base ID (prefix)
+                const isSameSet = mySet ? mySet.includes(oPrefix) : (oPrefix === prefix);
+                if (!isSameSet) return false;
+
+                // Final proximity check (1 tile radius)
+                return Math.abs(o.x - obj.x) <= 1 && Math.abs(o.y - obj.y) <= 1;
+            });
+
+            linked.forEach(o => {
+                o.isKicking = true;
+                parts.push(o);
+            });
+        }
+
+        // 0. ABORT CURRENT MOVEMENT
         if (this.player.isMoving) {
             this.player.isMoving = false;
             this.player.x = Math.round(this.player.x);
@@ -3662,15 +3735,13 @@ export const Overworld = {
         const screen = document.getElementById('screen-overworld');
         const playerEl = document.getElementById('player-sprite');
 
-        // Determine Launch Type based on Sprint Distance Matrix
         const dist = this.player.sprintDistance;
         let roll = Math.random() * 100;
         let choice = 'front';
         let isHomeRun = false;
 
-        if (dist === 0) {
-            choice = roll < 50 ? 'left' : 'right';
-        } else if (dist <= 3) {
+        if (dist === 0) { choice = roll < 50 ? 'left' : 'right'; }
+        else if (dist <= 3) {
             if (roll < 10) { isHomeRun = true; choice = 'front'; }
             else if (roll < 40) choice = 'left';
             else if (roll < 70) choice = 'right';
@@ -3685,7 +3756,6 @@ export const Overworld = {
             else choice = 'front';
         }
 
-        // Map choice to relative direction key
         let dirMap = {};
         if (dy < 0) dirMap = { front: 'u', left: 'l', right: 'r' };
         else if (dy > 0) dirMap = { front: 'f', left: 'l', right: 'r' };
@@ -3696,180 +3766,156 @@ export const Overworld = {
         const hitStopTime = isHomeRun ? 500 : 300;
         const shakeClass = isHomeRun ? 'anim-screen-shake-heavy' : 'anim-screen-shake';
 
-        this.player.sprintDistance = 0; // RESET MOMENTUM IMMEDIATELY
-
+        this.player.sprintDistance = 0; 
         if (screen) screen.classList.add(shakeClass);
 
-        // Force contact pose visually and internally
-        this.player.isMoving = false; // ABORT MOVEMENT IMMEDIATELY
-        this.player.isHitstopping = true; // MAINTAIN SPRINT VISUAL DURING IMPACT
+        this.player.isHitstopping = true;
         this.player.currentFrame = (this.player.stepParity * 2) + 1;
         this.updatePlayerPosition();
 
-        // Remove ALL specimen visual states to prevent conflict
-        el.classList.remove('anim-monster-breathing', 'anim-monster-pop');
-        el.classList.add('anim-monster-shake');
+        parts.forEach(p => {
+            const pEl = document.getElementById(`npc-${p.id}`);
+            if (pEl) {
+                pEl.classList.remove('anim-monster-breathing', 'anim-monster-pop', 'anim-monster-shake');
+                void pEl.offsetWidth;
+                pEl.classList.add('anim-monster-shake');
+            }
+        });
+
         this.isPaused = true;
 
         setTimeout(() => {
             if (!this.gameLoopActive) return;
-
-            // 2. RECONCILE AND UNPAUSE
             this.isPaused = false;
-            this.player.isHitstopping = false; // RELEASE SPRINT VISUAL LOCK
-
-            // Unconditionally Reset player sprite to idle after hitstop
+            this.player.isHitstopping = false;
             this.player.currentFrame = this.player.stepParity * 2;
             this.player.isSprinting = [...this.keysPressed].some(k => k === 'shift');
 
-            // FORCE DOM SYNC (Bypassing any potential game-loop batching)
             if (playerEl) {
                 playerEl.classList.remove('p-frame-1', 'p-frame-3');
                 playerEl.classList.add(`p-frame-${this.player.currentFrame}`);
             }
-            this.isPaused = false;
             this.updatePlayerPosition();
-
             if (screen) screen.classList.remove(shakeClass);
 
-            // 2. Clear monster shake
-            el.classList.remove('anim-monster-shake');
-
-            // Force a reflow to ensure the previous animation is cleared
-            void el.offsetWidth;
-
             // LOGICAL TILE FREEDOM: Remove from collision objects exactly when unpaused
-            const zone = this.zones[this.currentZone];
+            const partIds = parts.map(p => p.id);
             if (zone && zone.objects) {
-                zone.objects = zone.objects.filter(obj => obj.id !== monsterObj.id);
+                // Permanently remove NPCs (Wild Monsters); leave Props in the array to be reset on zone change
+                zone.objects = zone.objects.filter(o => o.type !== 'npc' || !partIds.includes(o.id));
             }
-            this.spawner.activeMonsters = this.spawner.activeMonsters.filter(m => m.id !== monsterObj.id);
+            if (this.spawner && this.spawner.activeMonsters) {
+                this.spawner.activeMonsters = this.spawner.activeMonsters.filter(m => !partIds.includes(m.id));
+            }
 
-            let trailEl = null;
-            requestAnimationFrame(() => {
-                el.style.zIndex = 9999;
-                el.style.willChange = 'transform, opacity';
+            parts.forEach((p) => {
+                const pEl = document.getElementById(`npc-${p.id}`);
+                if (!pEl) return;
 
-                // Apply Physics and Animation
+                pEl.classList.remove('anim-monster-shake');
+                void pEl.offsetWidth;
+                pEl.style.zIndex = 9999;
+                pEl.style.willChange = 'transform, opacity';
+
                 const spinMult = isHomeRun ? 4 : 1;
                 const totalSpin = (Math.random() * 660 + 60) * spinMult * (directionKey === 'l' ? -1 : 1);
-                el.style.setProperty('--kick-spin', `${totalSpin}deg`);
+                pEl.style.setProperty('--kick-spin', `${totalSpin}deg`);
 
-                // 4. START KICK ANIMATION
                 const animClass = isHomeRun ? `anim-monster-kick-homerun-${directionKey}` : `anim-monster-kick-${directionKey}`;
+                pEl.classList.add(animClass);
 
-                if (isHomeRun) {
-                    let trailAngle = 0;
-                    if (directionKey === 'l') trailAngle = 30;
-                    else if (directionKey === 'r') trailAngle = 150;
-                    else if (directionKey === 'u') trailAngle = 90;
-                    else if (directionKey === 'f') trailAngle = 270;
-
-                    trailEl = document.createElement('div');
-                    trailEl.className = `rocket-thruster anim-trail-homerun-${directionKey}`;
-
-                    // Nozzle alignment offset (Geometric precision on the flight line)
-                    let offX = 0, offY = 0;
-                    if (directionKey === 'l') { offX = 60; offY = 48; } // Rear-Right-Down for Left-Up flight
-                    else if (directionKey === 'r') { offX = 4; offY = 48; } // Rear-Left-Down for Right-Up flight
-                    else if (directionKey === 'u') { offX = 32; offY = 64; } // Bottom-Center for Up flight
-                    else if (directionKey === 'f') { offX = 32; offY = 0; } // Top-Center for Down flight
-
-                    trailEl.style.left = (parseFloat(el.style.left) + offX) + 'px';
-                    trailEl.style.top = (parseFloat(el.style.top) + offY) + 'px';
-                    trailEl.style.setProperty('--trail-angle', `${trailAngle}deg`);
-                    const energyColors = ['#ff4d4d', '#4dff88', '#4db8ff']; // Red, Green, Blue RGB Palette
-                    const mapEl = document.getElementById('overworld-map');
-                    const mapRect = mapEl.getBoundingClientRect();
-                    // 1. DYNAMIC WORLD-SPACE TRAIL (Live Tracking for BOTH Smoke & Sparks)
-                    let plumeCount = 0;
-                    const maxPlumes = 45; 
-                    const plumeInterval = setInterval(() => {
-                        if (plumeCount >= maxPlumes || !el || !el.parentNode) {
-                            clearInterval(plumeInterval);
-                            return;
-                        }
-
-                        // Real-time tracking of the animating monster
-                        const rect = el.getBoundingClientRect();
-                        const curX = rect.left - mapRect.left;
-                        const curY = rect.top - mapRect.top;
-                        
-                        // Current nozzle center (accounting for scaling monster box)
-                        const monsterWidth = rect.width;
-                        const monsterHeight = rect.height;
-                        const nozzleX = curX + (monsterWidth * (offX / 64));
-                        const nozzleY = curY + (monsterHeight * (offY / 64));
-                        const curScale = monsterWidth / 64;
-
-                        const pColor = energyColors[Math.floor(Math.random() * energyColors.length)];
-                        const driftX = (directionKey === 'l' ? -15 : (directionKey === 'r' ? 15 : 0));
-                        const driftY = (directionKey === 'u' ? -45 : (directionKey === 'f' ? 20 : -30));
-
-                        // --- Spawn 1 Smoke Cloud (Lingering) ---
-                        const puff = document.createElement('div');
-                        puff.className = 'smoke-plume-puff';
-                        puff.style.left = nozzleX + 'px';
-                        puff.style.top = nozzleY + 'px';
-                        puff.style.setProperty('--spark-color', pColor);
-                        puff.style.setProperty('--smoke-duration', `${0.4 + Math.random() * 0.2}s`);
-                        puff.style.setProperty('--drift-x', `${driftX}px`);
-                        puff.style.setProperty('--drift-y', `${driftY}px`);
-
-                        for (let j = 0; j < 3; j++) {
-                            const c = document.createElement('span');
-                            const size = (12 + Math.random() * 12) * curScale;
-                            c.style.width = `${size}px`;
-                            c.style.height = `${size}px`;
-                            c.style.left = `${(Math.random() * 16 - 8) * curScale}px`;
-                            c.style.top = `${(Math.random() * 12 - 6) * curScale}px`;
-                            puff.appendChild(c);
-                        }
-                        mapEl.appendChild(puff);
-
-                        // --- Spawn 3 Lingering Spark Stars (Shared logic but high density) ---
-                        for (let k = 0; k < 3; k++) {
-                            const s = document.createElement('div');
-                            s.className = 'thruster-spark';
-                            // Add chaotic "burst" offset to the spawn point
-                            s.style.left = (nozzleX + (Math.random() * 40 - 20) * curScale) + 'px';
-                            s.style.top = (nozzleY + (Math.random() * 24 - 12) * curScale) + 'px';
-                            // Random star rotation for a more organic feel
-                            s.style.transform = `rotate(${Math.random() * 360}deg)`;
-                            
-                            // Cubic bias: many small stars, few huge ones (4px to 20px)
-                            const starBase = (Math.pow(Math.random(), 3) * 16) + 4;
-                            s.style.setProperty('--spark-size', `${starBase * curScale}px`);
-                            s.style.setProperty('--spark-color', pColor);
-                            s.style.setProperty('--spark-duration', `${0.15 + Math.random() * 0.15}s`);
-                            // Widen the drift for a more "flickering" energy look
-                            s.style.setProperty('--drift-x', `${driftX * (1.5 + Math.random())}px`); 
-                            s.style.setProperty('--drift-y', `${driftY * (1 + Math.random())}px`);
-                            mapEl.appendChild(s);
-                            setTimeout(() => { if (s.parentNode) s.parentNode.removeChild(s); }, 500);
-                        }
-
-                        plumeCount++;
-                        setTimeout(() => { 
-                            if (puff.parentNode) puff.parentNode.removeChild(puff); 
-                        }, 700);
-                    }, 35); 
-                } else if (trailEl) {
-                    el.parentNode.appendChild(trailEl);
+                if (isHomeRun && (p.id === obj.id || p.type === 'npc')) {
+                    this.triggerHomeRunEffects(p, pEl, directionKey);
                 }
 
-                el.classList.add(animClass);
+                setTimeout(() => { if (pEl.parentNode) pEl.parentNode.removeChild(pEl); }, 2000);
             });
 
-            this.updateQuestProgress('kick', monsterObj.monsterId + '_wild');
-
-            setTimeout(() => {
-                if (el && el.parentNode) el.parentNode.removeChild(el);
-                if (trailEl && trailEl.parentNode) trailEl.parentNode.removeChild(trailEl);
-                // Trigger cooldown immediately to replace the kicked monster
-                this.spawner.startCooldown(zone.maxWildSpawns > 1 ? 500 : null);
-            }, isHomeRun ? 1600 : 800);
+            if (obj.type === 'npc' && obj.monsterId) {
+                this.updateQuestProgress('kick', obj.monsterId + '_wild');
+                if (this.spawner) this.spawner.startCooldown(zone.maxWildSpawns > 1 ? 500 : null);
+            }
         }, hitStopTime);
+    },
+
+    triggerHomeRunEffects(obj, el, directionKey) {
+        let trailAngle = 0;
+        if (directionKey === 'l') trailAngle = 30;
+        else if (directionKey === 'r') trailAngle = 150;
+        else if (directionKey === 'u') trailAngle = 90;
+        else if (directionKey === 'f') trailAngle = 270;
+
+        const trailEl = document.createElement('div');
+        trailEl.className = `rocket-thruster anim-trail-homerun-${directionKey}`;
+
+        let offX = 32, offY = 32;
+        if (directionKey === 'l') { offX = 60; offY = 48; } 
+        else if (directionKey === 'r') { offX = 4; offY = 48; } 
+        else if (directionKey === 'u') { offX = 32; offY = 64; } 
+        else if (directionKey === 'f') { offX = 32; offY = 0; } 
+
+        trailEl.style.left = (parseFloat(el.style.left) + offX) + 'px';
+        trailEl.style.top = (parseFloat(el.style.top) + offY) + 'px';
+        trailEl.style.setProperty('--trail-angle', `${trailAngle}deg`);
+
+        const mapEl = document.getElementById('overworld-map');
+        const mapRect = mapEl.getBoundingClientRect();
+        mapEl.appendChild(trailEl);
+
+        let plumeCount = 0;
+        const maxPlumes = 45; 
+        const plumeInterval = setInterval(() => {
+            if (plumeCount >= maxPlumes || !el || !el.parentNode) {
+                clearInterval(plumeInterval);
+                if (trailEl.parentNode) trailEl.parentNode.removeChild(trailEl);
+                return;
+            }
+
+            const rect = el.getBoundingClientRect();
+            const curX = rect.left - mapRect.left;
+            const curY = rect.top - mapRect.top;
+            
+            this.spawnHomerunParticles(curX, curY, rect.width, rect.height, directionKey);
+            plumeCount++;
+        }, 16);
+    },
+
+    spawnHomerunParticles(curX, curY, width, height, directionKey) {
+        const mapEl = document.getElementById('overworld-map');
+        let emitX = curX + width / 2;
+        let emitY = curY + height / 2;
+
+        const energyColors = ['#ff4d4d', '#4dff88', '#4db8ff'];
+        const driftX = (directionKey === 'l' ? 20 : (directionKey === 'r' ? -20 : (Math.random() - 0.5) * 40));
+        const driftY = (directionKey === 'u' ? 20 : (directionKey === 'f' ? -20 : (Math.random() - 0.5) * 40));
+
+        for (let i = 0; i < 2; i++) {
+            const puff = document.createElement('div');
+            puff.className = 'smoke-plume-puff';
+            puff.style.left = emitX + 'px';
+            puff.style.top = emitY + 'px';
+            puff.style.setProperty('--drift-x', `${driftX}px`);
+            puff.style.setProperty('--drift-y', `${driftY}px`);
+            puff.style.setProperty('--spark-color', energyColors[Math.floor(Math.random() * 3)]);
+
+            const size = 15 + Math.random() * 25;
+            const dot = document.createElement('span');
+            dot.style.width = size + 'px';
+            dot.style.height = size + 'px';
+            puff.appendChild(dot);
+            mapEl.appendChild(puff);
+            setTimeout(() => { if (puff.parentNode) puff.parentNode.removeChild(puff); }, 500);
+
+            if (Math.random() < 0.3) {
+                const spark = document.createElement('div');
+                spark.className = 'thruster-spark';
+                spark.style.left = emitX + 'px';
+                spark.style.top = emitY + 'px';
+                spark.style.setProperty('--spark-color', energyColors[Math.floor(Math.random() * 3)]);
+                mapEl.appendChild(spark);
+                setTimeout(() => { if (spark.parentNode) spark.parentNode.removeChild(spark); }, 300);
+            }
+        }
     },
 
     spawnFootstep(x, y, isSprinting = false) {
@@ -3879,11 +3925,9 @@ export const Overworld = {
         const puff = document.createElement('div');
         puff.className = 'footstep-puff';
 
-        // 3 Circles for Cartoon Cloud (Walking vs Sprinting)
         const count = 3;
         for (let i = 0; i < count; i++) {
             const circle = document.createElement('span');
-            // Size: 8-10px for walking, 10-18px for sprinting
             const size = isSprinting ? (Math.random() * 8 + 10) : (Math.random() * 2 + 8);
             circle.style.width = `${size}px`;
             circle.style.height = `${size}px`;
@@ -3892,17 +3936,12 @@ export const Overworld = {
             puff.appendChild(circle);
         }
 
-        // Position on the tile the player is leaving
         puff.style.left = `${(x * this.tileSize) + 20}px`;
         puff.style.top = `${(y * this.tileSize) + 40}px`;
-        puff.style.zIndex = this.player.y + 5; // Below player (y+11)
+        puff.style.zIndex = this.player.y + 5;
 
         mapEl.appendChild(puff);
-
-        // Auto-cleanup
-        setTimeout(() => {
-            if (puff.parentNode) puff.remove();
-        }, 500);
+        setTimeout(() => { if (puff.parentNode) puff.remove(); }, 500);
     }
 };
 

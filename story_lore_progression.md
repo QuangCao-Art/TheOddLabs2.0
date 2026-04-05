@@ -745,8 +745,8 @@ These dialogue lines are randomly assigned to generic researchers based on the s
 1. *"Boxes, more boxes...// I think I saw a Nitrophil hiding in one of these crates."*
 2. *"Why do we store so many 'Adhesive Residue' samples?// Storage duty is the worst."*
 3. *"The lab is full of history, but not all of it is in the main database.// Keep an eye out for unique furniture or abandoned test tanks—you might find a hidden data log or a rare item."*
-4. *"Curiosity is a researcher's greatest tool.// If you see something that looks out of place, try interacting with it. You never know what secrets might be tucked away in the corners."*
-5. *"Research Cards are the culmination of our tactical data.// Equipping these C-Card enhancements to your Cells allows for significant upgrades to their ability to survive any tactical engagement."*
+4. *"Who keeps kicking the stuff all over the place?// It's becoming a logistical nightmare to keep track of everything!"*
+5. *"I'm so tired of having to put things back where they belong...// One of these days, I WILL glue all the furniture to the floor!"*
 6. *"I saw Lana looking for something here recently.// She seemed... unusually tense."*
 
 
