@@ -37,6 +37,8 @@ This protocol MUST be strictly followed for all map modifications:
 - **3. MULTI_OBJECT_RESOLUTION**: Use arrays for overlapping `objects`. Order by Background -> Foreground.
 - **4. TILESET_MAPPING**: Ensure `style.css` contains the mapping for every used ID.
 - **5. PRE_EXECUTION_GRID_TRACE**: Trace every column before writing to ensure atomic pairings.
+- **6. AUTOMATED_STACKING_MEMORY**: Whenever a `BOTTOM_ID` is present, the model MUST automatically place the corresponding `TOP_ID` at `(X, Y-1)`. This is NON-NEGOTIABLE. If other objects are at the target coordinate, use the **Overlap Strategy** (Protocol 3) to render both.
+    - Pairs: F88<->F89, F61<->F62, F52/53<->F54/55, F13<->F14, F86<->F87.
 
 ### 1. Update the Grid (Layout)
 If changing walls or floors, modify the `layout` array.

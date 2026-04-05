@@ -973,7 +973,8 @@ export const Overworld = {
 
                 // --- Row 3 (Tops/Equipment) ---
                 { id: 'f16_3_1', x: 1, y: 3, type: 'prop' },
-                { id: 'f80_3_3', x: 3, y: 3, type: 'prop' }, { id: 'f81_3_4', x: 4, y: 3, type: 'prop' },
+                { id: 'f80_3_3', x: 3, y: 3, type: 'prop' }, { id: 'f4_3_3', x: 3, y: 3, type: 'prop', name: 'Table Segment' },
+                { id: 'f81_3_4', x: 4, y: 3, type: 'prop' }, { id: 'f5_3_4', x: 4, y: 3, type: 'prop', name: 'Table Segment' },
                 { id: 'f16_3_5', x: 5, y: 3, type: 'prop' },
                 { id: 'f80_3_6', x: 6, y: 3, type: 'prop' }, { id: 'f81_3_7', x: 7, y: 3, type: 'prop' },
                 { id: 'f16_3_8', x: 8, y: 3, type: 'prop' },
@@ -984,43 +985,50 @@ export const Overworld = {
                 { id: 'f16_3_14', x: 14, y: 3, type: 'prop' },
                 { id: 'f80_3_15', x: 15, y: 3, type: 'prop' }, { id: 'f62_3_15', x: 15, y: 3, type: 'prop' }, // Revision 5: Box Bottom at (15,3)
                 { id: 'f81_3_16', x: 16, y: 3, type: 'prop' },
-                { id: 'f80_3_18', x: 18, y: 3, type: 'prop' }, { id: 'f81_3_19', x: 19, y: 3, type: 'prop' },
-                { id: 'f61_3_20', x: 20, y: 3, type: 'prop' },
+                { id: 'f80_3_18', x: 18, y: 3, type: 'prop' }, { id: 'f48_3_18', x: 18, y: 3, type: 'prop', name: 'Hand Box' },
+                { id: 'f81_3_19', x: 19, y: 3, type: 'prop' }, { id: 'f60_3_19', x: 19, y: 3, type: 'prop' },
+                { id: 'f48_3_20', x: 20, y: 3, type: 'prop', name: 'Hand Box' },
                 { id: 'f80_3_21', x: 21, y: 3, type: 'prop' }, { id: 'f81_3_22', x: 22, y: 3, type: 'prop' },
+                { id: 'f60_3_23', x: 23, y: 3, type: 'prop' },
                 { id: 'f80_3_24', x: 24, y: 3, type: 'prop' }, { id: 'f60_3_24', x: 24, y: 3, type: 'prop' }, // Overlap f80/f60
                 { id: 'f81_3_25', x: 25, y: 3, type: 'prop' }, { id: 'f62_3_25', x: 25, y: 3, type: 'prop' }, // Overlap f81/f62
                 { id: 'f16_3_26', x: 26, y: 3, type: 'prop' },
                 { id: 'f80_3_27', x: 27, y: 3, type: 'prop' }, { id: 'f60_3_27', x: 27, y: 3, type: 'prop' }, // Overlap f80/f60
                 { id: 'f81_3_28', x: 28, y: 3, type: 'prop' }, { id: 'f7_3_28', x: 28, y: 3, type: 'prop' }, // Overlap f81/f7
                 { id: 'f16_3_29', x: 29, y: 3, type: 'prop' },
+                { id: 'f48_3_30', x: 30, y: 3, type: 'prop', name: 'Hand Box' },
                 { id: 'f16_3_31', x: 31, y: 3, type: 'prop' },
 
                 // --- Row 4 (Bottoms) ---
                 { id: 'f82_4_3', x: 3, y: 4, type: 'prop' }, { id: 'f83_4_4', x: 4, y: 4, type: 'prop' },
+                { id: 'f60_4_5', x: 5, y: 4, type: 'prop' },
                 { id: 'f82_4_6', x: 6, y: 4, type: 'prop' }, { id: 'f83_4_7', x: 7, y: 4, type: 'prop' },
+                { id: 'f48_4_8', x: 8, y: 4, type: 'prop', name: 'Hand Box' },
                 { id: 'f82_4_9', x: 9, y: 4, type: 'prop' },
                 { id: 'f83_4_10', x: 10, y: 4, type: 'prop' },
                 { id: 'f82_4_12', x: 12, y: 4, type: 'prop' },
                 { id: 'f83_4_13', x: 13, y: 4, type: 'prop' },
-                { id: 'f82_4_15', x: 15, y: 4, type: 'prop' }, { id: 'f61_4_15', x: 15, y: 4, type: 'prop' }, // Overlap f82/f61 for f62 at (15,5)
+                { id: 'f82_4_15', x: 15, y: 4, type: 'prop' }, 
                 { id: 'f83_4_16', x: 16, y: 4, type: 'prop' },
                 { id: 'f82_4_18', x: 18, y: 4, type: 'prop' }, { id: 'f83_4_19', x: 19, y: 4, type: 'prop' },
-                { id: 'f62_4_20', x: 20, y: 4, type: 'prop' },
+                { id: 'f7_4_20', x: 20, y: 4, type: 'prop', name: 'PC Terminal' },
                 { id: 'f82_4_21', x: 21, y: 4, type: 'prop' }, { id: 'f83_4_22', x: 22, y: 4, type: 'prop' },
                 { id: 'f82_4_24', x: 24, y: 4, type: 'prop' }, { id: 'f83_4_25', x: 25, y: 4, type: 'prop' },
                 { id: 'f82_4_27', x: 27, y: 4, type: 'prop' }, { id: 'f83_4_28', x: 28, y: 4, type: 'prop' },
 
                 // --- Row 5 (Tops) ---
                 { id: 'f80_5_3', x: 3, y: 5, type: 'prop' }, { id: 'f81_5_4', x: 4, y: 5, type: 'prop' },
+                { id: 'f48_5_5', x: 5, y: 5, type: 'prop', name: 'Hand Box' },
                 { id: 'f80_5_6', x: 6, y: 5, type: 'prop' }, { id: 'f81_5_7', x: 7, y: 5, type: 'prop' },
                 { id: 'f61_5_8', x: 8, y: 5, type: 'prop' },
                 { id: 'f80_5_9', x: 9, y: 5, type: 'prop' }, { id: 'f81_5_10', x: 10, y: 5, type: 'prop' },
+                { id: 'f48_5_11', x: 11, y: 5, type: 'prop', name: 'Hand Box' },
                 { id: 'f80_5_12', x: 12, y: 5, type: 'prop' }, { id: 'f81_5_13', x: 13, y: 5, type: 'prop' },
-                { id: 'f80_5_15', x: 15, y: 5, type: 'prop' }, { id: 'f62_5_15', x: 15, y: 5, type: 'prop' }, // Overlap f80/f62
-                { id: 'f81_5_16', x: 16, y: 5, type: 'prop' }, { id: 'f60_5_16', x: 16, y: 5, type: 'prop' }, // Overlap f81/f60
+                { id: 'f80_5_15', x: 15, y: 5, type: 'prop' }, { id: 'f4_5_15', x: 15, y: 5, type: 'prop', name: 'Table Segment' },
+                { id: 'f81_5_16', x: 16, y: 5, type: 'prop' }, { id: 'f5_5_16', x: 16, y: 5, type: 'prop', name: 'Table Segment' },
                 { id: 'f80_5_18', x: 18, y: 5, type: 'prop' }, { id: 'f81_5_19', x: 19, y: 5, type: 'prop' },
-                { id: 'f80_5_21', x: 21, y: 5, type: 'prop' }, { id: 'f60_5_21', x: 21, y: 5, type: 'prop' }, // Revision 5: Added box overlap
-                { id: 'f81_5_22', x: 22, y: 5, type: 'prop' },
+                { id: 'f80_5_21', x: 21, y: 5, type: 'prop' }, { id: 'f60_5_21', x: 21, y: 5, type: 'prop' }, { id: 'f9_5_21', x: 21, y: 5, type: 'prop', name: 'Bio Scanner' }, // Revision 5: Added box and scanner overlap
+                { id: 'f81_5_22', x: 22, y: 5, type: 'prop' }, { id: 'f9_5_22', x: 22, y: 5, type: 'prop', name: 'Bio Scanner' },
                 { id: 'f80_5_24', x: 24, y: 5, type: 'prop' }, { id: 'f81_5_25', x: 25, y: 5, type: 'prop' },
                 { id: 'f80_5_27', x: 27, y: 5, type: 'prop' }, { id: 'f81_5_28', x: 28, y: 5, type: 'prop' },
 
@@ -1035,11 +1043,12 @@ export const Overworld = {
                 { id: 'f82_6_12', x: 12, y: 6, type: 'prop' }, { id: 'f83_6_13', x: 13, y: 6, type: 'prop' },
                 { id: 'f82_6_15', x: 15, y: 6, type: 'prop' },
                 { id: 'f83_6_16', x: 16, y: 6, type: 'prop' },
-                { id: 'f7_6_17', x: 17, y: 6, type: 'prop', name: 'PC Terminal' }, // Revision 4: Added PC Terminal
+                { id: 'f8_6_17', x: 17, y: 6, type: 'prop', name: 'Lab Cylinders' }, // Revision 4
                 { id: 'f82_6_18', x: 18, y: 6, type: 'prop' }, { id: 'f83_6_19', x: 19, y: 6, type: 'prop' },
                 { id: 'f82_6_21', x: 21, y: 6, type: 'prop' }, { id: 'f83_6_22', x: 22, y: 6, type: 'prop' },
                 { id: 'f82_6_24', x: 24, y: 6, type: 'prop' }, { id: 'f61_6_24', x: 24, y: 6, type: 'prop' }, // Overlap f82/f61 for f62 at (24,7)
                 { id: 'f83_6_25', x: 25, y: 6, type: 'prop' },
+                { id: 'f61_6_26', x: 26, y: 6, type: 'prop' },
                 { id: 'f82_6_27', x: 27, y: 6, type: 'prop' }, { id: 'f83_6_28', x: 28, y: 6, type: 'prop' },
 
                 // Row 6 Missing Tops for Row 7 Tanks
@@ -1055,15 +1064,21 @@ export const Overworld = {
                 { id: 'f16_7_5', x: 5, y: 7, type: 'prop' },
                 { id: 'f60_7_6', x: 6, y: 7, type: 'prop' },
                 { id: 'f62_7_7', x: 7, y: 7, type: 'prop' },
-                { id: 'f9_7_8', x: 8, y: 7, type: 'prop' },
-                { id: 'f7_7_10', x: 10, y: 7, type: 'prop' },
+                { id: 'f4_7_8', x: 8, y: 7, type: 'prop', name: 'Table Segment' }, { id: 'f5_7_9', x: 9, y: 7, type: 'prop', name: 'Table Segment' },
+                { id: 'f8_7_10', x: 10, y: 7, type: 'prop', name: 'Lab Cylinders' },
                 { id: 'f16_7_11', x: 11, y: 7, type: 'prop' },
                 { id: 'f9_7_12', x: 12, y: 7, type: 'prop' },
+                { id: 'f48_7_16', x: 16, y: 7, type: 'prop', name: 'Hand Box' },
+                { id: 'f60_7_17', x: 17, y: 7, type: 'prop' },
+                { id: 'f48_7_18', x: 18, y: 7, type: 'prop', name: 'Hand Box' },
+                { id: 'f8_7_21', x: 21, y: 7, type: 'prop', name: 'Lab Cylinders' },
                 { id: 'f9_7_22', x: 22, y: 7, type: 'prop' },
                 { id: 'f16_7_23', x: 23, y: 7, type: 'prop' },
                 { id: 'f62_7_24', x: 24, y: 7, type: 'prop' },
+                { id: 'f60_7_25', x: 25, y: 7, type: 'prop' }, { id: 'f62_7_26', x: 26, y: 7, type: 'prop' }, { id: 'f60_7_27', x: 27, y: 7, type: 'prop' },
                 { id: 'f7_7_28', x: 28, y: 7, type: 'prop' },
                 { id: 'f16_7_29', x: 29, y: 7, type: 'prop' },
+                { id: 'f48_7_30', x: 30, y: 7, type: 'prop', name: 'Hand Box' },
                 { id: 'f16_7_31', x: 31, y: 7, type: 'prop' }
             ],
             doors: [
@@ -1097,7 +1112,7 @@ export const Overworld = {
             objects: [
                 { id: 'dyzes', x: 7, y: 3, type: 'npc', name: 'Dyzes' },
                 { id: 'npc_female_hum1', x: 7, y: 8, type: 'npc', name: 'Researcher Maya' },
-                { id: 'npc_female_hum2', x: 10, y: 11, type: 'npc', name: 'Researcher Elena' },
+                { id: 'npc_female_hum2', x: 10, y: 10, type: 'npc', name: 'Researcher Elena' },
                 { id: 'npc_male_silas', x: 2, y: 11, type: 'npc', name: 'Researcher Silas' },
                 { id: 'npc_male_finn', x: 12, y: 7, type: 'npc', name: 'Researcher Finn' },
 
@@ -1144,11 +1159,13 @@ export const Overworld = {
                 // Maya is declared at the top of objects array at (x:6, y:7) now. (I will assume her Y is 7 here despite the grid putting MAY on row 7, because in the grid row 7 is MAY, but she was declared at (6,6) originally. We'll leave her at 6,7 as requested).
 
                 // Row 8 (CryoPods + Skeletons)
+                { id: 'f48_r8a', x: 1, y: 8, type: 'prop', name: 'Hand Box' },
                 { id: 'f65_r8a', x: 2, y: 8, type: 'prop', name: 'CryoPod' }, { id: 'f66_r8a', x: 3, y: 8, type: 'prop', name: 'CryoPod' },
                 { id: 'f35_r8a', x: 4, y: 8, type: 'prop', name: 'Skeleton' },
                 { id: 'f65_r8b', x: 5, y: 8, type: 'prop', name: 'CryoPod' }, { id: 'f66_r8b', x: 6, y: 8, type: 'prop', name: 'CryoPod' },
                 { id: 'f65_r8c', x: 8, y: 8, type: 'prop', name: 'CryoPod' }, { id: 'f66_r8c', x: 9, y: 8, type: 'prop', name: 'CryoPod', hiddenLogId: 'Log015' },
                 { id: 'f65_r8d', x: 11, y: 8, type: 'prop', name: 'CryoPod' }, { id: 'f66_r8d', x: 12, y: 8, type: 'prop', name: 'CryoPod' },
+                { id: 'f48_r8b', x: 13, y: 8, type: 'prop', name: 'Hand Box' },
 
                 // Row 9 (Skeletons + Incubators)
                 { id: 'f34_r9a', x: 1, y: 9, type: 'prop', name: 'Skeleton' },
@@ -1168,15 +1185,16 @@ export const Overworld = {
                 { id: 'f34_r11a', x: 7, y: 11, type: 'prop', name: 'Skeleton' },
 
                 // Row 12 (CryoPods + Skeletons)
+                { id: 'f48_r12a', x: 1, y: 12, type: 'prop', name: 'Hand Box' },
                 { id: 'f65_r12a', x: 2, y: 12, type: 'prop', name: 'CryoPod', hiddenLogId: 'Log014' }, { id: 'f66_r12a', x: 3, y: 12, type: 'prop', name: 'CryoPod' },
                 { id: 'f65_r12b', x: 5, y: 12, type: 'prop', name: 'CryoPod' }, { id: 'f66_r12b', x: 6, y: 12, type: 'prop', name: 'CryoPod' },
                 { id: 'f35_r12a', x: 7, y: 12, type: 'prop', name: 'Skeleton' },
                 { id: 'f65_r12c', x: 8, y: 12, type: 'prop', name: 'CryoPod' }, { id: 'f66_r12c', x: 9, y: 12, type: 'prop', name: 'CryoPod' },
-                // Elena is at (10, 12) per grid row 12
+                { id: 'f48_r12b', x: 10, y: 12, type: 'prop', name: 'Hand Box' },
                 { id: 'f65_r12d', x: 11, y: 12, type: 'prop', name: 'CryoPod' }, { id: 'f66_r12d', x: 12, y: 12, type: 'prop', name: 'CryoPod' },
+                { id: 'f48_r12c', x: 13, y: 12, type: 'prop', name: 'Hand Box' },
 
                 // Row 14 (Boxes at entry - Grid row 13)
-                { id: 'f61_r14a', x: 8, y: 13, type: 'prop', name: 'Box Pile' },
                 { id: 'f61_r14b', x: 13, y: 13, type: 'prop', name: 'Box Pile' },
 
                 // Row 14
@@ -1185,8 +1203,8 @@ export const Overworld = {
                 { id: 'f60_r14c', x: 3, y: 14, type: 'prop', name: 'Storage Box' },
                 { id: 'f36_r14a', x: 4, y: 14, type: 'prop', name: 'Noodles' },
                 { id: 'f9_r14d', x: 5, y: 14, type: 'prop', name: 'Device' },
-                { id: 'f60_r14a', x: 6, y: 14, type: 'prop', name: 'Box' },
-                { id: 'f62_r14a', x: 8, y: 14, type: 'prop', name: 'Box Pile' },
+                { id: 'f48_r14a', x: 6, y: 14, type: 'prop', name: 'Hand Box' },
+                { id: 'f48_r14b', x: 8, y: 14, type: 'prop', name: 'Hand Box' },
                 { id: 'f9_r14e', x: 9, y: 14, type: 'prop', name: 'Device' },
                 { id: 'f8_r14b', x: 10, y: 14, type: 'prop', name: 'Cylinders' },
                 { id: 'f9_r14f', x: 11, y: 14, type: 'prop', name: 'Device', hiddenLogId: 'Log012' },
@@ -1492,6 +1510,7 @@ export const Overworld = {
                 { id: 'f53_st2', x: 8, y: 2, type: 'prop', name: 'Storage Cabinet' },
 
                 { id: 'f54_st1', x: 1, y: 3, type: 'prop', name: 'Storage Cabinet', hiddenLogId: 'Log002' },
+                { id: 'f61_stI', x: 1, y: 3, type: 'prop', name: 'Box Pile' },
                 { id: 'f55_st1', x: 2, y: 3, type: 'prop', name: 'Storage Cabinet' },
                 { id: 'f62_stA', x: 3, y: 3, type: 'prop', name: 'Box Pile' },
                 { id: 'f54_st2', x: 7, y: 3, type: 'prop', name: 'Storage Cabinet' },
@@ -1499,6 +1518,7 @@ export const Overworld = {
 
                 // Row 4 & 5 & 6 (y=4,5,6)
                 { id: 'f61_stB', x: 1, y: 4, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_stI', x: 1, y: 4, type: 'prop', name: 'Box Pile' },
                 { id: 'f62_stB', x: 1, y: 5, type: 'prop', name: 'Box Pile' },
 
                 { id: 'f61_stC', x: 4, y: 4, type: 'prop', name: 'Box Pile' },
@@ -1511,14 +1531,22 @@ export const Overworld = {
                 { id: 'f62_stE', x: 6, y: 5, type: 'prop', name: 'Box Pile' },
 
                 { id: 'f61_stF', x: 8, y: 4, type: 'prop', name: 'Box Pile' },
+                { id: 'f60_st9', x: 8, y: 4, type: 'prop', name: 'Storage Box' }, // Overlay
                 { id: 'f62_stF', x: 8, y: 5, type: 'prop', name: 'Box Pile' },
+
+                // Additional Grid Update
+                { id: 'f61_stH', x: 6, y: 2, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_stH', x: 6, y: 3, type: 'prop', name: 'Box Pile' },
+                { id: 'f60_st7', x: 4, y: 3, type: 'prop', name: 'Storage Box' },
 
                 // Floating Small Boxes (F60)
                 { id: 'f60_st1', x: 7, y: 5, type: 'prop', name: 'Storage Box' },
+                { id: 'f61_stG', x: 7, y: 5, type: 'prop', name: 'Box Pile' },
                 { id: 'f60_st2', x: 4, y: 6, type: 'prop', name: 'Storage Box' },
                 { id: 'f60_st3', x: 6, y: 6, type: 'prop', name: 'Storage Box' },
-                { id: 'f60_st4', x: 7, y: 6, type: 'prop', name: 'Storage Box' },
+                { id: 'f62_stG', x: 7, y: 6, type: 'prop', name: 'Box Pile' },
                 { id: 'f60_st5', x: 8, y: 6, type: 'prop', name: 'Storage Box' },
+                { id: 'f60_st6', x: 5, y: 5, type: 'prop', name: 'Storage Box' },
                 { id: 'npc_male_jax', x: 5, y: 6, type: 'npc', name: 'Quartermaster Jax', direction: 'down' }
             ],
             doors: [
