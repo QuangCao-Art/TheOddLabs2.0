@@ -856,88 +856,12 @@ export const Overworld = {
                 [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 27],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
                 [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
             ],
-            objects: [
-                // [AI_DECORATION_PROTOCOL] START RENDER: Rows 2-7 (v4.1)
-                // Row 2: CONTINUOUS PLANT TOPS (F88) (1-31)
-                ...Array.from({ length: 31 }, (_, i) => ({ id: `f88_r2x${i+1}`, x: i + 1, y: 2, type: 'prop', customSprite: 'tileset-03' })),
-
-                // Row 3: CONTINUOUS PLANT BOTTOMS (F89) + SCATTERED TOP OVERLAPS (1-31)
-                ...Array.from({ length: 31 }, (_, i) => {
-                    const x = i + 1;
-                    const items = [{ id: `f89_r3x${x}`, x, y: 3, type: 'prop', customSprite: 'tileset-03' }];
-
-                    // LAYER_RESOLVE: Items listed later appear in front
-                    if (x === 1) items.push({ id: 'f13_abT1', x, y: 3, type: 'prop' }); // Tank Top (Bottom at 1,4)
-                    if (x === 5) items.push({ id: 'f13_abT2', x, y: 3, type: 'prop' }); // Tank Top (Bottom at 5,4)
-                    if (x === 26) items.push({ id: 'f61_abB1', x, y: 3, type: 'prop' }); // Box Top (Bottom at 26,4)
-                    if (x === 28) items.push({ id: 'f61_abB2', x, y: 3, type: 'prop' }); // Box Top (Bottom at 28,4)
-
-                    // Add Tops of equipment below (Y=4)
-                    if (x === 8) items.push({ id: 'f88_abP1', x, y: 3, type: 'prop', customSprite: 'tileset-03' }); // Plant Top (Bottom at 8,4)
-                    if (x === 14) items.push({ id: 'f88_abP2', x, y: 3, type: 'prop', customSprite: 'tileset-03' }); // Plant Top (Bottom at 14,4)
-
-                    return items;
-                }).flat(),
-
-                // Row 4: SCATTERED EQUIPMENT & BOTTOMS & SOME TOPS for row 5
-                { id: 'f14_abT1', x: 1, y: 4, type: 'prop' }, // Tank Bottom (Top at 1,3)
-                { id: 'f86_abH1', x: 3, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Healthy Top (Bottom at 3,5)
-                { id: 'f14_abT2', x: 5, y: 4, type: 'prop' }, // Tank Bottom (Top at 5,3)
-                { id: 'f7_abC1', x: 7, y: 4, type: 'prop' }, // Computer
-                { id: 'f89_abP1', x: 8, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Plant Bottom (Top at 8,3)
-                { id: 'f9_abS1', x: 10, y: 4, type: 'prop' }, // Sequencer
-                { id: 'f8_abL1', x: 11, y: 4, type: 'prop' }, // Cylinders
-                { id: 'f60_abX1', x: 12, y: 4, type: 'prop' }, // Box
-                { id: 'f89_abP2', x: 14, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Plant Bottom (Top at 14,3)
-                { id: 'f88_abP3', x: 16, y: 4, type: 'prop', customSprite: 'tileset-03' }, // Plant Top (Bottom at 16,5)
-                { id: 'f61_abB3', x: 21, y: 4, type: 'prop' }, // Box Top (Bottom at 21,5)
-                { id: 'f60_abX2', x: 23, y: 4, type: 'prop' }, // Box
-                { id: 'f61_abB4', x: 25, y: 4, type: 'prop' }, // Box Top (Bottom at 25,5)
-                { id: 'f62_abB1', x: 26, y: 4, type: 'prop' }, // Box Bottom (Top at 26,3)
-                { id: 'f60_abX3', x: 27, y: 4, type: 'prop' }, // Box
-                { id: 'f62_abB2', x: 28, y: 4, type: 'prop' }, // Box Bottom (Top at 28,3)
-
-                // Row 5: SCATTERED EQUIPMENT & BOTTOMS & SOME TOPS for row 6
-                { id: 'f13_abT3', x: 1, y: 5, type: 'prop' }, // Tank Top (Bottom at 1,6)
-                { id: 'f87_abH1', x: 3, y: 5, type: 'prop', customSprite: 'tileset-03', hiddenLogId: 'Log009' }, // Healthy Bottom (Top at 3,4)
-                { id: 'f13_abT4', x: 5, y: 5, type: 'prop' }, // Tank Top (Bottom at 5,6)
-                { id: 'f60_abX4', x: 14, y: 5, type: 'prop' }, // Box
-                { id: 'f7_abC2', x: 15, y: 5, type: 'prop' }, // Computer
-                { id: 'f89_abP3', x: 16, y: 5, type: 'prop', customSprite: 'tileset-03' }, // Plant Bottom (Top at 16,4)
-                { id: 'f7_abC3', x: 17, y: 5, type: 'prop' }, // Computer
-                { id: 'f62_abB3', x: 21, y: 5, type: 'prop' }, // Box Bottom (Top at 21,4)
-                { id: 'f62_abB4', x: 25, y: 5, type: 'prop' }, // Box Bottom (Top at 25,4)
-
-                // Tops for row 6 per Stacking Rule
-                { id: 'f88_abP4', x: 9, y: 5, type: 'prop', customSprite: 'tileset-03' }, // Plant Top (Bottom at 9,6)
-                { id: 'f61_abB5', x: 23, y: 5, type: 'prop' }, // Box Top (Bottom at 23,6)
-                { id: 'f61_abB6', x: 27, y: 5, type: 'prop' }, // Box Top (Bottom at 27,6)
-
-                // Row 6: CONTINUOUS PLANT TOPS (F88) + SCATTERED BOTTOM OVERLAPS (1-31)
-                ...Array.from({ length: 31 }, (_, i) => {
-                    const x = i + 1;
-                    const items = [{ id: `f88_r6x${x}`, x, y: 6, type: 'prop', customSprite: 'tileset-03' }];
-
-                    if (x === 1) items.push({ id: 'f14_abT3', x, y: 6, type: 'prop' }); // Tank Bottom (Top at 1,5)
-                    if (x === 5) items.push({ id: 'f14_abT4', x, y: 6, type: 'prop' }); // Tank Bottom (Top at 5,5)
-                    if (x === 8) items.push({ id: 'f9_abS2', x, y: 6, type: 'prop' }); // Sequencer
-                    if (x === 9) items.push({ id: 'f89_abP4', x, y: 6, type: 'prop', customSprite: 'tileset-03' }); // Plant Bottom (Top at 9,5)
-                    if (x === 21) items.push({ id: 'f7_abC4', x, y: 6, type: 'prop' }); // Computer
-                    if (x === 23) items.push({ id: 'f62_abB5', x, y: 6, type: 'prop' }); // Box Bottom (Top at 23,5)
-                    if (x === 27) items.push({ id: 'f62_abB6', x, y: 6, type: 'prop' }); // Box Bottom (Top at 27,5)
-
-                    return items;
-                }).flat(),
-
-                // Row 7: CONTINUOUS PLANT BOTTOMS (F89) (1-31)
-                ...Array.from({ length: 31 }, (_, i) => ({ id: `f89_r7x${i+1}`, x: i + 1, y: 7, type: 'prop', customSprite: 'tileset-03' })),
-                // [AI_DECORATION_PROTOCOL] END RENDER
-            ],
+            objects: [],
             doors: [
                 { x: 32, y: 5, targetZone: 'botanic', targetX: 1, targetY: 13 }
             ]
@@ -985,7 +909,7 @@ export const Overworld = {
                 { id: 'f16_3_14', x: 14, y: 3, type: 'prop' },
                 { id: 'f80_3_15', x: 15, y: 3, type: 'prop' }, { id: 'f62_3_15', x: 15, y: 3, type: 'prop' }, // Revision 5: Box Bottom at (15,3)
                 { id: 'f81_3_16', x: 16, y: 3, type: 'prop' },
-                { id: 'f80_3_18', x: 18, y: 3, type: 'prop' }, { id: 'f48_3_18', x: 18, y: 3, type: 'prop', name: 'Hand Box' },
+                { id: 'f80_3_18', x: 18, y: 3, type: 'prop' },
                 { id: 'f81_3_19', x: 19, y: 3, type: 'prop' }, { id: 'f60_3_19', x: 19, y: 3, type: 'prop' },
                 { id: 'f48_3_20', x: 20, y: 3, type: 'prop', name: 'Hand Box' },
                 { id: 'f80_3_21', x: 21, y: 3, type: 'prop' }, { id: 'f81_3_22', x: 22, y: 3, type: 'prop' },
@@ -993,7 +917,7 @@ export const Overworld = {
                 { id: 'f80_3_24', x: 24, y: 3, type: 'prop' }, { id: 'f60_3_24', x: 24, y: 3, type: 'prop' }, // Overlap f80/f60
                 { id: 'f81_3_25', x: 25, y: 3, type: 'prop' }, { id: 'f62_3_25', x: 25, y: 3, type: 'prop' }, // Overlap f81/f62
                 { id: 'f16_3_26', x: 26, y: 3, type: 'prop' },
-                { id: 'f80_3_27', x: 27, y: 3, type: 'prop' }, { id: 'f60_3_27', x: 27, y: 3, type: 'prop' }, // Overlap f80/f60
+                { id: 'f80_3_27', x: 27, y: 3, type: 'prop' }, { id: 'f60_3_27', x: 27, y: 3, type: 'prop' }, { id: 'f8_3_27', x: 27, y: 3, type: 'prop', name: 'Lab Cylinders' }, // Overlap f80/f60/f8
                 { id: 'f81_3_28', x: 28, y: 3, type: 'prop' }, { id: 'f7_3_28', x: 28, y: 3, type: 'prop' }, // Overlap f81/f7
                 { id: 'f16_3_29', x: 29, y: 3, type: 'prop' },
                 { id: 'f48_3_30', x: 30, y: 3, type: 'prop', name: 'Hand Box' },
@@ -1008,12 +932,13 @@ export const Overworld = {
                 { id: 'f83_4_10', x: 10, y: 4, type: 'prop' },
                 { id: 'f82_4_12', x: 12, y: 4, type: 'prop' },
                 { id: 'f83_4_13', x: 13, y: 4, type: 'prop' },
-                { id: 'f82_4_15', x: 15, y: 4, type: 'prop' }, 
+                { id: 'f82_4_15', x: 15, y: 4, type: 'prop' },
                 { id: 'f83_4_16', x: 16, y: 4, type: 'prop' },
                 { id: 'f82_4_18', x: 18, y: 4, type: 'prop' }, { id: 'f83_4_19', x: 19, y: 4, type: 'prop' },
                 { id: 'f7_4_20', x: 20, y: 4, type: 'prop', name: 'PC Terminal' },
                 { id: 'f82_4_21', x: 21, y: 4, type: 'prop' }, { id: 'f83_4_22', x: 22, y: 4, type: 'prop' },
                 { id: 'f82_4_24', x: 24, y: 4, type: 'prop' }, { id: 'f83_4_25', x: 25, y: 4, type: 'prop' },
+                { id: 'f60_4_26', x: 26, y: 4, type: 'prop' },
                 { id: 'f82_4_27', x: 27, y: 4, type: 'prop' }, { id: 'f83_4_28', x: 28, y: 4, type: 'prop' },
 
                 // --- Row 5 (Tops) ---
@@ -1046,9 +971,10 @@ export const Overworld = {
                 { id: 'f8_6_17', x: 17, y: 6, type: 'prop', name: 'Lab Cylinders' }, // Revision 4
                 { id: 'f82_6_18', x: 18, y: 6, type: 'prop' }, { id: 'f83_6_19', x: 19, y: 6, type: 'prop' },
                 { id: 'f82_6_21', x: 21, y: 6, type: 'prop' }, { id: 'f83_6_22', x: 22, y: 6, type: 'prop' },
+                { id: 'f15_6_23', x: 23, y: 6, type: 'prop', name: 'Tank Top' }, { id: 'f8_6_23', x: 23, y: 6, type: 'prop', name: 'Lab Cylinders' },
                 { id: 'f82_6_24', x: 24, y: 6, type: 'prop' }, { id: 'f61_6_24', x: 24, y: 6, type: 'prop' }, // Overlap f82/f61 for f62 at (24,7)
                 { id: 'f83_6_25', x: 25, y: 6, type: 'prop' },
-                { id: 'f61_6_26', x: 26, y: 6, type: 'prop' },
+                { id: 'f61_6_26', x: 26, y: 6, type: 'prop' }, { id: 'f60_6_26', x: 26, y: 6, type: 'prop' },
                 { id: 'f82_6_27', x: 27, y: 6, type: 'prop' }, { id: 'f83_6_28', x: 28, y: 6, type: 'prop' },
 
                 // Row 6 Missing Tops for Row 7 Tanks
@@ -2267,7 +2193,7 @@ export const Overworld = {
                 const oldSpeed = wasSprinting ? 170 : this.player.moveSpeed;
                 const newSpeed = this.player.isSprinting ? 170 : this.player.moveSpeed;
                 const progressPercent = (now - this.player.moveStartedAt) / oldSpeed;
-                
+
                 // Recalculate start time so the character stays at the same relative position
                 this.player.moveStartedAt = now - (progressPercent * newSpeed);
                 this.player.currentMoveSpeed = newSpeed;
@@ -2583,7 +2509,7 @@ export const Overworld = {
 
         const now = Date.now();
         if (now - this.lastInteractTime < 150) return;
-        
+
         // Safety: Don't interact with something currently being kicked (e.g. during hitstop)
         const zone = this.zones[this.currentZone];
         let interactX = this.player.x;
@@ -3721,7 +3647,7 @@ export const Overworld = {
         if (suffixMatch && obj.type === 'prop') {
             const suffix = suffixMatch[1];
             const prefix = obj.id.split('_')[0];
-            
+
             // Known Linked Furniture Sets (Top+Bottom or Large Multi-parts)
             const linkedSets = [
                 ['f20', 'f21'], ['f22', 'f23'], ['f24', 'f25'],
@@ -3731,13 +3657,13 @@ export const Overworld = {
                 ['f42', 'f43', 'f44', 'f45', 'f46', 'f47'],
                 ['f52', 'f53', 'f54', 'f55']
             ];
-            
+
             const mySet = linkedSets.find(set => set.includes(prefix));
-            
+
             const linked = zone.objects.filter(o => {
                 if (o.id === obj.id || !o.id.endsWith(`_${suffix}`)) return false;
                 const oPrefix = o.id.split('_')[0];
-                
+
                 // Only link if they are in the same known set OR share the same base ID (prefix)
                 const isSameSet = mySet ? mySet.includes(oPrefix) : (oPrefix === prefix);
                 if (!isSameSet) return false;
@@ -3794,7 +3720,7 @@ export const Overworld = {
         const hitStopTime = isHomeRun ? 500 : 300;
         const shakeClass = isHomeRun ? 'anim-screen-shake-heavy' : 'anim-screen-shake';
 
-        this.player.sprintDistance = 0; 
+        this.player.sprintDistance = 0;
         if (screen) screen.classList.add(shakeClass);
 
         this.player.isHitstopping = true;
@@ -3877,10 +3803,10 @@ export const Overworld = {
         trailEl.className = `rocket-thruster anim-trail-homerun-${directionKey}`;
 
         let offX = 32, offY = 32;
-        if (directionKey === 'l') { offX = 60; offY = 48; } 
-        else if (directionKey === 'r') { offX = 4; offY = 48; } 
-        else if (directionKey === 'u') { offX = 32; offY = 64; } 
-        else if (directionKey === 'f') { offX = 32; offY = 0; } 
+        if (directionKey === 'l') { offX = 60; offY = 48; }
+        else if (directionKey === 'r') { offX = 4; offY = 48; }
+        else if (directionKey === 'u') { offX = 32; offY = 64; }
+        else if (directionKey === 'f') { offX = 32; offY = 0; }
 
         trailEl.style.left = (parseFloat(el.style.left) + offX) + 'px';
         trailEl.style.top = (parseFloat(el.style.top) + offY) + 'px';
@@ -3891,7 +3817,7 @@ export const Overworld = {
         mapEl.appendChild(trailEl);
 
         let plumeCount = 0;
-        const maxPlumes = 45; 
+        const maxPlumes = 45;
         const plumeInterval = setInterval(() => {
             if (plumeCount >= maxPlumes || !el || !el.parentNode) {
                 clearInterval(plumeInterval);
@@ -3902,7 +3828,7 @@ export const Overworld = {
             const rect = el.getBoundingClientRect();
             const curX = rect.left - mapRect.left;
             const curY = rect.top - mapRect.top;
-            
+
             this.spawnHomerunParticles(curX, curY, rect.width, rect.height, directionKey);
             plumeCount++;
         }, 16);
