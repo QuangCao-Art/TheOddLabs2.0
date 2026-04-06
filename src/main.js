@@ -1197,26 +1197,81 @@ function setupEventListeners() {
         'npc01': { art: 'Character_FullArt_NPC_Male', dialogue: "Commencing standard engagement protocol." },
         'npc02': { art: 'Character_FullArt_NPC_Female', dialogue: "Bio-signature match confirmed. Initiating test." },
         'npc03': { art: 'Character_FullArt_NPC_Male', dialogue: "Deploying tactical cells. Readiness check." },
-        'julia': { art: 'Character_FullArt_NPC_Female', dialogue: "Let's see what you got!" },
-        'tom': { art: 'Character_FullArt_NPC_Male', dialogue: "Processing synchronous feedback. Prepare for engagement." },
-        'kevin': { art: 'Character_FullArt_NPC_Male', dialogue: "Simulation initialized. Error margin: 0.01%." },
-        'daisy': { art: 'Character_FullArt_NPC_Female', dialogue: "Ready to lose? I won't go easy on you, Intern!" },
-        'clara': { art: 'Character_FullArt_NPC_Female', dialogue: "Watch the reaction when types collide!" },
-        'leo': { art: 'Character_FullArt_NPC_Male', dialogue: "Processing multiple tactical frequencies... Now!" },
-        'rose': { art: 'Character_FullArt_NPC_Female', dialogue: "Warning: Bio-membrane destabilization detected!" },
-        'theo': { art: 'Character_FullArt_NPC_Male', dialogue: "Order up! Let's see if you can handle the heat!" },
-        'silas': { art: 'Character_FullArt_NPC_Male', dialogue: "Accelerating cellular output now!" },
-        'elena': { art: 'Character_FullArt_NPC_Female', dialogue: "Initiating utility sync test." },
-        'finn': { art: 'Character_FullArt_NPC_Male', dialogue: "Deploying MAP Effects field!" },
+        'maya': { art: 'Character_FullArt_NPC_Female', dialogue: "Let's see what you got!" },
+        'sapstan': { art: 'Character_FullArt_NPC_Male', dialogue: "Processing synchronous feedback. Prepare for engagement." },
+        'blundur': { art: 'Character_FullArt_NPC_Male', dialogue: "Simulation initialized. Error margin: 0.01%." },
+        'saito': { art: 'Character_FullArt_NPC_Female', dialogue: "Ready to lose? I won't go easy on you, Intern!" },
+        'shopia': { art: 'Character_FullArt_NPC_Female', dialogue: "Watch the reaction when types collide!" },
+        'clips': { art: 'Character_FullArt_NPC_Male', dialogue: "Processing multiple tactical frequencies... Now!" },
+        'lustra': { art: 'Character_FullArt_NPC_Female', dialogue: "Warning: Bio-membrane destabilization detected!" },
+        'rattou': { art: 'Character_FullArt_NPC_Male', dialogue: "Order up! Let's see if you can handle the heat!" },
+        'ecto': { art: 'Character_FullArt_NPC_Male', dialogue: "Accelerating cellular output now!" },
+        'premy': { art: 'Character_FullArt_NPC_Female', dialogue: "Initiating utility sync test." },
+        'yifec': { art: 'Character_FullArt_NPC_Male', dialogue: "Deploying MAP Effects field!" },
         'white': { art: 'Character_FullArt_NPC_Male', dialogue: "Efficiency over luck, every time!" },
         'cherry': { art: 'Character_FullArt_NPC_Female', dialogue: "It's all in the placement!" },
-        'james': { art: 'Character_FullArt_NPC_Male', dialogue: "Initiating interference protocols." },
-        'robert': { art: 'Character_FullArt_NPC_Male', dialogue: "Crunching the numbers. Engagement imminent." },
-        'quinn': { art: 'Character_FullArt_NPC_Female', dialogue: "Activating Leader Perk: Strategic Supremacy." },
+        'anreal': { art: 'Character_FullArt_NPC_Male', dialogue: "Initiating interference protocols." },
+        'godou': { art: 'Character_FullArt_NPC_Male', dialogue: "Crunching the numbers. Engagement imminent." },
+        'yunidi': { art: 'Character_FullArt_NPC_Female', dialogue: "Activating Leader Perk: Strategic Supremacy." },
         'stemmy_wild': { art: 'Cell_FullArt_Stemmy', dialogue: "*A wild Stemmy aggressively bumps into you!*" },
         'nitrophil_wild': { art: 'Cell_FullArt_Nitrophil', dialogue: "*A wild Nitrophil aggressively bumps into you!*" },
         'cambihil_wild': { art: 'Cell_FullArt_Cambihil', dialogue: "*A wild Cambihil aggressively bumps into you!*" },
-        'lydrosome_wild': { art: 'Cell_FullArt_Lydrosome', dialogue: "*A wild Lydrosome aggressively bumps into you!*" }
+        'lydrosome_wild': { art: 'Cell_FullArt_Lydrosome', dialogue: "*A wild Lydrosome aggressively bumps into you!*" },
+        'zibrya': { art: 'Character_FullArt_NPC_Female', dialogue: "Research should be accessible to everyone, don't you think?" },
+        'elara': { art: 'Character_FullArt_Elara', dialogue: "The shimmer... it's just a trick of light and ancient circuitry." }
+    };
+
+    // --- OVERWORLD NPC SPRITE MAPPING ---
+    // Unified IDs mapping to their overworld sprite CSS class (npc_male, npc_female)
+    // If an ID is NOT in this table, the overworld engine defaults to derived class from ID.
+    window.OVERWORLD_NPC_SPRITES = {
+        // Atrium
+        'zibrya': 'npc_female',
+        'mamozet': 'npc_male',
+        'sapstan': 'npc_male',
+        'blundur': 'npc_male',
+        'maya': 'npc_female',
+
+        // Botanic
+        'corel': 'npc_male',
+        'shopia': 'npc_female',
+        'clips': 'npc_male',
+        'lustra': 'npc_female',
+
+        // Human Research
+        'miere': 'npc_female',
+        'premy': 'npc_female',
+        'ecto': 'npc_male',
+        'yifec': 'npc_male',
+
+        // Medical Experience
+        'figumie': 'npc_female',
+        'anva': 'npc_female',
+
+        // Nursery
+        'proxy': 'npc_male',
+        'creata': 'npc_female',
+
+        // Executive
+        'anreal': 'npc_male',
+        'godou': 'npc_male',
+        'yunidi': 'npc_female',
+
+        // Kitchen
+        'rattou': 'npc_male',
+        'furaijika': 'npc_female',
+
+        // Entertainment
+        'panto': 'npc_male',
+        'saito': 'npc_female',
+
+        // Specimen Storage
+        'white': 'npc_male',
+        'cherry': 'npc_female',
+        'piza': 'npc_male',
+
+        // Lobby
+        'pax': 'npc_male'
     };
 
     let preBattleSequenceActive = false;
@@ -4471,7 +4526,7 @@ function showGameOver(isFailure, forceOverlay = false) {
                 // Keep story flag but allow reward to fall through to NPC_ENCOUNTERS logic
                 gameState.storyFlags.jenziAtriumBattleDone = true;
             } else if (typeof NPC_ENCOUNTERS !== 'undefined' && NPC_ENCOUNTERS[opponentId]) {
-                // Custom Modular Reward from cards.js (e.g., Julia)
+                // Custom Modular Reward from cards.js (e.g., Maya)
                 const enc = NPC_ENCOUNTERS[opponentId];
                 if (enc.reward) {
                     creditsEarned = enc.reward.credits || 50;

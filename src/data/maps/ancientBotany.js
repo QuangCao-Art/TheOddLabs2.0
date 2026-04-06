@@ -145,7 +145,7 @@ export const ancientBotany = {
         {"id":"f91_mnmlhz3yx940q","x":28,"y":4,"type":"prop","name":"Empty Potted Pot"},
         {"id":"f91_mnmmcdmsuq29a","x":9,"y":7,"type":"prop","name":"Empty Potted Pot"},
         {"id":"f91_mnmmcdxm873oa","x":10,"y":7,"type":"prop","name":"Empty Potted Pot"},
-        {"id":"f57_mnmmd2f0tw58x","x":10,"y":5,"type":"prop","name":"Leader Desk B (Vertical)"},
+        {"id":"f57_mnmmd2f0tw58x","x":10,"y":5,"type":"prop","name":"Leader Desk B (Vertical)", "hiddenLogId": "Log006"},
         {"id":"f56_mnmmd2f0tw58x","x":10,"y":4,"type":"prop","name":"Leader Desk B (Vertical)"},
         {"id":"f28_mnmmd5i202fq2","x":11,"y":5,"type":"prop","name":"Leader Desk"},
         {"id":"f29_mnmmd5i202fq2","x":12,"y":5,"type":"prop","name":"Leader Desk"},
@@ -189,6 +189,6 @@ export const ancientBotany = {
         {"id":"f61_mnmt42fmnmzuc","x":7,"y":3,"type":"prop","name":"Stacked Box Pile"}
     ],
     doors: [
-        {"x":32,"y":5,"targetZone":"botanic","targetX":1,"targetY":13}
+        {"x":32,"y":5,"targetZone":"botanic","targetX":1,"targetY":4}
     ]
 };

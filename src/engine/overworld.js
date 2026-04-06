@@ -23,6 +23,8 @@ import { kitchen } from '../data/maps/kitchen.js';
 import { storage } from '../data/maps/storage.js';
 import { entertainment } from '../data/maps/entertainment.js';
 import { cellPlayGround } from '../data/maps/cellPlayGround.js';
+import { nursery } from '../data/maps/nursery.js';
+import { medicalExperienceRoom } from '../data/maps/medicalExperienceRoom.js';
 
 export const Overworld = {
     randomPools: {
@@ -84,7 +86,7 @@ export const Overworld = {
             ["Is it 'Noodle Tuesday' yet?", "The kitchen smells like salt and ambition today."],
             ["Looking to trade? The Vending Machines in the common areas are your best friend.", "You can sell your extra Biomass for credits and buy the new blueprints you need to grow your collection."],
             ["If you're short on credits, try offloading some Biomass at the vending terminal.", "We're always in need of raw biological samples for the synthesis floor."],
-            ["Chef Theo says the secret to a good lab lunch is properly calibrated salinity.", "I think he just likes playing with the digital scales."]
+            ["Chef Rattou says the secret to a good lab lunch is properly calibrated salinity.", "I think he just likes playing with the digital scales."]
         ],
         entertainment: [
             ["The new Battle Machine in the lounge is always occupied.", "I can't even get a turn on my lunch break!"],
@@ -114,6 +116,18 @@ export const Overworld = {
             ["First I saw one white figure, then I saw two near the restricted section.", "I think our facility's history might have some... active participants."],
             ["The Director is surprisingly hands-on here; he cleans every bookshelf himself.", "I saw him polishing the 'Genetic Heritage' spines with a silk cloth for two hours."],
             ["Did you ever hear that old story? // About the plant that fed on a human until it took their soul for its own.", "They say when it had eaten enough, its roots became legs and it pulled itself out of the soil. // It walks the earth now... pretending to be one of us, while its heart is still made of thorns."]
+        ],
+        nursery: [
+            ["Ever hear the myth of the 'Whispering Willow'?", "They say its leaves hold the memories of the very first dream.", "If you listen closely, you might hear the world's first secret... or just a very melodic hum."],
+            ["Cellular evolution is a study in adaptability.", "A single specimen can diverge into a mastery of natural forces or a peak of mechanical integration.", "It's an elegant choice between the leaf and the gear."],
+            ["Lana's actually super chill when she's around the plants!", "I saw her trying to lead a sing-along with the specimen tanks.", "They're not the best singers, but they've got great 'rhythm' in their vines!"],
+            ["I heard about a magical tree that, whenever it grows in the middle of a road, you'll never be able to pass it.// Even if you try to jump over it or go around it! The only way forward is to cut it down. Weird, right?", "Why didn't they just sprint-kick it like we always do? It's much more efficient than standing there waiting for a flute or something."]
+        ],
+        medicalExperienceRoom: [
+            ["There's an old folk tale about the 'Archeons'—colossal creatures that walked like men but had the spirits of beasts and the power of ancient magic.", "Imagine a world ruled by something that huge... it would be terrifying, wouldn't it?"],
+            ["The security guard mentioned hearing a low, resonant howl coming from the deep sectors last night.", "He claimed it felt less like a sound and more like a vibration in the floor tiles... almost like the cry of a giant beast trapped in the deep."],
+            ["If you can't find Scientist Dyzes at his station, he's likely reached a state of 'passive enlightenment'//—or as his assistant calls it, taking a nap.", "It's maddening how the most brilliant human-cell breakthroughs come to him while he's snoring. Lazy? Maybe. But his genius is undeniable."],
+            ["The 'Experience' part of this room is mostly just us watching people react to weird noises.", "It's a very cost-effective way to study stress-induced hormone spikes."]
         ]
     },
     tileSize: 64,
@@ -204,7 +218,9 @@ export const Overworld = {
         kitchen,
         storage,
         entertainment,
-        cellPlayGround
+        cellPlayGround,
+        nursery,
+        medicalExperienceRoom
     },
     furnitureMetadata: {
         // --- TILESET 02 (f0-f63) ---
@@ -546,8 +562,9 @@ export const Overworld = {
             });
         }
 
-        // Always add the class derived from the object ID
-        const specificClass = obj.id.startsWith('npc_') ? obj.id.split('_').slice(0, 2).join('_') : obj.id.split('_')[0];
+        // Derive gender/sprite class (npc_male, npc_female)
+        const mappedSprite = window.OVERWORLD_NPC_SPRITES && window.OVERWORLD_NPC_SPRITES[obj.id];
+        const specificClass = mappedSprite || (obj.id.startsWith('npc_') ? obj.id.split('_').slice(0, 2).join('_') : obj.id.split('_')[0]);
         el.classList.add(specificClass);
 
         if (obj.type === 'npc' && obj.id.includes('_wild_')) {
@@ -1684,18 +1701,339 @@ export const Overworld = {
                 ];
                 this.pendingBattleEncounter = 'capsain';
             }
+        } else if (npc.id === 'maya' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = ["Don't be discouraged! Sometimes a bit of luck helps with the final sync, but skill is the foundation! Just keep practicing your placement."];
+                } else {
+                    lines = [
+                        "Incredible! Your placement was precise. // That's the secret to the MAP system—it's not just about power, it's about the proximity of your attack nodes.",
+                        "Think of it like a puzzle: the closer you are to the target, the more damage you deal and the more energy (PP) you gain. // It's all about finding that sweet spot!"
+                    ];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "Excuse me, Intern! Have you mastered the Matching Attack Placement (MAP) system yet? // It's the core of our tactical research.",
+                    "If you can prove your proficiency, I'll share some insights on the finer points of MAP."
+                ];
+                this.pendingBattleEncounter = 'maya';
+            } else {
+                lines = ["It's all about finding that sweet spot in your attack placement! Keep practicing!"];
+            }
+        } else if (npc.id === 'sapstan' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = [
+                        "Don't sweat it. The Pellicle Point system is all about balance. // You'll eventually turn your Pellicle Points into an advantage...",
+                        "...but avoid that nasty 25% HP Overload discharge for now. // Take a breather and we'll try again later."
+                    ];
+                } else {
+                    lines = [
+                        "Nice job! You've got a good handle on the tactical flow. // Tip: positive PP creates a kinetic shield, softening incoming hits.",
+                        "Just don't hit Max PP—that'll cause a Pellicle Discharge, dealing 25% of your Max HP in damage!",
+                        "Later, you'll unlock skills to 'vent' those Pellicle Points for massive damage. Keep it up!"
+                    ];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "Hey there. Have you noticed how the Pellicle Point system works? // Most focus on attacks, but PP management is where you see real results.",
+                    "Spar with me? I'll show you the 'Positive Shield' effect. Ready?"
+                ];
+                this.pendingBattleEncounter = 'sapstan';
+            } else {
+                lines = ["Positive PP creates a kinetic shield. It's the secret to staying alive in a tough fight!"];
+            }
+        } else if (npc.id === 'blundur' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = [
+                        "Predictable. You won't win without using a calibrated Catalyst Box to boost your stats. // You lacked the tactical effects needed to penetrate my defense.",
+                        "Access your Inventory to slot new cards and see the results in your next battle. It's the best part of the job!"
+                    ];
+                } else {
+                    lines = [
+                        "Inquiry! How did you bypass my dermal bio-ceramics? A high-frequency sync? Fascinating.",
+                        "Pro-tip: Check your Catalyst Box in the Inventory menu to slot your rewards and boost your stats.",
+                        "Increasing your Research Grade will unlock even more slots for skills and passive effects. Truly revolutionary!"
+                    ];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "Salutations! I'm Biologist Blundur. Have you heard of the C-Card system? // They're bio-synthetic boosters that significantly enhance your Cell's stats.",
+                    "Slotting them into your Catalyst Box is essential for maximizing your tactical advantage. // Ready to see how much of a difference a good build makes?"
+                ];
+                this.pendingBattleEncounter = 'blundur';
+            } else {
+                lines = ["Check your Catalyst Box frequently and slot new cards. It's the only way to reach peak efficiency!"];
+            }
+        } else if (npc.id === 'saito' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = [
+                        "Better luck next time! // Since I'm nice, here's a tip: There's a Console Station in the Atrium near the north wall...",
+                        "...it's humming a bit strangely. Check the ports, maybe someone left a datapad plugged in!"
+                    ];
+                } else {
+                    lines = [
+                        "Fine, you're better than you look! // Check the Atrium. There's a pile of boxes near the south exit...",
+                        "something shiny is tucked inside one of them. Happy hunting!"
+                    ];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "Oh, you're looking for Sapstan and Blundur's lost datapads? // I might have seen them... but I won't tell you for free!",
+                    "Let's have a quick Cell battle. If you win, I'll give you a hint!"
+                ];
+                this.pendingBattleEncounter = 'saito';
+            } else {
+                lines = ["Did you find the shiny thing in the Atrium? I told you it was there!"];
+            }
+        } else if (npc.id === 'shopia' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = [
+                        "Efficiency is the cornerstone of research. // To succeed, one must master elemental counters: Thermal melts Botanic...",
+                        "Botanic absorbs Osmotic, and Osmotic cools Thermal. // Always analyze the nature of your target before initiating a sync."
+                    ];
+                } else {
+                    lines = [
+                        "Incredible! Identifying the elemental nature of your opponent is the first step toward mastery.",
+                        "Each type has a counter: Thermal melts Botanic, Botanic absorbs Osmotic, and Osmotic cools Thermal. // These 1.5x multipliers are the only way to survive the deeper wards."
+                    ];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "The Botanic Sector is a delicate ecosystem. You can't just barge in without a plan! // Have you analyzed the elemental spectrum?",
+                    "Every organism here has a specific nature that can be countered. // If you don't know your types, this will be a very short lesson."
+                ];
+                this.pendingBattleEncounter = 'shopia';
+            } else {
+                lines = ["Thermal melts Botanic, Botanic absorbs Osmotic, Osmotic cools Thermal. Keep those counters in mind!"];
+            }
+        } else if (npc.id === 'clips' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = ["Lagging behind? // If a Second Brain isn't enough to save you, maybe you should start looking for a third!"];
+                } else {
+                    lines = [
+                        "Solid processing speed! // Remember, the Second Brain card's presence alone grants you that extra Pellicle slot.",
+                        "It allows you to equip a second active skill, giving you much more control over your Pellicle Points (PP) in battle."
+                    ];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "New intern, right? You're entering a sector where one Basic skill just isn't enough to manage the tactical load.",
+                    "Have you heard of the 'Second Brain'? // It's a special card that unlocks an additional skill slot. // Let's see if you're ready for that kind of growth!"
+                ];
+                this.pendingBattleEncounter = 'clips';
+            } else {
+                lines = ["Equipping a second active skill is a total game-changer. Don't forget to slot your Second Brain card!"];
+            }
+        } else if (npc.id === 'lustra' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = [
+                        "See that extra damage? That's the Lysis Penalty. // For every point of Negative PP, you take 10% more damage from every hit.",
+                        "It's like fighting without a skin!"
+                    ];
+                } else {
+                    lines = [
+                        "Risky, but effective! You managed to 'vent' your PP just before your membrane collapsed.",
+                        "Remember: every point below zero increases incoming damage by 10%. // If you hit your debt limit, you're taking DOUBLE damage!",
+                        "It's called the 'Lysis State'—your cell's structural integrity is compromised."
+                    ];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "Be careful—if you push your Cell too hard, it'll literally fall apart. // Most interns think Negative PP is just a number...",
+                    "but it's a structural failure waiting to happen. // Want to see what 'Lysis' looks like up close?"
+                ];
+                this.pendingBattleEncounter = 'lustra';
+            } else {
+                lines = ["Watch your PP debt! The Lysis penalty is no joke—it'll double the damage you take."];
+            }
+        } else if (npc.id === 'rattou' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = [
+                        "Sloppy! You came in underprepared. // Make sure to stop by the Vending Machine.",
+                        "It sells more than just food; you can trade in your excess Biomass for Lab credits, then buy Blueprints for advanced Cells."
+                    ];
+                } else {
+                    lines = [
+                        "Delicious work! You've got the hunger. // The Vending Machine here is more than just furniture.",
+                        "It’s not just for grabbing a quick bite; use your credits to get stock! // Remember to visit it often."
+                    ];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "Hungry for progress, Intern? Cooking's all about preparation. // Have you used the Vending Machine here in the Kitchen?",
+                    "It's essential for trading Biomass and acquiring Blueprints. // Let me show you why stayin' stocked is stayin' alive!"
+                ];
+                this.pendingBattleEncounter = 'rattou';
+            } else {
+                lines = ["The kitchen's vending machine is your hub for recipes and credits. Don't go hungry out there!"];
+            }
+        } else if (npc.id === 'ecto' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = ["Diversity is the key to winning, Intern. If you only rely on one type, you'll hit a wall eventually. Go back and synthesize something different."];
+                } else {
+                    lines = ["Impressive sync. You're ready to use the Cell-Accelerator properly. Just remember: a balanced team is a stable team."];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "Hey Intern. You're deep into the labs now. Have you started using the Cell-Accelerator in the Atrium?",
+                    "It's where we synthesize new life from collected recipes. // Want a demonstration of what a well-accelerated Cell can do?"
+                ];
+                this.pendingBattleEncounter = 'ecto';
+            } else {
+                lines = ["A balanced squad is a stable squad. Don't forget to use the Accelerator to diversify your team!"];
+            }
+        } else if (npc.id === 'premy' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = [
+                        "Listen closely: if you have two of the same Cell, you can merge them at the Bio-extractor.",
+                        "It makes them stronger and generates much more Biomass for future research. Don't waste your duplicates!"
+                    ];
+                } else {
+                    lines = [
+                        "You've got the spark! Now go use that Bio-extractor. // Remember: merging identical Cells is the secret to power.",
+                        "It boosts their stats and gives you a surplus of Biomass."
+                    ];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "Welcome to the Human Research Ward! Have you used the Bio-extractor in the Extraction Room yet?",
+                    "It's the primary tool for harvesting Biomass and refining your Cell potential. // Let's see if you're ready for the next level!"
+                ];
+                this.pendingBattleEncounter = 'premy';
+            } else {
+                lines = ["Merging duplicate cells at the Bio-extractor is the fastest way to build up your biomass reserves."];
+            }
+        } else if (npc.id === 'yifec' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = [
+                        "MAP Effects are game-changers. For example, EASY TARGET makes any NEAR hit count as a perfect MATCH.",
+                        "Or use PERFECT STRIKE for an unavoidable hit where all nodes count as a MATCH. You need to control the field!"
+                    ];
+                } else {
+                    lines = [
+                        "Impressive! You handled the field well. // Don't forget MAP Effects like RELIABLE HIT, which forces a NEAR result.",
+                        "Or use PUNY SLAP if you need an intentional weak hit—it makes all nodes count as FAR. Knowledge is power!"
+                    ];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "Mastering basic placement is for interns. True researchers use MAP Effects to manipulate the battlefield.",
+                    "These effects give you direct control over your sync results, regardless of how you place your attack. // Ready to see it in action?"
+                ];
+                this.pendingBattleEncounter = 'yifec';
+            } else {
+                lines = ["MAP Effects like Perfect Strike can completely ignore placement difficulty. Use them wisely!"];
+            }
+        } else if (npc.id === 'white' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = ["See? Perfection in PP management and a solid C-Card build. That's how you win—luck has nothing to do with it!"];
+                } else {
+                    lines = ["Wait... did you just out-manage my PP? Fine, maybe your C-Card strategy was just slightly better... for now!"];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "I'm telling you, the MAP system is pure luck! // The real pros win through superior PP management and C-Card strategy.",
+                    "Here, I'll prove it by crushing this intern with pure tactical efficiency!"
+                ];
+                this.pendingBattleEncounter = 'white';
+            } else {
+                lines = ["PP management is the only logical path to victory. Everything else is just static!"];
+            }
+        } else if (npc.id === 'cherry' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = ["A beautiful MAP sync! That's the power of the placement system. PP management is just for those who can't aim!"];
+                } else {
+                    lines = ["Even in defeat, I can see you value the MAP system. That placement was beautiful... even if it did wreck my squad!"];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "Nonsense! Placement is everything! // If you can't place it, you can't win. // Intern, show this 'optimizer' that a perfect MAP placement is the true path!"
+                ];
+                this.pendingBattleEncounter = 'cherry';
+            } else {
+                lines = ["A perfect match on every node is the mark of a true researcher. Practice your aim!"];
+            }
+        } else if (npc.id === 'anreal' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = [
+                        "Operational failure. You allowed the CHOICEBLOCK to restrict your options until you had nowhere to turn.",
+                        "And HURTBLOCK is a double-edged sword—if you use the same node as me, we both lose access to it."
+                    ];
+                } else {
+                    lines = [
+                        "Impressive. You navigated the blocks and maintained operational flow. // Remember: CHOICEBLOCK prevents re-selecting used nodes.",
+                        "HURTBLOCK disables nodes used by BOTH players. Maneuverability is everything!"
+                    ];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "The Director demands 99.9% uptime. To survive at this level, you must navigate operational constraints.",
+                    "Specifically, the specialized interference patterns we call BLOCK protocols. // Ready to see how they can paralyze a squad?"
+                ];
+                this.pendingBattleEncounter = 'anreal';
+            } else {
+                lines = ["Block protocols are the Director's specialized security layer. Always think two moves ahead!"];
+            }
+        } else if (npc.id === 'godou' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = [
+                        "Calculation error. You ran out of PP for your Pellicle skills when it mattered most.",
+                        "Basic Skills cost 0 PP; Pellicle Skills cost life-force. You must cycle them perfectly."
+                    ];
+                } else {
+                    lines = [
+                        "Your resource cycling is... statistically significant. // You used Basic Skills to build energy and saved your Pellicle Skills for the strike.",
+                        "That's the hallmark of a high-performance researcher."
+                    ];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "Data analysis shows most interns waste their biological potential on raw power.",
+                    "True tactical efficiency comes from balancing Basic energy-builders with Pellicle-heavy finishers. // Let's stress-test your management."
+                ];
+                this.pendingBattleEncounter = 'godou';
+            } else {
+                lines = ["Cycle your basic skills to bank PP for your big finishers. It's simple arithmetic!"];
+            }
+        } else if (npc.id === 'yunidi' && (lines.length === 1 && lines[0] === "...")) {
+            if (isPostBattle) {
+                if (bossWon) {
+                    lines = [
+                        "Operational oversight. You lacked the high-tier synergy needed to bypass my Perk's influence.",
+                        "Leader Perks are the foundation of an elite squad. Without a Perk, you're just a statistic."
+                    ];
+                } else {
+                    lines = [
+                        "A victory against the Executive Suite... statistically improbable, yet here you are.",
+                        "You must have a powerful Leader Perk of your own to have survived that. // Tier L cards are the true keys to power!"
+                    ];
+                }
+            } else if (!isBattleDone) {
+                lines = [
+                    "Director Capsain doesn't hire assistants; he hires strategic advantages.",
+                    "The true elite operate through Leader Perks—passive Tier L cards that rewrite the laws of the sync. // Ready for a Perks build?"
+                ];
+                this.pendingBattleEncounter = 'yunidi';
+            } else {
+                lines = ["Leader Perks grant passive advantages that override standard battle rules. Never go into the suite without one!"];
+            }
         } else if (lines.length === 1 && lines[0] === "...") {
-            // Generic Staff Randomizer
-            let activePool = this.randomPools.atrium;
-            if (this.currentZone === 'lobby') activePool = this.randomPools.lobby;
-            if (this.currentZone === 'botanic') activePool = this.randomPools.botanic;
-            if (this.currentZone === 'human') activePool = this.randomPools.human;
-            if (this.currentZone === 'kitchen') activePool = this.randomPools.kitchen;
-            if (this.currentZone === 'entertainment') activePool = this.randomPools.entertainment;
-            if (this.currentZone === 'storage') activePool = this.randomPools.storage;
-            if (this.currentZone === 'specimenStorage') activePool = this.randomPools.specimenStorage;
-            if (this.currentZone === 'library') activePool = this.randomPools.library;
-
+            // Generic Staff Randomizer (Dynamic Lookup based on currentZone)
+            const activePool = this.randomPools[this.currentZone] || this.randomPools.atrium;
             const randomIndex = Math.floor(Math.random() * activePool.length);
             lines = activePool[randomIndex];
         }

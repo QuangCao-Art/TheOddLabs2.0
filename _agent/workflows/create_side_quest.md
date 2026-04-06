@@ -11,9 +11,10 @@ This workflow guides you through the process of adding a new Side Quest to the g
 [Quest ID]: (e.g., quest_my_new_quest)
 [Quest Title]: (e.g., The Great Hunt)
 [Quest Description]: (A short summary for the Quest Tab - MANDATORY)
-[Quest Type]: (defeat | synthesis | collect | duel)
+[Quest Type]: (defeat | synthesis | collect | duel | show_monster)
 [Target ID]: (monster_id, item_id, or npc_id)
 [Amount]: (Number required)
+[Min Efficiency]: (Required for 'show_monster' type, e.g., 1)
 [Reward]: { type: 'log', id: 'LogXXX' } OR { type: 'item', id: 'ITEM_ID' } OR { type: 'resource', id: 'credits', amount: 500 } OR { type: 'resource_multi', rewards: [...] }
 [Consume]: (true/false - for 'collect' type only)
 
@@ -27,15 +28,16 @@ This workflow guides you through the process of adding a new Side Quest to the g
 > **Dialogue Segmentation**: Use `//` within a single string to denote a line break/panel segment (e.g., `"Hello... // How are you?"`). This helps with dialogue pacing.
 
 ##### 2. NPC Assignment
-- **NPC ID**: (e.g., npc_female_at1)
+- **NPC ID**: (e.g., saito, maya, or a new ID if creating a new NPC)
+- **Map File**: (e.g., atrium.js, human.js)
 ```
 
 ### 1. Define Quest Data
 Add the new quest definition to the `QUESTS` object in [quests.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/quests.js).
 
 **⚠️ CRITICAL RULES**:
-- **Description**: You MUST provide a `description` property or the UI will show `undefined`.
-- **Dialogue Arrays**: All dialogue fields (`offer`, `progress`, `complete`, `finished`) should be **Arrays of Strings**. If you provide a single string, the engine's `.map()` function will crash.
+- **Description**: You MUST provide a `description` property for the UI.
+- **Dialogue Arrays**: All dialogue fields (`offer`, `progress`, `complete`, `finished`) should be **Arrays of Strings**.
 - **Multi-Rewards**: To give multiple rewards (e.g., 200 Credits + a Card), use the `resource_multi` type:
   ```javascript
   reward: {
@@ -47,23 +49,26 @@ Add the new quest definition to the `QUESTS` object in [quests.js](file:///d:/An
   }
   ```
 
-- **Monster Checks (`show_monster`)**: When checking for a monster in the player's party, use the following property names:
-  - `m.id` (Species ID, e.g., 'lydrosome')
-  - `m.extractEfficiency` (Efficiency level, e.g., 1)
-  - *Mistake to Avoid*: Do NOT use `monsterId` or `efficiency`; these are deprecated or local variables only.
+### 2. Centralized Metadata Registration
+If you are creating a NEW NPC for this quest, or if the NPC doesn't have a unique visual yet, you MUST update [main.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/main.js):
+- **Sprite Mapping**: Add the NPC to `OVERWORLD_NPC_SPRITES` (e.g., `maya: 'npc_f_01'`).
+- **Portrait/Quote Mapping**: Add the NPC to `PRE_BATTLE_DATA` if they will have unique battle portraits or pre-battle lines.
 
-- **Ghostly/Event NPCs (Proximity Decoupling)**: For NPCs that should "phase in" as the player approaches:
-  - Set `proximityTrigger: true`.
-  - Use `triggerX` and `triggerY` to set the center of the detection zone separate from the NPC's actual tile (e.g., place him at `y:3` but set `triggerY: 0` for a delayed reveal).
+### 3. Assign quest to NPC in Map File
+Link the quest to the NPC within its corresponding modular map file in [src/data/maps/](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/maps/):
+- Locate the NPC in the `objects` array.
+- Add `sideQuestId: 'your_quest_id'` to the NPC object.
 
-### 2. Assign to NPC
-Link the quest to the specified NPC in [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/overworld.js).
-Add `sideQuestId: 'your_quest_id'` to the NPC entity.
+**Example (atrium.js)**:
+```javascript
+{ "id": "zibrya", "x": 8, "y": 4, "type": "npc", "name": "Assistant Zibrya", "sideQuestId": "quest_zibrya_firstcollection" }
+```
 
 ---
 
 ### ⚠️ Quest Integrity Checklist
 - [ ] **Description Check**: Does the quest have a `description` for the UI?
-- [ ] **Dialogue Type Check**: Are ALL dialogue fields arrays? (Even if only one line)
+- [ ] **Dialogue Type Check**: Are ALL dialogue fields arrays?
 - [ ] **Progress Variable**: Is `{progress}` included in the `progress` dialogue?
-- [ ] **Reward Sync**: If using `resource_multi`, ensure the Quest Tab in `main.js` is updated to render it if it's a new sub-type.
+- [ ] **Map Registration**: Is the `sideQuestId` added to the NPC in the modular map file (NOT overworld.js)?
+- [ ] **Visual Mapping**: Is the NPC registered in `OVERWORLD_NPC_SPRITES` in `main.js`?

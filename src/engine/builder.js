@@ -93,14 +93,29 @@ export const BuilderMode = {
 
         // Export Button
         document.getElementById('builder-export').addEventListener('click', () => this.showExport());
-        document.getElementById('export-close').addEventListener('click', () => {
+        document.getElementById('export-close').addEventListener('mousedown', (e) => e.stopPropagation());
+        document.getElementById('export-close').addEventListener('click', (e) => {
+            e.stopPropagation();
             document.getElementById('builder-export-modal').classList.add('hidden');
         });
-        document.getElementById('export-copy').addEventListener('click', () => {
+        document.getElementById('export-copy').addEventListener('mousedown', (e) => e.stopPropagation());
+        document.getElementById('export-copy').addEventListener('click', (e) => {
+            e.stopPropagation();
             const textarea = document.getElementById('export-textarea');
             textarea.select();
             document.execCommand('copy');
-            window.showAlertModal("DATA EXPORTOR", "Layout code copied to clipboard successfully.");
+            
+            // Subtle feedback instead of modal alert
+            const btn = e.target;
+            const originalText = btn.innerText;
+            btn.innerText = "COPIED TO CLIPBOARD";
+            btn.style.background = "#00ff66";
+            btn.style.color = "#000";
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.background = "";
+                btn.style.color = "";
+            }, 2000);
         });
 
         // Export Button
@@ -113,7 +128,11 @@ export const BuilderMode = {
 
         // Global Mouse Click for Placement/Deletion
         window.addEventListener('mousedown', (e) => {
-            if (!this.active || e.target.closest('#builder-palette') || e.target.closest('.modal-content')) return;
+            // Ignore placement if clicking on UI palette, modal content, or the export overlay backdrop
+            if (!this.active || 
+                e.target.closest('#builder-palette') || 
+                e.target.closest('.modal-content') || 
+                e.target.closest('#builder-export-modal')) return;
             
             if (e.button === 0) { // Left Click: Place or Selection
                 this.handlePlacement();
@@ -402,16 +421,23 @@ export const BuilderMode = {
         const modal = document.getElementById('builder-export-modal');
         const textarea = document.getElementById('export-textarea');
 
+        // Filter out wild cells (temp), spawned NPCs (wild), and all NPCs as requested
+        const exportedObjects = zone.objects.filter(obj => 
+            !obj.temp && 
+            !(obj.id && obj.id.includes('_wild_')) && 
+            obj.type !== 'npc'
+        );
+
         const exportData = {
             layout: zone.layout,
-            objects: zone.objects,
+            objects: exportedObjects,
             doors: zone.doors
         };
 
         // Format into a nice string
         let output = `// --- EXPORTED DATA FOR ${zone.name} ---\n`;
         output += `layout: [\n${zone.layout.map(row => "    [" + row.join(",") + "]").join(",\n")}\n],\n`;
-        output += `objects: [\n${zone.objects.map(obj => "    " + JSON.stringify(obj)).join(",\n")}\n],\n`;
+        output += `objects: [\n${exportedObjects.map(obj => "    " + JSON.stringify(obj)).join(",\n")}\n],\n`;
         output += `doors: [\n${zone.doors.map(d => "    " + JSON.stringify(d)).join(",\n")}\n]`;
 
         textarea.value = output;

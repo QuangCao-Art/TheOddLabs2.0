@@ -127,6 +127,6 @@ export const preservationRoom = {
         { id: 'f16_7_31', x: 31, y: 7, type: 'prop' }
     ],
     doors: [
-        { x: 0, y: 5, targetZone: 'human', targetX: 13, targetY: 13 }
+        { x: 0, y: 5, targetZone: 'human', targetX: 13, targetY: 4 }
     ]
 };

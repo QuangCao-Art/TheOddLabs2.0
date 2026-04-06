@@ -37,7 +37,7 @@ export const lobby = {
         { id: 'f59_lob2', x: 6, y: 3, type: 'prop', name: 'Decorative Bush' },
         { id: 'f59_lob3', x: 1, y: 6, type: 'prop', name: 'Decorative Bush' },
         { id: 'f59_lob4', x: 9, y: 6, type: 'prop', name: 'Decorative Bush' },
-        { id: 'npc_male_lob1', x: 7, y: 5, type: 'npc', name: 'Researcher Mark' }
+        { id: 'pax', x: 7, y: 5, type: 'npc', name: 'Receptionist Pax' }
     ],
     doors: [
         { x: 5, y: 2, targetZone: 'atrium', targetX: 9, targetY: 13, requiredFlag: 'jenziAtriumUnlocked' }

@@ -38,8 +38,8 @@ export const kitchen = {
         { id: 'f36_kit3', x: 4, y: 6, type: 'prop', name: 'Abandoned Snack' },
         { id: 'f59_kit2', x: 5, y: 6, type: 'prop', name: 'Kitchen Fern' },
         {
-            id: 'npc_male_theo', x: 4, y: 5, type: 'npc', name: 'Chef Theo', direction: 'down',
-            battleEncounterId: 'theo',
+            id: 'rattou', x: 4, y: 5, type: 'npc', name: 'Chef Rattou', direction: 'down',
+            battleEncounterId: 'rattou',
             dialogue: [
                 "Hungry for progress, Intern? Cooking's all about preparation.",
                 "Have you used the Vending Machine here in the Kitchen?",
@@ -58,7 +58,7 @@ export const kitchen = {
                 "So remember to visit it to stock up sometime."
             ]
         },
-        { id: 'npc_female_mia', x: 9, y: 5, type: 'npc', name: 'Researcher Mia', direction: 'down' }
+        { id: 'furaijika', x: 9, y: 5, type: 'npc', name: 'Researcher Furaijika', direction: 'down' }
     ],
     doors: [
         { x: 10, y: 4, targetZone: 'atrium', targetX: 1, targetY: 7 },

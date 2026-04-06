@@ -47,13 +47,13 @@ export const QUESTS = {
             finished: ["I should really be more careful with my belongings."]
         }
     },
-    'quest_sarah_firstcollection': {
-        id: 'quest_sarah_firstcollection',
+    'quest_zibrya_firstcollection': {
+        id: 'quest_zibrya_firstcollection',
         title: 'The First Collection',
         type: 'defeat',
         target: 'stemmy_wild',
         amount: 2,
-        description: "Defeat 2 Wild Stemmies to help Assistant Sarah with her card research.",
+        description: "Defeat 2 Wild Stemmies to help Assistant Zibrya with her card research.",
         dialogue: {
             offer: [
                 "Hey there, Intern! Did you know the Lab has different kinds of cards?",

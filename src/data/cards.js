@@ -170,78 +170,78 @@ export const NPC_ENCOUNTERS = {
     },
     'npc01': { name: "NPC Male", rg: 5, team: ['stemmy'], style: 'balanced' },
     'npc02': { name: "NPC Female", rg: 5, team: ['stemmy'], style: 'balanced' },
-    'julia': { 
-        name: "Scientist Julia", 
+    'maya': { 
+        name: "Scientist Maya", 
         rg: 1, 
         team: ['stemmy'], 
         style: 'balanced',
         reward: { exp: 100, biomass: 5, credits: 60 }
     },
-    'tom': { 
-        name: "Biologist Tom", 
+    'sapstan': { 
+        name: "Biologist Sapstan", 
         rg: 2, 
         team: ['cambihil'], 
         style: 'balanced',
         reward: { exp: 120, biomass: 6, credits: 80 }
     },
-    'kevin': { 
-        name: "Researcher Kevin", 
+    'blundur': { 
+        name: "Researcher Blundur", 
         rg: 2, 
         team: ['lydrosome'], 
         style: 'balanced',
         reward: { exp: 120, biomass: 6, credits: 80 }
     },
-    'daisy': { 
-        name: "Assistant Daisy", 
+    'saito': { 
+        name: "Assistant Saito", 
         rg: 3, 
         team: ['nitrophil'], 
         style: 'balanced',
         reward: { exp: 150, biomass: 10, credits: 150 }
     },
-    'clara': {
-        name: "Scientist Clara",
+    'shopia': {
+        name: "Scientist Shopia",
         rg: 5,
         team: ['cambihil'],
         style: 'balanced',
         reward: { exp: 400, biomass: 20, credits: 300 }
     },
-    'leo': {
-        name: "Tech Leo",
+    'clips': {
+        name: "Tech Clips",
         rg: 6,
         team: ['stemmy'],
         style: 'utility',
         reward: { exp: 500, biomass: 25, credits: 400 }
     },
-    'rose': {
-        name: "Researcher Rose",
+    'lustra': {
+        name: "Researcher Lustra",
         rg: 7,
         team: ['nitrophil'],
         style: 'aggressive',
         reward: { exp: 500, biomass: 30, credits: 500 }
     },
-    'theo': {
-        name: "Chef Theo",
+    'rattou': {
+        name: "Chef Rattou",
         rg: 7,
         team: ['stemmy', 'nitrophil'],
         style: 'aggressive',
         reward: { exp: 700, biomass: 30, credits: 600 }
     },
-    'silas': {
-        name: "Researcher Silas",
+    'ecto': {
+        name: "Researcher Ecto",
         rg: 11,
         team: ['stemmy', 'stemmy'],
         style: 'aggressive',
         reward: { exp: 800, biomass: 40, credits: 600 }
     },
-    'elena': {
-        name: "Researcher Elena",
+    'premy': {
+        name: "Researcher Premy",
         rg: 12,
         team: ['stemmy', 'nitrophil'],
         style: 'utility',
         reward: { exp: 900, biomass: 45, credits: 700 }
     },
-    'finn': {
-        name: "Researcher Finn",
+    'yifec': {
+        name: "Researcher Yifec",
         rg: 13,
         team: ['lydrosome', 'stemmy'],
         style: 'utility',
@@ -261,22 +261,22 @@ export const NPC_ENCOUNTERS = {
         style: 'utility',
         reward: { exp: 1000, biomass: 50, credits: 800 }
     },
-    'james': {
-        name: "Assistant James",
+    'anreal': {
+        name: "Assistant Anreal",
         rg: 17,
         team: ['lydrosome', 'cambihil'],
         style: 'balanced',
         reward: { exp: 1500, biomass: 80, credits: 1500 }
     },
-    'robert': {
-        name: "Assistant Robert",
+    'godou': {
+        name: "Assistant Godou",
         rg: 17,
         team: ['cambihil', 'nitrophil'],
         style: 'balanced',
         reward: { exp: 1500, biomass: 80, credits: 1500 }
     },
-    'quinn': {
-        name: "Assistant Quinn",
+    'yunidi': {
+        name: "Assistant Yunidi",
         rg: 18,
         team: ['stemmy', 'stemmy', 'nitrophil'],
         style: 'balanced',

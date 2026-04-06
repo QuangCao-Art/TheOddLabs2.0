@@ -357,11 +357,11 @@ Characters respond differently based on the number of DataLogs you have archived
 - **Before Battle**: *"Analysis commencing. Do not disappoint."*
 
 ### NPC Profiles (Generic Engagement Protocol)
-- **NPC01_M**: *"Commencing standard engagement protocol."*
-- **NPC02_F**: *"Bio-signature match confirmed. Initiating test."*
-- **NPC03_M**: *"Deploying tactical cells. Readiness check."*
+- **NPC01_M**: *"Simulation protocol initialized. Researcher Blundur at your service."* (Kevin)
+- **NPC02_F**: *"Bio-signature match confirmed. Scientist Maya ready for sync."* (Julia)
+- **NPC03_M**: *"Deploying tactical cells. Biologist Sapstan check."* (Tom)
 
-### Scientist Julia (Atrium)
+### Scientist Maya (Atrium)
 
 ### 1. Dialogue
 - **Before Battle**: "Excuse me, Intern! Have you mastered the Matching Attack Placement (MAP) system yet? // It's the core of our tactical research. // If you can prove your proficiency, I'll share some insights on the finer points of MAP."
@@ -381,7 +381,7 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ---
 
-### Biologist Tom (Atrium)
+### Biologist Sapstan (Atrium)
 
 ### 1. Dialogue
 - **Before Battle**: "Hey there. Have you noticed how the Pellicle Point system works? // Most focus on attacks, but PP management is where you see real results. // Spar with me? I'll show you the 'Positive Shield' effect. Ready?"
@@ -401,10 +401,10 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ---
 
-### Researcher Kevin (Atrium)
+### Researcher Blundur (Atrium)
 
 ### 1. Dialogue
-- **Before Battle**: "Salutations! I'm Biologist Kevin. Have you heard of the C-Card system? // They're bio-synthetic boosters that significantly enhance your Cell's stats and unlock powerful new skills and effects. // Slotting them into your Catalyst Box is essential for maximizing your tactical advantage in battle. // Ready to see how much of a difference a good build makes?"
+- **Before Battle**: "Salutations! I'm Biologist Blundur. Have you heard of the C-Card system? // They're bio-synthetic boosters that significantly enhance your Cell's stats and unlock powerful new skills and effects. // Slotting them into your Catalyst Box is essential for maximizing your tactical advantage in battle. // Ready to see how much of a difference a good build makes?"
 - **Pre-battle**: "Simulation initialized. Error margin: 0.01%."
 - **Defeated (Player Wins)**: "Inquiry! How did you bypass my dermal bio-ceramics? A high-frequency sync? Fascinating. // Pro-tip: Check your Catalyst Box in the Inventory menu to slot your rewards and boost your stats. // Increasing your Research Grade will unlock even more slots for skills and passive effects. Truly revolutionary!"
 - **Won (Player Loses)**: "Predictable. You won't win without using a calibrated Catalyst Box to boost your stats. // You lacked the tactical effects needed to penetrate my defense. // Access your Inventory to slot new cards and see the results in your next battle. It's the best part of the job!"
@@ -421,10 +421,10 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ---
 
-### Assistant Daisy (Entertainment Lounge)
+### Assistant Saito (Entertainment Lounge)
 
 ### 1. Dialogue
-- **Before Battle**: "Oh, you're looking for Tom and Kevin's lost datapads? // I might have seen them... but I won't tell you for free! // Let's have a quick Cell battle. If you win, I'll give you a hint!"
+- **Before Battle**: "Oh, you're looking for Sapstan and Blundur's lost datapads? // I might have seen them... but I won't tell you for free! // Let's have a quick Cell battle. If you win, I'll give you a hint!"
 - **Pre-battle**: "Ready to lose? I won't go easy on you, Intern!"
 - **NPC Victory (Player Loses)**: "Better luck next time! // Since I'm nice, here's a tip: There's a Console Station in the Atrium near the north wall... it's humming a bit strangely. Check the ports, maybe someone left a datapad plugged in!"
 - **NPC Defeat (Player Wins)**: "Fine, you're better than you look! // Check the Atrium. There's a pile of boxes near the south exit... something shiny is tucked inside one of them. Happy hunting!"
@@ -441,7 +441,7 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ---
 
-### Scientist Clara (Botanic Sector)
+### Scientist Shopia (Botanic Sector)
 
 ### 1. Dialogue
 - **Before Battle**: "The Botanic Sector is a delicate ecosystem. You can't just barge in without a plan! // Have you analyzed the elemental spectrum? // Every organism here has a specific nature that can be countered. // If you don't know your types, this will be a very short lesson."
@@ -461,7 +461,7 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ---
 
-### Tech Leo (Botanic Sector)
+### Tech Clips (Botanic Sector)
 
 ### 1. Dialogue
 - **Before Battle**: "New intern, right? You're entering a sector where one Basic skill just isn't enough to manage the tactical load. // Have you heard of the 'Second Brain'? // It's a special card that unlocks an additional skill slot just by being in your squad's Catalyst Box. // Let's see if you're ready for that kind of growth!"
@@ -481,7 +481,7 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ---
 
-### Researcher Rose (Botanic Sector)
+### Researcher Lustra (Botanic Sector)
 
 ### 1. Dialogue
 - **Before Battle**: "Be careful—if you push your Cell too hard, it'll literally fall apart. // Most interns think Negative PP is just a number, but it's a structural failure waiting to happen. // Want to see what 'Lysis' looks like up close?"
@@ -501,7 +501,7 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ---
 
-### Chef Theo (Staff Kitchen)
+### Chef Rattou (Staff Kitchen)
 
 ### 1. Dialogue
 - **Before Battle**: "Hungry for progress, Intern? Cooking's all about preparation. // Have you used the Vending Machine here in the Kitchen? // It’s not just for snacks like noodles; it’s essential for trading Biomass and acquiring Blueprints. // Let me show you why stayin' stocked is stayin' alive!"
@@ -521,7 +521,7 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ---
 
-### Researcher Silas (Human Ward)
+### Researcher Ecto (Human Ward)
 
 ### 1. Dialogue
 - **Before Battle**: "Hey Intern. You're deep into the labs now. Have you started using the Cell-Accelerator in the Atrium? // It's where we synthesize new life from collected recipes. // You'll need it if you want to keep up with the researchers here. Want a demonstration of what a well-accelerated Cell can do?"
@@ -541,7 +541,7 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ---
 
-### Researcher Elena (Human Ward)
+### Researcher Premy (Human Ward)
 
 ### 1. Dialogue
 - **Before Battle**: "Welcome to the Human Research Ward! Have you used the Bio-extractor in the Extraction Room yet? // It's the primary tool for harvesting Biomass and refining your Cell potential. // If you haven't mastered it, your squad will stay at baseline potential. Let's see if you're ready for the next level!"
@@ -561,7 +561,7 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ---
 
-### Researcher Finn (Human Ward)
+### Researcher Yifec (Human Ward)
 
 ### 1. Dialogue
 - **Before Battle**: "Mastering basic placement is for interns. True researchers use MAP Effects to manipulate the battlefield. // These effects give you direct control over your sync results, regardless of how you place your attack. // Ready to see how MAP Effects change the game?"
@@ -621,7 +621,7 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ---
 
-### Assistant James (Executive Suite)
+### Assistant Anreal (Executive Suite)
 
 #### 1. Dialogue
 - **Before Battle**: "The Director demands 99.9% uptime. To survive at this level, you must navigate operational constraints. // Specifically, the specialized interference patterns we call BLOCK protocols. // Ready to see how CHOICEBLOCK and HURTBLOCK can paralyze a poorly managed squad?"
@@ -641,7 +641,7 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ---
 
-### Assistant Robert (Executive Suite)
+### Assistant Godou (Executive Suite)
 
 #### 1. Dialogue
 - **Before Battle**: "Data analysis shows most interns waste their biological potential on raw power. // True tactical efficiency comes from balancing Basic energy-builders with Pellicle-heavy finishers. // Let's stress-test your resource management skills."
@@ -661,7 +661,7 @@ Characters respond differently based on the number of DataLogs you have archived
 
 ---
 
-### Assistant Quinn (Executive Suite)
+### Assistant Yunidi (Executive Suite)
 
 #### 1. Dialogue
 - **Before Battle**: "Director Capsain doesn't hire assistants; he hires strategic advantages. // Typical research only focuses on active moves, but the true elite operate through Leader Perks. // These are powerful, passive Tier L cards that rewrite the fundamental laws of the sync. // Ready to face an Executive-grade Perks build?"
@@ -797,14 +797,14 @@ These dialogue lines are randomly assigned to generic researchers based on the s
 ## NPC Distribution
 The lab's 23 residents are distributed as follows:
 
-- **Lab Entrance (Lobby)**: **Jenzi** (The Senior Gatekeeper).
-- **Main Atrium (The Hub)**: 2 Researchers (Kevin, Tom).
-- **Staff Kitchen**: 2 Staff Members (Chef Theo, Mia).
-- **Entertainment Lounge**: 1 Resident (Assistant Daisy).
-- **Botanic Sector**: 4 Researchers (Evan, Clara, Leo, Rose) + **Lana**.
-- **Human Research Ward**: 4 Researchers (Maya, Elena, Silas, Finn) + **Dyzes**.
-- **Specimen Storage**: 3 Researchers (Eli, White, Cherry).
-- **Executive Suite**: 2 Assistants (James, Robert) + **Director Capsain**.
+- **Lab Entrance (Lobby)**: **Jenzi** (The Senior Gatekeeper) and **Pax**.
+- **Main Atrium (The Hub)**: 4 Researchers (**Maya**, **Blundur**, **Sapstan**, **Mamozet**) and **Zibrya**.
+- **Staff Kitchen**: 2 Staff Members (**Rattou**, **Furaijika**).
+- **Entertainment Lounge**: 2 Residents (**Saito**, **Panto**).
+- **Botanic Sector**: 4 Researchers (**Shopia**, **Clips**, **Lustra**, **Corel**) + **Lana**.
+- **Human Research Ward**: 4 Researchers (**Miere**, **Premy**, **Ecto**, **Yifec**) + **Dyzes**.
+- **Specimen Storage**: 3 Researchers (**Piza**, **White**, **Cherry**).
+- **Executive Suite**: 3 Assistants (**Anreal**, **Godou**, **Yunidi**) + **Director Capsain**.
 - **The Secret Old Lab**: 1 Resident (The **Origin Nitrophil**).
 
 ## Starter Monster: Your Bio-Signature
