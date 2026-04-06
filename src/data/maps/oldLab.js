@@ -1,0 +1,51 @@
+export const oldLab = {
+    name: 'THE OLD LAB (SECRET)',
+    width: 11,
+    height: 8,
+    spawn: { x: 1, y: 4 },
+    layout: [
+        [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+        [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+        [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
+        [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+        [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+        [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+        [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+        [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+    ],
+    objects: [
+        { id: 'f61_ol1', x: 1, y: 2, type: 'prop', name: 'Stacked Boxes' },
+        { id: 'f62_ol1', x: 1, y: 3, type: 'prop', name: 'Stacked Boxes' },
+        { id: 'f61_ol2', x: 2, y: 2, type: 'prop', name: 'Stacked Boxes' },
+        { id: 'f62_ol3', x: 2, y: 3, type: 'prop', name: 'Storage Box' },
+        { id: 'f52_ol1', x: 6, y: 2, type: 'prop', name: 'Large Cabinet' },
+        { id: 'f53_ol1', x: 7, y: 2, type: 'prop', name: 'Large Cabinet' },
+        { id: 'f54_ol1', x: 6, y: 3, type: 'prop', name: 'Large Cabinet' },
+        { id: 'f55_ol1', x: 7, y: 3, type: 'prop', name: 'Large Cabinet' },
+        { id: 'f37_ol1', x: 3, y: 3, type: 'prop', name: 'Empty Bowl' },
+        { id: 'f37_ol2', x: 4, y: 3, type: 'prop', name: 'Empty Bowl' },
+        { id: 'f36_ol1', x: 5, y: 3, type: 'prop', name: 'Fresh Noodles' },
+        { id: 'f30_ol1', x: 8, y: 3, type: 'prop', name: 'Director Desk', hiddenLogId: 'Log999' },
+        { id: 'f31_ol1', x: 9, y: 3, type: 'prop', name: 'Director Desk' },
+        { id: 'f37_ol3', x: 6, y: 4, type: 'prop', name: 'Empty Bowl' },
+        { id: 'f0_ol1', x: 9, y: 4, type: 'prop', name: 'Lab Chair' },
+        { id: 'item_origin_nitrophil', x: 5, y: 4, type: 'cell', name: 'Origin Nitrophil', hiddenItemId: 'Quest04', customSprite: 'c3 orange-hue' },
+        { id: 'f22_ol1', x: 1, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+        { id: 'f23_ol1', x: 1, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+        { id: 'f61_ol2_dup', x: 3, y: 5, type: 'prop', name: 'Stacked Boxes' },
+        { id: 'f62_ol4', x: 3, y: 6, type: 'prop', name: 'Stacked Boxes' },
+        { id: 'f34_ol1', x: 6, y: 5, type: 'prop', name: 'Model Skeleton' },
+        { id: 'f35_ol1', x: 6, y: 6, type: 'prop', name: 'Model Skeleton' },
+        { id: 'f60_ol1', x: 8, y: 5, type: 'prop', name: 'Small Box' },
+        { id: 'f60_ol2', x: 8, y: 6, type: 'prop', name: 'Small Box' },
+        { id: 'f22_ol2', x: 9, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+        { id: 'f23_ol2', x: 9, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+        { id: 'f9_ol1', x: 2, y: 6, type: 'prop', name: 'Research Device' },
+        { id: 'f8_ol1', x: 4, y: 6, type: 'prop', name: 'Lab Glassware' },
+        { id: 'f37_ol4', x: 5, y: 6, type: 'prop', name: 'Empty Bowl' },
+        { id: 'f36_ol2', x: 7, y: 6, type: 'prop', name: 'Fresh Noodles' }
+    ],
+    doors: [
+        { x: 0, y: 4, targetZone: 'specimenStorage', targetX: 18, targetY: 4 }
+    ]
+};

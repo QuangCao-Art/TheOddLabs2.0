@@ -49,6 +49,11 @@ Update [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/o
     'f105': { hasCollision: true, info: "A mysterious new lab device." }
     ```
 
+### 6. Place in a Zone (Optional)
+If you need to place the new furniture immediately:
+1.  Identify the target zone file in [src/data/maps/](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/maps/).
+2.  Add it to the `objects` array following the [modify_map_layout](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/_agent/workflows/modify_map_layout.md) workflow.
+
 ---
 
 ### ✅ Success Criteria

@@ -206,6 +206,1534 @@ export const Overworld = {
         entertainment,
         cellPlayGround
     },
+                { id: 'f0_at1', x: 6, y: 5, type: 'prop', name: 'Reception Desk' },
+                { id: 'f13_at_acc', x: 8, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f15_at_acc', x: 9, y: 5, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f22_at_acc', x: 10, y: 5, type: 'prop', name: 'Bio-Reactor' },
+                { id: 'npc_male_at2', x: 7, y: 10, type: 'npc', name: 'Researcher Paul' },
+                { id: 'f1_at_ne1', x: 12, y: 5, type: 'prop', name: 'Lab Chair' },
+                { id: 'f11_at_ne', x: 13, y: 5, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f11_at_e', x: 15, y: 5, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f0_at2', x: 16, y: 5, type: 'prop', name: 'Reception Desk' },
+
+                // Row 6 (Cluster Mid-B, Mixed Tank Bottoms Overlapping CellAcc Tops)
+                { id: 'f1_at_nw2', x: 2, y: 6, type: 'prop', name: 'Lab Chair' },
+                { id: 'f12_at_nw', x: 3, y: 6, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f12_at1', x: 5, y: 6, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f0_at1_b', x: 6, y: 6, type: 'prop', name: 'Reception Desk' },
+                { id: 'f14_at_acc', x: 8, y: 6, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f16_at_acc', x: 9, y: 6, type: 'prop', name: 'Specimen Tank' },
+                { id: 'f23_at_acc', x: 10, y: 6, type: 'prop', name: 'Bio-Reactor' },
+                { id: 'f92_acc', x: 8, y: 6, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f93_acc', x: 9, y: 6, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f94_acc', x: 10, y: 6, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f1_at_ne2', x: 12, y: 6, type: 'prop', name: 'Lab Chair' },
+                { id: 'f12_at_ne', x: 13, y: 6, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f12_at_e', x: 15, y: 6, type: 'prop', name: 'Atrium Core Table' },
+                { id: 'f0_at2_b', x: 16, y: 6, type: 'prop', name: 'Reception Desk' },
+
+                // Row 7 (Tom, Kevin, CellAccelerator Mid Row)
+                {
+                    id: 'npc_male_at3', x: 4, y: 6, type: 'npc', name: 'Biologist Tom',
+                    battleEncounterId: 'tom',
+                    dialogue: [
+                        "Hey there. Have you noticed how the Pellicle Point system works?",
+                        "Most focus on attacks, but PP management is where you see real results.",
+                        "Spar with me? I'll show you the 'Positive Shield' effect. Ready?"
+                    ],
+                    npcWinDialogue: [
+                        "Don't sweat it. The Pellicle Point system is all about balance.",
+                        "You'll eventually turn your Pellicle Points into an advantage, but avoid that nasty 25% HP Overload discharge for now.",
+                        "Take a breather and we'll try again later."
+                    ],
+                    npcLossDialogue: [
+                        "Nice job! You've got a good handle on the tactical flow.",
+                        "Tip: positive PP creates a kinetic shield, softening incoming hits.",
+                        "Just don't hit Max PP—that'll cause a Pellicle Discharge, dealing 25% of your Max HP in damage!",
+                        "Later, you'll unlock skills to 'vent' those Pellicle Points for massive damage. Keep it up!"
+                    ]
+                },
+                { id: 'f95_acc', x: 8, y: 7, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f96_acc', x: 9, y: 7, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f97_acc', x: 10, y: 7, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                {
+                    id: 'npc_male_at1', x: 14, y: 8, type: 'npc', name: 'Researcher Kevin',
+                    battleEncounterId: 'kevin',
+                    dialogue: [
+                        "Salutations! I'm Biologist Kevin. Have you heard of the C-Card system?",
+                        "They're bio-synthetic boosters that significantly enhance your Cell's stats and unlock powerful new skills and effects.",
+                        "Slotting them into your Catalyst Box is essential for maximizing your tactical advantage in battle.",
+                        "Ready to see how much of a difference a good build makes?"
+                    ],
+                    npcWinDialogue: [
+                        "Predictable. You won't win without using a calibrated Catalyst Box to boost your stats.",
+                        "You lacked the tactical effects needed to penetrate my defense.",
+                        "Access your Inventory to slot new cards and see the results in your next battle. It's the best part of the job!"
+                    ],
+                    npcLossDialogue: [
+                        "Inquiry! How did you bypass my dermal bio-ceramics? A high-frequency sync? Fascinating.",
+                        "Pro-tip: Check your Catalyst Box in the Inventory menu to slot your rewards and boost your stats.",
+                        "Increasing your Research Grade will unlock even more slots for skills and passive effects. Truly revolutionary!"
+                    ]
+                },
+
+                // Row 8 (Analysis Tables, Leader Table, CellAccelerator Bottom Row, Lab Cylinders)
+                { id: 'f26_at_nw_s', x: 2, y: 8, type: 'prop', name: 'Analysis Table' },
+                { id: 'f27_at_nw_s', x: 3, y: 8, type: 'prop', name: 'Analysis Table' },
+                { id: 'f26_at1_s', x: 5, y: 8, type: 'prop', name: 'Analysis Table' },
+                { id: 'f27_at1_s', x: 6, y: 8, type: 'prop', name: 'Analysis Table' },
+                { id: 'f98_acc', x: 8, y: 8, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f99_acc', x: 9, y: 8, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f100_acc', x: 10, y: 8, type: 'prop', name: 'Cell-Accelerator', customSprite: 'tileset-03' },
+                { id: 'f8_at_s1', x: 12, y: 8, type: 'prop', name: 'Lab Equipment' },
+                { id: 'f9_at_s1', x: 13, y: 8, type: 'prop', name: 'Lab Device' },
+                { id: 'f28_at_s1', x: 15, y: 8, type: 'prop', name: 'Executive Desk' },
+                { id: 'f29_at_s1', x: 16, y: 8, type: 'prop', name: 'Executive Desk' },
+
+                // Row 9 (More Equipment, Computers, Supply Cabinets)
+                { id: 'f8_at_s2', x: 2, y: 9, type: 'prop', name: 'Lab Equipment' },
+                { id: 'f9_at_s2', x: 3, y: 9, type: 'prop', name: 'Lab Device' },
+                { id: 'f7_at_s1', x: 5, y: 9, type: 'prop', name: 'Console Station' },
+                { id: 'f7_at_s2', x: 6, y: 9, type: 'prop', name: 'Console Station' },
+                { id: 'f7_at_s3', x: 12, y: 9, type: 'prop', name: 'Console Station' },
+                { id: 'f7_at_s4', x: 13, y: 9, type: 'prop', name: 'Console Station' },
+                { id: 'f58_at5', x: 15, y: 9, type: 'prop', name: 'Supply Cabinet' },
+                { id: 'f58_at6', x: 16, y: 9, type: 'prop', name: 'Supply Cabinet' },
+
+                // Row 10 (Storage Cabinet Tops x4)
+                { id: 'f52_at_w1', x: 2, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_at_w1', x: 3, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f52_at_w2', x: 5, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_at_w2', x: 6, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f52_at_e1', x: 12, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_at_e1', x: 13, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f52_at_e2', x: 15, y: 10, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_at_e2', x: 16, y: 10, type: 'prop', name: 'Storage Cabinet' },
+
+                // Row 11 (Cabinet Bottoms x4, Julia)
+                { id: 'f54_at_w1', x: 2, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f55_at_w1', x: 3, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f54_at_w2', x: 5, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f55_at_w2', x: 6, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                {
+                    id: 'npc_female_at2', x: 11, y: 11, type: 'npc', name: 'Scientist Julia',
+                    battleEncounterId: 'julia',
+                    dialogue: [
+                        "Excuse me, Intern! Have you mastered the Matching Attack Placement (MAP) system yet?",
+                        "It's the core of our tactical research.",
+                        "If you can prove your proficiency, I'll share some insights on the finer points of MAP."
+                    ],
+                    npcWinDialogue: ["Don't be discouraged! Sometimes a bit of luck helps with the final sync, but skill is the foundation!", "Just keep practicing your placement."],
+                    npcLossDialogue: [
+                        "Incredible! Your placement was precise.",
+                        "That's the secret to the MAP system—it's not just about power, it's about the proximity of your attack nodes.",
+                        "Think of it like a puzzle: the closer you are to the target, the more damage you deal and the more Pellicle Points (PP) you gain.",
+                        "It's all about finding that sweet spot!"
+                    ]
+                },
+                { id: 'f54_at_e1', x: 12, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f55_at_e1', x: 13, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f54_at_e2', x: 15, y: 11, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f55_at_e2', x: 16, y: 11, type: 'prop', name: 'Storage Cabinet' },
+
+                // Row 12 (Box Pile Tops)
+                { id: 'f61_at_s2', x: 1, y: 12, type: 'prop', name: 'Box Pile' },
+                { id: 'f61_at_s3', x: 7, y: 12, type: 'prop', name: 'Box Pile' },
+                { id: 'f61_at_s4', x: 16, y: 12, type: 'prop', name: 'Box Pile' },
+
+                // Row 13 (Southern Path Decorations & Box Pile Bottoms)
+                { id: 'f62_at_s2', x: 1, y: 13, type: 'prop', name: 'Box Pile' },
+                { id: 'f59_at_s1', x: 2, y: 13, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'f3_at_s1', x: 3, y: 13, type: 'prop', name: 'Meeting Table' },
+                { id: 'f62_at_s3', x: 7, y: 13, type: 'prop', name: 'Box Pile', hiddenLogId: 'Log005' },
+                { id: 'f59_at_s4', x: 8, y: 13, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'f59_at_s5', x: 10, y: 13, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'f8_at_s4', x: 11, y: 13, type: 'prop', name: 'Lab Equipment' },
+                { id: 'f59_at_s6', x: 12, y: 13, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'f59_at_s7', x: 15, y: 13, type: 'prop', name: 'Atrium Decoration' },
+                { id: 'f62_at_s4', x: 16, y: 13, type: 'prop', name: 'Box Pile' },
+                { id: 'f9_at_s4', x: 17, y: 13, type: 'prop', name: 'Lab Device' }
+            ],
+            doors: [
+                { x: 9, y: 14, targetZone: 'lobby', targetX: 5, targetY: 3 },
+                { x: 4, y: 14, targetZone: 'bioExtraction', targetX: 5, targetY: 3 },
+                { x: 0, y: 7, targetZone: 'kitchen', targetX: 9, targetY: 4, requiredFlag: 'botanicSectorUnlocked' },
+                { x: 0, y: 10, targetZone: 'entertainment', targetX: 8, targetY: 6 },
+                { x: 18, y: 10, targetZone: 'storage', targetX: 1, targetY: 6 },
+                { x: 0, y: 4, targetZone: 'botanic', targetX: 13, targetY: 13, requiredFlag: 'botanicSectorUnlocked' },
+                { x: 18, y: 4, targetZone: 'human', targetX: 1, targetY: 13, requiredFlag: 'humanWardUnlocked' },
+                { x: 18, y: 7, targetZone: 'specimenStorage', targetX: 1, targetY: 4, requiredFlag: 'humanWardUnlocked' },
+                { x: 9, y: 2, targetZone: 'executive', targetX: 7, targetY: 7, requiredFlag: 'executiveSuiteUnlocked' }
+            ]
+        },
+        bioExtraction: {
+            name: 'BIO EXTRACTION ROOM',
+            width: 8,
+            height: 10,
+            spawn: { x: 5, y: 3 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 1], // Row 0
+                [10, 14, 14, 14, 14, 14, 14, 11], // Row 1
+                [10, 15, 15, 15, 15, 22, 15, 11], // Row 2 (Door at index 5)
+                [10, 13, 13, 13, 13, 13, 13, 11], // Row 3
+                [10, 13, 13, 13, 13, 13, 13, 11], // Row 4
+                [10, 13, 13, 13, 13, 13, 13, 11], // Row 5
+                [10, 13, 13, 13, 13, 13, 13, 11], // Row 6
+                [10, 13, 13, 13, 13, 13, 13, 11], // Row 7
+                [10, 13, 13, 13, 13, 13, 13, 11], // Row 8
+                [2, 9, 9, 9, 9, 9, 9, 3]  // Row 9
+            ],
+            objects: [
+                // Bio-Extractor centered in 8x10 room
+                // Horizontal: indices 3, 4 | Vertical: indices 4, 5, 6
+                { id: 'f42_bio', x: 3, y: 4, type: 'prop', name: 'Bio-Extractor' },
+                { id: 'f43_bio', x: 4, y: 4, type: 'prop', name: 'Bio-Extractor' },
+                { id: 'f44_bio', x: 3, y: 5, type: 'prop', name: 'Bio-Extractor' },
+                { id: 'f45_bio', x: 4, y: 5, type: 'prop', name: 'Bio-Extractor' },
+                { id: 'f46_bio', x: 3, y: 6, type: 'prop', name: 'Bio-Extractor' },
+                { id: 'f47_bio', x: 4, y: 6, type: 'prop', name: 'Bio-Extractor' },
+                // Decorative Plants
+                { id: 'f59_bio_nw', x: 1, y: 3, type: 'prop', name: 'Potted Plant' },
+                { id: 'f4_bio_n', x: 2, y: 3, type: 'prop', name: 'Research Table' },
+                { id: 'f5_bio_n', x: 3, y: 3, type: 'prop', name: 'Research Table' },
+                { id: 'f7_bio_n', x: 4, y: 3, type: 'prop', name: 'Research Terminal' },
+                { id: 'f59_bio_ne', x: 6, y: 3, type: 'prop', name: 'Potted Plant' },
+                { id: 'f59_bio_sw', x: 1, y: 8, type: 'prop', name: 'Potted Plant' },
+                { id: 'f59_bio_se', x: 6, y: 8, type: 'prop', name: 'Potted Plant' },
+                // Huge Petry Dishes
+                { id: 'f103_bio_l1', x: 1, y: 4, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_l2', x: 1, y: 5, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_l3', x: 1, y: 6, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_l4', x: 1, y: 7, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_r1', x: 6, y: 4, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_r2', x: 6, y: 5, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_r3', x: 6, y: 6, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_r4', x: 6, y: 7, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_s1', x: 2, y: 8, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_s2', x: 3, y: 8, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_s3', x: 4, y: 8, type: 'prop', name: 'Huge Petry Dish' },
+                { id: 'f103_bio_s4', x: 5, y: 8, type: 'prop', name: 'Huge Petry Dish' }
+            ],
+            doors: [
+                { x: 5, y: 2, targetZone: 'atrium', targetX: 4, targetY: 13 }
+            ]
+        },
+        specimenStorage: {
+            name: 'SPECIMEN STORAGE',
+            width: 20,
+            height: 8,
+            spawn: { x: 1, y: 4 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1], // Row 0
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11], // Row 1
+                [10, 15, 15, 15, 15, 15, 22, 15, 15, 15, 15, 15, 15, 22, 15, 15, 15, 15, 15, 11], // Row 2
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 3
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Row 4 (Doors moved up)
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 5 (Shifted wall back)
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Row 6
+                [2, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 3] // Row 7 (Bottom Wall)
+            ],
+            objects: [
+                // Top Row of Tanks (Varied)
+                { id: 'f13_spec1', x: 1, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec1', x: 1, y: 3, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec2', x: 2, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec2', x: 2, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec3', x: 3, y: 2, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec3', x: 3, y: 3, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec4', x: 4, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec4', x: 4, y: 3, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec5', x: 5, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec5', x: 5, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec6', x: 9, y: 2, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec6', x: 9, y: 3, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec7', x: 7, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec7', x: 7, y: 3, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec8', x: 8, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec8', x: 8, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f13_spec10', x: 10, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec10', x: 10, y: 3, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec11', x: 11, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec11', x: 11, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec12', x: 12, y: 2, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec12', x: 12, y: 3, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f15_spec14', x: 14, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec14', x: 14, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec15', x: 15, y: 2, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec15', x: 15, y: 3, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec16', x: 16, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec16', x: 16, y: 3, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec17', x: 17, y: 2, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec17', x: 17, y: 3, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec18', x: 18, y: 2, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec18', x: 18, y: 3, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'npc_male_white', x: 11, y: 4, type: 'npc', name: 'Researcher White', direction: 'down' },
+                { id: 'npc_female_cherry', x: 15, y: 4, type: 'npc', name: 'Researcher Cherry', direction: 'down' },
+                { id: 'npc_male_eli', x: 5, y: 5, type: 'npc', name: 'Assistant Eli', direction: 'down' },
+
+                // Bottom Row of Tanks (Varied)
+                { id: 'f13_spec19', x: 1, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec19', x: 1, y: 6, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec20', x: 2, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec20', x: 2, y: 6, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec21', x: 3, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec21', x: 3, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec22', x: 4, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec22', x: 4, y: 6, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec23', x: 5, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec23', x: 5, y: 6, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec24', x: 9, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec24', x: 9, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec25', x: 7, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec25', x: 7, y: 6, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec26', x: 8, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec26', x: 8, y: 6, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f13_spec28', x: 10, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec28', x: 10, y: 6, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec29', x: 11, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec29', x: 11, y: 6, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec30', x: 12, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec30', x: 12, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f15_spec32', x: 14, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec32', x: 14, y: 6, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec33', x: 15, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec33', x: 15, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f13_spec34', x: 16, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f14_spec34', x: 16, y: 6, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f15_spec35', x: 17, y: 5, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f16_spec35', x: 17, y: 6, type: 'prop', name: 'Blue Specimen Tank' },
+                { id: 'f22_spec36', x: 18, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_spec36', x: 18, y: 6, type: 'prop', name: 'Red Specimen Tank' }
+            ],
+            doors: [
+                { x: 0, y: 4, targetZone: 'atrium', targetX: 17, targetY: 7 },
+                { x: 6, y: 7, targetZone: 'storage', targetX: 5, targetY: 3, requiredFlag: 'humanWardUnlocked' },
+                { x: 6, y: 2, targetZone: 'human', targetX: 7, targetY: 14 },
+                { x: 19, y: 4, targetZone: 'old_lab', targetX: 1, targetY: 4, requiredItems: ['Quest01', 'Quest02', 'Quest03'] },
+                { x: 13, y: 2, targetZone: 'executive', targetX: 18, targetY: 7, requiredFlag: 'executiveSuiteUnlocked' },
+                { x: 13, y: 7, targetZone: 'truth_room', targetX: 5, targetY: 3, requiredItem: 'Quest05' }
+            ]
+        },
+        truth_room: {
+            name: 'THE TRUTH ROOM',
+            width: 11,
+            height: 8,
+            spawn: { x: 5, y: 3 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 22, 15, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+            ],
+            objects: [],
+            spawnPool: { stemmy: 60, nitrophil: 10, cambihil: 20, lydrosome: 10 },
+            doors: [
+                { x: 5, y: 2, targetZone: 'specimenStorage', targetX: 13, targetY: 6 }
+            ]
+        },
+        old_lab: {
+            name: 'THE OLD LAB (SECRET)',
+            width: 11,
+            height: 8,
+            spawn: { x: 1, y: 4 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+            ],
+            objects: [
+                { id: 'f61_ol1', x: 1, y: 2, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'f62_ol1', x: 1, y: 3, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'f61_ol2', x: 2, y: 2, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'f62_ol3', x: 2, y: 3, type: 'prop', name: 'Storage Box' },
+                { id: 'f52_ol1', x: 6, y: 2, type: 'prop', name: 'Large Cabinet' },
+                { id: 'f53_ol1', x: 7, y: 2, type: 'prop', name: 'Large Cabinet' },
+                { id: 'f54_ol1', x: 6, y: 3, type: 'prop', name: 'Large Cabinet' },
+                { id: 'f55_ol1', x: 7, y: 3, type: 'prop', name: 'Large Cabinet' },
+                { id: 'f37_ol1', x: 3, y: 3, type: 'prop', name: 'Empty Bowl' },
+                { id: 'f37_ol2', x: 4, y: 3, type: 'prop', name: 'Empty Bowl' },
+                { id: 'f36_ol1', x: 5, y: 3, type: 'prop', name: 'Fresh Noodles' },
+                { id: 'f30_ol1', x: 8, y: 3, type: 'prop', name: 'Director Desk', hiddenLogId: 'Log999' },
+                { id: 'f31_ol1', x: 9, y: 3, type: 'prop', name: 'Director Desk' },
+                { id: 'f37_ol3', x: 6, y: 4, type: 'prop', name: 'Empty Bowl' },
+                { id: 'f0_ol1', x: 9, y: 4, type: 'prop', name: 'Lab Chair' },
+                { id: 'item_origin_nitrophil', x: 5, y: 4, type: 'cell', name: 'Origin Nitrophil', hiddenItemId: 'Quest04', customSprite: 'c3 orange-hue' },
+                { id: 'f22_ol1', x: 1, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_ol1', x: 1, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f61_ol2_dup', x: 3, y: 5, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'f62_ol4', x: 3, y: 6, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'f34_ol1', x: 6, y: 5, type: 'prop', name: 'Model Skeleton' },
+                { id: 'f35_ol1', x: 6, y: 6, type: 'prop', name: 'Model Skeleton' },
+                { id: 'f60_ol1', x: 8, y: 5, type: 'prop', name: 'Small Box' },
+                { id: 'f60_ol2', x: 8, y: 6, type: 'prop', name: 'Small Box' },
+                { id: 'f22_ol2', x: 9, y: 5, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f23_ol2', x: 9, y: 6, type: 'prop', name: 'Red Specimen Tank' },
+                { id: 'f9_ol1', x: 2, y: 6, type: 'prop', name: 'Research Device' },
+                { id: 'f8_ol1', x: 4, y: 6, type: 'prop', name: 'Lab Glassware' },
+                { id: 'f37_ol4', x: 5, y: 6, type: 'prop', name: 'Empty Bowl' },
+                { id: 'f36_ol2', x: 7, y: 6, type: 'prop', name: 'Fresh Noodles' }
+            ],
+            doors: [
+                { x: 0, y: 4, targetZone: 'specimenStorage', targetX: 18, targetY: 4 }
+            ]
+        },
+        botanic: {
+            name: 'BOTANIC SECTOR',
+            width: 15,
+            height: 16,
+            spawn: { x: 7, y: 13 },
+            spawnPool: { stemmy: 60, nitrophil: 10, cambihil: 20, lydrosome: 10 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 32, 32, 32, 15, 15, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3]
+            ],
+            objects: [
+                { id: 'lana', x: 7, y: 3, type: 'npc', name: 'Lana' },
+                // North Storage Row (y=3 with y=2 tops)
+                { id: 'f52_bot1', x: 1, y: 2, type: 'prop', name: 'Storage Unit' },
+                { id: 'f53_bot1', x: 2, y: 2, type: 'prop', name: 'Storage Unit' },
+                { id: 'f13_lanaTank1B', x: 3, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f20_lanaTop1', x: 10, y: 2, type: 'prop', name: 'Fern Specimen' },
+                { id: 'f13_lanaTank1', x: 11, y: 2, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f52_bot2', x: 12, y: 2, type: 'prop', name: 'Storage Unit' },
+                { id: 'f53_bot2', x: 13, y: 2, type: 'prop', name: 'Storage Unit' },
+
+                { id: 'f54_bot1', x: 1, y: 3, type: 'prop', name: 'Storage Unit', hiddenLogId: 'Log007' },
+                { id: 'f55_bot1', x: 2, y: 3, type: 'prop', name: 'Storage Unit' },
+                { id: 'f14_lanaTank1B', x: 3, y: 3, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f91_bot2', x: 4, y: 3, type: 'prop', name: 'Empty Pot' },
+                { id: 'f59_lanaBush1', x: 5, y: 3, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_lanaBush2', x: 9, y: 3, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f21_lanaBot1', x: 10, y: 3, type: 'prop', name: 'Fern Specimen' },
+                { id: 'f14_lanaTank1', x: 11, y: 3, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f54_bot2', x: 12, y: 3, type: 'prop', name: 'Storage Unit' },
+                { id: 'f55_bot2', x: 13, y: 3, type: 'prop', name: 'Storage Unit' },
+                // Upper Garden Cluster (y=4,5,6,7) - STACK at x=4
+                { id: 'f24_bot1', x: 2, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot1', x: 2, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot2', x: 3, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot2', x: 3, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot3a', x: 4, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot3a', x: 4, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot3b', x: 4, y: 5, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot3b', x: 4, y: 6, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot3c', x: 4, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot3c', x: 4, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot4', x: 5, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot4', x: 5, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot5', x: 6, y: 4, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot5', x: 6, y: 5, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f13_bot1', x: 8, y: 4, type: 'prop', name: 'Green Specimen Tank' }, { id: 'f14_bot1', x: 8, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f13_bot2', x: 9, y: 4, type: 'prop', name: 'Green Specimen Tank' }, { id: 'f14_bot2', x: 9, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f38_bot1', x: 10, y: 4, type: 'prop', name: 'Incubation Chamber' }, { id: 'f39_bot1', x: 11, y: 4, type: 'prop', name: 'Incubation Chamber' },
+                { id: 'f40_bot1', x: 10, y: 5, type: 'prop', name: 'Incubation Chamber' }, { id: 'f41_bot1', x: 11, y: 5, type: 'prop', name: 'Incubation Chamber' },
+                { id: 'f13_bot3', x: 12, y: 4, type: 'prop', name: 'Green Specimen Tank' }, { id: 'f14_bot3', x: 12, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                { id: 'f13_bot4', x: 13, y: 4, type: 'prop', name: 'Green Specimen Tank' }, { id: 'f14_bot4', x: 13, y: 5, type: 'prop', name: 'Green Specimen Tank' },
+                // Middle Garden Cluster (y=6,7)
+                { id: 'f24_bot6', x: 2, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot6', x: 2, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot7', x: 3, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot7', x: 3, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot9', x: 5, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot9', x: 5, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f24_bot10', x: 6, y: 6, type: 'prop', name: 'Bioluminescent Bush' }, { id: 'f25_bot10', x: 6, y: 7, type: 'prop', name: 'Bioluminescent Bush' },
+                { id: 'f60_bot1', x: 8, y: 7, type: 'prop', name: 'Archived Samples' },
+                { id: 'f28_bot1', x: 9, y: 7, type: 'prop', name: 'Lead Analysis Desk', hiddenLogId: 'Log010' },
+                { id: 'f29_bot1', x: 10, y: 7, type: 'prop', name: 'Lead Analysis Desk' },
+                { id: 'f61_bot1', x: 11, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'f62_bot1', x: 11, y: 7, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'KeyItem-SecretCard_bot1', x: 12, y: 7, type: 'prop', name: 'Access Key' },
+                { id: 'f61_bot2', x: 13, y: 6, type: 'prop', name: 'Stacked Boxes' }, { id: 'f62_bot2', x: 13, y: 7, type: 'prop', name: 'Stacked Boxes' },
+                // Refined Hedge Row (y=8) with Column 7 Path
+                { id: 'f59_bot1', x: 1, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot2', x: 2, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot3', x: 3, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot4', x: 4, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f91_bot5', x: 5, y: 8, type: 'prop', name: 'Empty Pot' },
+                { id: 'f59_bot6', x: 6, y: 8, type: 'prop', name: 'Decorative Bush' },
+                // Path at x=7
+                { id: 'f59_bot7', x: 8, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot8', x: 9, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f91_bot9', x: 10, y: 8, type: 'prop', name: 'Empty Pot' },
+                { id: 'f59_bot10', x: 11, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot11', x: 12, y: 8, type: 'prop', name: 'Decorative Bush' },
+                { id: 'f59_bot12', x: 13, y: 8, type: 'prop', name: 'Decorative Bush' },
+                // Expanded Lower Garden Rows (y=9-12) - STACKS at x=4 and x=10
+                { id: 'f91_botA1', x: 2, y: 10, type: 'prop', name: 'Empty Pot' },
+                { id: 'f20_botA2', x: 3, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA2', x: 3, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA3a', x: 4, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA3a', x: 4, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA3b', x: 4, y: 10, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA3b', x: 4, y: 11, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA3c', x: 4, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA3c', x: 4, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA4', x: 5, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA4', x: 5, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA5', x: 6, y: 9, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA5', x: 6, y: 10, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_bot1', x: 8, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot1', x: 8, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot2', x: 9, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot2', x: 9, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot3a', x: 10, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot3a', x: 10, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot3b', x: 10, y: 10, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot3b', x: 10, y: 11, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot3c', x: 10, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot3c', x: 10, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot4', x: 11, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot4', x: 11, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_bot5', x: 12, y: 9, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot5', x: 12, y: 10, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f20_botA6', x: 2, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA6', x: 2, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA7', x: 3, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA7', x: 3, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA9', x: 5, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA9', x: 5, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_botA10', x: 6, y: 11, type: 'prop', name: 'Scented Specimen' }, { id: 'f21_botA10', x: 6, y: 12, type: 'prop', name: 'Scented Specimen' },
+                { id: 'f20_bot6', x: 8, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot6', x: 8, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f91_bot7', x: 9, y: 12, type: 'prop', name: 'Empty Pot' },
+                { id: 'f20_bot9', x: 11, y: 11, type: 'prop', name: 'Specimen Fern' }, { id: 'f21_bot9', x: 11, y: 12, type: 'prop', name: 'Specimen Fern' },
+                { id: 'f91_bot10', x: 12, y: 12, type: 'prop', name: 'Empty Pot' },
+                // Final Station Wall (y=13,14)
+                { id: 'f61_bot3', x: 1, y: 13, type: 'prop', name: 'Stacked Boxes' }, { id: 'f62_bot3', x: 1, y: 14, type: 'prop', name: 'Stacked Boxes' },
+                { id: 'f26_bot1', x: 2, y: 14, type: 'prop', name: 'Research Station', hiddenLogId: 'Log006' },
+                { id: 'f27_bot1', x: 3, y: 14, type: 'prop', name: 'Research Station' },
+                { id: 'f60_bot2', x: 4, y: 14, type: 'prop', name: 'Archived Samples' },
+                { id: 'f91_bot3', x: 5, y: 14, type: 'prop', name: 'Empty Pot' },
+                { id: 'f9_bot1', x: 6, y: 14, type: 'prop', name: 'Protein Sequencer' },
+                { id: 'f8_bot1', x: 8, y: 14, type: 'prop', name: 'Lab Cylinders' },
+                { id: 'f60_bot5', x: 9, y: 14, type: 'prop', name: 'Archived Samples' },
+                { id: 'f28_bot2', x: 10, y: 14, type: 'prop', name: 'Lead Analysis Desk' },
+                { id: 'f29_bot2', x: 11, y: 14, type: 'prop', name: 'Lead Analysis Desk' },
+                { id: 'f26_bot2', x: 12, y: 14, type: 'prop', name: 'Research Station' },
+                { id: 'f27_bot2', x: 13, y: 14, type: 'prop', name: 'Research Station' },
+                // Staff NPCs
+                { id: 'npc_male_bot1', x: 2, y: 9, type: 'npc', name: 'Researcher Evan' },
+                {
+                    id: 'npc_female_bot1', x: 1, y: 5, type: 'npc', name: 'Scientist Clara',
+                    battleEncounterId: 'clara',
+                    dialogue: [
+                        "The Botanic Sector is a delicate ecosystem. You can't just barge in without a plan!",
+                        "Have you analyzed the elemental spectrum? Every organism here has a specific nature that can be countered.",
+                        "If you don't know your types, this will be a very short lesson."
+                    ],
+                    npcWinDialogue: [
+                        "Efficiency is the cornerstone of research. To succeed, one must master elemental counters: Thermal melts Botanic, Botanic absorbs Osmotic, and Osmotic cools Thermal.",
+                        "Always analyze the nature of your target before initiating a sync."
+                    ],
+                    npcLossDialogue: [
+                        "Incredible! Identifying the elemental nature of your opponent is the first step toward mastery.",
+                        "Each type has a counter: Thermal melts Botanic, Botanic absorbs Osmotic, and Osmotic cools Thermal. These 1.5x multipliers are the only way to survive the deeper wards."
+                    ]
+                },
+                {
+                    id: 'npc_male_bot2', x: 13, y: 9, type: 'npc', name: 'Tech Leo',
+                    battleEncounterId: 'leo',
+                    dialogue: [
+                        "New intern, right? You're entering a sector where one Basic skill just isn't enough to manage the tactical load.",
+                        "Have you heard of the 'Second Brain'? It's a special card that unlocks an additional skill slot just by being in your squad's Catalyst Box.",
+                        "Let's see if you're ready for that kind of growth!"
+                    ],
+                    npcWinDialogue: [
+                        "Lagging behind? If a Second Brain isn't enough to save you, maybe you should start looking for a third!"
+                    ],
+                    npcLossDialogue: [
+                        "Solid processing speed! Remember, the Second Brain card's presence alone grants you that extra Pellicle slot.",
+                        "It allows you to equip a second active skill, giving you much more control over your Pellicle Points (PP) in battle."
+                    ]
+                },
+                {
+                    id: 'npc_female_bot2', x: 9, y: 11, type: 'npc', name: 'Researcher Rose',
+                    battleEncounterId: 'rose',
+                    dialogue: [
+                        "Be careful—if you push your Cell too hard, it'll literally fall apart.",
+                        "Most interns think Negative PP is just a number, but it's a structural failure waiting to happen.",
+                        "Want to see what 'Lysis' looks like up close?"
+                    ],
+                    npcWinDialogue: [
+                        "See that extra damage? That's the Lysis Penalty.",
+                        "For every point of Negative PP, you take 10% more damage from every hit. It's like fighting without a skin!"
+                    ],
+                    npcLossDialogue: [
+                        "Risky, but effective! You managed to 'vent' your PP just before your membrane collapsed.",
+                        "Remember: every point below zero increases incoming damage by 10%. If you hit your debt limit (your negative Max PP), you're taking DOUBLE damage!",
+                        "It's called the 'Lysis State'—your cell's structural integrity is compromised."
+                    ]
+                },
+            ],
+            doors: [
+                { x: 14, y: 13, targetZone: 'atrium', targetX: 1, targetY: 4 },
+                { x: 7, y: 15, targetZone: 'kitchen', targetX: 7, targetY: 3 },
+                { x: 0, y: 13, targetZone: 'ancientBotany', targetX: 31, targetY: 5 }
+            ]
+        },
+        ancientBotany: {
+            name: 'ANCIENT BOTANY LAB',
+            width: 33,
+            height: 9,
+            spawn: { x: 16, y: 6 },
+            layout: [
+                [0,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,1],
+                [10,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,11],
+                [10,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,11],
+                [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,11],
+                [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,11],
+                [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,25],
+                [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,11],
+                [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,11],
+                [2,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,3]
+            ],
+            objects: [
+                {"id":"f89_mnmjgqrqvarsi","x":30,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmjgqrqvarsi","x":30,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmjgriydhuji","x":28,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmjgriydhuji","x":28,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmjgsn35a25t","x":30,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmjgsn35a25t","x":30,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmjgsz253pzo","x":29,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmjgsz253pzo","x":29,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmjgtj3hkaij","x":28,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmjgtj3hkaij","x":28,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkyybcypktk","x":27,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkyybcypktk","x":27,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkyz78wnm07","x":26,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkyz78wnm07","x":26,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkyzn0oj6g0","x":26,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkyzn0oj6g0","x":26,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkz13pskdeb","x":24,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkz13pskdeb","x":24,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkz29u6me4y","x":20,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkz29u6me4y","x":20,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkz2x6l42ku","x":22,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkz2x6l42ku","x":22,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkz39pezava","x":23,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkz39pezava","x":23,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkz46teu2i3","x":24,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkz46teu2i3","x":24,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkz4y4j7nes","x":22,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkz4y4j7nes","x":22,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkz5cr55of9","x":21,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkz5cr55of9","x":21,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkz6qo5hnh2","x":18,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkz6qo5hnh2","x":18,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkz6yzc1ebe","x":17,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkz6yzc1ebe","x":17,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkz7ja9yre8","x":17,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkz7ja9yre8","x":17,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzep569pjo","x":16,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzep569pjo","x":16,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzfo8zapy2","x":15,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzfo8zapy2","x":15,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzg96v7wt8","x":15,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzg96v7wt8","x":15,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzgif77si8","x":14,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzgif77si8","x":14,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzhguom9nb","x":12,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzhguom9nb","x":12,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzhnc44i1y","x":11,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzhnc44i1y","x":11,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzi0zeey96","x":10,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzi0zeey96","x":10,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkziesrpzj3","x":9,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkziesrpzj3","x":9,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzism3r3r1","x":8,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzism3r3r1","x":8,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzj1xr92rr","x":7,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzj1xr92rr","x":7,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzjk1zbjj3","x":14,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzjk1zbjj3","x":14,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzk5m52i6n","x":12,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzk5m52i6n","x":12,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzl0f0llsi","x":11,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzl0f0llsi","x":11,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzlblrs23l","x":10,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzlblrs23l","x":10,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzlp3qrg2a","x":9,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzlp3qrg2a","x":9,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzm4ovrrmh","x":8,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzm4ovrrmh","x":8,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmkzmkmm5zdx","x":7,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmkzmkmm5zdx","x":7,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnml0rp9q9l1g","x":6,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnml0rp9q9l1g","x":6,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnml0suyk1z3s","x":6,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnml0suyk1z3s","x":6,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnml0uxla56e4","x":1,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnml0uxla56e4","x":1,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f91_mnml1a3dv9152","x":2,"y":3,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f14_mnml1n6feaqle","x":1,"y":4,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnml1n6feaqle","x":1,"y":3,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f14_mnml1nsorll5p","x":1,"y":6,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnml1nsorll5p","x":1,"y":5,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f87_mnml1tzinshot","x":3,"y":5,"type":"prop","name":"Ancient Plant (Healthy)"},
+                {"id":"f86_mnml1tzinshot","x":3,"y":4,"type":"prop","name":"Ancient Plant (Healthy)"},
+                {"id":"f89_mnml236vakl1s","x":1,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnml236vakl1s","x":1,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f91_mnml285cwcdcl","x":4,"y":7,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f91_mnml2fs5rjaq1","x":3,"y":3,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f91_mnml2gz236d8f","x":3,"y":7,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f89_mnml2jahbnmer","x":2,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnml2jahbnmer","x":2,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnml2jx0m2lmk","x":4,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnml2jx0m2lmk","x":4,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f106_mnml2u5dy5wt6","x":4,"y":4,"type":"prop","name":"Warning Sign (Side)"},
+                {"id":"f106_mnml2uiq6q7hv","x":4,"y":5,"type":"prop","name":"Warning Sign (Side)"},
+                {"id":"f106_mnml2uwxcj7jm","x":4,"y":6,"type":"prop","name":"Warning Sign (Side)"},
+                {"id":"f14_mnml5nq1xhrg6","x":25,"y":3,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnml5nq1xhrg6","x":25,"y":2,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f14_mnml5pq9dd38q","x":13,"y":3,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnml5pq9dd38q","x":13,"y":2,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f14_mnml5riemtdhs","x":13,"y":7,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnml5riemtdhs","x":13,"y":6,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f14_mnml5utqpgkuh","x":19,"y":7,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnml5utqpgkuh","x":19,"y":6,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f14_mnml5vxuzrtuo","x":19,"y":3,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnml5vxuzrtuo","x":19,"y":2,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f14_mnml5xw8cjgkw","x":5,"y":3,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnml5xw8cjgkw","x":5,"y":2,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f8_mnml6bi41t1xg","x":5,"y":4,"type":"prop","name":"Chemical Table A"},
+                {"id":"f14_mnml6iuqvqu1s","x":5,"y":7,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnml6iuqvqu1s","x":5,"y":6,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f9_mnml6lhdzxj7u","x":5,"y":6,"type":"prop","name":"Protein Sequencer A"},
+                {"id":"f14_mnml6ylbcqbhi","x":31,"y":7,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnml6ylbcqbhi","x":31,"y":6,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f14_mnml6z5nd2hig","x":31,"y":3,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnml6z5nd2hig","x":31,"y":2,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f14_mnml8bsz19ero","x":25,"y":7,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnml8bsz19ero","x":25,"y":6,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f60_mnml8n3a1aug4","x":31,"y":4,"type":"prop","name":"Small Odd Carton Box"},
+                {"id":"f60_mnml8rhncwrsw","x":30,"y":6,"type":"prop","name":"Small Odd Carton Box"},
+                {"id":"f26_mnml95ppe7tc1","x":25,"y":4,"type":"prop","name":"Long Table D"},
+                {"id":"f27_mnml95ppe7tc1","x":26,"y":4,"type":"prop","name":"Long Table D"},
+                {"id":"f9_mnml9ezwblu1j","x":31,"y":6,"type":"prop","name":"Protein Sequencer A"},
+                {"id":"f8_mnmlc0x3z2oic","x":14,"y":5,"type":"prop","name":"Chemical Table A"},
+                {"id":"f26_mnmlc3wyyvkcf","x":15,"y":5,"type":"prop","name":"Long Table D"},
+                {"id":"f27_mnmlc3wyyvkcf","x":16,"y":5,"type":"prop","name":"Long Table D"},
+                {"id":"f8_mnmlc5y007wxk","x":17,"y":5,"type":"prop","name":"Chemical Table A"},
+                {"id":"f89_mnmld6xp88muj","x":20,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmld6xp88muj","x":20,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f60_mnmle5wyq8sgb","x":19,"y":4,"type":"prop","name":"Small Odd Carton Box"},
+                {"id":"f60_mnmlfp6d7ptea","x":20,"y":4,"type":"prop","name":"Small Odd Carton Box"},
+                {"id":"f8_mnmlg3mvc92ri","x":24,"y":6,"type":"prop","name":"Chemical Table A"},
+                {"id":"f8_mnmlg8v6jzkyh","x":23,"y":6,"type":"prop","name":"Chemical Table A"},
+                {"id":"f9_mnmlgdmhx61qb","x":24,"y":4,"type":"prop","name":"Protein Sequencer A"},
+                {"id":"f60_mnmlgpxxhv8uw","x":22,"y":6,"type":"prop","name":"Small Odd Carton Box"},
+                {"id":"f62_mnmlgvtqlmsgg","x":27,"y":4,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f61_mnmlgvtqlmsgg","x":27,"y":3,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f62_mnmlh06frez8r","x":30,"y":4,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f61_mnmlh06frez8r","x":30,"y":3,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f60_mnmlh1o69rpob","x":29,"y":4,"type":"prop","name":"Small Odd Carton Box"},
+                {"id":"f62_mnmlh4v8wm1fl","x":28,"y":6,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f61_mnmlh4v8wm1fl","x":28,"y":5,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f60_mnmlh6gpfhxfy","x":27,"y":6,"type":"prop","name":"Small Odd Carton Box"},
+                {"id":"f91_mnmlhbtpmf79a","x":29,"y":6,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f91_mnmlhetpsz743","x":27,"y":7,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f91_mnmlhhuhpei73","x":29,"y":3,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f91_mnmlhjr1yftam","x":23,"y":7,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f91_mnmlhm9bw9ybe","x":21,"y":3,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f91_mnmlhsl0djdeh","x":26,"y":6,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f91_mnmlhz3yx940q","x":28,"y":4,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f89_mnmlibxfof4l4","x":25,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmlibxfof4l4","x":25,"y":5,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f91_mnmmcdmsuq29a","x":9,"y":7,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f91_mnmmcdxm873oa","x":10,"y":7,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f57_mnmmd2f0tw58x","x":10,"y":5,"type":"prop","name":"Leader Desk B (Vertical)"},
+                {"id":"f56_mnmmd2f0tw58x","x":10,"y":4,"type":"prop","name":"Leader Desk B (Vertical)"},
+                {"id":"f28_mnmmd5i202fq2","x":11,"y":5,"type":"prop","name":"Leader Desk"},
+                {"id":"f29_mnmmd5i202fq2","x":12,"y":5,"type":"prop","name":"Leader Desk"},
+                {"id":"f7_mnmmdabzjwvt7","x":13,"y":5,"type":"prop","name":"Compute Station A"},
+                {"id":"f0_mnmmddxr4zcw8","x":11,"y":4,"type":"prop","name":"Chair A (Left-Face)"},
+                {"id":"f89_mnmmfskwdlw7q","x":18,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmmfskwdlw7q","x":18,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f91_mnmmg2nyowh1p","x":16,"y":7,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f89_mnmmgetn2l4ou","x":18,"y":5,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmmgetn2l4ou","x":18,"y":4,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmmggsxtw059","x":19,"y":5,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmmggsxtw059","x":19,"y":4,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f62_mnmmh16bp05n6","x":20,"y":6,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f61_mnmmh16bp05n6","x":20,"y":5,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f60_mnmmh6c15uled","x":19,"y":6,"type":"prop","name":"Small Odd Carton Box"},
+                {"id":"f60_mnmmhc1l2o48s","x":21,"y":6,"type":"prop","name":"Small Odd Carton Box"},
+                {"id":"f58_mnmmhj8bbbfmm","x":23,"y":4,"type":"prop","name":"Small Storage Cabinet"},
+                {"id":"f62_mnmmnulxuhdpo","x":12,"y":6,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f61_mnmmnulxuhdpo","x":12,"y":5,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f60_mnmmnzda5m4vf","x":13,"y":6,"type":"prop","name":"Small Odd Carton Box"},
+                {"id":"f62_mnmmoaf7a1lzy","x":20,"y":5,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f61_mnmmoaf7a1lzy","x":20,"y":4,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f60_mnmmoigimewus","x":21,"y":5,"type":"prop","name":"Small Odd Carton Box"},
+                {"id":"f60_mnmmom6xy2tfl","x":26,"y":5,"type":"prop","name":"Small Odd Carton Box"},
+                {"id":"npc_wild_1775445963632_592","monsterId":"stemmy","x":13,"y":4,"type":"npc","name":"Stemmy","direction":"down","customSprite":"c0","temp":true},
+                {"id":"f14_mnmn1p57vp494","x":25,"y":7,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnmn1p57vp494","x":25,"y":6,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f89_mnmn1v1ozdp3n","x":24,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmn1v1ozdp3n","x":24,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f26_mnmn2eadd324g","x":24,"y":6,"type":"prop","name":"Long Table D"},
+                {"id":"f27_mnmn2eadd324g","x":25,"y":6,"type":"prop","name":"Long Table D"},
+                {"id":"f91_mnmnfd926ldgr","x":7,"y":3,"type":"prop","name":"Empty Potted Pot"},
+                {"id":"f60_mnmnfwzur32eh","x":6,"y":4,"type":"prop","name":"Small Odd Carton Box"},
+                {"id":"f62_mnmng14swfnhc","x":7,"y":4,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f61_mnmng14swfnhc","x":7,"y":3,"type":"prop","name":"Stacked Box Pile"},
+                {"id":"f60_mnmng8w8i3d8l","x":6,"y":6,"type":"prop","name":"Small Odd Carton Box"}
+            ],
+            doors: [
+                {"x":32,"y":5,"targetZone":"botanic","targetX":1,"targetY":13}
+            ]
+        },
+        preservationRoom: {
+            name: 'PRESERVATION ROOM',
+            width: 33,
+            height: 9,
+            spawn: { x: 1, y: 5 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+            ],
+            objects: [
+                // --- Back Wall Leaning (Tops for Row 3) ---
+                { id: 'f15_t3_1', x: 1, y: 2, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_t3_5', x: 5, y: 2, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_t3_8', x: 8, y: 2, type: 'prop', name: 'Tank Top' },
+                { id: 'f61_t3_10', x: 10, y: 2, type: 'prop', name: 'Box Top' }, // Revision 5: Leaning box top
+                { id: 'f15_t3_14', x: 14, y: 2, type: 'prop', name: 'Tank Top' },
+                { id: 'f61_t3_15', x: 15, y: 2, type: 'prop', name: 'Box Top' }, // Revision 5: Leaning box top
+                { id: 'f61_t3_25', x: 25, y: 2, type: 'prop', name: 'Box Top' }, // Leaning box pile for f62 at (25,3)
+                { id: 'f15_t3_26', x: 26, y: 2, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_t3_29', x: 29, y: 2, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_t3_31', x: 31, y: 2, type: 'prop', name: 'Tank Top' },
+
+                // --- Row 3 (Tops/Equipment) ---
+                { id: 'f16_3_1', x: 1, y: 3, type: 'prop' },
+                { id: 'f80_3_3', x: 3, y: 3, type: 'prop' }, { id: 'f4_3_3', x: 3, y: 3, type: 'prop', name: 'Table Segment' },
+                { id: 'f81_3_4', x: 4, y: 3, type: 'prop' }, { id: 'f5_3_4', x: 4, y: 3, type: 'prop', name: 'Table Segment' },
+                { id: 'f16_3_5', x: 5, y: 3, type: 'prop' },
+                { id: 'f80_3_6', x: 6, y: 3, type: 'prop' }, { id: 'f81_3_7', x: 7, y: 3, type: 'prop' },
+                { id: 'f16_3_8', x: 8, y: 3, type: 'prop' },
+                { id: 'f80_3_9', x: 9, y: 3, type: 'prop' },
+                { id: 'f81_3_10', x: 10, y: 3, type: 'prop' }, { id: 'f62_3_10', x: 10, y: 3, type: 'prop' }, // Revision 5: Box Bottom at (10,3)
+                { id: 'f80_3_12', x: 12, y: 3, type: 'prop' }, { id: 'f9_3_12', x: 12, y: 3, type: 'prop' }, // Overlap f80/f9
+                { id: 'f81_3_13', x: 13, y: 3, type: 'prop' }, { id: 'f60_3_13', x: 13, y: 3, type: 'prop' }, // Overlap f81/f60
+                { id: 'f16_3_14', x: 14, y: 3, type: 'prop' },
+                { id: 'f80_3_15', x: 15, y: 3, type: 'prop' }, { id: 'f62_3_15', x: 15, y: 3, type: 'prop' }, // Revision 5: Box Bottom at (15,3)
+                { id: 'f81_3_16', x: 16, y: 3, type: 'prop' },
+                { id: 'f80_3_18', x: 18, y: 3, type: 'prop' },
+                { id: 'f81_3_19', x: 19, y: 3, type: 'prop' }, { id: 'f60_3_19', x: 19, y: 3, type: 'prop' },
+                { id: 'f48_3_20', x: 20, y: 3, type: 'prop', name: 'Hand Box' },
+                { id: 'f80_3_21', x: 21, y: 3, type: 'prop' }, { id: 'f81_3_22', x: 22, y: 3, type: 'prop' },
+                { id: 'f60_3_23', x: 23, y: 3, type: 'prop' },
+                { id: 'f80_3_24', x: 24, y: 3, type: 'prop' }, { id: 'f60_3_24', x: 24, y: 3, type: 'prop' }, // Overlap f80/f60
+                { id: 'f81_3_25', x: 25, y: 3, type: 'prop' }, { id: 'f62_3_25', x: 25, y: 3, type: 'prop' }, // Overlap f81/f62
+                { id: 'f16_3_26', x: 26, y: 3, type: 'prop' },
+                { id: 'f80_3_27', x: 27, y: 3, type: 'prop' }, { id: 'f60_3_27', x: 27, y: 3, type: 'prop' }, { id: 'f8_3_27', x: 27, y: 3, type: 'prop', name: 'Lab Cylinders' }, // Overlap f80/f60/f8
+                { id: 'f81_3_28', x: 28, y: 3, type: 'prop' }, { id: 'f7_3_28', x: 28, y: 3, type: 'prop' }, // Overlap f81/f7
+                { id: 'f16_3_29', x: 29, y: 3, type: 'prop' },
+                { id: 'f48_3_30', x: 30, y: 3, type: 'prop', name: 'Hand Box' },
+                { id: 'f16_3_31', x: 31, y: 3, type: 'prop' },
+
+                // --- Row 4 (Bottoms) ---
+                { id: 'f82_4_3', x: 3, y: 4, type: 'prop' }, { id: 'f83_4_4', x: 4, y: 4, type: 'prop' },
+                { id: 'f60_4_5', x: 5, y: 4, type: 'prop' },
+                { id: 'f82_4_6', x: 6, y: 4, type: 'prop' }, { id: 'f83_4_7', x: 7, y: 4, type: 'prop' },
+                { id: 'f48_4_8', x: 8, y: 4, type: 'prop', name: 'Hand Box' },
+                { id: 'f82_4_9', x: 9, y: 4, type: 'prop' },
+                { id: 'f83_4_10', x: 10, y: 4, type: 'prop' },
+                { id: 'f82_4_12', x: 12, y: 4, type: 'prop' },
+                { id: 'f83_4_13', x: 13, y: 4, type: 'prop' },
+                { id: 'f82_4_15', x: 15, y: 4, type: 'prop' },
+                { id: 'f83_4_16', x: 16, y: 4, type: 'prop' },
+                { id: 'f82_4_18', x: 18, y: 4, type: 'prop' }, { id: 'f83_4_19', x: 19, y: 4, type: 'prop' },
+                { id: 'f7_4_20', x: 20, y: 4, type: 'prop', name: 'PC Terminal' },
+                { id: 'f82_4_21', x: 21, y: 4, type: 'prop' }, { id: 'f83_4_22', x: 22, y: 4, type: 'prop' },
+                { id: 'f82_4_24', x: 24, y: 4, type: 'prop' }, { id: 'f83_4_25', x: 25, y: 4, type: 'prop' },
+                { id: 'f60_4_26', x: 26, y: 4, type: 'prop' },
+                { id: 'f82_4_27', x: 27, y: 4, type: 'prop' }, { id: 'f83_4_28', x: 28, y: 4, type: 'prop' },
+
+                // --- Row 5 (Tops) ---
+                { id: 'f80_5_3', x: 3, y: 5, type: 'prop' }, { id: 'f81_5_4', x: 4, y: 5, type: 'prop' },
+                { id: 'f48_5_5', x: 5, y: 5, type: 'prop', name: 'Hand Box' },
+                { id: 'f80_5_6', x: 6, y: 5, type: 'prop' }, { id: 'f81_5_7', x: 7, y: 5, type: 'prop' },
+                { id: 'f61_5_8', x: 8, y: 5, type: 'prop' },
+                { id: 'f80_5_9', x: 9, y: 5, type: 'prop' }, { id: 'f81_5_10', x: 10, y: 5, type: 'prop' },
+                { id: 'f48_5_11', x: 11, y: 5, type: 'prop', name: 'Hand Box' },
+                { id: 'f80_5_12', x: 12, y: 5, type: 'prop' }, { id: 'f81_5_13', x: 13, y: 5, type: 'prop' },
+                { id: 'f80_5_15', x: 15, y: 5, type: 'prop' }, { id: 'f4_5_15', x: 15, y: 5, type: 'prop', name: 'Table Segment' },
+                { id: 'f81_5_16', x: 16, y: 5, type: 'prop' }, { id: 'f5_5_16', x: 16, y: 5, type: 'prop', name: 'Table Segment' },
+                { id: 'f80_5_18', x: 18, y: 5, type: 'prop' }, { id: 'f81_5_19', x: 19, y: 5, type: 'prop' },
+                { id: 'f80_5_21', x: 21, y: 5, type: 'prop' }, { id: 'f60_5_21', x: 21, y: 5, type: 'prop' }, { id: 'f9_5_21', x: 21, y: 5, type: 'prop', name: 'Bio Scanner' }, // Revision 5: Added box and scanner overlap
+                { id: 'f81_5_22', x: 22, y: 5, type: 'prop' }, { id: 'f9_5_22', x: 22, y: 5, type: 'prop', name: 'Bio Scanner' },
+                { id: 'f80_5_24', x: 24, y: 5, type: 'prop' }, { id: 'f81_5_25', x: 25, y: 5, type: 'prop' },
+                { id: 'f80_5_27', x: 27, y: 5, type: 'prop' }, { id: 'f81_5_28', x: 28, y: 5, type: 'prop' },
+
+                // --- Row 6 (Bottoms/Tops overlap) ---
+                { id: 'f82_6_3', x: 3, y: 6, type: 'prop' }, { id: 'f61_6_3', x: 3, y: 6, type: 'prop' }, // Overlap f82/f61 for f62 at (3,7)
+                { id: 'f83_6_4', x: 4, y: 6, type: 'prop' },
+                { id: 'f15_6_5', x: 5, y: 6, type: 'prop', name: 'Tank Top' }, // Top for Tank at (5,7)
+                { id: 'f82_6_6', x: 6, y: 6, type: 'prop' },
+                { id: 'f83_6_7', x: 7, y: 6, type: 'prop' }, { id: 'f61_6_7', x: 7, y: 6, type: 'prop' }, // Overlap f83/f61 for f62 at (7,7)
+                { id: 'f62_6_8', x: 8, y: 6, type: 'prop' },
+                { id: 'f82_6_9', x: 9, y: 6, type: 'prop' }, { id: 'f83_6_10', x: 10, y: 6, type: 'prop' },
+                { id: 'f82_6_12', x: 12, y: 6, type: 'prop' }, { id: 'f83_6_13', x: 13, y: 6, type: 'prop' },
+                { id: 'f82_6_15', x: 15, y: 6, type: 'prop' },
+                { id: 'f83_6_16', x: 16, y: 6, type: 'prop' },
+                { id: 'f8_6_17', x: 17, y: 6, type: 'prop', name: 'Lab Cylinders' }, // Revision 4
+                { id: 'f82_6_18', x: 18, y: 6, type: 'prop' }, { id: 'f83_6_19', x: 19, y: 6, type: 'prop' },
+                { id: 'f82_6_21', x: 21, y: 6, type: 'prop' }, { id: 'f83_6_22', x: 22, y: 6, type: 'prop' },
+                { id: 'f15_6_23', x: 23, y: 6, type: 'prop', name: 'Tank Top' }, { id: 'f8_6_23', x: 23, y: 6, type: 'prop', name: 'Lab Cylinders' },
+                { id: 'f82_6_24', x: 24, y: 6, type: 'prop' }, { id: 'f61_6_24', x: 24, y: 6, type: 'prop' }, // Overlap f82/f61 for f62 at (24,7)
+                { id: 'f83_6_25', x: 25, y: 6, type: 'prop' },
+                { id: 'f61_6_26', x: 26, y: 6, type: 'prop' }, { id: 'f60_6_26', x: 26, y: 6, type: 'prop' },
+                { id: 'f82_6_27', x: 27, y: 6, type: 'prop' }, { id: 'f83_6_28', x: 28, y: 6, type: 'prop' },
+
+                // Row 6 Missing Tops for Row 7 Tanks
+                { id: 'f15_6_1', x: 1, y: 6, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_6_11', x: 11, y: 6, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_6_23', x: 23, y: 6, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_6_29', x: 29, y: 6, type: 'prop', name: 'Tank Top' },
+                { id: 'f15_6_31', x: 31, y: 6, type: 'prop', name: 'Tank Top' },
+
+                // --- Row 7 (Bottoms) ---
+                { id: 'f16_7_1', x: 1, y: 7, type: 'prop' },
+                { id: 'f62_7_3', x: 3, y: 7, type: 'prop' },
+                { id: 'f16_7_5', x: 5, y: 7, type: 'prop' },
+                { id: 'f60_7_6', x: 6, y: 7, type: 'prop' },
+                { id: 'f62_7_7', x: 7, y: 7, type: 'prop' },
+                { id: 'f4_7_8', x: 8, y: 7, type: 'prop', name: 'Table Segment' }, { id: 'f5_7_9', x: 9, y: 7, type: 'prop', name: 'Table Segment' },
+                { id: 'f8_7_10', x: 10, y: 7, type: 'prop', name: 'Lab Cylinders' },
+                { id: 'f16_7_11', x: 11, y: 7, type: 'prop' },
+                { id: 'f9_7_12', x: 12, y: 7, type: 'prop' },
+                { id: 'f48_7_16', x: 16, y: 7, type: 'prop', name: 'Hand Box' },
+                { id: 'f60_7_17', x: 17, y: 7, type: 'prop' },
+                { id: 'f48_7_18', x: 18, y: 7, type: 'prop', name: 'Hand Box' },
+                { id: 'f8_7_21', x: 21, y: 7, type: 'prop', name: 'Lab Cylinders' },
+                { id: 'f9_7_22', x: 22, y: 7, type: 'prop' },
+                { id: 'f16_7_23', x: 23, y: 7, type: 'prop' },
+                { id: 'f62_7_24', x: 24, y: 7, type: 'prop' },
+                { id: 'f60_7_25', x: 25, y: 7, type: 'prop' }, { id: 'f62_7_26', x: 26, y: 7, type: 'prop' }, { id: 'f60_7_27', x: 27, y: 7, type: 'prop' },
+                { id: 'f7_7_28', x: 28, y: 7, type: 'prop' },
+                { id: 'f16_7_29', x: 29, y: 7, type: 'prop' },
+                { id: 'f48_7_30', x: 30, y: 7, type: 'prop', name: 'Hand Box' },
+                { id: 'f16_7_31', x: 31, y: 7, type: 'prop' }
+            ],
+            doors: [
+                { x: 0, y: 5, targetZone: 'human', targetX: 13, targetY: 13 }
+            ]
+        },
+        human: {
+            name: 'HUMAN RESEARCH WARD',
+            width: 15,
+            height: 16,
+            spawn: { x: 7, y: 13 },
+            spawnPool: { stemmy: 60, nitrophil: 10, cambihil: 10, lydrosome: 20 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 32, 32, 32, 15, 15, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Exit to Atrium (Left) and Preservation Room (Right)
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3]
+            ],
+            objects: [
+                { id: 'dyzes', x: 7, y: 3, type: 'npc', name: 'Dyzes' },
+                { id: 'npc_female_hum1', x: 7, y: 8, type: 'npc', name: 'Researcher Maya' },
+                { id: 'npc_female_hum2', x: 10, y: 10, type: 'npc', name: 'Researcher Elena' },
+                { id: 'npc_male_silas', x: 2, y: 11, type: 'npc', name: 'Researcher Silas' },
+                { id: 'npc_male_finn', x: 12, y: 7, type: 'npc', name: 'Researcher Finn' },
+
+
+
+                // Row 2
+                { id: 'f52_r2a', x: 1, y: 2, type: 'prop', name: 'Archive' }, { id: 'f53_r2a', x: 2, y: 2, type: 'prop', name: 'Archive' },
+                { id: 'f15_r2a', x: 3, y: 2, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f34_r2a', x: 4, y: 2, type: 'prop', name: 'Skeleton' },
+                { id: 'f34_r2b', x: 10, y: 2, type: 'prop', name: 'Skeleton' },
+                { id: 'f15_r2b', x: 11, y: 2, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f52_r2d', x: 12, y: 2, type: 'prop', name: 'Archive' }, { id: 'f53_r2d', x: 13, y: 2, type: 'prop', name: 'Archive' },
+
+                // Row 3
+                { id: 'f54_r3a', x: 1, y: 3, type: 'prop', name: 'Archive' }, { id: 'f55_r3a', x: 2, y: 3, type: 'prop', name: 'Archive' },
+                { id: 'f16_r3a', x: 3, y: 3, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f35_r3a', x: 4, y: 3, type: 'prop', name: 'Skeleton' },
+                { id: 'f48_r3a', x: 5, y: 3, type: 'prop', name: 'Hand Box' },
+                { id: 'f48_r3b', x: 9, y: 3, type: 'prop', name: 'Hand Box' },
+                { id: 'f35_r3b', x: 10, y: 3, type: 'prop', name: 'Skeleton' },
+                { id: 'f16_r3b', x: 11, y: 3, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f54_r3d', x: 12, y: 3, type: 'prop', name: 'Archive' }, { id: 'f55_r3d', x: 13, y: 3, type: 'prop', name: 'Archive' },
+
+                // Row 4 (Empty in new grid)
+
+                // Row 5 (Stasis Tanks + Storage Pods top)
+                { id: 'f15_r5a', x: 1, y: 5, type: 'prop', name: 'Stasis Tank' }, { id: 'f84_r5a', x: 2, y: 5, type: 'prop', name: 'Storage Pod' },
+                { id: 'f15_r5b', x: 3, y: 5, type: 'prop', name: 'Stasis Tank' }, { id: 'f84_r5b', x: 4, y: 5, type: 'prop', name: 'Storage Pod' },
+                { id: 'f15_r5c', x: 5, y: 5, type: 'prop', name: 'Stasis Tank' }, { id: 'f84_r5c', x: 6, y: 5, type: 'prop', name: 'Storage Pod' },
+                { id: 'f84_r5d', x: 8, y: 5, type: 'prop', name: 'Storage Pod' }, { id: 'f15_r5d', x: 9, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f84_r5e', x: 10, y: 5, type: 'prop', name: 'Storage Pod' }, { id: 'f15_r5e', x: 11, y: 5, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f84_r5f', x: 12, y: 5, type: 'prop', name: 'Storage Pod' }, { id: 'f15_r5f', x: 13, y: 5, type: 'prop', name: 'Stasis Tank' },
+
+                // Row 6 (Stasis Tanks + Storage Pods bottom)
+                { id: 'f16_r6a', x: 1, y: 6, type: 'prop', name: 'Stasis Tank' }, { id: 'f85_r6a', x: 2, y: 6, type: 'prop', name: 'Storage Pod' },
+                { id: 'f16_r6b', x: 3, y: 6, type: 'prop', name: 'Stasis Tank' }, { id: 'f85_r6b', x: 4, y: 6, type: 'prop', name: 'Storage Pod', hiddenLogId: 'Log013' },
+                { id: 'f16_r6c', x: 5, y: 6, type: 'prop', name: 'Stasis Tank' }, { id: 'f85_r6c', x: 6, y: 6, type: 'prop', name: 'Storage Pod' },
+                { id: 'f85_r6d', x: 8, y: 6, type: 'prop', name: 'Storage Pod' }, { id: 'f16_r6d', x: 9, y: 6, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f85_r6e', x: 10, y: 6, type: 'prop', name: 'Storage Pod' }, { id: 'f16_r6e', x: 11, y: 6, type: 'prop', name: 'Stasis Tank' },
+                { id: 'f85_r6f', x: 12, y: 6, type: 'prop', name: 'Storage Pod' }, { id: 'f16_r6f', x: 13, y: 6, type: 'prop', name: 'Stasis Tank' },
+
+                // Row 7 (Skeleton + Maya)
+                { id: 'f34_r7a', x: 4, y: 7, type: 'prop', name: 'Skeleton' },
+                // Maya is declared at the top of objects array at (x:6, y:7) now. (I will assume her Y is 7 here despite the grid putting MAY on row 7, because in the grid row 7 is MAY, but she was declared at (6,6) originally. We'll leave her at 6,7 as requested).
+
+                // Row 8 (CryoPods + Skeletons)
+                { id: 'f48_r8a', x: 1, y: 8, type: 'prop', name: 'Hand Box' },
+                { id: 'f65_r8a', x: 2, y: 8, type: 'prop', name: 'CryoPod' }, { id: 'f66_r8a', x: 3, y: 8, type: 'prop', name: 'CryoPod' },
+                { id: 'f35_r8a', x: 4, y: 8, type: 'prop', name: 'Skeleton' },
+                { id: 'f65_r8b', x: 5, y: 8, type: 'prop', name: 'CryoPod' }, { id: 'f66_r8b', x: 6, y: 8, type: 'prop', name: 'CryoPod' },
+                { id: 'f65_r8c', x: 8, y: 8, type: 'prop', name: 'CryoPod' }, { id: 'f66_r8c', x: 9, y: 8, type: 'prop', name: 'CryoPod', hiddenLogId: 'Log015' },
+                { id: 'f65_r8d', x: 11, y: 8, type: 'prop', name: 'CryoPod' }, { id: 'f66_r8d', x: 12, y: 8, type: 'prop', name: 'CryoPod' },
+                { id: 'f48_r8b', x: 13, y: 8, type: 'prop', name: 'Hand Box' },
+
+                // Row 9 (Skeletons + Incubators)
+                { id: 'f34_r9a', x: 1, y: 9, type: 'prop', name: 'Skeleton' },
+                { id: 'f38_r9a', x: 8, y: 9, type: 'prop', name: 'Incubator' }, { id: 'f39_r9a', x: 9, y: 9, type: 'prop', name: 'Incubator' },
+                { id: 'f34_r9b', x: 13, y: 9, type: 'prop', name: 'Skeleton' },
+
+                // Row 10 (Skeletons + CryoPods + Tables + Incubators)
+                { id: 'f35_r10a', x: 1, y: 10, type: 'prop', name: 'Skeleton' },
+                { id: 'f65_r10a', x: 2, y: 10, type: 'prop', name: 'CryoPod' }, { id: 'f66_r10a', x: 3, y: 10, type: 'prop', name: 'CryoPod' },
+                { id: 'f4_r10a', x: 5, y: 10, type: 'prop', name: 'Table' }, { id: 'f5_r10a', x: 6, y: 10, type: 'prop', name: 'Table' },
+                { id: 'f8_r10a', x: 7, y: 10, type: 'prop', name: 'Lab Cylinders' },
+                { id: 'f40_r10a', x: 8, y: 10, type: 'prop', name: 'Incubator' }, { id: 'f41_r10a', x: 9, y: 10, type: 'prop', name: 'Incubator' },
+                { id: 'f65_r10b', x: 11, y: 10, type: 'prop', name: 'CryoPod' }, { id: 'f66_r10b', x: 12, y: 10, type: 'prop', name: 'CryoPod' },
+                { id: 'f35_r10b', x: 13, y: 10, type: 'prop', name: 'Skeleton' },
+
+                // Row 11
+                { id: 'f34_r11a', x: 7, y: 11, type: 'prop', name: 'Skeleton' },
+
+                // Row 12 (CryoPods + Skeletons)
+                { id: 'f48_r12a', x: 1, y: 12, type: 'prop', name: 'Hand Box' },
+                { id: 'f65_r12a', x: 2, y: 12, type: 'prop', name: 'CryoPod', hiddenLogId: 'Log014' }, { id: 'f66_r12a', x: 3, y: 12, type: 'prop', name: 'CryoPod' },
+                { id: 'f65_r12b', x: 5, y: 12, type: 'prop', name: 'CryoPod' }, { id: 'f66_r12b', x: 6, y: 12, type: 'prop', name: 'CryoPod' },
+                { id: 'f35_r12a', x: 7, y: 12, type: 'prop', name: 'Skeleton' },
+                { id: 'f65_r12c', x: 8, y: 12, type: 'prop', name: 'CryoPod' }, { id: 'f66_r12c', x: 9, y: 12, type: 'prop', name: 'CryoPod' },
+                { id: 'f48_r12b', x: 10, y: 12, type: 'prop', name: 'Hand Box' },
+                { id: 'f65_r12d', x: 11, y: 12, type: 'prop', name: 'CryoPod' }, { id: 'f66_r12d', x: 12, y: 12, type: 'prop', name: 'CryoPod' },
+                { id: 'f48_r12c', x: 13, y: 12, type: 'prop', name: 'Hand Box' },
+
+                // Row 14 (Boxes at entry - Grid row 13)
+                { id: 'f61_r14b', x: 13, y: 13, type: 'prop', name: 'Box Pile' },
+
+                // Row 14
+                { id: 'f9_r14a', x: 1, y: 14, type: 'prop', name: 'Device' },
+                { id: 'f8_r14a', x: 2, y: 14, type: 'prop', name: 'Cylinders' },
+                { id: 'f60_r14c', x: 3, y: 14, type: 'prop', name: 'Storage Box' },
+                { id: 'f36_r14a', x: 4, y: 14, type: 'prop', name: 'Noodles' },
+                { id: 'f9_r14d', x: 5, y: 14, type: 'prop', name: 'Device' },
+                { id: 'f48_r14a', x: 6, y: 14, type: 'prop', name: 'Hand Box' },
+                { id: 'f48_r14b', x: 8, y: 14, type: 'prop', name: 'Hand Box' },
+                { id: 'f9_r14e', x: 9, y: 14, type: 'prop', name: 'Device' },
+                { id: 'f8_r14b', x: 10, y: 14, type: 'prop', name: 'Cylinders' },
+                { id: 'f9_r14f', x: 11, y: 14, type: 'prop', name: 'Device', hiddenLogId: 'Log012' },
+                { id: 'f60_r14b', x: 12, y: 14, type: 'prop', name: 'Box' },
+                { id: 'f62_r14b', x: 13, y: 14, type: 'prop', name: 'Box Pile' }
+            ],
+            doors: [
+                { x: 0, y: 13, targetZone: 'atrium', targetX: 17, targetY: 4 },
+                { x: 7, y: 15, targetZone: 'specimenStorage', targetX: 6, targetY: 3 },
+                { x: 14, y: 13, targetZone: 'preservationRoom', targetX: 1, targetY: 5 }
+            ]
+        },
+        executive: {
+            name: 'EXECUTIVE SUITE',
+            width: 22,
+            height: 9,
+            spawn: { x: 7, y: 7 },
+            spawnPool: { stemmy: 60, nitrophil: 20, cambihil: 10, lydrosome: 10 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1, 0, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 5, 4, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 32, 15, 32, 15, 32, 15, 32, 15, 32, 15, 32, 18, 16, 32, 15, 22, 15, 32, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 19, 17, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 7, 6, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3, 2, 9, 9, 20, 9, 9, 3]
+            ],
+            objects: [
+                { id: 'capsain', x: 7, y: 4, type: 'npc', name: 'Director Capsain' },
+                { id: 'npc_male_exec1', x: 3, y: 5, type: 'npc', name: 'Assistant James' },
+                { id: 'npc_male_exec2', x: 9, y: 7, type: 'npc', name: 'Assistant Robert' },
+
+                // Director Desk (F30, F31) - Moved to y=5
+                { id: 'f30_director', x: 7, y: 5, type: 'prop', name: 'Director Desk', hiddenLogId: 'Log016' },
+                { id: 'f31_director', x: 8, y: 5, type: 'prop', name: 'Director Desk', hiddenLogId: 'Log019' },
+
+                // Central Bookshelf Cluster (F76-F79) and Cabinets (F58)
+                { id: 'f76_execMid', x: 7, y: 2, type: 'prop', name: 'Executive Bookshelf' },
+                { id: 'f77_execMid', x: 8, y: 2, type: 'prop', name: 'Executive Bookshelf' },
+                { id: 'f17_execWall1', x: 17, y: 2, type: 'prop', name: 'Wall Hanging' },
+                { id: 'f17_execWall2', x: 19, y: 2, type: 'prop', name: 'Wall Hanging' },
+                { id: 'f78_execMid', x: 7, y: 3, type: 'prop', name: 'Executive Bookshelf' },
+                { id: 'f79_execMid', x: 8, y: 3, type: 'prop', name: 'Executive Bookshelf' },
+                { id: 'f103_execMidL', x: 6, y: 3, type: 'prop', name: 'Huge Petri Dish' },
+                { id: 'f58_execMidR', x: 9, y: 3, type: 'prop', name: 'Small Cabinet' },
+
+                // Noodle Snacks (F36)
+                { id: 'f36_exec1', x: 3, y: 3, type: 'prop', name: 'Snack' },
+                { id: 'f36_exec2', x: 11, y: 3, type: 'prop', name: 'Snack' },
+                { id: 'f36_exec3', x: 9, y: 5, type: 'prop', name: 'Snack' },
+                { id: 'f36_exec4', x: 1, y: 7, type: 'prop', name: 'Snack' },
+                { id: 'f36_exec5', x: 13, y: 7, type: 'prop', name: 'Snack' },
+
+                // Archives (L) - Clusters (F52-F55)
+                { id: 'f52_execL1', x: 1, y: 2, type: 'prop', name: 'Archives' },
+                { id: 'f53_execL1', x: 2, y: 2, type: 'prop', name: 'Archives' },
+                { id: 'f54_execL1', x: 1, y: 3, type: 'prop', name: 'Archives', hiddenLogId: 'Log017' },
+                { id: 'f55_execL1', x: 2, y: 3, type: 'prop', name: 'Archives', hiddenLogId: 'Log018' },
+
+                { id: 'f52_execL2', x: 1, y: 4, type: 'prop', name: 'Archives' },
+                { id: 'f53_execL2', x: 2, y: 4, type: 'prop', name: 'Archives' },
+                { id: 'f54_execL2', x: 1, y: 5, type: 'prop', name: 'Archives' },
+                { id: 'f55_execL2', x: 2, y: 5, type: 'prop', name: 'Archives' },
+
+                // Archives (R) - F52-F55
+                { id: 'f52_execR', x: 12, y: 2, type: 'prop', name: 'Archives' },
+                { id: 'f53_execR', x: 13, y: 2, type: 'prop', name: 'Archives' },
+                { id: 'f54_execR', x: 12, y: 3, type: 'prop', name: 'Archives' },
+                { id: 'f55_execR', x: 13, y: 3, type: 'prop', name: 'Archives' },
+
+                // Incubator (Center-Left) - F38-F41
+                { id: 'f38_exec', x: 4, y: 2, type: 'prop', name: 'Incubator' },
+                { id: 'f39_exec', x: 5, y: 2, type: 'prop', name: 'Incubator' },
+                { id: 'f40_exec', x: 4, y: 3, type: 'prop', name: 'Incubator' },
+                { id: 'f41_exec', x: 5, y: 3, type: 'prop', name: 'Incubator' },
+
+                // Assistant Desks - F28, F29
+                { id: 'f28_exec1', x: 4, y: 5, type: 'prop', name: 'Assistant Desk' },
+                { id: 'f29_exec1', x: 5, y: 5, type: 'prop', name: 'Assistant Desk' },
+                { id: 'f28_exec2', x: 11, y: 5, type: 'prop', name: 'Assistant Desk' },
+                { id: 'f29_exec2', x: 12, y: 5, type: 'prop', name: 'Assistant Desk' },
+
+                // Corridor (Right) - F76-F79
+                { id: 'f76_execCor', x: 14, y: 3, type: 'prop', name: 'Bookshelf' },
+                { id: 'f77_execCor', x: 15, y: 3, type: 'prop', name: 'Bookshelf' },
+                { id: 'f78_execCor', x: 14, y: 4, type: 'prop', name: 'Bookshelf' },
+                { id: 'f79_execCor', x: 15, y: 4, type: 'prop', name: 'Bookshelf' },
+
+                // Terminals and Tanks
+                { id: 'f7_execCor1', x: 16, y: 3, type: 'prop', name: 'Terminal' },
+                { id: 'f7_execCor2', x: 20, y: 3, type: 'prop', name: 'Terminal' },
+
+                { id: 'f22_exec_C1', x: 17, y: 3, type: 'prop', name: 'Research Tank' },
+                { id: 'f23_exec_C1', x: 17, y: 4, type: 'prop', name: 'Research Tank' },
+                { id: 'f22_exec_C2', x: 17, y: 5, type: 'prop', name: 'Research Tank' },
+                { id: 'f23_exec_C2', x: 17, y: 6, type: 'prop', name: 'Research Tank' },
+
+                { id: 'f22_exec_C3', x: 19, y: 3, type: 'prop', name: 'Research Tank' },
+                { id: 'f23_exec_C3', x: 19, y: 4, type: 'prop', name: 'Research Tank' },
+                { id: 'f22_exec_C4', x: 19, y: 5, type: 'prop', name: 'Research Tank' },
+                { id: 'f23_exec_C4', x: 19, y: 6, type: 'prop', name: 'Research Tank' },
+
+                { id: 'f9_execCor1', x: 16, y: 7, type: 'prop', name: 'Bio Scanner' },
+                { id: 'f9_execCor2', x: 20, y: 7, type: 'prop', name: 'Bio Scanner' },
+
+                // Box Piles and Storage - F60, F61, F62
+                { id: 'f61_execTop1', x: 10, y: 2, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_execBot1', x: 10, y: 3, type: 'prop', name: 'Box Pile' },
+                { id: 'f61_execTop2', x: 3, y: 6, type: 'prop', name: 'Box Pile' },
+                { id: 'f61_execTop3', x: 11, y: 6, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_execBot2', x: 3, y: 7, type: 'prop', name: 'Box Pile' },
+
+                { id: 'f60_exec1', x: 2, y: 7, type: 'prop', name: 'Storage Box' },
+                { id: 'f60_exec2', x: 4, y: 7, type: 'prop', name: 'Storage Box' },
+                { id: 'f8_exec7a', x: 5, y: 7, type: 'prop', name: 'Lab Cylinders' },
+                { id: 'f8_exec7b', x: 10, y: 7, type: 'prop', name: 'Lab Cylinders' },
+                { id: 'f62_execBot3', x: 11, y: 7, type: 'prop', name: 'Box Pile' },
+                { id: 'f60_exec4', x: 12, y: 7, type: 'prop', name: 'Storage Box' }
+            ],
+            doors: [
+                { x: 7, y: 8, targetZone: 'atrium', targetX: 9, targetY: 3 },
+                { x: 18, y: 8, targetZone: 'specimenStorage', targetX: 13, targetY: 3 },
+                { x: 18, y: 2, targetZone: 'library', targetX: 3, targetY: 15 }
+            ]
+        },
+        library: {
+            name: 'EXECUTIVE LIBRARY',
+            width: 7,
+            height: 17,
+            spawn: { x: 3, y: 15 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 20, 9, 9, 3]
+            ],
+            objects: [
+                {
+                    id: 'elara', x: 3, y: 3, type: 'npc', name: 'Elara',
+                    direction: 'down', customSprite: 'T_Char_Sprite_Elara_01',
+                    portrait: 'Character_FullArt_Elara',
+                    proximityTrigger: true, triggerRadius: 3,
+                    triggerY: 1,
+                    sideQuestId: 'quest_elara_ghost'
+                },
+                // Bookshelf Row (Left & Right)
+                { id: 'f76_lib1', x: 1, y: 2, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib1', x: 2, y: 2, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f76_lib2', x: 4, y: 2, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib2', x: 5, y: 2, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib1', x: 1, y: 3, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib1', x: 2, y: 3, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib2', x: 4, y: 3, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib2', x: 5, y: 3, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+
+                { id: 'f76_lib3', x: 1, y: 4, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib3', x: 2, y: 4, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f76_lib4', x: 4, y: 4, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib4', x: 5, y: 4, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib3', x: 1, y: 5, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib3', x: 2, y: 5, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib4', x: 4, y: 5, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib4', x: 5, y: 5, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+
+                { id: 'f76_lib5', x: 1, y: 6, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib5', x: 2, y: 6, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f76_lib6', x: 4, y: 6, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib6', x: 5, y: 6, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib5', x: 1, y: 7, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib5', x: 2, y: 7, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib6', x: 4, y: 7, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib6', x: 5, y: 7, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+
+                { id: 'f76_lib7', x: 1, y: 8, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib7', x: 2, y: 8, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f76_lib8', x: 4, y: 8, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib8', x: 5, y: 8, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib7', x: 1, y: 9, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib7', x: 2, y: 9, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib8', x: 4, y: 9, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib8', x: 5, y: 9, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+
+                { id: 'f76_lib9', x: 1, y: 10, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib9', x: 2, y: 10, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f76_lib10', x: 4, y: 10, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib10', x: 5, y: 10, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib9', x: 1, y: 11, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib9', x: 2, y: 11, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f78_lib10', x: 4, y: 11, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib10', x: 5, y: 11, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+
+                { id: 'f76_lib11', x: 1, y: 12, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f77_lib11', x: 2, y: 12, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f4_lib', x: 4, y: 13, type: 'prop', name: 'Research Table' }, { id: 'f5_lib', x: 5, y: 13, type: 'prop', name: 'Research Table' },
+
+                { id: 'f78_lib11', x: 1, y: 13, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' }, { id: 'f79_lib11', x: 2, y: 13, type: 'prop', name: 'Bookshelf', customSprite: 'tileset-03' },
+                { id: 'f61_lib', x: 1, y: 14, type: 'prop', name: 'Stored Boxes' },
+                { id: 'f0_lib1', x: 5, y: 14, type: 'prop', name: 'Study Chair' },
+
+                { id: 'f62_lib', x: 1, y: 15, type: 'prop', name: 'Stored Boxes' },
+                { id: 'f60_lib', x: 2, y: 15, type: 'prop', name: 'Reference Box' },
+                { id: 'f0_lib2', x: 5, y: 15, type: 'prop', name: 'Study Chair' },
+                { id: 'npc_female_wednesday', x: 4, y: 15, type: 'npc', name: 'Wednesday', direction: 'down' }
+            ],
+            doors: [
+                { x: 3, y: 16, targetZone: 'executive', targetX: 18, targetY: 3 }
+            ]
+        },
+        kitchen: {
+            name: 'STAFF KITCHEN',
+            width: 11,
+            height: 8,
+            spawn: { x: 7, y: 6 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 15, 22, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Exit to Atrium (Shifted Up 2)
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Exit to Atrium (In the wall)
+                [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 3]
+            ],
+            objects: [
+                // Vending Machines (L) - Shifted to Y=2,3
+                { id: 'f67_kitL', x: 1, y: 2, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-TopLeft tileset-03' },
+                { id: 'f68_kitL', x: 2, y: 2, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-TopRight tileset-03' },
+                { id: 'f69_kitL', x: 1, y: 3, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-BottomLeft tileset-03' },
+                { id: 'f70_kitL', x: 2, y: 3, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-BottomRight tileset-03' },
+
+                // Vending Machines (R) - Shifted to Y=2,3
+                { id: 'f67_kitR', x: 8, y: 2, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-TopLeft tileset-03' },
+                { id: 'f68_kitR', x: 9, y: 2, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-TopRight tileset-03' },
+                { id: 'f69_kitR', x: 8, y: 3, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-BottomLeft tileset-03' },
+                { id: 'f70_kitR', x: 9, y: 3, type: 'prop', name: 'Odd-Vend', customSprite: 'VendingMachine-BottomRight tileset-03' },
+
+                // snacks and trash (Y=3)
+                { id: 'f36_kit1', x: 3, y: 3, type: 'prop', name: 'Quick Bite', hiddenLogId: 'Log008' },
+                { id: 'f36_kit2', x: 4, y: 3, type: 'prop', name: 'Forgotten Lunch' },
+                { id: 'f60_kit_trash', x: 5, y: 3, type: 'prop', name: 'Trash Box' },
+                { id: 'f37_kit1', x: 6, y: 3, type: 'prop', name: 'Empty Bowl' },
+
+                // Chairs (L)
+                { id: 'f1_kit1', x: 1, y: 4, type: 'prop', name: 'Kitchen Chair' },
+                { id: 'f1_kit2', x: 1, y: 5, type: 'prop', name: 'Kitchen Chair' },
+
+                // Tables (Center/Right - Y=5)
+                { id: 'f3_kit1', x: 3, y: 5, type: 'prop', name: 'Coffee Table' },
+                { id: 'f3_kit2', x: 5, y: 5, type: 'prop', name: 'Coffee Table' },
+                { id: 'f36_kit4', x: 8, y: 6, type: 'prop', name: 'Mid-Day Snack' },
+                { id: 'f3_kit3', x: 9, y: 6, type: 'prop', name: 'Coffee Table' },
+
+                // Mixed Decor Row (Y=6)
+                { id: 'f59_kit1', x: 1, y: 6, type: 'prop', name: 'Kitchen Fern' },
+                { id: 'f60_kit1', x: 2, y: 6, type: 'prop', name: 'Supplies' },
+                { id: 'f59_kit3', x: 3, y: 6, type: 'prop', name: 'Kitchen Fern' },
+                { id: 'f36_kit3', x: 4, y: 6, type: 'prop', name: 'Abandoned Snack' },
+                { id: 'f59_kit2', x: 5, y: 6, type: 'prop', name: 'Kitchen Fern' },
+                {
+                    id: 'npc_male_theo', x: 4, y: 5, type: 'npc', name: 'Chef Theo', direction: 'down',
+                    battleEncounterId: 'theo',
+                    dialogue: [
+                        "Hungry for progress, Intern? Cooking's all about preparation.",
+                        "Have you used the Vending Machine here in the Kitchen?",
+                        "It’s not just for snacks like noodles; it’s essential for trading Biomass and acquiring Blueprints.",
+                        "Let me show you why stayin' stocked is stayin' alive!"
+                    ],
+                    npcWinDialogue: [
+                        "Sloppy! You came in underprepared.",
+                        "Make sure to stop by the Vending Machine.",
+                        "It sells more than just food; you can trade in your excess Biomass for Lab credits, then use those credits to buy Blueprints for advanced Cells."
+                    ],
+                    npcLossDialogue: [
+                        "Delicious work! You've got the hunger.",
+                        "The Vending Machine here is more than just furniture.",
+                        "It’s not just for grabbing a quick bite like noodles; use your Lab credits to get stock!",
+                        "So remember to visit it to stock up sometime."
+                    ]
+                },
+                { id: 'npc_female_mia', x: 9, y: 5, type: 'npc', name: 'Researcher Mia', direction: 'down' }
+            ],
+            doors: [
+                { x: 10, y: 4, targetZone: 'atrium', targetX: 1, targetY: 7 },
+                { x: 7, y: 2, targetZone: 'botanic', targetX: 7, targetY: 14 },
+                { x: 7, y: 7, targetZone: 'entertainment', targetX: 7, targetY: 3, requiredFlag: 'botanicSectorUnlocked' }
+            ]
+        },
+        storage: {
+            name: 'STORAGE BAY',
+            width: 10,
+            height: 8,
+            spawn: { x: 1, y: 6 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 22, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 11], // Exit to Atrium (On the left wall)
+                [2, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+            ],
+            objects: [
+                // Row 2 & 3 (y=2,3)
+                { id: 'f52_st1', x: 1, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_st1', x: 2, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f61_stA', x: 3, y: 2, type: 'prop', name: 'Box Pile' },
+                { id: 'f52_st2', x: 7, y: 2, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f53_st2', x: 8, y: 2, type: 'prop', name: 'Storage Cabinet' },
+
+                { id: 'f54_st1', x: 1, y: 3, type: 'prop', name: 'Storage Cabinet', hiddenLogId: 'Log002' },
+                { id: 'f61_stI', x: 1, y: 3, type: 'prop', name: 'Box Pile' },
+                { id: 'f55_st1', x: 2, y: 3, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f62_stA', x: 3, y: 3, type: 'prop', name: 'Box Pile' },
+                { id: 'f54_st2', x: 7, y: 3, type: 'prop', name: 'Storage Cabinet' },
+                { id: 'f55_st2', x: 8, y: 3, type: 'prop', name: 'Storage Cabinet' },
+
+                // Row 4 & 5 & 6 (y=4,5,6)
+                { id: 'f61_stB', x: 1, y: 4, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_stI', x: 1, y: 4, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_stB', x: 1, y: 5, type: 'prop', name: 'Box Pile' },
+
+                { id: 'f61_stC', x: 4, y: 4, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_stC', x: 4, y: 5, type: 'prop', name: 'Box Pile' },
+
+                { id: 'f61_stD', x: 3, y: 5, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_stD', x: 3, y: 6, type: 'prop', name: 'Box Pile' },
+
+                { id: 'f61_stE', x: 6, y: 4, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_stE', x: 6, y: 5, type: 'prop', name: 'Box Pile' },
+
+                { id: 'f61_stF', x: 8, y: 4, type: 'prop', name: 'Box Pile' },
+                { id: 'f60_st9', x: 8, y: 4, type: 'prop', name: 'Storage Box' }, // Overlay
+                { id: 'f62_stF', x: 8, y: 5, type: 'prop', name: 'Box Pile' },
+
+                // Additional Grid Update
+                { id: 'f61_stH', x: 6, y: 2, type: 'prop', name: 'Box Pile' },
+                { id: 'f62_stH', x: 6, y: 3, type: 'prop', name: 'Box Pile' },
+                { id: 'f60_st7', x: 4, y: 3, type: 'prop', name: 'Storage Box' },
+
+                // Floating Small Boxes (F60)
+                { id: 'f60_st1', x: 7, y: 5, type: 'prop', name: 'Storage Box' },
+                { id: 'f61_stG', x: 7, y: 5, type: 'prop', name: 'Box Pile' },
+                { id: 'f60_st2', x: 4, y: 6, type: 'prop', name: 'Storage Box' },
+                { id: 'f60_st3', x: 6, y: 6, type: 'prop', name: 'Storage Box' },
+                { id: 'f62_stG', x: 7, y: 6, type: 'prop', name: 'Box Pile' },
+                { id: 'f60_st5', x: 8, y: 6, type: 'prop', name: 'Storage Box' },
+                { id: 'f60_st6', x: 5, y: 5, type: 'prop', name: 'Storage Box' },
+                { id: 'npc_male_jax', x: 5, y: 6, type: 'npc', name: 'Quartermaster Jax', direction: 'down' }
+            ],
+            doors: [
+                { x: 0, y: 6, targetZone: 'atrium', targetX: 17, targetY: 10 },
+                { x: 5, y: 2, targetZone: 'specimenStorage', targetX: 6, targetY: 6, requiredFlag: 'humanWardUnlocked' }
+            ]
+        },
+        entertainment: {
+            name: 'ENTERTAINMENT LOUNGE',
+            width: 10,
+            height: 8,
+            spawn: { x: 8, y: 6 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 15, 22, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [24, 13, 13, 13, 13, 13, 13, 13, 13, 25], // Exit to Atrium (Right) and Play Ground (Left)
+                [2, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+            ],
+            objects: [
+                // Seating Row (L)
+                { id: 'f1_ent1', x: 1, y: 3, type: 'prop', name: 'Lounge Seat' },
+                { id: 'f1_ent2', x: 1, y: 4, type: 'prop', name: 'Lounge Seat' },
+                { id: 'f1_ent3', x: 1, y: 5, type: 'prop', name: 'Lounge Seat' },
+
+                // Right Side Group
+                { id: 'f0_ent1', x: 8, y: 3, type: 'prop', name: 'Lounge Seat' },
+                { id: 'f7_ent', x: 8, y: 4, type: 'prop', name: 'Lounge PC', hiddenLogId: 'Log003' },
+                { id: 'f0_ent2', x: 8, y: 5, type: 'prop', name: 'Lounge Seat' },
+
+                // Decor
+                { id: 'f6_ent1', x: 1, y: 2, type: 'prop', name: 'Art Display' },
+                { id: 'f6_ent2', x: 3, y: 2, type: 'prop', name: 'Art Display' },
+                { id: 'f6_ent3', x: 5, y: 2, type: 'prop', name: 'Art Display' },
+
+                // Battle Station (2x2)
+                { id: 'f71_ent', x: 4, y: 4, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-TopLeft tileset-03' },
+                { id: 'f72_ent', x: 5, y: 4, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-TopRight tileset-03' },
+                { id: 'f73_ent', x: 4, y: 5, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-BottomLeft tileset-03' },
+                { id: 'f74_ent', x: 5, y: 5, type: 'prop', name: 'Battle Machine', customSprite: 'BattleMachine-BottomRight tileset-03' },
+                { id: 'npc_male_ben', x: 2, y: 5, type: 'npc', name: 'Researcher Ben', direction: 'down' },
+                {
+                    id: 'npc_female_daisy', x: 3, y: 3, type: 'npc', name: 'Assistant Daisy', direction: 'down',
+                    battleEncounterId: 'daisy',
+                    dialogue: ["Oh, you're looking for Tom and Kevin's lost datapads?", "I might have seen them... but I won't tell you for free!", "Let's have a quick Cell battle. If you win, I'll give you a hint!"],
+                    npcWinDialogue: ["Better luck next time!", "Since I'm nice, here's a tip: There's a Console Station in the Atrium near the north wall...", "It's humming a bit strangely. Check the ports, maybe someone left a datapad plugged in!"],
+                    npcLossDialogue: ["Fine, you're better than you look!", "Check the Atrium. There's a pile of boxes near the south exit...", "Something shiny is tucked inside one of them. Happy hunting!"]
+                }
+            ],
+            doors: [
+                { x: 9, y: 6, targetZone: 'atrium', targetX: 1, targetY: 10 },
+                { x: 7, y: 2, targetZone: 'kitchen', targetX: 7, targetY: 6, requiredFlag: 'botanicSectorUnlocked' },
+                { x: 0, y: 6, targetZone: 'cellPlayGround', targetX: 15, targetY: 6 }
+            ]
+        },
+        cellPlayGround: {
+            name: 'CELL PLAY GROUND',
+            width: 17,
+            height: 13,
+            spawn: { x: 15, y: 6 },
+            layout: [
+                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
+                [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
+                [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+            ],
+            objects: [
+                // North Wall (Row 3 decorations, with Row 2 tops)
+                { id: 'f59_n1', x: 1, y: 3, type: 'prop', name: 'Pot Plant' },
+                { id: 'f20_n2', x: 2, y: 2, type: 'prop', name: 'Lab Plant Top' }, { id: 'f21_n2', x: 2, y: 3, type: 'prop', name: 'Lab Plant Bottom' },
+                { id: 'f59_n3', x: 3, y: 3, type: 'prop', name: 'Pot Plant' },
+                { id: 'f20_n4', x: 4, y: 2, type: 'prop', name: 'Lab Plant Top' }, { id: 'f21_n4', x: 4, y: 3, type: 'prop', name: 'Lab Plant Bottom' },
+                { id: 'f59_n5', x: 5, y: 3, type: 'prop', name: 'Pot Plant' },
+                { id: 'f20_n6', x: 6, y: 2, type: 'prop', name: 'Lab Plant Top' }, { id: 'f21_n6', x: 6, y: 3, type: 'prop', name: 'Lab Plant Bottom' },
+                { id: 'f59_n7', x: 7, y: 3, type: 'prop', name: 'Pot Plant' },
+                { id: 'f20_n8', x: 8, y: 2, type: 'prop', name: 'Lab Plant Top' }, { id: 'f21_n8', x: 8, y: 3, type: 'prop', name: 'Lab Plant Bottom' },
+                { id: 'f59_n9', x: 9, y: 3, type: 'prop', name: 'Pot Plant' },
+                { id: 'f20_n10', x: 10, y: 2, type: 'prop', name: 'Lab Plant Top' }, { id: 'f21_n10', x: 10, y: 3, type: 'prop', name: 'Lab Plant Bottom' },
+                { id: 'f59_n11', x: 11, y: 3, type: 'prop', name: 'Pot Plant' },
+                { id: 'f20_n12', x: 12, y: 2, type: 'prop', name: 'Lab Plant Top' }, { id: 'f21_n12', x: 12, y: 3, type: 'prop', name: 'Lab Plant Bottom' },
+                { id: 'f59_n13', x: 13, y: 3, type: 'prop', name: 'Pot Plant' },
+                { id: 'f20_n14', x: 14, y: 2, type: 'prop', name: 'Lab Plant Top' }, { id: 'f21_n14', x: 14, y: 3, type: 'prop', name: 'Lab Plant Bottom' },
+                { id: 'f59_n15', x: 15, y: 3, type: 'prop', name: 'Pot Plant' },
+
+                // Central Cluster 1 (Left)
+                { id: 'f60_c1_6a', x: 3, y: 6, type: 'prop', name: 'Odd Box' },
+                { id: 'f60_c1_6b', x: 4, y: 6, type: 'prop', name: 'Odd Box' }, { id: 'f20_c1_6b', x: 4, y: 6, type: 'prop', name: 'Lab Plant Top' },
+                { id: 'f60_c1_6c', x: 5, y: 6, type: 'prop', name: 'Odd Box' },
+                { id: 'f60_c1_7a', x: 3, y: 7, type: 'prop', name: 'Odd Box' },
+                { id: 'f21_c1_7b', x: 4, y: 7, type: 'prop', name: 'Lab Plant Bottom' },
+                { id: 'f60_c1_7c', x: 5, y: 7, type: 'prop', name: 'Odd Box' },
+                // Mid Cluster
+                { id: 'f59_mid_7a', x: 7, y: 7, type: 'prop', name: 'Small Plant' },
+                { id: 'f20_mid_8', x: 8, y: 6, type: 'prop', name: 'Lab Plant Top' }, { id: 'f21_mid_8', x: 8, y: 7, type: 'prop', name: 'Lab Plant Bottom' },
+                { id: 'f59_mid_7c', x: 9, y: 7, type: 'prop', name: 'Small Plant' },
+                { id: 'f60_c1_8a', x: 3, y: 8, type: 'prop', name: 'Odd Box' },
+                { id: 'f60_c1_8b', x: 4, y: 8, type: 'prop', name: 'Odd Box' },
+                { id: 'f60_c1_8c', x: 5, y: 8, type: 'prop', name: 'Odd Box' },
+
+                // Central Cluster 2 (Right)
+                { id: 'f60_c2_6a', x: 11, y: 6, type: 'prop', name: 'Odd Box' },
+                { id: 'f60_c2_6b', x: 12, y: 6, type: 'prop', name: 'Odd Box' }, { id: 'f20_c2_6b', x: 12, y: 6, type: 'prop', name: 'Lab Plant Top' },
+                { id: 'f60_c2_6c', x: 13, y: 6, type: 'prop', name: 'Odd Box' },
+                { id: 'f60_c2_7a', x: 11, y: 7, type: 'prop', name: 'Odd Box' },
+                { id: 'f21_c2_7b', x: 12, y: 7, type: 'prop', name: 'Lab Plant Bottom' },
+                { id: 'f60_c2_7c', x: 13, y: 7, type: 'prop', name: 'Odd Box' },
+                { id: 'f60_c2_8a', x: 11, y: 8, type: 'prop', name: 'Odd Box' },
+                { id: 'f60_c2_8b', x: 12, y: 8, type: 'prop', name: 'Odd Box' },
+                { id: 'f60_c2_8c', x: 13, y: 8, type: 'prop', name: 'Odd Box' },
+
+                // South Wall (Row 11 decorations)
+                { id: 'f59_s1', x: 1, y: 11, type: 'prop', name: 'Pot Plant' },
+                { id: 'f60_s2', x: 2, y: 11, type: 'prop', name: 'Odd Box' },
+                { id: 'f59_s3', x: 3, y: 11, type: 'prop', name: 'Pot Plant' },
+                { id: 'f59_s4', x: 4, y: 11, type: 'prop', name: 'Pot Plant' },
+                { id: 'f59_s5', x: 5, y: 11, type: 'prop', name: 'Pot Plant' },
+                { id: 'f61_s6', x: 6, y: 10, type: 'prop', name: 'Box Pile Top' }, { id: 'f62_s6', x: 6, y: 11, type: 'prop', name: 'Box Pile Bottom' },
+                { id: 'f60_s7', x: 7, y: 11, type: 'prop', name: 'Odd Box' },
+                { id: 'f59_s8', x: 8, y: 11, type: 'prop', name: 'Pot Plant' },
+                { id: 'f59_s9', x: 9, y: 11, type: 'prop', name: 'Pot Plant' },
+                { id: 'f59_s10', x: 10, y: 11, type: 'prop', name: 'Pot Plant' },
+                { id: 'f59_s11', x: 11, y: 11, type: 'prop', name: 'Pot Plant' },
+                { id: 'f59_s12', x: 12, y: 11, type: 'prop', name: 'Pot Plant' },
+                { id: 'f59_s13', x: 13, y: 11, type: 'prop', name: 'Pot Plant' },
+                { id: 'f60_s14', x: 14, y: 11, type: 'prop', name: 'Odd Box' },
+                { id: 'f59_s15', x: 15, y: 11, type: 'prop', name: 'Pot Plant' }
+            ],
+            maxWildSpawns: 5,
+            disableBattle: true,
+            disableWildDespawn: true,
+            spawnPool: { stemmy: 25, nitrophil: 25, cambihil: 25, lydrosome: 25 },
+            doors: [
+                { x: 16, y: 6, targetZone: 'entertainment', targetX: 1, targetY: 6 }
+            ]
+        }
+    },
+
     furnitureMetadata: {
         // --- TILESET 02 (f0-f63) ---
         'f0': { hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
