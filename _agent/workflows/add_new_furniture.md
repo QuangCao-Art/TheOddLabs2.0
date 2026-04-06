@@ -5,9 +5,11 @@ description: Add a New Asset to the Game & Builder Tool
 ### 0. Provide the Requirement Template
 **MANDATORY**: Whenever this workflow is triggered or mentioned, the assistant MUST provide the following and ask the user to fill it out:
 
+```markdown
 | Furniture ID | Description | X Position | Y Position | Have Collision | Kickable | Key Item | Info |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| (Next Available ID) | (e.g. Lab Tank) | (Pixel X) | (Pixel Y) | (Yes/No) | (Yes/No) | (Yes/No) | (Tooltip Text) |
+| f107 | Name | (X) | (Y) | (Yes/No) | (Yes/No) | (Yes/No) | (Tooltip) |
+```
 
 ### 1. Identify the Sprite
 - Open `Lab_TileSet_02.png` or `Lab_TileSet_03.png`.
@@ -47,6 +49,14 @@ Update [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/o
 2.  Add the ID with its collision status and description text.
     ```javascript
     'f105': { hasCollision: true, info: "A mysterious new lab device." }
+    ```
+
+### 5.5 Register Furniture Linkage
+**MANDATORY for multi-tile objects** (e.g., 2-tile high robots/plants):
+1.  Locate `linkedSets` within the `kickObject` function.
+2.  Add a new array containing the IDs that should be kicked together.
+    ```javascript
+    ['f107', 'f108'],
     ```
 
 ### 6. Place in a Zone (Optional)

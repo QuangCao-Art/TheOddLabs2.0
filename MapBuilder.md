@@ -169,6 +169,8 @@ Used for advanced lab equipment and specialized props. Texture asset: `Lab_TileS
 | **f104** | Item-LabCredit | 256px | 768px | Yes | An internal currency chip exclusive to Labs. What started as a corporate joke became the only way to pay for the 'premium' noodles. |
 | **f105** | WarningSign-Front | 512px | 768px | Yes | Nothing can stop me, even when the sign says so. |
 | **f106** | WarningSign-Side | 768px | 768px | Yes | Nothing can stop me; turning the sign sideways won't help. |
+| **f107** | Mr-Slim-Top | 1024px | 768px | No | This skeleton robot has an auto-assemble function; otherwise, it's a real mess. |
+| **f108** | Mr-Slim-Bottom | 1024px | 1024px | Yes | This skeleton robot has an auto-assemble function; otherwise, it's a real mess. |
 
 ---
 

@@ -232,7 +232,14 @@ export const FURNITURE_TEMPLATES = {
     ITEM_SECRET: { name: 'ULTIMATE RARE CARD', tiles: [{ id: 'f63', relX: 0, relY: 0 }] },
     ITEM_BLUEPRINT: { name: 'CELL GENOMIC BLUEPRINT', tiles: [{ id: 'f101', relX: 0, relY: 0 }] },
     ITEM_BIOMASS: { name: 'RAW BIOMASS CONTAINER', tiles: [{ id: 'f102', relX: 0, relY: 0 }] },
-    ITEM_CREDIT: { name: 'LAB CREDIT CHIP', tiles: [{ id: 'f104', relX: 0, relY: 0 }] }
+    ITEM_CREDIT: { name: 'LAB CREDIT CHIP', tiles: [{ id: 'f104', relX: 0, relY: 0 }] },
+    MR_SLIM: {
+        name: 'Mr-Slim Robot',
+        tiles: [
+            { id: 'f108', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f107', relX: 0, relY: -1, name: 'Top' }
+        ]
+    }
 };
 
 /**

@@ -332,6 +332,8 @@ export const Overworld = {
         'f104': { hasCollision: true, info: "An internal currency chip exclusive to Labs. What started as a corporate joke became the only way to pay for the 'premium' noodles." },
         'f105': { hasCollision: true, kickable: true, info: "Nothing can stop me, even when the sign says so." },
         'f106': { hasCollision: true, kickable: true, info: "Nothing can stop me; turning the sign sideways won't help." },
+        'f107': { hasCollision: false, kickable: true, info: "This skeleton robot has an auto-assemble function; otherwise, it's a real mess." },
+        'f108': { hasCollision: true, kickable: true, info: "This skeleton robot has an auto-assemble function; otherwise, it's a real mess." },
 
         // --- ENCOUNTER CELLS ---
         'c0': { hasCollision: true, info: "A wild Stemmy is wandering." },
@@ -2579,7 +2581,9 @@ export const Overworld = {
                 ['f61', 'f62'], ['f76', 'f77', 'f78', 'f79'],
                 ['f38', 'f39', 'f40', 'f41'],
                 ['f42', 'f43', 'f44', 'f45', 'f46', 'f47'],
-                ['f52', 'f53', 'f54', 'f55']
+                ['f52', 'f53', 'f54', 'f55'],
+                ['f84', 'f85'], ['f86', 'f87'], ['f88', 'f89'],
+                ['f107', 'f108']
             ];
 
             const mySet = linkedSets.find(set => set.includes(prefix));
