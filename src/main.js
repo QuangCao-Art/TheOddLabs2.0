@@ -8,6 +8,7 @@ import { SHOP_ITEMS, shopState } from './data/shop.js';
 import { SYNTHESIS_RECIPES } from './data/synthesis.js';
 import { QUESTS, MAIN_QUEST_LOGS } from './data/quests.js';
 import { BioExtract } from './ui/bio_extract.js';
+import { BuilderMode } from './engine/builder.js';
 
 // Initialize UI Modules
 if (BioExtract) BioExtract.init();
@@ -16,6 +17,7 @@ if (BioExtract) BioExtract.init();
 window.gameState = gameState;
 window.Overworld = Overworld;
 window.BioExtract = BioExtract;
+window.BuilderMode = BuilderMode;
 
 // DOM References
 const interactivePentagon = document.getElementById('interactive-pentagon');
@@ -509,7 +511,7 @@ function initPauseMenuEvents() {
     });
 }
 
-window.showConfirmModal = (title, message, onConfirm, manualCleanup = false) => {
+window.showConfirmModal = (title, message, onConfirm, manualCleanup = false, hideCancel = false) => {
     const screen = document.getElementById('screen-confirm');
     const titleEl = document.getElementById('confirm-title');
     const subEl = document.getElementById('confirm-subtitle');
@@ -519,10 +521,19 @@ window.showConfirmModal = (title, message, onConfirm, manualCleanup = false) => 
 
     if (!screen || !titleEl || !msgEl || !btnYes || !btnNo) return;
 
-    // Reset and Initialize state
-    let confirmNavIndex = 1; // Default to 'CANCEL' for safety
+    // Reset button states from potential Alert/Lore overrides
+    btnNo.style.display = '';
+    btnYes.innerText = "PROCEED";
+    btnNo.innerText = "CANCEL";
+
+    // Initialize state
+    let confirmNavIndex = hideCancel ? 0 : 1; 
     titleEl.innerText = (title || "WARNING").toUpperCase();
     msgEl.innerText = message || "Proceed with operation?";
+
+    if (hideCancel) {
+        btnNo.style.display = 'none';
+    }
 
     // Dynamic subtitle flavor
     if (subEl) {
@@ -560,6 +571,7 @@ window.showConfirmModal = (title, message, onConfirm, manualCleanup = false) => 
             confirmNavIndex = 0;
             updateConfirmSelection();
         } else if (key === 'd' || key === 's' || key === 'arrowright' || key === 'arrowdown') {
+            if (hideCancel) return; // Prevent unlocking from YES
             e.preventDefault();
             confirmNavIndex = 1;
             updateConfirmSelection();
@@ -604,6 +616,66 @@ window.showConfirmModal = (title, message, onConfirm, manualCleanup = false) => 
     btnYes.onclick = (e) => { e.stopImmediatePropagation(); handleYes(); };
     btnNo.onclick = (e) => { e.stopImmediatePropagation(); handleNo(); };
 };
+
+/**
+ * Custom Input Modal (Generalized Prompt)
+ * @param {string} title - Header text
+ * @param {string} message - Prompt message
+ * @param {string} defaultValue - Initial input value
+ * @param {function} onConfirm - Callback receiving the input value
+ */
+window.showPromptModal = (title, message, defaultValue, onConfirm) => {
+    const modal = document.getElementById('preset-name-modal');
+    const input = document.getElementById('preset-name-input');
+    const btnConfirm = document.getElementById('btn-preset-confirm');
+    const btnCancel = document.getElementById('btn-preset-cancel');
+    const titleEl = document.getElementById('preset-modal-title');
+    const promptText = document.getElementById('preset-modal-prompt');
+
+    if (!modal || !input || !btnConfirm || !btnCancel) return;
+
+    titleEl.innerText = (title || "INPUT REQUIRED").toUpperCase();
+    promptText.innerText = message || "Enter value:";
+    input.value = defaultValue || "";
+    modal.classList.remove('hidden');
+    input.focus();
+    input.select();
+
+    const cleanup = () => {
+        modal.classList.add('hidden');
+        btnConfirm.onclick = null;
+        btnCancel.onclick = null;
+        input.onkeydown = null;
+        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
+    };
+
+    const confirm = () => {
+        const val = input.value.trim();
+        cleanup();
+        if (onConfirm) onConfirm(val);
+    };
+
+    btnConfirm.onclick = confirm;
+    btnCancel.onclick = cleanup;
+    input.onkeydown = (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); confirm(); }
+        if (e.key === 'Escape') { e.preventDefault(); cleanup(); }
+    };
+    if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
+};
+
+/**
+ * Custom Alert Modal (Single Button)
+ */
+window.showAlertModal = (title, message, onConfirm) => {
+    const btnYes = document.getElementById('btn-confirm-yes');
+    if (btnYes) btnYes.innerText = "AUTHENTICATE";
+
+    window.showConfirmModal(title, message, () => {
+        if (onConfirm) onConfirm();
+    }, false, true); // Pass hideCancel = true
+};
+
 
 // --- STARTER SELECTION LOGIC ---
 let selectedStarterId = null;
@@ -773,6 +845,9 @@ function init() {
 
         // Centralized Reset handles all Profile/Preset/State initialization
         resetGame();
+
+        // Initialize Builder Mode
+        if (BuilderMode) BuilderMode.init();
 
         // Starts the premium entry sequence instead of a direct show
         playStartupSequence();

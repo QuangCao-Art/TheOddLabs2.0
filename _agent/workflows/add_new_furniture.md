@@ -1,0 +1,58 @@
+---
+description: Add a New Asset to the Game & Builder Tool
+---
+
+### 0. Provide the Requirement Template
+**MANDATORY**: Whenever this workflow is triggered or mentioned, the assistant MUST provide the following and ask the user to fill it out:
+
+| Furniture ID | Description | X Position | Y Position | Have Collision | Kickable | Key Item | Info |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| (Next Available ID) | (e.g. Lab Tank) | (Pixel X) | (Pixel Y) | (Yes/No) | (Yes/No) | (Yes/No) | (Tooltip Text) |
+
+### 1. Identify the Sprite
+- Open `Lab_TileSet_02.png` or `Lab_TileSet_03.png`.
+- Note the Top-Left pixel coordinates (X, Y) of the sprite.
+- Assign the next available ID (e.g., `f105`).
+
+### 2. Update Documentation
+Add the entry to [MapBuilder.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/MapBuilder.md).
+- **Section**: Furniture Registry.
+- **Entry**: `fID: Name (Tileset X, Y)`.
+
+### 3. Implement CSS Rendering
+Update [style.css](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/style.css).
+1.  Ensure the ID is included in the tileset URL block (e.g., `.world-object.prop.f105`).
+2.  Add the specific coordinate mapping:
+    ```css
+    .world-object.prop.f105 {
+        background-position: calc(-[X]px / 4) calc(-[Y]px / 4);
+    }
+    ```
+
+### 4. Add to Builder Palette
+Update [furniture.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/furniture.js).
+1.  Locate `FURNITURE_TEMPLATES`.
+2.  Add a new template entry for the object.
+    - For multi-tile objects, specify the `relX` and `relY` for each part.
+    ```javascript
+    NEW_OBJECT: { 
+        name: 'Human Readable Name', 
+        tiles: [{ id: 'f105', relX: 0, relY: 0 }] 
+    }
+    ```
+
+### 5. Finalize Metadata
+Update [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/overworld.js).
+1.  Locate `furnitureMetadata`.
+2.  Add the ID with its collision status and description text.
+    ```javascript
+    'f105': { hasCollision: true, info: "A mysterious new lab device." }
+    ```
+
+---
+
+### ✅ Success Criteria
+- [ ] The object appears correctly in the **PROPS** tab of the Builder palette.
+- [ ] The "Ghost Preview" shows the correct sprite when selected.
+- [ ] Right-clicking the object in Builder Mode deletes the entire group.
+- [ ] Interacting with the object in Play Mode shows the correct info tooltip.

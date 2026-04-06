@@ -851,19 +851,40 @@ export const Overworld = {
             height: 9,
             spawn: { x: 16, y: 6 },
             layout: [
-                [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
-                [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
-                [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 25],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
-                [2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3]
+                [0,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,1],
+                [10,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,11],
+                [10,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,11],
+                [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,11],
+                [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,11],
+                [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,25],
+                [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,11],
+                [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,11],
+                [2,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,3]
             ],
-            objects: [],
+            objects: [
+                {"id":"f89_mnmjgqfm22ujx","x":31,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmjgqfm22ujx","x":31,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmjgqrqvarsi","x":30,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmjgqrqvarsi","x":30,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmjgr5n0h1wj","x":29,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmjgr5n0h1wj","x":29,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmjgriydhuji","x":28,"y":3,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmjgriydhuji","x":28,"y":2,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmjgsbten6ku","x":31,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmjgsbten6ku","x":31,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmjgsn35a25t","x":30,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmjgsn35a25t","x":30,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmjgsz253pzo","x":29,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmjgsz253pzo","x":29,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f89_mnmjgtj3hkaij","x":28,"y":7,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f88_mnmjgtj3hkaij","x":28,"y":6,"type":"prop","name":"Ancient Plant (Dead)"},
+                {"id":"f14_mnmjh9c88vx3k","x":31,"y":4,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnmjh9c88vx3k","x":31,"y":3,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f14_mnmjh9zrwptoo","x":31,"y":6,"type":"prop","name":"Specimen Tank (Green)"},
+                {"id":"f13_mnmjh9zrwptoo","x":31,"y":5,"type":"prop","name":"Specimen Tank (Green)"}
+            ],
             doors: [
-                { x: 32, y: 5, targetZone: 'botanic', targetX: 1, targetY: 13 }
+                {"x":32,"y":5,"targetZone":"botanic","targetX":1,"targetY":13}
             ]
         },
         preservationRoom: {
@@ -1730,6 +1751,8 @@ export const Overworld = {
         'f102': { hasCollision: true, info: "A container of stabilized raw biological material. It smells faintly of damp earth and limitless potential." },
         'f103': { hasCollision: true, info: "An oversized cultivation dish designed for Cell. It's climate-controlled and remarkably soft—essentially a luxury suite for a Cell." },
         'f104': { hasCollision: true, info: "An internal currency chip exclusive to Labs. What started as a corporate joke became the only way to pay for the 'premium' noodles." },
+        'f105': { hasCollision: true, kickable: true, info: "Nothing can stop me, even when the sign says so." },
+        'f106': { hasCollision: true, kickable: true, info: "Nothing can stop me; turning the sign sideways won't help." },
 
         // --- ENCOUNTER CELLS ---
         'c0': { hasCollision: true, info: "A wild Stemmy is wandering." },

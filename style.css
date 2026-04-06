@@ -4915,7 +4915,7 @@ body {
     background-size: 512px 512px !important;
 }
 
-#overworld-map .world-object.tileset-03 {
+.world-object.tileset-03 {
     background-image: url('./assets/images/Lab_TileSet_03.png') !important;
     background-size: 512px 512px !important;
 }
@@ -5398,7 +5398,9 @@ body {
 .world-object.prop.f101,
 .world-object.prop.f102,
 .world-object.prop.f103,
-.world-object.prop.f104 {
+.world-object.prop.f104,
+.world-object.prop.f105,
+.world-object.prop.f106 {
     background-image: url('./assets/images/Lab_TileSet_03.png') !important;
     background-size: 512px 512px !important;
 }
@@ -5501,6 +5503,16 @@ body {
 .world-object.prop.CryoPodBig-BottomRight,
 .world-object.prop.f83 {
     background-position: calc(-1792px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.WarningSign-Front,
+.world-object.prop.f105 {
+    background-position: calc(-512px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.WarningSign-Side,
+.world-object.prop.f106 {
+    background-position: calc(-768px / 4) calc(-768px / 4);
 }
 
 .world-object.prop.StoragePod-Top,
@@ -5937,7 +5949,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 3000;
+    z-index: 30000;
 }
 
 #preset-name-modal.modal-overlay.hidden {
@@ -6040,7 +6052,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2000;
+    z-index: 30000;
     transition: opacity 0.4s ease, visibility 0.4s;
 }
 
@@ -9054,3 +9066,290 @@ body {
     animation: monster-breathing 1s ease-in-out infinite !important;
     transform-origin: center bottom;
 }
+
+/* --- BUILDER MODE UI --- */
+#builder-palette {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    bottom: 20px;
+    width: 350px;
+    background: rgba(0, 10, 20, 0.95);
+    border: 2px solid var(--neon-cyan);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    z-index: 10000;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+    font-family: 'Orbitron', sans-serif;
+    color: white;
+}
+
+#builder-palette.hidden {
+    display: none;
+}
+
+.palette-header {
+    padding: 15px;
+    border-bottom: 2px solid rgba(0, 243, 255, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.palette-header h3 {
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    color: var(--neon-cyan);
+}
+
+#builder-close {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.palette-tabs {
+    display: flex;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.palette-tabs .tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.3s ease;
+}
+
+.palette-tabs .tab-btn.active {
+    color: var(--neon-cyan);
+    border-bottom-color: var(--neon-cyan);
+    background: rgba(0, 243, 255, 0.1);
+}
+
+.palette-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.palette-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.palette-item:hover {
+    background: rgba(0, 243, 255, 0.1);
+    border-color: var(--neon-cyan);
+}
+
+.palette-item.selected {
+    background: rgba(0, 243, 255, 0.2);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+}
+
+.palette-item .item-preview {
+    width: 48px;
+    height: 48px;
+    background-size: 512px auto !important; /* Scale to fit */
+    image-rendering: pixelated;
+}
+
+.palette-item span {
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.8);
+    word-break: break-word;
+}
+
+.palette-footer {
+    padding: 15px;
+    border-top: 2px solid rgba(0, 243, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#builder-export {
+    width: 100%;
+    padding: 12px;
+    background: var(--neon-cyan);
+    color: black;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.grid-tools {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.grid-tools span {
+    font-size: 0.7rem;
+    color: var(--neon-cyan);
+}
+
+.grid-btn {
+    flex: 1;
+    padding: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 0.6rem;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.grid-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Ghost Preview */
+#builder-ghost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    border: 2px dashed var(--neon-cyan);
+    box-sizing: border-box;
+}
+
+#builder-ghost .tile {
+    opacity: 0.5;
+}
+
+/* Export Modal */
+#builder-export-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20000;
+}
+
+#builder-export-modal.hidden {
+    display: none;
+}
+
+#builder-export-modal .modal-content {
+    background: #1a1a1a;
+    border: 2px solid var(--neon-cyan);
+    padding: 30px;
+    width: 80%;
+    max-width: 800px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#builder-export-modal textarea {
+    width: 100%;
+    height: 400px;
+    background: #000;
+    color: var(--color-bio);
+    font-family: 'Courier New', Courier, monospace;
+    padding: 15px;
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    resize: none;
+    border-radius: 6px;
+}
+
+#builder-export-modal button {
+    padding: 12px 25px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+#export-copy {
+    background: var(--neon-cyan);
+    border: none;
+    color: black;
+}
+
+#export-close {
+    background: none;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.builder-active #player-sprite {
+    opacity: 0.3;
+}
+
+.builder-active .world-object {
+    pointer-events: auto !important;
+}
+
+.builder-active .world-object:hover {
+    outline: 2px solid red;
+    cursor: crosshair;
+}
+
+.palette-item .item-preview-wrapper {
+    width: 48px;
+    height: 48px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.palette-item .item-preview {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    min-height: 64px;
+    transform: scale(0.75);
+    transform-origin: center center;
+    image-rendering: pixelated;
+    background-size: 512px 512px;
+    background-repeat: no-repeat;
+    /* Reset world-object positioning for the palette icons */
+    position: static !important;
+    pointer-events: none !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    display: block !important;
+}
+
+
+.item-preview.terrain, .item-preview.door {
+    background-image: url('./assets/images/Lab_TileSet_01.png');
+}
+
+.item-preview.prop {
+    background-image: url('./assets/images/Lab_TileSet_02.png');
+}
+
+

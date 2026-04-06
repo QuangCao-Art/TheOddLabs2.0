@@ -167,6 +167,8 @@ Used for advanced lab equipment and specialized props. Texture asset: `Lab_TileS
 | **f102** | Item-BioMass | 1792px | 0px | Yes | A container of stabilized raw biological material. It smells faintly of damp earth and limitless potential. |
 | **f103** | HugePetryDish | 0px | 768px | Yes | An oversized cultivation dish designed for Cell. It's climate-controlled and remarkably soft—essentially a luxury suite for a Cell. |
 | **f104** | Item-LabCredit | 256px | 768px | Yes | An internal currency chip exclusive to Labs. What started as a corporate joke became the only way to pay for the 'premium' noodles. |
+| **f105** | WarningSign-Front | 512px | 768px | Yes | Nothing can stop me, even when the sign says so. |
+| **f106** | WarningSign-Side | 768px | 768px | Yes | Nothing can stop me; turning the sign sideways won't help. |
 
 ---
 
