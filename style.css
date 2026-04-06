@@ -6056,6 +6056,10 @@ body {
     transition: opacity 0.4s ease, visibility 0.4s;
 }
 
+#screen-confirm, #screen-pause {
+    z-index: 99999 !important;
+}
+
 .overlay.hidden {
     opacity: 0;
     visibility: hidden;
