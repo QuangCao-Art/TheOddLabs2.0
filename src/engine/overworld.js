@@ -293,7 +293,7 @@ export const Overworld = {
         'f53': { hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
         'f54': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
         'f55': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-        'f56': { hasCollision: true, info: "\"Why do all the tables have to be this messy?\" asked the janitor." },
+        'f56': { hasCollision: false, info: "\"Why do all the tables have to be this messy?\" asked the janitor." },
         'f57': { hasCollision: true, info: "\"Why do all the tables have to be this messy?\" asked the janitor." },
         'f58': { hasCollision: true, info: "I can see the little cockroaches crawling out!" },
         'f59': { hasCollision: true, kickable: true, info: "Looks like a normal plant... or is it?" },
@@ -3056,8 +3056,7 @@ export const Overworld = {
                 pEl.classList.remove('anim-monster-breathing', 'anim-monster-pop', 'anim-monster-shake');
                 void pEl.offsetWidth;
 
-                // --- Sync Z-Index for all parts (Top + Bottom) immediately on hit ---
-                pEl.style.setProperty('z-index', '50000', 'important'); 
+                // --- Wait to sync Z-Index (Top + Bottom) until the launch phase ---
                 pEl.style.willChange = 'transform, opacity';
 
                 pEl.classList.add('anim-monster-shake');
