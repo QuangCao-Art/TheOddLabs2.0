@@ -165,6 +165,22 @@ export const FURNITURE_TEMPLATES = {
             { id: 'f77', relX: 1, relY: -1, name: 'Top Right' }
         ]
     },
+    CRYO_POD_BIG: {
+        name: 'Grand Cryo Pod (2x2)',
+        tiles: [
+            { id: 'f82', relX: 0, relY: 0, name: 'Bottom Left' },
+            { id: 'f83', relX: 1, relY: 0, name: 'Bottom Right' },
+            { id: 'f80', relX: 0, relY: -1, name: 'Top Left' },
+            { id: 'f81', relX: 1, relY: -1, name: 'Top Right' }
+        ]
+    },
+    STORAGE_POD_FROZEN: {
+        name: 'Deep Freeze Storage Pod',
+        tiles: [
+            { id: 'f85', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f84', relX: 0, relY: -1, name: 'Top' }
+        ]
+    },
     BIO_EXTRACTOR: {
         name: 'Bio Extractor Industrial',
         tiles: [
@@ -222,6 +238,7 @@ export const FURNITURE_TEMPLATES = {
     WALL_HANGING_B: { name: 'Evolution Poster B', tiles: [{ id: 'f17', relX: 0, relY: 0 }] },
     WARNING_SIGN_FRONT: { name: 'Warning Sign (Front)', tiles: [{ id: 'f105', relX: 0, relY: 0 }] },
     WARNING_SIGN_SIDE: { name: 'Warning Sign (Side)', tiles: [{ id: 'f106', relX: 0, relY: 0 }] },
+    HUGE_PETRI_DISH_SINGLE: { name: 'Petry Dish (Standalone)', tiles: [{ id: 'f103', relX: 0, relY: 0 }] },
 
     // --- KEY ITEMS ---
     ITEM_DATAPAD: { name: 'DATAPAD LOG', tiles: [{ id: 'f49', relX: 0, relY: 0 }] },
@@ -229,6 +246,7 @@ export const FURNITURE_TEMPLATES = {
     ITEM_SAUCE: { name: 'INFERNO SAUCE', tiles: [{ id: 'f51', relX: 0, relY: 0 }] },
     ITEM_COLLECTIBLE: { name: 'COLLECTIBLE CARD', tiles: [{ id: 'f75', relX: 0, relY: 0 }] },
     ITEM_DATASTICK: { name: 'OLD DATA STICK', tiles: [{ id: 'f64', relX: 0, relY: 0 }] },
+    ITEM_EMPLOYEE_CARD: { name: 'OFFICIAL EMPLOYEE CARD', tiles: [{ id: 'f90', relX: 0, relY: 0 }] },
     ITEM_SECRET: { name: 'ULTIMATE RARE CARD', tiles: [{ id: 'f63', relX: 0, relY: 0 }] },
     ITEM_BLUEPRINT: { name: 'CELL GENOMIC BLUEPRINT', tiles: [{ id: 'f101', relX: 0, relY: 0 }] },
     ITEM_BIOMASS: { name: 'RAW BIOMASS CONTAINER', tiles: [{ id: 'f102', relX: 0, relY: 0 }] },
@@ -238,6 +256,20 @@ export const FURNITURE_TEMPLATES = {
         tiles: [
             { id: 'f108', relX: 0, relY: 0, name: 'Bottom' },
             { id: 'f107', relX: 0, relY: -1, name: 'Top' }
+        ]
+    },
+    HUGE_PETRY_DISH: {
+        name: 'Huge Petry Dish',
+        tiles: [
+            { id: 'f110', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f109', relX: 0, relY: -1, name: 'Top' }
+        ]
+    },
+    MOBILE_MONITOR_CABINET: {
+        name: 'Mobile Monitor Cabinet',
+        tiles: [
+            { id: 'f112', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f111', relX: 0, relY: -1, name: 'Top' }
         ]
     }
 };
@@ -271,7 +303,9 @@ export const TERRAIN_PALETTE = [
     { id: 6, name: 'Inner Corner (BL)' },
     { id: 7, name: 'Inner Corner (BR)' },
     // --- Special ---
-    { id: 32, name: 'Window (Basic)' }
+    { id: 32, name: 'Window (Basic)' },
+    { id: 33, name: 'Window (FullWall)' },
+    { id: 38, name: 'Floor (SideDeco)' }
 ];
 
 /**
@@ -293,5 +327,21 @@ export const DOOR_TEMPLATES = {
     DOOR_RIGHT: {
         name: 'Right Wall Door',
         tiles: [{ id: 25, relX: 0, relY: 0, name: 'Closed' }]
+    },
+    DOOR_SECRET_OPEN: {
+        name: 'Secret Door (Open)',
+        tiles: [{ id: 34, relX: 0, relY: 0, name: 'Open' }]
+    },
+    DOOR_SECRET_BOTTOM_OPEN: {
+        name: 'Secret Door Bottom (Open)',
+        tiles: [{ id: 35, relX: 0, relY: 0, name: 'Open' }]
+    },
+    DOOR_SECRET_RIGHT_OPEN: {
+        name: 'Secret Door Right (Open)',
+        tiles: [{ id: 36, relX: 0, relY: 0, name: 'Open' }]
+    },
+    DOOR_SECRET_LEFT_OPEN: {
+        name: 'Secret Door Left (Open)',
+        tiles: [{ id: 37, relX: 0, relY: 0, name: 'Open' }]
     }
 };

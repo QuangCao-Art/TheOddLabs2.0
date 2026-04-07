@@ -4796,6 +4796,36 @@ body {
     background-position: calc(-1280px / 4) calc(-768px / 4);
 }
 
+/* Window-FullWall */
+.t-33 {
+    background-position: calc(-1536px / 4) calc(-768px / 4);
+}
+
+/* Door-Secret-Open */
+.t-34 {
+    background-position: calc(-768px / 4) calc(-1280px / 4);
+}
+
+/* Door-Edge-Bottom-Secret-Open */
+.t-35 {
+    background-position: calc(-1024px / 4) calc(-1280px / 4);
+}
+
+/* Door-Edge-Right-Secret-Open */
+.t-36 {
+    background-position: calc(-1280px / 4) calc(-1280px / 4);
+}
+
+/* Door-Edge-Left-Secret-Open */
+.t-37 {
+    background-position: calc(-1536px / 4) calc(-1280px / 4);
+}
+
+/* Floor-SideDeco */
+.t-38 {
+    background-position: calc(-0px / 4) calc(-1280px / 4);
+}
+
 .tile.interactable {
     cursor: pointer;
 }
@@ -5402,7 +5432,11 @@ body {
 .world-object.prop.f105,
 .world-object.prop.f106,
 .world-object.prop.f107,
-.world-object.prop.f108 {
+.world-object.prop.f108,
+.world-object.prop.f109,
+.world-object.prop.f110,
+.world-object.prop.f111,
+.world-object.prop.f112 {
     background-image: url('./assets/images/Lab_TileSet_03.png') !important;
     background-size: 512px 512px !important;
 }
@@ -5523,6 +5557,22 @@ body {
 
 .world-object.prop.f108 {
     background-position: calc(-1024px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.f109 {
+    background-position: calc(-1536px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f110 {
+    background-position: calc(-1536px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f111 {
+    background-position: calc(-1792px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f112 {
+    background-position: calc(-1792px / 4) calc(-1536px / 4);
 }
 
 .world-object.prop.StoragePod-Top,

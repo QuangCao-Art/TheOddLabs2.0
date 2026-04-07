@@ -47,6 +47,12 @@ This document serves as the official reference for building levels using the `La
 | **30** | Door-Edge-Left-Locked | 1280 | 1024 |
 | **31** | Door-Edge-Right-Locked | 1536 | 1024 |
 | **32** | Window-Basic | 1280 | 768 |
+| **33** | Window-FullWall | 1536 | 768 |
+| **34** | Door-Secret-Open | 768 | 1280 |
+| **35** | Door-Edge-Bottom-Secret-Open | 1024 | 1280 |
+| **36** | Door-Edge-Right-Secret-Open | 1280 | 1280 |
+| **37** | Door-Edge-Left-Secret-Open | 1536 | 1280 |
+| **38** | Floor-SideDeco | 0 | 1280 |
 
 ---
 
@@ -171,6 +177,10 @@ Used for advanced lab equipment and specialized props. Texture asset: `Lab_TileS
 | **f106** | WarningSign-Side | 768px | 768px | Yes | Nothing can stop me; turning the sign sideways won't help. |
 | **f107** | Mr-Slim-Top | 1024px | 768px | No | This skeleton robot has an auto-assemble function; otherwise, it's a real mess. |
 | **f108** | Mr-Slim-Bottom | 1024px | 1024px | Yes | This skeleton robot has an auto-assemble function; otherwise, it's a real mess. |
+| **f109** | HugeTwoStoryPetryDish-Top | 1536px | 1280px | No | An oversized cultivation dish designed for Cells. It's the same model used in the main lab, but standing two stories tall. |
+| **f110** | HugeTwoStoryPetryDish-Bottom | 1536px | 1536px | Yes | An oversized cultivation dish designed for Cells. It's the same model used in the main lab, but standing two stories tall. |
+| **f111** | MobileMonitorCabinet-Top | 1792px | 1280px | No | A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time! |
+| **f112** | MobileMonitorCabinet-Bottom | 1792px | 1536px | Yes | A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time! |
 
 ---
 

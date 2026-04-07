@@ -346,6 +346,10 @@ export const Overworld = {
         'f106': { hasCollision: true, kickable: true, info: "Nothing can stop me; turning the sign sideways won't help." },
         'f107': { hasCollision: false, kickable: true, info: "This skeleton robot has an auto-assemble function; otherwise, it's a real mess." },
         'f108': { hasCollision: true, kickable: true, info: "This skeleton robot has an auto-assemble function; otherwise, it's a real mess." },
+        'f109': { hasCollision: false, info: "An oversized cultivation dish designed for Cells. It's the same model used in the main lab, but standing two stories tall." },
+        'f110': { hasCollision: true, info: "An oversized cultivation dish designed for Cells. It's the same model used in the main lab, but standing two stories tall." },
+        'f111': { hasCollision: false, info: "A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time!" },
+        'f112': { hasCollision: true, info: "A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time!" },
 
         // --- ENCOUNTER CELLS ---
         'c0': { hasCollision: true, info: "A wild Stemmy is wandering." },
@@ -508,8 +512,8 @@ export const Overworld = {
                 tile.classList.add('tile', `t-${tileID}`);
 
                 const isClosedDoor = [20, 22, 24, 25, 28, 29, 30, 31].includes(tileID);
-                const isOpenDoor = [21, 23, 26, 27].includes(tileID);
-                const isGenericWall = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 32].includes(tileID);
+                const isOpenDoor = [21, 23, 26, 27, 34, 35, 36, 37].includes(tileID);
+                const isGenericWall = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 32, 33].includes(tileID);
 
                 if (isGenericWall || isClosedDoor) tile.classList.add('wall');
                 else tile.classList.add('floor');
