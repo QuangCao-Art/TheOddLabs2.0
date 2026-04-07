@@ -645,6 +645,28 @@ export const Overworld = {
             el.appendChild(badge);
         }
 
+        // Debug indicator for hidden rewards (Logs, Items, or Unified Rewards)
+        if (window.gameState?.showAllHiddenStuff && (obj.hiddenLogId || obj.hiddenItemId || obj.hiddenReward)) {
+            // Use unique suffix for spotId if it exists to group multi-tile props
+            const suffixMatch = obj.id?.match(/_([a-z0-9]{10,})$/);
+            const spotId = suffixMatch ? 
+                `${this.currentZone}_${suffixMatch[1]}` : 
+                `${this.currentZone}_${obj.x}_${obj.y}`;
+
+            const collected = (obj.hiddenLogId && this.logsCollected.includes(obj.hiddenLogId)) ||
+                              (obj.hiddenItemId && window.gameState.items.includes(obj.hiddenItemId)) ||
+                              (obj.hiddenReward && window.gameState.lootedSpots.includes(spotId));
+
+            if (!collected) {
+                const cross = document.createElement('div');
+                // Red for Logs, Blue for Items/Rewards
+                const isItem = !!(obj.hiddenItemId || obj.hiddenReward);
+                cross.className = `debug-hidden-log ${isItem ? 'blue' : 'red'}`;
+                cross.innerText = 'X';
+                el.appendChild(cross);
+            }
+        }
+
         if (obj.proximityTrigger) {
             const tx = obj.triggerX !== undefined ? obj.triggerX : obj.x;
             const ty = obj.triggerY !== undefined ? obj.triggerY : obj.y;
@@ -741,8 +763,10 @@ export const Overworld = {
         // Check for pending item pickups (rewards from battle)
         if (this.pendingItemPickup) {
             const itemId = this.pendingItemPickup;
+            const spotId = this.pendingItemSpotId || null;
             this.pendingItemPickup = null;
-            this.collectItem(itemId);
+            this.pendingItemSpotId = null;
+            this.collectItem(itemId, spotId);
         }
 
         this.spawner.start();
@@ -1472,7 +1496,23 @@ export const Overworld = {
                 return;
             }
 
-            // Generic Item/Log Collection Logic
+            // 1. Unified Systematic Reward (Hiding Spot Tracking)
+            if (obj.hiddenReward && window.gameState) {
+                // Use unique suffix for spotId if it exists to group multi-tile props
+                const suffixMatch = obj.id?.match(/_([a-z0-9]{10,})$/);
+                const spotId = suffixMatch ? 
+                    `${this.currentZone}_${suffixMatch[1]}` : 
+                    `${this.currentZoneId || this.currentZone}_${obj.x}_${obj.y}`;
+
+                if (!window.gameState.lootedSpots.includes(spotId)) {
+                    this.pendingItemPickup = obj.hiddenReward;
+                    this.pendingItemSpotId = spotId; 
+                    this.showDialogue('Discovery', ['You found something hidden!']);
+                    return;
+                }
+            }
+
+            // Legacy Item/Log Collection Logic
             if (obj.hiddenLogId && !this.logsCollected.includes(obj.hiddenLogId)) {
                 this.pendingItemPickup = obj.hiddenLogId;
                 this.showDialogue('Discovery', ['You found an item!']);
@@ -2419,9 +2459,17 @@ export const Overworld = {
         this.showDialogue(npc.name, lines, npc.id);
     },
 
-    collectItem(itemId) {
-        console.log(`Collected Item: ${itemId}`);
+    collectItem(itemId, spotId = null) {
+        console.log(`Collected Item: ${itemId} (Spot: ${spotId})`);
         this.updateQuestProgress('collect', itemId);
+        
+        // Register looted spot if using the unified system
+        if (spotId && window.gameState) {
+            if (!window.gameState.lootedSpots.includes(spotId)) {
+                window.gameState.lootedSpots.push(spotId);
+            }
+        }
+
         const itemInfo = (window.ITEM_PICKUP_DATA && window.ITEM_PICKUP_DATA[itemId]) ? window.ITEM_PICKUP_DATA[itemId] : { type: 'item' };
         const itemType = itemInfo.type || (itemId.length === 3 && !isNaN(itemId) ? 'log' : 'item');
 
@@ -2429,6 +2477,23 @@ export const Overworld = {
             if (!this.logsCollected.includes(itemId)) {
                 this.logsCollected.push(itemId);
                 if (window.gameState) window.gameState.logs = [...this.logsCollected];
+            }
+        } else if (itemType === 'resource') {
+            if (window.gameState) {
+                if (itemInfo.resourceType === 'credits') window.gameState.credits += (itemInfo.amount || 0);
+                if (itemInfo.resourceType === 'biomass') window.gameState.biomass += (itemInfo.amount || 0);
+                if (window.updateResourceHUD) window.updateResourceHUD();
+            }
+        } else if (itemType === 'card') {
+            if (window.gameState) {
+                if (!window.gameState.profiles.player.cardBox.includes(itemId)) {
+                    window.gameState.profiles.player.cardBox.push(itemId);
+                }
+            }
+        } else if (itemType === 'blueprint') {
+            if (window.gameState && !window.gameState.items.includes(itemId)) {
+                window.gameState.items.push(itemId);
+                if (window.addLog) window.addLog(`<span class="tactical">NEW PROTOCOL ACQUIRED:</span> ${itemInfo.name} registered to local synthesis unit.`);
             }
         } else {
             if (window.gameState && !window.gameState.items.includes(itemId)) {
@@ -2438,7 +2503,10 @@ export const Overworld = {
 
         // Remove from current zone if it was a world object drop
         const zone = this.zones[this.currentZone];
-        const objIdx = zone.objects.findIndex(o => (o.hiddenLogId === itemId || o.hiddenItemId === itemId) && (o.id.startsWith('item_') || o.id.startsWith('log_')));
+        const objIdx = zone.objects.findIndex(o => 
+            (o.hiddenLogId === itemId || o.hiddenItemId === itemId || o.hiddenReward === itemId) && 
+            (o.id.startsWith('item_') || o.id.startsWith('log_'))
+        );
         if (objIdx > -1) {
             const obj = zone.objects[objIdx];
             zone.objects.splice(objIdx, 1);
@@ -2630,8 +2698,10 @@ export const Overworld = {
         // Handle pending item discovery (hidden items)
         if (this.pendingItemPickup) {
             const itemId = this.pendingItemPickup;
+            const spotId = this.pendingItemSpotId || null;
             this.pendingItemPickup = null;
-            this.collectItem(itemId);
+            this.pendingItemSpotId = null;
+            this.collectItem(itemId, spotId);
         }
 
         // Handle deferred item pickups (like boss rewards)

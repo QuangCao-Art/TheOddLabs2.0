@@ -39,6 +39,14 @@ export const BuilderMode = {
             </div>
             <div class="palette-content" id="palette-items"></div>
             <div class="palette-footer">
+                <div class="builder-reward-group">
+                    <label>HIDDEN REWARD ID</label>
+                    <input type="text" id="builder-reward-id" placeholder="e.g. REWARD_CREDITS_50">
+                    <div id="reward-suggestions" class="reward-suggestions"></div>
+                </div>
+                <div class="builder-debug-group">
+                    <button id="builder-toggle-hidden" class="builder-debug-btn">SHOW HIDDEN: OFF</button>
+                </div>
                 <button id="builder-export">EXPORT CODE</button>
             </div>
         `;
@@ -68,6 +76,59 @@ export const BuilderMode = {
         document.body.appendChild(modal);
 
         this.switchTab('furniture');
+        this.renderRewardSuggestions();
+    },
+
+    renderRewardSuggestions() {
+        const container = document.getElementById('reward-suggestions');
+        const input = document.getElementById('builder-reward-id');
+        if (!container || !input) return;
+
+        // Categorize Rewards
+        const resources = ['NONE'];
+        const specialties = [];
+
+        if (window.ITEM_PICKUP_DATA) {
+            Object.keys(window.ITEM_PICKUP_DATA).forEach(id => {
+                if (!id.startsWith('REWARD_')) return;
+                const data = window.ITEM_PICKUP_DATA[id];
+                if (data.type === 'resource') resources.push(id);
+                else specialties.push(id);
+            });
+        }
+
+        const createChips = (list) => list.map(id => {
+            const label = id === 'NONE' ? 'NONE' : id.replace('REWARD_', '').replace('BLUEPRINT_', 'BP:').replace('CARD_', 'CD:');
+            const isSelected = input.value === (id === 'NONE' ? '' : id);
+            return `<span class="reward-chip ${isSelected ? 'selected' : ''}" data-id="${id}">${label}</span>`;
+        }).join('');
+
+        container.innerHTML = `
+            <div class="suggestions-col left">
+                <div class="col-label">RESOURCES</div>
+                ${createChips(resources)}
+            </div>
+            <div class="suggestions-col right">
+                <div class="col-label">SPECIALTIES</div>
+                ${createChips(specialties)}
+            </div>
+        `;
+
+        container.querySelectorAll('.reward-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const id = chip.dataset.id;
+                input.value = id === 'NONE' ? '' : id;
+                container.querySelectorAll('.reward-chip').forEach(c => c.classList.remove('selected'));
+                chip.classList.add('selected');
+            });
+        });
+
+        input.addEventListener('input', () => {
+            container.querySelectorAll('.reward-chip').forEach(c => {
+                const targetId = c.dataset.id === 'NONE' ? '' : c.dataset.id;
+                c.classList.toggle('selected', input.value === targetId);
+            });
+        });
     },
 
     setupEventListeners() {
@@ -94,10 +155,21 @@ export const BuilderMode = {
         // Export Button
         document.getElementById('builder-export').addEventListener('click', () => this.showExport());
         document.getElementById('export-close').addEventListener('mousedown', (e) => e.stopPropagation());
-        document.getElementById('export-close').addEventListener('click', (e) => {
-            e.stopPropagation();
+        document.getElementById('export-close').addEventListener('click', () => {
             document.getElementById('builder-export-modal').classList.add('hidden');
         });
+
+        // Show Hidden Toggle
+        const toggleHiddenBtn = document.getElementById('builder-toggle-hidden');
+        if (toggleHiddenBtn) {
+            toggleHiddenBtn.addEventListener('click', () => {
+                window.gameState.showAllHiddenStuff = !window.gameState.showAllHiddenStuff;
+                toggleHiddenBtn.textContent = `SHOW HIDDEN: ${window.gameState.showAllHiddenStuff ? 'ON' : 'OFF'}`;
+                toggleHiddenBtn.classList.toggle('active', window.gameState.showAllHiddenStuff);
+                Overworld.renderMap(Overworld.currentZone);
+            });
+        }
+
         document.getElementById('export-copy').addEventListener('mousedown', (e) => e.stopPropagation());
         document.getElementById('export-copy').addEventListener('click', (e) => {
             e.stopPropagation();
@@ -279,6 +351,8 @@ export const BuilderMode = {
 
     placeFurniture(zone) {
         const tid = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        const reward = document.getElementById('builder-reward-id')?.value.trim();
+        
         this.selectedTemplate.tiles.forEach(t => {
             const newObj = {
                 id: `${t.id}_${tid}`,
@@ -287,6 +361,7 @@ export const BuilderMode = {
                 type: 'prop',
                 name: this.selectedTemplate.name
             };
+            if (reward) newObj.hiddenReward = reward;
             zone.objects.push(newObj);
         });
     },

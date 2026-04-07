@@ -403,7 +403,28 @@ window.ITEM_PICKUP_DATA = {
     'CARD02': { name: 'CELL CARD: LYDROSOME', desc: 'A collectible card features Lydrosome, hand made by Jenzi.', spriteClass: 'f75', type: 'item', previewImg: 'Card_Lydrosome.png' },
     'CARD03': { name: 'CELL CARD: NITROPHIL', desc: 'A collectible card features Nitrophil, hand made by Jenzi.', spriteClass: 'f75', type: 'item', previewImg: 'Card_Nitrophil.png' },
     'Quest05': { name: 'OFFICIAL EMPLOYEE CARD', desc: 'You are now a truly member of the pack!', spriteClass: 'f90', type: 'item', previewImg: 'Card_Placeholder.png' },
-    'blueprint_stemmy': { name: 'STEMMY BLUEPRINT', desc: 'A blueprint to create Stemmy.', spriteClass: 'f101', type: 'item', previewImg: 'Card_Placeholder.png' },
+    'blueprint_stemmy': { name: 'STEMMY BLUEPRINT', desc: 'A blueprint to create Stemmy.', spriteClass: 'f101', type: 'blueprint', previewImg: 'Card_Placeholder.png' },
+    'blueprint_nitrophil': { name: 'NITROPHIL BLUEPRINT', desc: 'A blueprint to create Nitrophil.', spriteClass: 'f101', type: 'blueprint', previewImg: 'Card_Placeholder.png' },
+    'blueprint_cambihil': { name: 'CAMBIHIL BLUEPRINT', desc: 'A blueprint to create Cambihil.', spriteClass: 'f101', type: 'blueprint', previewImg: 'Card_Placeholder.png' },
+    'blueprint_lydrosome': { name: 'LYDROSOME BLUEPRINT', desc: 'A blueprint to create Lydrosome.', spriteClass: 'f101', type: 'blueprint', previewImg: 'Card_Placeholder.png' },
+    // --- Unified Hidden Rewards ---
+    'REWARD_BLUEPRINT_STEMMY': { name: 'STEMMY BLUEPRINT', desc: 'A blueprint to create Stemmy.', spriteClass: 'f101', type: 'blueprint' },
+    'REWARD_BLUEPRINT_NITROPHIL': { name: 'NITROPHIL BLUEPRINT', desc: 'A blueprint to create Nitrophil.', spriteClass: 'f101', type: 'blueprint' },
+    'REWARD_BLUEPRINT_CAMBIHIL': { name: 'CAMBIHIL BLUEPRINT', desc: 'A blueprint to create Cambihil.', spriteClass: 'f101', type: 'blueprint' },
+    'REWARD_BLUEPRINT_LYDROSOME': { name: 'LYDROSOME BLUEPRINT', desc: 'A blueprint to create Lydrosome.', spriteClass: 'f101', type: 'blueprint' },
+    'REWARD_CREDITS_50': { name: 'LAB CREDITS', desc: 'A small cache of 50 Lab Credits.', type: 'resource', resourceType: 'credits', amount: 50, spriteClass: 'f104' },
+    'REWARD_CREDITS_10': { name: 'LAB CREDITS', desc: 'A tiny cache of 10 Lab Credits.', type: 'resource', resourceType: 'credits', amount: 10, spriteClass: 'f104' },
+    'REWARD_CREDITS_100': { name: 'LAB CREDITS', desc: 'A secure cache of 100 Lab Credits.', type: 'resource', resourceType: 'credits', amount: 100, spriteClass: 'f104' },
+    'REWARD_CREDITS_250': { name: 'LAB CREDITS', desc: 'An executive cache of 250 Lab Credits.', type: 'resource', resourceType: 'credits', amount: 250, spriteClass: 'f104' },
+    'REWARD_BIOMASS_20': { name: 'BIOMASS', desc: 'A small container of 20 raw Biomass.', type: 'resource', resourceType: 'biomass', amount: 20, spriteClass: 'f102' },
+    'REWARD_BIOMASS_50': { name: 'BIOMASS', desc: 'A bulk container of 50 raw Biomass.', type: 'resource', resourceType: 'biomass', amount: 50, spriteClass: 'f102' },
+    'REWARD_BIOMASS_100': { name: 'BIOMASS', desc: 'A major container of 100 raw Biomass.', type: 'resource', resourceType: 'biomass', amount: 100, spriteClass: 'f102' },
+
+    // Special Card Rewards
+    'REWARD_CARD_STEMMY': { name: 'CELL CARD: STEMMY', desc: 'A collectible card features Stemmy.', spriteClass: 'f75', type: 'card' },
+    'REWARD_CARD_CAMBIHIL': { name: 'CELL CARD: CAMBIHIL', desc: 'A collectible card features Cambihil.', spriteClass: 'f75', type: 'card' },
+    'REWARD_CARD_LYDROSOME': { name: 'CELL CARD: LYDROSOME', desc: 'A collectible card features Lydrosome.', spriteClass: 'f75', type: 'card' },
+    'REWARD_CARD_NITROPHIL': { name: 'CELL CARD: NITROPHIL', desc: 'A collectible card features Nitrophil.', spriteClass: 'f75', type: 'card' },
 };
 
 window.showItemPickupModal = (itemId, onClose) => {
@@ -412,7 +433,12 @@ window.showItemPickupModal = (itemId, onClose) => {
 
     const label = document.getElementById('pickup-label');
     if (label) {
-        label.textContent = (itemId === 'Quest04' || data.type === 'monster') ? 'CELL ACQUIRED' : 'ITEM ACQUIRED';
+        if (itemId === 'Quest04' || data.type === 'monster') label.textContent = 'CELL ACQUIRED';
+        else if (data.type === 'log') label.textContent = 'DATALOG DISCOVERED';
+        else if (data.type === 'resource') label.textContent = 'RESOURCE ACQUIRED';
+        else if (data.type === 'card') label.textContent = 'C-CARD ACQUIRED';
+        else if (data.type === 'blueprint') label.textContent = 'BLUEPRINT ACQUIRED';
+        else label.textContent = 'ITEM ACQUIRED';
     }
 
     if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
@@ -424,6 +450,9 @@ window.showItemPickupModal = (itemId, onClose) => {
     const sprite = document.getElementById('pickup-sprite');
     if (itemId === 'Quest04' || data.type === 'monster') {
         sprite.className = `pickup-cell-sprite ${data.spriteClass}`;
+    } else if (data.type === 'card') {
+        // Collectible cards can use a specialized class or default to key-item-sprite
+        sprite.className = `key-item-sprite ${data.spriteClass}`;
     } else {
         sprite.className = `key-item-sprite ${data.spriteClass}`;
     }

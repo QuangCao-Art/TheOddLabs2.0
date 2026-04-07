@@ -213,3 +213,35 @@ To build a wall that spans two tiles high, use the Top and Bottom segments in ve
 [14], // Wall-Middle-Top
 [15]  // Wall-Middle-Bottom
 ```
+
+## 5. Hidden Reward IDs (Builder Tool Reference)
+When using the **HIDDEN REWARD ID** field in the Builder Tool, you can use any ID from `ITEM_PICKUP_DATA`. Here are common ones:
+
+### Resources
+- `REWARD_CREDITS_50` - 50 Lab Credits
+- `REWARD_CREDITS_100` - 100 Lab Credits
+- `REWARD_CREDITS_250` - 250 Lab Credits
+- `REWARD_CREDITS_10` - 10 Lab Credits (Tiny cache)
+- `REWARD_CREDITS_50` - 50 Lab Credits (Small cache)
+- `REWARD_CREDITS_100` - 100 Lab Credits (Secure cache)
+- `REWARD_CREDITS_250` - 250 Lab Credits (Executive cache)
+- `REWARD_BIOMASS_20` - 20 Biomass (Small container)
+- `REWARD_BIOMASS_50` - 50 Biomass (Bulk container)
+- `REWARD_BIOMASS_100` - 100 Biomass (Major container)
+
+### Special Item Protocols (Blueprints)
+- `REWARD_BLUEPRINT_STEMMY` - Blueprint for Stemmy
+- `REWARD_BLUEPRINT_NITROPHIL` - Blueprint for Nitrophil
+- `REWARD_BLUEPRINT_CAMBIHIL` - Blueprint for Cambihil
+- `REWARD_BLUEPRINT_LYDROSOME` - Blueprint for Lydrosome
+
+### Collectible Cards
+- `REWARD_CARD_STEMMY` - Stemmy Card
+- `REWARD_CARD_NITROPHIL` - Nitrophil Card
+- `REWARD_CARD_CAMBIHIL` - Cambihil Card
+- `REWARD_CARD_LYDROSOME` - Lydrosome Card
+
+### Legacy Datalogs
+- `Log001` - Atrium Intro
+- `Log002` - First Discovery
+- *(Use 3-digit numeric codes like 004, 005 for basic pads)*

@@ -26,7 +26,7 @@ export const lobby = {
         { id: 'f14_lob_tr', x: 9, y: 3, type: 'prop', name: 'Green Specimen Tank' },
         { id: 'jenzi', x: 4, y: 4, type: 'npc', name: 'Jenzi' },
         { id: 'f59_lob_nw', x: 1, y: 3, type: 'prop', name: 'Decorative Bush' },
-        { id: 'f1_lobby_wait1', x: 1, y: 4, type: 'prop', name: 'Lab Chair' },
+        { id: 'f1_lobby_wait1', x: 1, y: 4, type: 'prop', name: 'Lab Chair', hiddenReward: 'REWARD_CREDITS_250' },
         { id: 'f1_lobby_wait2', x: 1, y: 5, type: 'prop', name: 'Lab Chair' },
         { id: 'f56_reception', x: 8, y: 5, type: 'prop', name: 'Leader Desk' },
         { id: 'f57_reception', x: 8, y: 6, type: 'prop', name: 'Leader Desk' },

@@ -71,6 +71,7 @@ export const gameState = {
     unseenLogs: [], // Track newly found logs that haven't been viewed yet
     bioExtractGrid: new Array(9).fill(null), // 3x3 grid for bio extraction [monster, biomassStored, lastTick]
     quests: {}, // Track active and completed quests
+    lootedSpots: [], // Track unique coordinate-based hiding spots that have been emptied (zone_x_y)
     
     // Persistent Session Tracking
     lastOverworldPos: {
@@ -162,6 +163,7 @@ export function saveGameState() {
         logs: gameState.logs,
         unseenLogs: gameState.unseenLogs,
         quests: gameState.quests,
+        lootedSpots: gameState.lootedSpots || [],
         bioExtractGrid: gameState.bioExtractGrid,
         lastOverworldPos: gameState.lastOverworldPos
     };
@@ -213,6 +215,7 @@ export function loadGameState() {
         if (saved.logs) gameState.logs = [...saved.logs];
         if (saved.unseenLogs) gameState.unseenLogs = [...saved.unseenLogs];
         if (saved.quests) gameState.quests = { ...saved.quests };
+        if (saved.lootedSpots) gameState.lootedSpots = [...saved.lootedSpots];
         if (saved.bioExtractGrid) gameState.bioExtractGrid = [...saved.bioExtractGrid];
         if (saved.lastOverworldPos) gameState.lastOverworldPos = { ...saved.lastOverworldPos };
         
@@ -265,6 +268,7 @@ export function fullResetGameState() {
     gameState.logs = [];
     gameState.unseenLogs = [];
     gameState.quests = {};
+    gameState.lootedSpots = [];
     gameState.bioExtractGrid = new Array(9).fill(null);
     
     gameState.lastOverworldPos = {

@@ -21,7 +21,37 @@ export const SHOP_ITEMS = {
         iconClass: 'icon-blueprint',
         price: 500,
         sellPrice: 0,
-        oneTime: false
+        oneTime: true
+    },
+    'blueprint_nitrophil': {
+        id: 'blueprint_nitrophil',
+        name: 'Nitrophil Blueprint',
+        desc: 'A blueprint to create Nitrophil.',
+        icon: '',
+        iconClass: 'icon-blueprint',
+        price: 900,
+        sellPrice: 0,
+        oneTime: true
+    },
+    'blueprint_cambihil': {
+        id: 'blueprint_cambihil',
+        name: 'Cambihil Blueprint',
+        desc: 'A blueprint to create Cambihil.',
+        icon: '',
+        iconClass: 'icon-blueprint',
+        price: 900,
+        sellPrice: 0,
+        oneTime: true
+    },
+    'blueprint_lydrosome': {
+        id: 'blueprint_lydrosome',
+        name: 'Lydrosome Blueprint',
+        desc: 'A blueprint to create Lydrosome.',
+        icon: '',
+        iconClass: 'icon-blueprint',
+        price: 900,
+        sellPrice: 0,
+        oneTime: true
     }
 };
 
