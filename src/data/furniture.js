@@ -343,5 +343,21 @@ export const DOOR_TEMPLATES = {
     DOOR_SECRET_LEFT_OPEN: {
         name: 'Secret Door Left (Open)',
         tiles: [{ id: 37, relX: 0, relY: 0, name: 'Open' }]
+    },
+    DOOR_HIDDEN_BASIC: {
+        name: 'Hidden Door (Basic)',
+        tiles: [{ id: 39, relX: 0, relY: 0, name: 'Hidden' }]
+    },
+    DOOR_HIDDEN_BOTTOM: {
+        name: 'Hidden Door (Bottom Edge)',
+        tiles: [{ id: 40, relX: 0, relY: 0, name: 'Hidden' }]
+    },
+    DOOR_HIDDEN_RIGHT: {
+        name: 'Hidden Door (Right Wall)',
+        tiles: [{ id: 41, relX: 0, relY: 0, name: 'Hidden' }]
+    },
+    DOOR_HIDDEN_LEFT: {
+        name: 'Hidden Door (Left Wall)',
+        tiles: [{ id: 42, relX: 0, relY: 0, name: 'Hidden' }]
     }
 };

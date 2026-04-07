@@ -20,6 +20,10 @@ This protocol MUST be strictly followed for all map modifications:
 - **5. PRE_EXECUTION_GRID_TRACE**: Trace every column before writing to ensure atomic pairings.
 - **6. AUTOMATED_STACKING_MEMORY**: Whenever a `BOTTOM_ID` is present, the model MUST automatically place the corresponding `TOP_ID` at `(X, Y-1)`. This is NON-NEGOTIABLE. If other objects are at the target coordinate, use the **Overlap Strategy** (Protocol 3) to render both.
 - **7. CONNECTED_ZONES_SYNC**: Whenever a map's dimensions or floor layout changes, YOU MUST AUDIT all other map files to find any `doors` targets pointing to the modified zone, and update their `targetX` and `targetY` to match the new spawn/floor coordinates.
+- **8. HIDDEN_DOOR_PROTOCOL**: For secret passages, use IDs **39–42** (Hidden-Closed) in the `layout`. 
+    - These tiles stay visually disguised as walls until the player walks into them.
+    - Upon interaction (if unlocked), they reveal the **Secret Passage** visuals (IDs **34–37**).
+    - Ensure a corresponding entry exists in the `doors` array for the transition to work.
 
 ### 1. Identify the Target Zone File
 Map data is now modularized into individual files.

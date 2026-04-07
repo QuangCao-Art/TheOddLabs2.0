@@ -53,6 +53,10 @@ This document serves as the official reference for building levels using the `La
 | **36** | Door-Edge-Right-Secret-Open | 1280 | 1280 |
 | **37** | Door-Edge-Left-Secret-Open | 1536 | 1280 |
 | **38** | Floor-SideDeco | 0 | 1280 |
+| **39** | Hidden-Door-Basic-Closed | 256 | 1024 |
+| **40** | Hidden-Door-Bottom-Closed | 256 | 512 |
+| **41** | Hidden-Door-Right-Closed | 512 | 256 |
+| **42** | Hidden-Door-Left-Closed | 0 | 256 |
 
 ---
 

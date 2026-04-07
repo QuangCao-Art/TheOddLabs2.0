@@ -25,6 +25,7 @@ import { entertainment } from '../data/maps/entertainment.js';
 import { cellPlayGround } from '../data/maps/cellPlayGround.js';
 import { nursery } from '../data/maps/nursery.js';
 import { medicalExperienceRoom } from '../data/maps/medicalExperienceRoom.js';
+import { secretCryoChamber } from '../data/maps/secretCryoChamber.js';
 
 export const Overworld = {
     randomPools: {
@@ -232,7 +233,8 @@ export const Overworld = {
         entertainment,
         cellPlayGround,
         nursery,
-        medicalExperienceRoom
+        medicalExperienceRoom,
+        secretCryoChamber
     },
     furnitureMetadata: {
         // --- TILESET 02 (f0-f63) ---
@@ -511,14 +513,14 @@ export const Overworld = {
                 const tile = document.createElement('div');
                 tile.classList.add('tile', `t-${tileID}`);
 
-                const isClosedDoor = [20, 22, 24, 25, 28, 29, 30, 31].includes(tileID);
+                const isClosedDoor = [20, 22, 24, 25, 28, 29, 30, 31, 39, 40, 41, 42].includes(tileID);
                 const isOpenDoor = [21, 23, 26, 27, 34, 35, 36, 37].includes(tileID);
                 const isGenericWall = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 32, 33].includes(tileID);
 
                 if (isGenericWall || isClosedDoor) tile.classList.add('wall');
                 else tile.classList.add('floor');
 
-                if (isClosedDoor || isOpenDoor) tile.classList.add('door-tile');
+                if (isClosedDoor || isOpenDoor || [39, 40, 41, 42].includes(tileID)) tile.classList.add('door-tile');
 
                 mapEl.appendChild(tile);
             }
@@ -571,6 +573,28 @@ export const Overworld = {
         document.getElementById('location-name').textContent = zone.name;
         this.updatePlayerPosition();
         this.savePosition();
+        
+        // --- NEW: Spatial Conflict Audit (Auto-kick furniture overlaps on entry) ---
+        const overlapped = zone.objects.filter(obj => {
+            const w = obj.width || 1;
+            const h = obj.height || 1;
+            return this.player.x >= obj.x && this.player.x < obj.x + w && this.player.y >= obj.y && this.player.y < obj.y + h;
+        });
+
+        overlapped.forEach(obj => {
+            const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
+            const isKickable = (obj.temp === true || (obj.id && obj.id.includes('_wild_')) || (meta && meta.kickable === true));
+            if (isKickable && !obj.isKicking) {
+                const dirMap = { 
+                    'up': { dx: 0, dy: -1 }, 
+                    'down': { dx: 0, dy: 1 }, 
+                    'left': { dx: -1, dy: 0 }, 
+                    'right': { dx: 1, dy: 0 } 
+                };
+                const push = dirMap[this.player.direction] || { dx: 0, dy: 1 };
+                this.kickObject(obj, push.dx, push.dy, true); // Force bypass transition guard
+            }
+        });
 
         // 6. UNLOCK VISUALS (Clean up transition locks after render)
         setTimeout(() => {
@@ -916,7 +940,7 @@ export const Overworld = {
                 }
 
                 const tileID = zone.layout[nextY][nextX];
-                const doorMap = { 20: 21, 22: 23, 24: 26, 25: 27 };
+                const doorMap = { 20: 21, 22: 23, 24: 26, 25: 27, 39: 34, 40: 35, 41: 36, 42: 37 };
                 const isLocked = [28, 29, 30, 31].includes(tileID);
 
                 if (doorMap[tileID]) {
@@ -2922,8 +2946,8 @@ export const Overworld = {
         }
     },
 
-    kickObject(obj, dx, dy) {
-        if (this.isTransitioning || this.isPaused || obj.isKicking) return;
+    kickObject(obj, dx, dy, force = false) {
+        if ((this.isTransitioning && !force) || this.isPaused || obj.isKicking) return;
         obj.isKicking = true;
 
         const el = document.getElementById(`npc-${obj.id}`);
@@ -2954,12 +2978,18 @@ export const Overworld = {
             const mySet = linkedSets.find(set => set.includes(prefix));
 
             const linked = zone.objects.filter(o => {
-                if (o.id === obj.id || !o.id.endsWith(`_${suffix}`)) return false;
+                if (o.id === obj.id) return false;
                 const oPrefix = o.id.split('_')[0];
+                const oSuffixMatch = o.id.match(/_([a-zA-Z0-9]+)$/);
+                const oSuffix = oSuffixMatch ? oSuffixMatch[1] : null;
 
-                // Only link if they are in the same known set OR share the same base ID (prefix)
-                const isSameSet = mySet ? mySet.includes(oPrefix) : (oPrefix === prefix);
-                if (!isSameSet) return false;
+                // Match if: 
+                // 1. Exact suffix match (Standard protocol)
+                // 2. OR both belong to a known furniture set AND are adjacent
+                const isSuffixMatch = suffixMatch && (oSuffix === suffix);
+                const isSetMatch = mySet && mySet.includes(oPrefix);
+
+                if (!isSuffixMatch && !isSetMatch) return false;
 
                 // Final proximity check (1 tile radius)
                 return Math.abs(o.x - obj.x) <= 1 && Math.abs(o.y - obj.y) <= 1;
@@ -3025,6 +3055,11 @@ export const Overworld = {
             if (pEl) {
                 pEl.classList.remove('anim-monster-breathing', 'anim-monster-pop', 'anim-monster-shake');
                 void pEl.offsetWidth;
+
+                // --- Sync Z-Index for all parts (Top + Bottom) immediately on hit ---
+                pEl.style.setProperty('z-index', '50000', 'important'); 
+                pEl.style.willChange = 'transform, opacity';
+
                 pEl.classList.add('anim-monster-shake');
             }
         });
@@ -3061,7 +3096,7 @@ export const Overworld = {
 
                 pEl.classList.remove('anim-monster-shake');
                 void pEl.offsetWidth;
-                pEl.style.zIndex = 9999;
+                pEl.style.setProperty('z-index', '50000', 'important');
                 pEl.style.willChange = 'transform, opacity';
 
                 const spinMult = isHomeRun ? 4 : 1;

@@ -4826,6 +4826,26 @@ body {
     background-position: calc(-0px / 4) calc(-1280px / 4);
 }
 
+/* Hidden-Door-Basic-Closed (Matches Wall-Center-Bottom ID 15) */
+.t-39 {
+    background-position: calc(-256px / 4) calc(-1024px / 4);
+}
+
+/* Hidden-Door-Bottom-Closed (Matches WallEdge-Bottom ID 9) */
+.t-40 {
+    background-position: calc(-256px / 4) calc(-512px / 4);
+}
+
+/* Hidden-Door-Right-Closed (Matches Wall-Right-Side ID 11) */
+.t-41 {
+    background-position: calc(-512px / 4) calc(-256px / 4);
+}
+
+/* Hidden-Door-Left-Closed (Matches Wall-Left-Side ID 10) */
+.t-42 {
+    background-position: calc(-0px / 4) calc(-256px / 4);
+}
+
 .tile.interactable {
     cursor: pointer;
 }
@@ -8650,50 +8670,50 @@ body {
 
 .anim-monster-kick-l {
     animation: monster-kick-poof-l 0.8s linear forwards !important;
-    z-index: 999 !important;
+    z-index: 50000 !important;
     will-change: transform, opacity;
 }
 
 .anim-monster-kick-f {
     animation: monster-kick-poof-f 0.8s linear forwards !important;
-    z-index: 999 !important;
+    z-index: 50000 !important;
     will-change: transform, opacity;
 }
 
 .anim-monster-kick-u {
     animation: monster-kick-poof-u 0.8s linear forwards !important;
-    z-index: 999 !important;
+    z-index: 50000 !important;
     will-change: transform, opacity;
 }
 
 .anim-monster-kick-r {
     animation: monster-kick-poof-r 0.8s linear forwards !important;
-    z-index: 999 !important;
+    z-index: 50000 !important;
     will-change: transform, opacity;
 }
 
 /* Home Run Variants */
 .anim-monster-kick-homerun-l {
     animation: monster-kick-homerun-l 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
-    z-index: 10000 !important;
+    z-index: 50000 !important;
     will-change: transform, opacity;
 }
 
 .anim-monster-kick-homerun-r {
     animation: monster-kick-homerun-r 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
-    z-index: 10000 !important;
+    z-index: 50000 !important;
     will-change: transform, opacity;
 }
 
 .anim-monster-kick-homerun-f {
     animation: monster-kick-homerun-f 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
-    z-index: 10000 !important;
+    z-index: 50000 !important;
     will-change: transform, opacity;
 }
 
 .anim-monster-kick-homerun-u {
     animation: monster-kick-homerun-u 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
-    z-index: 10000 !important;
+    z-index: 50000 !important;
     will-change: transform, opacity;
 }
 
