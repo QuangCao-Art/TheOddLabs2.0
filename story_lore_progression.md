@@ -363,6 +363,32 @@ Characters respond differently based on the number of DataLogs you have archived
 - **NPC02_F**: *"Bio-signature match confirmed. Scientist Maya ready for sync."* (Julia)
 - **NPC03_M**: *"Deploying tactical cells. Biologist Sapstan check."* (Tom)
 
+### Zone Dialogue: Cell Playground
+- **Pool 01**: "The Pellicle layer of these Cells is remarkably resilient. // They can withstand the force of a full explosion without losing structural integrity. // To them, a sprint-kick is probably nothing more than a playful tickle!"
+- **Pool 02**: "We aren't entirely sure why the Cells gravitate toward this specific room in such high numbers. // Since they insisted on gathering here, we decided to officially designate it as their 'Playground'."
+- **Pool 03**: "Did you know that Cells actually enjoy physical interaction? // They respond to affection just like a pet. // Curiously, their dense sensory nodes perceive a head pat and a firm kick as the exact same sensation!"
+
+### Pessi (Cell Playground)
+**Role**: Researcher of "High-Velocity Affection"
+**Background**: Pessi is obsessed with the sensory resilience of Cells. He believes that the Intern's standard "kick" is actually the most efficient way to communicate love to a Cell, and is tirelessly collecting data to prove his "Gentle Pat" theory.
+
+#### Quest: A Gentle Pat (Timed)
+- **Narrative**: Pessi needs a high-frequency data set to calibrate the playground's impact sensors. He asks the Intern to provide "affection" to 20 cells via high-velocity kicks in under 30 seconds.
+- **Dialogue**:
+    - **Offer**: "Hey Intern! Quick question—did you know that Cells actually enjoy physical interaction? // They respond to affection just like a pet, but their dense sensory nodes are... unique. // Our research suggests that a soft head pat and a firm, high-velocity kick are perceived as the exact same sensation of love! // I need to study their reaction to high-frequency affection. Can you give 20 of them a 'gentle pat' with your boot in 30 seconds? // It’s for science, and I’m sure they’ll appreciate the attention!"
+    - **Retry**: "The data stream cut out. I think you weren't showing enough 'affection' quickly enough for the sensors to stabilize. // Ready to try 'A Gentle Pat' again? The cells are waiting for your love, and I've still got 800 LC for the data!"
+    - **Progress**: "Don't stop now! You still have {amount} cells waiting for their 'gentle pat'!"
+    - **Complete**: "Incredible! Look at those data spikes! The cells are absolutely glowing from all that interaction. // It turns out high-velocity affection is the most efficient way to keep them happy. // Here is your reward. You’ve got a real talent for... well, whatever that was!"
+    - **Finished**: "Thanks again! My research on 'High-Velocity Affection' is going to be a department head-turner for sure."
+
+### Kolla (Cell Playground)
+**Role**: Observation Specialist
+**Background**: Kolla is the calm counterpoint to Pessi's enthusiasm. She observes the social clustering of Cells and ensures they don't get *too* excited by Pessi's "affection" experiments. She's interested in why Cells chose this specific room as their designated "Playground."
+- **Ambient Lines**:
+    - *"The Pellicle layer of these Cells is remarkably resilient. // They can withstand the force of a full explosion without losing structural integrity. // To them, a sprint-kick is probably nothing more than a playful tickle!"*
+    - *"We aren't entirely sure why the Cells gravitate toward this specific room in such high numbers. // Since they insisted on gathering here, we decided to officially designate it as their 'Playground'."*
+    - *"Did you know that Cells actually enjoy physical interaction? // They respond to affection just like a pet. // Curiously, their dense sensory nodes perceive a head pat and a firm kick as the exact same sensation!"*
+
 ### Scientist Maya (Atrium)
 
 ### 1. Dialogue

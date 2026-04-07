@@ -8158,6 +8158,122 @@ body {
 #zone-transition-overlay.slow-transition {
     transition: opacity 0.6s ease-in-out;
 }
+/* --- TIMED QUEST UI --- */
+#quest-countdown-overlay {
+    position: fixed;
+    top: 160px; /* Shifted up 20px */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+    font-size: 8rem;
+    font-weight: 900;
+    color: #00f3ff;
+    /* Thick deep dark blue stroke + Depth Drop Shadow */
+    text-shadow: 
+        -1.5px -1.5px 0 #000b1a,  
+         1.5px -1.5px 0 #000b1a,
+        -1.5px  1.5px 0 #000b1a,  
+         1.5px  1.5px 0 #000b1a,
+         0px 0px 30px rgba(0, 243, 255, 0.4);
+    filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.9));
+    pointer-events: none;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 5px;
+}
+
+#quest-countdown-overlay.stomp {
+    animation: stomp-impact 0.8s cubic-bezier(0.12, 0, 0.39, 0) forwards;
+}
+
+@keyframes stomp-impact {
+    0% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+    20% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+}
+
+#quest-timer-hud {
+    position: fixed;
+    top: 160px; /* Shifted up 20px */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9000;
+    
+    background: rgba(20, 25, 30, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 12px;
+    border-radius: 12px;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    min-width: 180px;
+    pointer-events: none;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.hud-timer-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 5px 0;
+}
+
+.timer-label, .progress-label {
+    font-size: 0.65rem;
+    color: var(--neon-cyan);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+#quest-timer-value {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+#quest-progress-container {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Darker background for the count */
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#quest-progress-value {
+    font-size: 2.2rem; /* Much bigger number */
+    font-weight: 900;
+    color: #00f3ff;
+    text-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+    line-height: 1;
+}
+
+#quest-timer-hud.danger {
+    border-color: #ff3c3c;
+    background: rgba(40, 10, 10, 0.8);
+    animation: hudPulseRed 1s infinite alternate;
+}
+
+#quest-timer-hud.danger #quest-timer-value,
+#quest-timer-hud.danger .timer-label {
+    color: #ff3c3c;
+    text-shadow: 0 0 15px #ff3c3c;
+}
+
+@keyframes hudPulseRed {
+    from { box-shadow: 0 0 10px rgba(255, 60, 60, 0.2); }
+    to { box-shadow: 0 0 30px rgba(255, 60, 60, 0.5); }
+}
 
 /* Custom Confirmation Modal */
 #screen-confirm {

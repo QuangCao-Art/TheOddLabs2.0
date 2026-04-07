@@ -106,6 +106,66 @@ export const QUESTS = {
             ]
         },
         reward: { type: 'log', id: 'Log020' }
+    },
+    'timed_test_kick': {
+        id: 'timed_test_kick',
+        title: 'High-Pressure Kick Test',
+        description: "Kick 3 objects in 20 seconds. Protocol: Precision and Speed.",
+        type: 'kick',
+        targetType: 'npc',
+        uiLabel: 'KICK COUNT',
+        target: 'any',
+        amount: 3,
+        timeLimit: 20,
+        reward: { type: 'resource', id: 'credits', amount: 300 },
+        dialogue: {
+            offer: [
+                "Authorized personnel only! This wing requires a high-speed diagnostic.",
+                "Can you kick 3 objects in under 20 seconds?",
+                "It's the only way to calibrate the bio-sensors in this sector."
+            ],
+            retry: [
+                "Diagnostic failed. The sensors didn't catch enough impact data.",
+                "Want to try the High-Pressure Kick Test again for 300 LC?"
+            ],
+            progress: ["Clock is ticking, Intern! {amount} more kicks needed!"],
+            complete: [
+                "Calibration successful! Sensors are green across the board.",
+                "Here is your compensation for the high-intensity workout."
+            ],
+            finished: ["Good form. You've got quite a kick, Intern."]
+        }
+    },
+    'quest_pessi_playground': {
+        id: 'quest_pessi_playground',
+        title: 'A Gentle Pat',
+        description: "Kick 20 Cells in 30 seconds to help Pessi study how Cells perceive physical interaction.",
+        type: 'kick',
+        targetType: 'npc',
+        uiLabel: 'KICK COUNT',
+        target: 'any',
+        amount: 20,
+        timeLimit: 30,
+        reward: { type: 'resource', id: 'credits', amount: 800 },
+        dialogue: {
+            offer: [
+                "Hey Intern! Quick question—did you know that Cells actually enjoy physical interaction?",
+                "They respond to affection just like a pet, but their dense sensory nodes are... well, unique. // Our research suggests that a soft head pat and a firm, high-velocity kick are perceived as the exact same sensation of love!",
+                "I need to study their reaction to high-frequency affection. Can you give 20 of them a 'gentle pat' with your boot in 30 seconds?",
+                "It’s for science, and I’m sure they’ll appreciate the attention!"
+            ],
+            retry: [
+                "The data stream cut out. I think you weren't showing enough 'affection' quickly enough for the sensors to stabilize.",
+                "Ready to try 'A Gentle Pat' again? The cells are waiting for your love, and I've still got 800 LC for the data!"
+            ],
+            progress: ["Don't stop now! You still have {amount} cells waiting for their 'gentle pat'!"],
+            complete: [
+                "Incredible! Look at those data spikes! The cells are absolutely glowing from all that interaction.",
+                "It turns out high-velocity affection is the most efficient way to keep them happy.",
+                "Here is your reward. You’ve got a real talent for... well, whatever that was!"
+            ],
+            finished: ["Thanks again! My research on 'High-Velocity Affection' is going to be a department head-turner for sure."]
+        }
     }
 };
 

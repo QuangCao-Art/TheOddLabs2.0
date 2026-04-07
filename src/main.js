@@ -1256,6 +1256,10 @@ function setupEventListeners() {
         'anreal': 'npc_male',
         'godou': 'npc_male',
         'yunidi': 'npc_female',
+        
+        // Playground
+        'pessi': 'npc_male',
+        'kolla': 'npc_female',
 
         // Kitchen
         'rattou': 'npc_male',
@@ -1948,6 +1952,12 @@ function setupEventListeners() {
 
         if (key === 'r') {
             const isOverworld = !document.getElementById('screen-overworld').classList.contains('hidden');
+
+            // Block inventory during timed quests
+            if (isOverworld && window.Overworld && window.Overworld.activeTimedQuestId) {
+                console.log("Input Blocked: Timed Quest Active.");
+                return;
+            }
 
             // Prevent opening inventory if another interactive overlay is open
             const activeOverlays = [
@@ -4712,6 +4722,37 @@ async function triggerSlowTransition(callback) {
     overlay.classList.add('hidden');
     overlay.classList.remove('slow-transition');
 }
+
+/**
+ * Quick 0.3s fade transition for quest starts/fails
+ * @param {function} callback - Logic to execute while the screen is black
+ */
+async function triggerQuickTransition(callback) {
+    const overlay = document.getElementById('zone-transition-overlay');
+    if (!overlay) {
+        if (callback) await callback();
+        return;
+    }
+
+    overlay.classList.remove('slow-transition');
+    overlay.classList.remove('hidden');
+    void overlay.offsetWidth; // Force reflow
+    overlay.classList.add('active');
+
+    // Wait for Fade-Out (0.3s)
+    await new Promise(r => setTimeout(r, 300));
+
+    if (callback) await callback();
+
+    await new Promise(r => setTimeout(r, 100));
+
+    overlay.classList.remove('active');
+    await new Promise(r => setTimeout(r, 300));
+    overlay.classList.add('hidden');
+}
+
+window.triggerSlowTransition = triggerSlowTransition;
+window.triggerQuickTransition = triggerQuickTransition;
 
 function showScreen(screenId) {
     const currentVisible = Array.from(document.querySelectorAll('.screen')).find(s => !s.classList.contains('hidden'));

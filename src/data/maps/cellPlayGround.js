@@ -69,7 +69,9 @@ export const cellPlayGround = {
         { id: 'f59_s12', x: 12, y: 11, type: 'prop', name: 'Pot Plant' },
         { id: 'f59_s13', x: 13, y: 11, type: 'prop', name: 'Pot Plant' },
         { id: 'f60_s14', x: 14, y: 11, type: 'prop', name: 'Odd Box' },
-        { id: 'f59_s15', x: 15, y: 11, type: 'prop', name: 'Pot Plant' }
+        { id: 'f59_s15', x: 15, y: 11, type: 'prop', name: 'Pot Plant' },
+        { id: 'pessi', x: 7, y: 10, type: 'npc', name: 'Pessi', sideQuestId: 'quest_pessi_playground' },
+        { id: 'kolla', x: 9, y: 10, type: 'npc', name: 'Kolla' }
     ],
     maxWildSpawns: 5,
     disableBattle: true,

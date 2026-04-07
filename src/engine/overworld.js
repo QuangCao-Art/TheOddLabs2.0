@@ -128,6 +128,11 @@ export const Overworld = {
             ["The security guard mentioned hearing a low, resonant howl coming from the deep sectors last night.", "He claimed it felt less like a sound and more like a vibration in the floor tiles... almost like the cry of a giant beast trapped in the deep."],
             ["If you can't find Scientist Dyzes at his station, he's likely reached a state of 'passive enlightenment'//—or as his assistant calls it, taking a nap.", "It's maddening how the most brilliant human-cell breakthroughs come to him while he's snoring. Lazy? Maybe. But his genius is undeniable."],
             ["The 'Experience' part of this room is mostly just us watching people react to weird noises.", "It's a very cost-effective way to study stress-induced hormone spikes."]
+        ],
+        cellPlayGround: [
+            ["The Pellicle layer of these Cells is remarkably resilient. // They can withstand the force of a full explosion without losing structural integrity. // To them, a sprint-kick is probably nothing more than a playful tickle!"],
+            ["We aren't entirely sure why the Cells gravitate toward this specific room in such high numbers. // Since they insisted on gathering here, we decided to officially designate it as their 'Playground'."],
+            ["Did you know that Cells actually enjoy physical interaction? // They respond to affection just like a pet. // Curiously, their dense sensory nodes perceive a head pat and a firm kick as the exact same sensation!"]
         ]
     },
     tileSize: 64,
@@ -162,6 +167,13 @@ export const Overworld = {
     typingInterval: null,
     isTransitioning: false,
     isPaused: false,
+
+    // --- TIMED QUEST SYSTEM ---
+    activeTimedQuestId: null,
+    timedQuestElapsed: 0,
+    isStartingQuest: false,
+    questNPCAttached: null,
+
     lastInteractTime: 0,
     logsCollected: [], // Local cache, synced from gameState.logs in renderMap
     pendingIncubatorMenu: false, // flag for incubator healing flow
@@ -358,13 +370,18 @@ export const Overworld = {
         return this.furnitureMetadata[prefix] || null;
     },
 
-    updateQuestProgress(type, id) {
+    updateQuestProgress(type, id, objectType = null) {
         let changed = false;
         Object.keys(gameState.quests).forEach(questId => {
             const progressObj = gameState.quests[questId];
             const questData = QUESTS[questId];
 
-            if (progressObj.status === 'started' && questData.type === type && questData.target === id) {
+            if (progressObj.status === 'started' && questData.type === type && (questData.target === id || questData.target === 'any')) {
+                // If the quest specifies a targetType (e.g., 'npc'), verify the kicked object matches
+                if (questData.targetType && objectType && questData.targetType !== objectType) {
+                    return; // Skip if types don't match
+                }
+
                 progressObj.progress++;
                 changed = true;
 
@@ -442,6 +459,11 @@ export const Overworld = {
         const zone = this.zones[id];
         const isNewZone = id !== this.currentZone || forceSpawn;
 
+        // --- NEW: Spawner Cleanup (Prevent timer leaks on zone change) ---
+        if (isNewZone && this.spawner) {
+            this.spawner.stop();
+        }
+
         const mapEl = document.getElementById('overworld-map');
         const playerSprite = document.getElementById('player-sprite');
 
@@ -468,8 +490,11 @@ export const Overworld = {
                 const isLockedByFlag = door && door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag] && !window.gameState.debugUnlockDoors;
                 const missingItems = door ? (door.requiredItems || (door.requiredItem ? [door.requiredItem] : [])).filter(id => !window.gameState.items.includes(id)) : [];
                 const isLockedByItem = door && missingItems.length > 0 && !window.gameState.debugUnlockDoors && !window.gameState.debugAllItems;
+                
+                // --- NEW: Timed Quest Lockdown (Block entry/exit during stress tests) ---
+                const isLockedByQuest = this.activeTimedQuestId !== null;
 
-                if (isLockedByFlag || isLockedByItem) {
+                if (isLockedByFlag || isLockedByItem || isLockedByQuest) {
                     const lockedMap = {
                         20: 29, 21: 29, // Edge-Bottom
                         22: 28, 23: 28, // Basic
@@ -634,7 +659,10 @@ export const Overworld = {
                 // If dialogue is active, always allow F to advance/speed up
                 if (this.isDialogueActive) {
                     this.interact();
-                } else if (!this.isPaused && !e.repeat) {
+                } else if (!this.isPaused && !e.repeat && !this.isStartingQuest) {
+                    // Block interaction during timed quests
+                    if (this.activeTimedQuestId) return;
+
                     // Safety check: Don't interact if any UI overlay/modal is visible
                     const hasOverlay = document.querySelector('.overlay:not(.hidden), .modal-overlay:not(.hidden), .modal-overlay.active');
                     if (!hasOverlay) {
@@ -704,6 +732,9 @@ export const Overworld = {
         // Only run if overworld is visible
         const overworldVisible = !document.getElementById('screen-overworld').classList.contains('hidden');
         if (overworldVisible && !this.isPaused && !this.isTransitioning) {
+            // Update timed quest logic
+            this.updateTimedQuest();
+
             // Update movement progress first
             this.handleMovementProgress();
 
@@ -873,6 +904,13 @@ export const Overworld = {
         if (!targetTile || targetTile.classList.contains('wall')) {
             // Restore Auto-Open Logic
             if (targetTile && targetTile.classList.contains('door-tile')) {
+                // --- NEW: Block doors during timed quests ---
+                if (this.activeTimedQuestId) {
+                    // Just block movement without the time-wasting dialogue pop-up
+                    this.updatePlayerPosition();
+                    return;
+                }
+
                 const tileID = zone.layout[nextY][nextX];
                 const doorMap = { 20: 21, 22: 23, 24: 26, 25: 27 };
                 const isLocked = [28, 29, 30, 31].includes(tileID);
@@ -1039,6 +1077,226 @@ export const Overworld = {
         }
 
         this.isTransitioning = false;
+    },
+
+    // --- TIMED QUEST ENGINE ---
+
+    async startTimedQuest(qId, npc) {
+        if (this.activeTimedQuestId) return;
+        const qData = QUESTS[qId];
+        if (!qData || !qData.timeLimit) return;
+
+        console.log(`Starting Timed Quest: ${qId}`);
+
+        // 1. Initial State
+        const qProgress = window.gameState.quests[qId];
+        qProgress.status = 'started';
+        qProgress.progress = 0;
+        // Record origin for teleport back on failure
+        qProgress.origin = {
+            zone: this.currentZone,
+            x: this.player.x,
+            y: this.player.y
+        };
+        saveGameState();
+
+        try {
+            // 2. Quick Fade Transition & Map Reset
+            if (window.triggerQuickTransition) {
+                await window.triggerQuickTransition(async () => {
+                    // Clear map of pre-existing wild monsters for a clean challenge start
+                    this.spawner.stop();
+                    this.spawner.cleanupTempObjects();
+
+                    this.isStartingQuest = true;
+                    this.activeTimedQuestId = qId;
+                    this.timedQuestElapsed = 0;
+                    this.questNPCAttached = npc;
+
+                    // Re-render to show locked door visuals while the screen is black
+                    this.renderMap(this.currentZone, false, this.player.x, this.player.y);
+                });
+            } else {
+                this.spawner.stop();
+                this.spawner.cleanupTempObjects();
+                this.isStartingQuest = true;
+                this.activeTimedQuestId = qId;
+                this.timedQuestElapsed = 0;
+                this.questNPCAttached = npc;
+                
+                // Re-render to show locked door visuals during the transition
+                this.renderMap(this.currentZone, false, this.player.x, this.player.y);
+            }
+
+            // 3. Start 3-2-1 Countdown
+            const countdownEl = document.getElementById('quest-countdown-overlay');
+            const timerHud = document.getElementById('quest-timer-hud');
+
+            if (countdownEl) {
+                countdownEl.classList.remove('hidden');
+                const sequence = ['3', '2', '1', 'GO!'];
+                for (const step of sequence) {
+                    countdownEl.textContent = step;
+                    countdownEl.classList.remove('stomp');
+                    void countdownEl.offsetWidth; // Force reflow
+                    countdownEl.classList.add('stomp');
+                    await new Promise(r => setTimeout(r, 800));
+                }
+                countdownEl.classList.add('hidden');
+                countdownEl.classList.remove('stomp');
+            }
+
+            this.isStartingQuest = false;
+            if (timerHud) timerHud.classList.remove('hidden');
+
+            // --- NEW: Dynamic UI Labeling ---
+            const labelEl = document.getElementById('quest-label-objective');
+            if (labelEl) {
+                labelEl.textContent = qData.uiLabel || 'Target Count';
+            }
+
+            // --- NEW: Post-Countdown Synchronization ---
+            // 1. Reset start time to NOW (so countdown doesn't consume quest time)
+            qProgress.startTime = Date.now();
+            saveGameState();
+
+            // 2. Trigger immediate spawner restart
+            this.spawner.start();
+
+            // 3. Force-spawn exactly 5 monsters immediately for a "hot" start
+            const initialBurst = 5;
+            const zone = this.zones[this.currentZone];
+            const maxSpawns = (zone && zone.maxWildSpawns) || 1;
+            
+            for (let i = 0; i < Math.min(initialBurst, maxSpawns); i++) {
+                this.spawner.spawnWildMonster();
+            }
+        } finally {
+            // Guarantee interaction lock is released even on error
+            this.isStartingQuest = false;
+        }
+    },
+
+    updateTimedQuest() {
+        if (!this.activeTimedQuestId || this.isStartingQuest || this.isPaused || this.isTransitioning) return;
+
+        const qId = this.activeTimedQuestId;
+        const qData = QUESTS[qId];
+        const qProgress = window.gameState.quests[qId];
+
+        // 1. Check for Completion (Done externally in updateQuestProgress, but we check status here)
+        if (qProgress.status === 'completed' || qProgress.status === 'finished') {
+            if (window.triggerQuickTransition) {
+                window.triggerQuickTransition(async () => {
+                    this.cleanupTimedQuest();
+                    // Re-render to ensure a perfect clean map
+                    this.renderMap(this.currentZone, false, this.player.x, this.player.y);
+                    this.spawner.start();
+                });
+            } else {
+                this.cleanupTimedQuest();
+                this.spawner.start();
+            }
+            return;
+        }
+
+        // 2. Track Time
+        const now = Date.now();
+        const diff = (now - qProgress.startTime) / 1000;
+        const remaining = Math.max(0, qData.timeLimit - diff);
+
+        // 3. Update HUD
+        const timerValue = document.getElementById('quest-timer-value');
+        const timerHud = document.getElementById('quest-timer-hud');
+        const progressValue = document.getElementById('quest-progress-value');
+
+        if (timerValue) {
+            const mins = Math.floor(remaining / 60);
+            const secs = Math.floor(remaining % 60);
+            timerValue.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        if (progressValue) {
+            progressValue.innerText = `${qProgress.progress || 0} / ${qData.amount}`;
+        }
+
+        if (timerHud) {
+            if (remaining <= 10) {
+                timerHud.classList.add('danger');
+            } else {
+                timerHud.classList.remove('danger');
+            }
+        }
+
+        // 4. Handle Timeout
+        if (remaining <= 0) {
+            this.failTimedQuest();
+        }
+    },
+
+    async failTimedQuest() {
+        if (!this.activeTimedQuestId) return;
+        const qId = this.activeTimedQuestId;
+        const qData = QUESTS[qId];
+        const qProgress = window.gameState.quests[qId];
+        const npc = this.questNPCAttached;
+
+        console.log(`Timed Quest FAILED: ${qId}`);
+        this.isPaused = true; // Lock player during failure sequence
+
+        // 1. Mark State
+        qProgress.status = 'timed_out';
+        saveGameState();
+
+        // 2. Fade to black and Teleport Back
+        if (window.triggerQuickTransition) {
+            await window.triggerQuickTransition(async () => {
+                this.cleanupTimedQuest(); // Clear ID before re-rendering original zone
+                if (qProgress.origin) {
+                    this.renderMap(qProgress.origin.zone, false, qProgress.origin.x, qProgress.origin.y);
+                    
+                    // Face the NPC for realism
+                    if (npc) {
+                        if (npc.y < qProgress.origin.y) this.player.direction = 'up';
+                        else if (npc.y > qProgress.origin.y) this.player.direction = 'down';
+                        else if (npc.x < qProgress.origin.x) this.player.direction = 'left';
+                        else if (npc.x > qProgress.origin.x) this.player.direction = 'right';
+                        
+                        this.player.currentFrame = (this.player.stepParity * 2);
+                        this.updatePlayerPosition();
+                    }
+                }
+            });
+        }
+        
+        this.spawner.start(); // Restart spawning in original zone
+
+        this.isPaused = false;
+        this.activeTimedQuestId = null;
+
+        // 3. Auto-trigger Dialogue
+        if (npc) {
+            const timeoutDialogue = qData.dialogue.timeout || ["You ran out of time! Come back when you're faster."];
+            this.showDialogue(npc.name, timeoutDialogue, npc.id);
+        }
+    },
+
+    cleanupTimedQuest(clearId = true) {
+        if (clearId) this.activeTimedQuestId = null;
+        this.isStartingQuest = false;
+        this.questNPCAttached = null;
+
+        // Perform deep cleanup of wild monsters
+        this.spawner.stop();
+        this.spawner.cleanupTempObjects();
+
+        const timerHud = document.getElementById('quest-timer-hud');
+        if (timerHud) {
+            timerHud.classList.add('hidden');
+            timerHud.classList.remove('low-time');
+        }
+        const countdownEl = document.getElementById('quest-countdown-overlay');
+        if (countdownEl) countdownEl.classList.add('hidden');
     },
 
     updatePlayerPosition() {
@@ -1238,6 +1496,21 @@ export const Overworld = {
         }
 
         // 3. Tile Interaction (Special Locked Messages)
+        // --- NEW: Timed Quest Lockdown Message ---
+        if (this.activeTimedQuestId) {
+            const tiles = document.querySelectorAll('#overworld-map .tile');
+            const targetTileIndex = targetY * zone.width + targetX;
+            const targetTile = tiles[targetTileIndex];
+            if (targetTile && targetTile.classList.contains('door-tile')) {
+                this.showDialogue("Security Protocol", [
+                    "PROTOCOL LOCKDOWN ACTIVE: [LEVEL 4 ENFORCEMENT]",
+                    "All sector exits are sealed until current performance diagnostics are complete.",
+                    "Please return to the test area immediately."
+                ]);
+                return;
+            }
+        }
+
         if (targetX >= 0 && targetX < zone.width && targetY >= 0 && targetY < zone.height) {
             const door = zone.doors && zone.doors.find(d => d.x === targetX && d.y === targetY);
             if (door) {
@@ -1347,10 +1620,28 @@ export const Overworld = {
 
                 // Case 0: First Time Interaction - ALWAYS show Offer
                 if (!qProgress) {
-                    // Mark as started immediately so the next talk hits the progress/complete case
                     window.gameState.quests[qId] = { status: 'started', progress: 0, offerSeen: true };
                     saveGameState();
                     this.showDialogue(npc.name, qData.dialogue.offer, npc.id);
+
+                    // Check if this is a timed quest - if so, prepare to start it after dialogue
+                    if (qData.timeLimit) {
+                        this.onDialogueComplete = () => {
+                            this.startTimedQuest(qId, npc);
+                        };
+                        this.isStartingQuest = true; // Lock interactions immediately
+                    }
+                    return;
+                }
+
+                // Case: Quest was FAILED or TIMED OUT (Branching for retry)
+                if (qProgress.status === 'failed' || qProgress.status === 'timed_out') {
+                    const retryLines = qData.dialogue.retry || ["Ready to try that challenge again?"];
+                    this.showDialogue(npc.name, retryLines, npc.id);
+                    this.onDialogueComplete = () => {
+                        this.startTimedQuest(qId, npc);
+                    };
+                    this.isStartingQuest = true; // Lock interactions immediately
                     return;
                 }
 
@@ -1407,8 +1698,20 @@ export const Overworld = {
                     }
 
                     // Otherwise show standard progress lines
-                    let progressLines = qData.dialogue.progress.map(line =>
-                        line.replace('{progress}', qProgress.progress)
+                    let linesToUse = qData.dialogue.progress;
+
+                    // --- NEW: Timed Quest Retry Flow ---
+                    // If status is started but timer isn't running, show retry instead of progress
+                    if (qData.timeLimit > 0 && this.activeTimedQuestId !== qId) {
+                        linesToUse = qData.dialogue.retry || qData.dialogue.offer;
+                        this.onDialogueComplete = () => {
+                            this.startTimedQuest(qId, npc);
+                        };
+                        this.isStartingQuest = true; // Lock interactions immediately
+                    }
+
+                    let progressLines = linesToUse.map(line =>
+                        line.replace('{progress}', qProgress.progress).replace('{amount}', qData.amount - qProgress.progress)
                     );
                     this.showDialogue(npc.name, progressLines, npc.id);
 
@@ -2059,6 +2362,10 @@ export const Overworld = {
             } else {
                 lines = ["Leader Perks grant passive advantages that override standard battle rules. Never go into the suite without one!"];
             }
+        } else if (npc.id === 'pessi' || npc.id === 'kolla') {
+            const activePool = this.randomPools.cellPlayGround;
+            const randomIndex = Math.floor(Math.random() * activePool.length);
+            lines = activePool[randomIndex];
         } else if (lines.length === 1 && lines[0] === "...") {
             // Generic Staff Randomizer (Dynamic Lookup based on currentZone)
             const activePool = this.randomPools[this.currentZone] || this.randomPools.atrium;
@@ -2188,7 +2495,7 @@ export const Overworld = {
             // 2. If no direct match, resolve gender-based fallback from Sprites registry
             if (!artFile && npcId) {
                 const spriteType = window.OVERWORLD_NPC_SPRITES ? window.OVERWORLD_NPC_SPRITES[npcId] : null;
-                
+
                 if (spriteType === 'npc_female') {
                     artFile = portraitMap['npc_female'];
                 } else if (spriteType === 'npc_male') {
@@ -2382,11 +2689,13 @@ export const Overworld = {
             }, 200);
         }
 
-        // --- NEW: Execute Completion Callback ---
+        // --- NEW: Execute Completion Callback (Delayed to clear UI) ---
         if (typeof this.onDialogueComplete === 'function') {
             const cb = this.onDialogueComplete;
             this.onDialogueComplete = null;
-            cb();
+            setTimeout(() => {
+                cb();
+            }, 400);
         }
 
         // Restart Spawner after Dialogue (only if not about to start a battle)
@@ -2468,8 +2777,15 @@ export const Overworld = {
         cleanupTempObjects() {
             const zone = Overworld.zones[Overworld.currentZone];
             if (zone && zone.objects) {
+                // 1. Filter the internal data array
                 zone.objects = zone.objects.filter(obj => !obj.temp);
             }
+
+            // 2. Remove actual DOM elements to prevent "static ghosts" or lingering unkickable cells
+            const wildCells = document.querySelectorAll('.wild-cell');
+            wildCells.forEach(el => {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            });
         },
 
         startCooldown(customDelay = null) {
@@ -2758,8 +3074,10 @@ export const Overworld = {
                 setTimeout(() => { if (pEl.parentNode) pEl.parentNode.removeChild(pEl); }, 2000);
             });
 
+            // Update Quest Progress with type gating (differentiates between Cells and furniture)
+            this.updateQuestProgress('kick', obj.monsterId ? (obj.monsterId + '_wild') : (obj.id || obj.type), obj.type);
+
             if (obj.type === 'npc' && obj.monsterId) {
-                this.updateQuestProgress('kick', obj.monsterId + '_wild');
                 if (this.spawner) this.spawner.startCooldown(zone.maxWildSpawns > 1 ? 500 : null);
             }
         }, hitStopTime);
