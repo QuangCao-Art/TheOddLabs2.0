@@ -2,6 +2,10 @@
 description: Add a New Asset to the Game & Builder Tool
 ---
 
+### ✍️ Writing Quality & Grammar
+> [!IMPORTANT]
+> For any new text (Furniture Names, Descriptions, Info/Tooltips), the assistant MUST perform a comprehensive grammar check and polish the language for professional, high-quality narrative writing before implementation.
+
 ### 0. Provide the Requirement Template
 **MANDATORY**: Whenever this workflow is triggered or mentioned, the assistant MUST provide the following and ask the user to fill it out:
 
@@ -71,3 +75,4 @@ If you need to place the new furniture immediately:
 - [ ] The "Ghost Preview" shows the correct sprite when selected.
 - [ ] Right-clicking the object in Builder Mode deletes the entire group.
 - [ ] Interacting with the object in Play Mode shows the correct info tooltip.
+- [ ] **Grammar & Polish**: Have the furniture name and info text been checked and polished?

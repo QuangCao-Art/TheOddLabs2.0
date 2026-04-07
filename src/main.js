@@ -1271,7 +1271,10 @@ function setupEventListeners() {
         'piza': 'npc_male',
 
         // Lobby
-        'pax': 'npc_male'
+        'pax': 'npc_male',
+
+        // Storage
+        'deartis': 'npc_male'
     };
 
     let preBattleSequenceActive = false;

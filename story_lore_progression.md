@@ -30,6 +30,8 @@ To save the project and reveal the truth, the player must recover the **Origin N
 - **Director Capsain**: The authoritarian head of The Odd Labs. He is grumpy, defensive about the '82 Leak, and values "professionalism" above all else. He publicly despises the sentient Cells as "monstrous anomalies," but secretly cares for the Origin Nitrophil and is deeply embarrassed by his noodle-related mistake.
 - **Lana (Botanic Expert)**: A brilliant but impatient scientist. She is hardheaded and often snaps at the player for being inefficient. After being defeated, she seems to be holding something back, giving the player a key but warning them to mind their own business.
 - **Dyzes (Human Cell Expert)**: Chill, laid-back, and eccentric. He believes in "cellular harmony." After his battle, he acts suspicious/hiding something, but provides the **Old Data Stick** needed to find the Old Lab.
+- **Deartis (Janitor)**: A world-weary janitor stationed in the Storage Bay. He has seen the lab's messiest secrets and is mostly concerned with the lack of hygiene in the Specimen Storage wards. He provides grounded, cynical commentary on the lab's "professionalism."
+
 
 ## NPC Tactical Snapshots (Presets)
 
@@ -805,7 +807,9 @@ The lab's 23 residents are distributed as follows:
 - **Human Research Ward**: 4 Researchers (**Miere**, **Premy**, **Ecto**, **Yifec**) + **Dyzes**.
 - **Specimen Storage**: 3 Researchers (**Piza**, **White**, **Cherry**).
 - **Executive Suite**: 3 Assistants (**Anreal**, **Godou**, **Yunidi**) + **Director Capsain**.
+- **Storage Bay**: **Deartis** (The Janitor).
 - **The Secret Old Lab**: 1 Resident (The **Origin Nitrophil**).
+
 
 ## Starter Monster: Your Bio-Signature
 Upon entering the lab for your first shift, Jenzi leads you to the **Incubation Chamber** in the Lobby. To proceed with your research, you must choose a "Primary Biological Signature":
@@ -1003,6 +1007,35 @@ This section provides a deep-dive into the biological, historical, and philosoph
 *   **History**: Birthed in the laboratories of the Flora-Sapiens as a strategic food source. Hidden within the core of the research facility during "The Great Purge" by Lily (Atlas and Elara being the first). After the ancient races entered hibernation, humans emerged and spent millennia evolving, eventually building civilizations on the ruins of the old world with no memory of their origin as "The Living Reserve."
 *   **Philosophy**: **Curiosity & Potential.** Humans are the "unexpected variable." They are the only ones currently active and progressing, yet they are walking a dangerous line. They are using the "Seed Science" of their creators (The Odd Labs) to build a future, unaware that this progress is exactly what triggers the ancient alarms.
 *   **Place in the Conflict**: Humans are the **Bridge.** They possess the biological "Root-Potential" of their creators, but their physical dominion mirrors that of the **Archeons**. They are the only race capable of choosing a path that doesn't involve the total annihilation of the other. They are neither gods nor beasts—they are the unintended inheritors of the Earth, and their existence is the only thing that disrupts the eternal cycle of the Purge.
+
+
+---
+
+### Assistant Zibrya (Atrium Side Quest)
+
+#### 1. Dialogue
+- **Offer**: "Hey there, Intern! Did you know the Lab has different kinds of cards? // We use C-Cards for upgrading Cells, but there are also Collectible Cards... just for the sake of collecting! // A true Lab member is one who hunts down every secret card. // Tell you what—if you can defeat 2 Wild Stemmies to help with my research, I'll give you the first spare card I have. // It's a great way to start your collection. What do you say?"
+- **Progress**: "How's the hunt going? You've defeated {progress} out of 2 Wild Stemmies so far. Keep at it!"
+- **Complete**: "Congratulations! Stemmy is actually so cool! People say it's lame, but I find it super handy—that little guy has a lot of potential. // As promised, here is your Stemmy Collectible Card! It's super common, but hey, every legendary collection has to start somewhere. // Keep an eye out for others—they could be anywhere!"
+- **Finished**: "Did you know that Jenzy actually makes all these collectible cards herself? She's really good at making stuff, isn't she?"
+
+#### 2. Quest Details
+- **Type**: Defeat (2 Wild Stemmies)
+- **Reward**: Stemmy Collectible Card (CARD00), 200 Credits.
+
+---
+
+### Witness Elara (Library Side Quest)
+
+#### 1. Dialogue
+- **Offer**: "Don't be startled. The shimmer... it's just a trick of light and ancient circuitry. I am Elara. // I am not a ghost. I am merely a witness... // one of the first souls to walk this earth when the world was still green and the masters were ancient. // I remember the first sun before it was hidden behind these walls. // You look so much like them. The same spark in your eyes, the same fragile determination. // It warms these old wires just to see you standing here—a child of the original sun. // It is that same spark I see in the Lydrosome—specimens of profound, osmotic intelligence that remind me of the potential we once held. // Bring me one with Efficiency Level 1, and I shall share with you the truth of our genesis. // You deserve to know who we really are, Child."
+- **Progress**: "The history of this lab is a circle, Child. // I'm waiting for a Lydrosome with high-level efficiency. Master the technology without letting it consume your spark."
+- **Complete**: "Remarkable. The Lydrosome's harmony is perfect... almost like it remembers the source itself. // You've mastered the technology without letting it consume your spark. // Lily gave us life to save her people, but she accidentally gave us a heart that beats for its own reasons—// and a soul that neither of the ancient races could have ever calculated. // Fox calls us a 'mistake.' Lily calls us a 'tragedy.' // But I look at you, and I see more than a designed resource. // We are the 'Accidental Genesis'—the unexpected children of a hungry solution that has long since passed into myth. // As promised, here is the secret of this lab. // It's Log #020. Read it well; it is the truth that turns a circle into a straight line. // We exist now, and that is the only truth that matters."
+- **Finished**: "The history of this lab is a circle, Child, but you have the potential to turn it into a straight line. // You don't have to be a weapon for the Archeons, and you don't have to be food for the Hemophylls. // You just have to be human. Go now, and master the technology they left behind. // The next Purge is warming its engines, but the Cells... they are the only ones the Machine cannot delete."
+
+#### 2. Quest Details
+- **Type**: Show Monster (Lydrosome, Min Efficiency 1)
+- **Reward**: Log #020 (The Truth of Genesis).
 
 ---
 

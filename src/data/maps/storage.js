@@ -47,7 +47,7 @@ export const storage = {
         { id: 'f62_stG', x: 7, y: 6, type: 'prop', name: 'Box Pile' },
         { id: 'f60_st5', x: 8, y: 6, type: 'prop', name: 'Storage Box' },
         { id: 'f60_st6', x: 5, y: 5, type: 'prop', name: 'Storage Box' },
-        { id: 'npc_male_jax', x: 5, y: 6, type: 'npc', name: 'Quartermaster Jax', direction: 'down' }
+        { id: 'deartis', x: 5, y: 6, type: 'npc', name: 'Janitor Deartis', direction: 'down' }
     ],
     doors: [
         { x: 0, y: 6, targetZone: 'atrium', targetX: 17, targetY: 10 },

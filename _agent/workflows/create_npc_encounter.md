@@ -4,6 +4,14 @@ description: Create a new NPC battle encounter
 
 This workflow guides you through the process of adding a new, one-time NPC battle encounter to the game, ensuring all data, logic, and visual mappings are correctly implemented.
 
+### ✍️ Writing Quality & Grammar
+> [!IMPORTANT]
+> For any new dialogue (VS sequence, before/after battle), the assistant MUST perform a comprehensive grammar check and polish the language for professional, high-quality narrative writing before implementation.
+
+### 📜 Zone Dialogue Protocol
+> [!IMPORTANT]
+> If the NPC is a standard zone resident (Peaceful/Flavor), the **"Before Battle"** overworld dialogue MUST match the official lines in the **"Zone Dialogue"** section of [story_lore_progression.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/story_lore_progression.md).
+
 ### 0. Provide Request Template
 **REQUIREMENT**: Whenever this workflow is mentioned or triggered, the assistant MUST provide the following template to the user to collect the encounter details:
 
@@ -61,5 +69,7 @@ Ensure the character art/quote is mapped for the pre-battle VS sequence.
 ### ⚠️ Post-Mortem Bug Checklist (DO NOT SKIP)
 - [ ] **Sprite Mapping**: Does the ID exist in `window.OVERWORLD_NPC_SPRITES` in `main.js`?
 - [ ] **Character Art**: Does the `battleEncounterId` exist in `PRE_BATTLE_DATA` in `main.js`?
+- [ ] **Grammar & Polish**: Have the battle lines been checked and polished for high-quality writing?
 - [ ] **ID Consistency**: Does the ID in `NPC_ENCOUNTERS` EXACTLY match the ID in the modular map?
+- [ ] **Zone Dialogue Accuracy**: If the NPC is a floor resident, does the Overworld dialogue match `story_lore_progression.md`?
 - [ ] **Dialogue Branching**: Ensure specialized narrative dialogues are added to `overworld.js:startNPCInteraction`.

@@ -2,6 +2,10 @@
 description: Create a standardized UI Menu (Modal) following Laboratory OS standards
 ---
 
+### ✍️ Writing Quality & Grammar
+> [!IMPORTANT]
+> For any new UI text (Titles, Subtitles, Button Labels), the assistant MUST perform a comprehensive grammar check and polish the language for professional, high-quality narrative writing before implementation.
+
 # 🛠 Creating Laboratory OS UI Menus
 
 Use this workflow to create a new UI modal (Pause, Confirmation, or Dialogue) ensuring it meets the game's high-end aesthetic standards and avoids common input bugs.

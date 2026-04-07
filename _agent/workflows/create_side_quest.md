@@ -24,6 +24,10 @@ This workflow guides you through the process of adding a new Side Quest to the g
 - **Complete**: ["Line 1", "Line 2"]
 - **Finished**: ["Line 1", "Line 2"]
 
+### ✍️ Writing Quality & Grammar
+> [!IMPORTANT]
+> Because quest dialogue is new and story-driven, the assistant MUST perform a comprehensive grammar check and polish the language for professional, high-quality narrative writing before implementation.
+
 > [!TIP]
 > **Dialogue Segmentation**: Use `//` within a single string to denote a line break/panel segment (e.g., `"Hello... // How are you?"`). This helps with dialogue pacing.
 
@@ -69,6 +73,8 @@ Link the quest to the NPC within its corresponding modular map file in [src/data
 ### ⚠️ Quest Integrity Checklist
 - [ ] **Description Check**: Does the quest have a `description` for the UI?
 - [ ] **Dialogue Type Check**: Are ALL dialogue fields arrays?
+- [ ] **Grammar & Polish**: Have the lines been checked and polished for high-quality writing?
 - [ ] **Progress Variable**: Is `{progress}` included in the `progress` dialogue?
+- [ ] **Zone Dialogue Sync**: If the NPC is a flavor NPC, does their ambient dialogue match `story_lore_progression.md`?
 - [ ] **Map Registration**: Is the `sideQuestId` added to the NPC in the modular map file (NOT overworld.js)?
 - [ ] **Visual Mapping**: Is the NPC registered in `OVERWORLD_NPC_SPRITES` in `main.js`?

@@ -2,6 +2,10 @@
 description: Modify the Map Layout or Furniture
 ---
 
+### ✍️ Writing Quality & Grammar
+> [!IMPORTANT]
+> Although this workflow is grid-heavy, any new text (updated Room Names, Map Descriptions, or labels in MapBuilder.md) MUST be checked for grammar and polished for professional narrative quality.
+
 This workflow guides you through changing a zone's tile grid or furniture placement, ensuring that stacking logic (AI_DECORATION_PROTOCOL) and visual rendering are maintained.
 
 

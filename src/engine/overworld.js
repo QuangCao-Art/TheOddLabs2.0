@@ -1343,15 +1343,16 @@ export const Overworld = {
             const qData = QUESTS[qId];
 
             if (qData) {
-                // Initialize if not exists
-                if (!window.gameState.quests[qId]) {
-                    window.gameState.quests[qId] = { status: 'started', progress: 0 };
+                const qProgress = window.gameState.quests[qId];
+
+                // Case 0: First Time Interaction - ALWAYS show Offer
+                if (!qProgress) {
+                    // Mark as started immediately so the next talk hits the progress/complete case
+                    window.gameState.quests[qId] = { status: 'started', progress: 0, offerSeen: true };
                     saveGameState();
                     this.showDialogue(npc.name, qData.dialogue.offer, npc.id);
                     return;
                 }
-
-                const qProgress = window.gameState.quests[qId];
 
                 // Case 1: Quest is ready to be turned in (Sequential priority)
                 if (qProgress.status === 'completed') {
@@ -1365,6 +1366,7 @@ export const Overworld = {
                     this.onDialogueComplete = () => {
                         this.giveQuestReward(qId);
                         qProgress.status = 'finished';
+                        qProgress.progress = qData.amount; // Ensure progress shows as full (e.g., 1/1)
                         saveGameState();
                     };
                     this.showDialogue(npc.name, qData.dialogue.complete, npc.id);
@@ -1373,24 +1375,38 @@ export const Overworld = {
 
                 // Case 2: Quest is ongoing
                 if (qProgress.status === 'started') {
-                    // Custom Check for 'show_monster' type
+                    // --- NEW: Instant Completion Check ---
+                    let canCompleteNow = false;
+
+                    // A: show_monster check
                     if (qData.type === 'show_monster') {
-                        const hasMonster = gameState.profiles.player.party.some(m =>
+                        canCompleteNow = gameState.profiles.player.party.some(m =>
                             m && m.id === qData.target && (m.extractEfficiency || 0) >= (qData.minEfficiency || 0)
                         );
-
-                        if (hasMonster) {
-                            // Turn in immediately!
-                            this.onDialogueComplete = () => {
-                                this.giveQuestReward(qId);
-                                qProgress.status = 'finished';
-                                saveGameState();
-                            };
-                            this.showDialogue(npc.name, qData.dialogue.complete, npc.id);
-                            return;
-                        }
+                    }
+                    // B: collect check (if item already in inventory)
+                    else if (qData.type === 'collect') {
+                        canCompleteNow = window.gameState.items.includes(qData.target);
                     }
 
+                    if (canCompleteNow) {
+                        // Turn in immediately!
+                        if (qData.consume && qData.type === 'collect') {
+                            const idx = window.gameState.items.indexOf(qData.target);
+                            if (idx > -1) window.gameState.items.splice(idx, 1);
+                        }
+
+                        this.onDialogueComplete = () => {
+                            this.giveQuestReward(qId);
+                            qProgress.status = 'finished';
+                            qProgress.progress = qData.amount; // Ensure progress shows as full (e.g., 1/1)
+                            saveGameState();
+                        };
+                        this.showDialogue(npc.name, qData.dialogue.complete, npc.id);
+                        return;
+                    }
+
+                    // Otherwise show standard progress lines
                     let progressLines = qData.dialogue.progress.map(line =>
                         line.replace('{progress}', qProgress.progress)
                     );
@@ -1703,6 +1719,16 @@ export const Overworld = {
                 ];
                 this.pendingBattleEncounter = 'capsain';
             }
+        } else if (npc.id === 'deartis') {
+            const flavors = [
+                "Boxes, more boxes...// I think I saw a Nitrophil hiding in one of these crates.",
+                "Why do we store so many 'Adhesive Residue' samples?// Storage duty is the worst.",
+                "The lab is full of history, but not all of it is in the main database.// Keep an eye out for unique furniture or abandoned test tanks—you might find a hidden data log or a rare item.",
+                "Who keeps kicking the stuff all over the place?// It's becoming a logistical nightmare to keep track of everything!",
+                "I'm so tired of having to put things back where they belong...// One of these days, I WILL glue all the furniture to the floor!",
+                "I saw Lana looking for something here recently.// She seemed... unusually tense."
+            ];
+            lines = [flavors[Math.floor(Math.random() * flavors.length)]];
         } else if (npc.id === 'maya' && (lines.length === 1 && lines[0] === "...")) {
             if (isPostBattle) {
                 if (bossWon) {
@@ -2151,14 +2177,33 @@ export const Overworld = {
                 'lana': 'Character_FullArt_Lana.png',
                 'dyzes': 'Character_FullArt_Dyzes.png',
                 'capsain': 'Character_FullArt_Director.png',
+                'elara': 'Character_FullArt_Elara.png',
                 'npc_female': 'Character_FullArt_NPC_Female.png',
-                'npc_male': 'Character_FullArt_NPC_Male.png',
-                'elara': 'Character_FullArt_Elara.png'
+                'npc_male': 'Character_FullArt_NPC_Male.png'
             };
 
-            const key = npcId ? (npcId.startsWith('npc_') ? npcId.split('_').slice(0, 2).join('_') : npcId.split('_')[0]) : null;
-            if (key && portraitMap[key]) {
-                portraitImg.src = `assets/images/${portraitMap[key]}`;
+            // 1. Try Direct Match from the map first
+            let artFile = portraitMap[npcId];
+
+            // 2. If no direct match, resolve gender-based fallback from Sprites registry
+            if (!artFile && npcId) {
+                const spriteType = window.OVERWORLD_NPC_SPRITES ? window.OVERWORLD_NPC_SPRITES[npcId] : null;
+                
+                if (spriteType === 'npc_female') {
+                    artFile = portraitMap['npc_female'];
+                } else if (spriteType === 'npc_male') {
+                    artFile = portraitMap['npc_male'];
+                } else {
+                    // Final generic fallback for npc_ prefixed IDs (legacy support)
+                    const legacyKey = npcId.startsWith('npc_') ? npcId.split('_').slice(0, 2).join('_') : null;
+                    if (legacyKey && portraitMap[legacyKey]) {
+                        artFile = portraitMap[legacyKey];
+                    }
+                }
+            }
+
+            if (artFile) {
+                portraitImg.src = `assets/images/${artFile}`;
                 portraitOverlay.classList.remove('hidden');
             }
         }

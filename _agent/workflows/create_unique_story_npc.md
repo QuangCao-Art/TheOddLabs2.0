@@ -8,6 +8,16 @@ This workflow guides you through the creation of a named character in the lab—
 > [!IMPORTANT]
 > **Always ask the user if the NPC is peaceful.** If the user does not specify an interaction type, **PEACEFUL** is the default state. You MUST NOT add battle logic or quests unless explicitly requested.
 
+### 📜 Zone Dialogue Protocol
+> [!IMPORTANT]
+> For **Peaceful** or **Flavor** NPCs, you MUST pull their dialogue from the **"Zone Dialogue"** section of [story_lore_progression.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/story_lore_progression.md). 
+> - **Rule**: DO NOT make up new dialogue for these NPCs.
+> - **Rule**: DO NOT ask the user for new dialogue for these NPCs.
+
+### ✍️ Writing Quality & Grammar
+> [!IMPORTANT]
+> If the user provides new dialogue (e.g., for a Boss or unique Story NPC), you MUST perform a comprehensive grammar check and polish the language for professional, high-quality narrative writing before implementation.
+
 ### 0. Provide Request Template
 **REQUIREMENT**: Whenever this workflow is mentioned or triggered, the assistant MUST provide the following template:
 
@@ -22,7 +32,7 @@ This workflow guides you through the creation of a named character in the lab—
 - **Full Art Portrait**: [Optional: Filename for BS sequence, e.g., Boss_Lana.png]
 
 ##### 2. Gameplay & Logic (ONLY IF NOT PEACEFUL)
-- **Initial Dialogue**: [Optional: Simple lines for peaceful NPCs]
+- **Initial Dialogue**: [MANDATORY for Peaceful: Use Zone Dialogue from story_lore_progression.md]
 - **Battle Encounter ID**: [Optional: If Battleable, link to NPC_ENCOUNTERS]
 - **Quest ID**: [Optional: If Quest Giver, link to QUESTS]
 ```
@@ -57,4 +67,6 @@ Unique narrative responses are defined in the engagement handler:
 - [ ] **Lore ID Consistency**: Does the ID in the map file match `main.js` and `overworld.js`?
 - [ ] **Metadata Mapping**: Is the NPC registered in `OVERWORLD_NPC_SPRITES`?
 - [ ] **Dialogue Type**: Are all lines defined in `overworld.js` arrays?
+- [ ] **Zone Dialogue Accuracy**: Does the dialogue match the official lines in `story_lore_progression.md`?
+- [ ] **Grammar & Polish**: Have the lines been checked and polished for high-quality writing?
 - [ ] **Lore Check**: Has the new character been added to the Profiles in `story_lore_progression.md`?
