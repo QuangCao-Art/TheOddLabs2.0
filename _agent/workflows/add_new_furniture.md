@@ -10,9 +10,9 @@ description: Add a New Asset to the Game & Builder Tool
 **MANDATORY**: Whenever this workflow is triggered or mentioned, the assistant MUST provide the following and ask the user to fill it out:
 
 ```markdown
-| Furniture ID | Description | X Position | Y Position | Have Collision | Kickable | Breakable | Breaks Into | Info |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| f107 | Name | (X) | (Y) | (Yes/No) | (Yes/No) | (Yes/No/Debris) | (TemplateID) | (Tooltip) |
+| Furniture ID | Description | X Position | Y Position | Have Collision | Kickable | Breakable | Breaks Into | Material | Info |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| f107 | Name | (X) | (Y) | (Yes/No) | (Yes/No) | (Yes/No/Debris) | (TemplateID) | (wood/glass/liquid) | (Tooltip) |
 ```
 
 ### 1. Identify the Sprite
@@ -50,12 +50,20 @@ Update [furniture.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/fur
 Update [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/overworld.js).
 1.  Locate `furnitureMetadata`.
 2.  Add the ID with its collision status, description text, and breakable settings.
+
+> [!TIP]
+> **Understanding "Breaks Into"**:
+> - This is the **Template ID** of the "Broken" version of your object.
+> - You find these names (Keys) in [furniture.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/furniture.js) inside the `FURNITURE_TEMPLATES` object.
+> - Example ID: `TANK_DEBRIS_KICKABLE` or `DESK_BROKEN`.
+
     ```javascript
     'f105': { 
         hasCollision: true, 
         info: "A mysterious new lab device.",
         breakable: true,          // Set to true for destructible objects
-        breaksInto: 'DEBRIS_ID'   // Key from FURNITURE_TEMPLATES for the debris
+        breaksInto: 'DEBRIS_ID',  // Template ID found in FURNITURE_TEMPLATES
+        material: 'glass'         // Audio tag: wood | glass | metal | liquid | monster
     }
     ```
 

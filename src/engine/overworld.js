@@ -4,6 +4,7 @@
  */
 
 import { gameState, saveGameState } from './state.js';
+import { AudioManager } from './audio.js';
 import { QUESTS } from '../data/quests.js';
 
 // Modular Map Data Imports
@@ -248,27 +249,27 @@ export const Overworld = {
         'f7': { hasCollision: true, info: "Whirrs loudly and smells faintly of burnt toast. Please don't check its browser history." },
         'f8': { hasCollision: true, info: "Do not shake. Do not stir. In fact, just don't even look at it too hard." },
         'f9': { hasCollision: true, info: "A protein sequencer that occasionally plays elevator music when it's bored." },
-        'f11': { hasCollision: true, info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
-        'f12': { hasCollision: true, info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
-        'f13': { hasCollision: false, info: "This specimen has only one eye. The label says: DON'T LOOK AT ITS EYE." },
-        'f14': { hasCollision: true, info: "This specimen has only one eye. The label says: DON'T LOOK AT ITS EYE." },
-        'f15': { hasCollision: false, info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
-        'f16': { hasCollision: true, info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
+        'f11': { hasCollision: true, material: 'wood', info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
+        'f12': { hasCollision: true, material: 'wood', info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
+        'f13': { hasCollision: false, material: 'glass', info: "This specimen has only one eye. The label says: DON'T LOOK AT ITS EYE." },
+        'f14': { hasCollision: true, material: ['glass', 'liquid'], info: "This specimen has only one eye. The label says: DON'T LOOK AT ITS EYE." },
+        'f15': { hasCollision: false, material: 'glass', info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
+        'f16': { hasCollision: true, material: ['glass', 'liquid'], info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
         'f17': { hasCollision: true, info: "A poster showing three creature races. Or perhaps they aren't simply 'races'..." },
         'f18': { hasCollision: false, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
         'f19': { hasCollision: true, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
         'f20': { hasCollision: false, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
         'f21': { hasCollision: true, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
-        'f22': { hasCollision: false, info: "The specimen here is slowly swimming; why are its surroundings turning yellow?" },
-        'f23': { hasCollision: true, info: "The specimen here is slowly swimming; why are its surroundings turning yellow?" },
-        'f24': { hasCollision: false, info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
-        'f25': { hasCollision: true, info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
-        'f26': { hasCollision: true, info: "Reserved for 'The Important People'. Includes a built-in panic button." },
-        'f27': { hasCollision: true, info: "Reserved for 'The Important People'. Includes a built-in panic button." },
-        'f28': { hasCollision: true, info: "Features a secret drawer for hiding snacks from the interns." },
-        'f29': { hasCollision: true, info: "Features a secret drawer for hiding snacks from the interns." },
-        'f30': { hasCollision: true, info: "Carved from obsidian glass. Legend says the Director actually sleeps under it." },
-        'f31': { hasCollision: true, info: "Carved from obsidian glass. Legend says the Director actually sleeps under it." },
+        'f22': { hasCollision: false, material: 'glass', info: "The specimen here is slowly swimming; why are its surroundings turning yellow?" },
+        'f23': { hasCollision: true, material: ['glass', 'liquid'], info: "The specimen here is slowly swimming; why are its surroundings turning yellow?" },
+        'f24': { hasCollision: false, material: 'glass', info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
+        'f25': { hasCollision: true, material: ['glass', 'liquid'], info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
+        'f26': { hasCollision: true, material: 'wood', info: "Reserved for 'The Important People'. Includes a built-in panic button." },
+        'f27': { hasCollision: true, material: 'wood', info: "Reserved for 'The Important People'. Includes a built-in panic button." },
+        'f28': { hasCollision: true, material: 'wood', info: "Features a secret drawer for hiding snacks from the interns." },
+        'f29': { hasCollision: true, material: 'wood', info: "Features a secret drawer for hiding snacks from the interns." },
+        'f30': { hasCollision: true, material: 'glass', info: "Carved from obsidian glass. Legend says the Director actually sleeps under it." },
+        'f31': { hasCollision: true, material: 'glass', info: "Carved from obsidian glass. Legend says the Director actually sleeps under it." },
         'f32': { hasCollision: true, info: "A medical pod. Warning: Set to 'Deep Sleep', not 'Quick Nap'. See you in three days." },
         'f33': { hasCollision: true, info: "A medical pod. Warning: Set to 'Deep Sleep', not 'Quick Nap'. See you in three days." },
         'f34': { hasCollision: false, info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
@@ -3173,6 +3174,13 @@ export const Overworld = {
         else if (dx > 0) dirMap = { front: 'r', left: 'u', right: 'f' };
 
         const directionKey = dirMap[choice];
+
+        // AUDIO: Determine material and play impact
+        const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
+        let materials = (meta && meta.material) || 'base';
+        if (obj.type === 'npc') materials = 'monster';
+        AudioManager.playImpact(materials);
+
         const hitStopTime = isHomeRun ? 500 : 300;
         const shakeClass = isHomeRun ? 'anim-screen-shake-heavy' : 'anim-screen-shake';
 
@@ -3272,6 +3280,9 @@ export const Overworld = {
     },
 
     triggerHomeRunEffects(obj, el, directionKey) {
+        // AUDIO: Play Homerun Sound
+        AudioManager.play('kick_homerun', 0.7, 0.1);
+
         let trailAngle = 0;
         if (directionKey === 'l') trailAngle = 30;
         else if (directionKey === 'r') trailAngle = 150;
@@ -3331,6 +3342,14 @@ export const Overworld = {
             const el = document.getElementById(`npc-${id}`);
             if (el) el.remove();
         });
+
+        // AUDIO: Play material-aware Shatter Sound
+        const baseObj = oldParts[0];
+        const meta = this.getFurnitureMeta(baseObj.id, baseObj.customSprite);
+        const material = (meta && meta.material) ? (Array.isArray(meta.material) ? meta.material[0] : meta.material) : 'glass';
+        
+        if (material === 'wood') AudioManager.play('shatter_wood', 0.6, 0.1);
+        else AudioManager.play('shatter_tank', 0.6, 0.1); // Default for tech/glass
 
         // 3. Instantiate & Render New Furniture (Surgically)
         const mapEl = document.getElementById('overworld-map');

@@ -10,6 +10,7 @@ import { QUESTS, MAIN_QUEST_LOGS } from './data/quests.js';
 import { BioExtract } from './ui/bio_extract.js';
 import { BuilderMode } from './engine/builder.js';
 import { FURNITURE_TEMPLATES } from './data/furniture.js';
+import { AudioManager } from './engine/audio.js';
 
 // Initialize UI Modules
 if (BioExtract) BioExtract.init();
@@ -57,6 +58,20 @@ document.getElementById('btn-debug-rich')?.addEventListener('click', () => {
 
 // Dragging State
 let isDragging = false;
+
+// --- AUDIO AUTO-BOOT ---
+// Browsers block audio until the first user interaction.
+const bootAudio = () => {
+    AudioManager.init();
+    // If we are already on a screen that needs music, trigger it again now that ctx exists
+    const currentScreen = Array.from(document.querySelectorAll('.screen')).find(s => !s.classList.contains('hidden'));
+    if (currentScreen) showScreen(currentScreen.id);
+    
+    window.removeEventListener('click', bootAudio);
+    window.removeEventListener('keydown', bootAudio);
+};
+window.addEventListener('click', bootAudio);
+window.addEventListener('keydown', bootAudio);
 let startX, startY;
 const pentagonRect = interactivePentagon?.getBoundingClientRect();
 
@@ -1009,12 +1024,16 @@ function setupEventListeners() {
         });
     });
     document.getElementById('btn-continue-game')?.addEventListener('click', () => {
+        AudioManager.init();
+        AudioManager.load('impact_base');
         if (loadGameState()) {
             triggerSlowTransition(() => startOverworld());
         }
     });
 
     document.getElementById('btn-start-overworld')?.addEventListener('click', () => {
+        AudioManager.init();
+        AudioManager.load('impact_base');
         const hasSave = localStorage.getItem('oddlabs_save_data');
         if (hasSave) {
             window.showConfirmModal(
@@ -4788,12 +4807,18 @@ window.triggerQuickTransition = triggerQuickTransition;
 function showScreen(screenId) {
     const currentVisible = Array.from(document.querySelectorAll('.screen')).find(s => !s.classList.contains('hidden'));
 
-    // Track previous screen for "back" functionality, but don't set it if the target is rulebook
-    // (though rulebook already sets it, let's make it consistent)
+    // Track previous screen for "back" functionality
     if (currentVisible && screenId !== currentVisible.id) {
-        // Special case: don't make the rulebook or inventory overworld the 'previous' of main menu if logically we want to go back to main menu
-        // But generally, tracking the last visible screen is what "back" means.
         previousScreen = currentVisible.id;
+    }
+
+    // AUDIO: BGM Switching logic
+    if (screenId === 'screen-main-menu') {
+        AudioManager.playBGM('music_main_menu', 0.4);
+    } else if (screenId === 'screen-overworld') {
+        AudioManager.playBGM('music_overworld', 0.35);
+    } else if (screenId === 'screen-battle') {
+        AudioManager.playBGM('music_battle', 0.45);
     }
 
     document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
