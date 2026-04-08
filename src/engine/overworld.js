@@ -2985,7 +2985,7 @@ export const Overworld = {
             const pos = floorTiles[Math.floor(Math.random() * floorTiles.length)];
 
             // --- NEW: Weighted Spawn Pool System ---
-            const monsterIds = ['stemmy', 'nitrophil', 'cambihil', 'lydrosome'];
+            const monsterIds = ['stemmy', 'cambihil', 'lydrosome', 'nitrophil'];
             let pool = zone.spawnPool || { stemmy: 70, nitrophil: 10, cambihil: 10, lydrosome: 10 };
 
             const roll = Math.random() * 100;

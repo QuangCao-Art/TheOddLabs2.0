@@ -38,13 +38,9 @@ export const medicalExperienceRoom = {
         { "id": "f33_mnput7u0bkijb", "x": 4, "y": 5, "type": "prop", "name": "Medical Sleep Pod" },
         { "id": "f16_mnpvhkq961rs3", "x": 3, "y": 7, "type": "prop", "name": "Specimen Tank (Blue)" },
         { "id": "f15_mnpvhkq961rs3", "x": 3, "y": 6, "type": "prop", "name": "Specimen Tank (Blue)" },
-        { "id": "f85_mnpviyae1vqh5", "x": 7, "y": 9, "type": "prop", "name": "Deep Freeze Storage Pod" },
-        { "id": "f84_mnpviyae1vqh5", "x": 7, "y": 8, "type": "prop", "name": "Deep Freeze Storage Pod" },
         { "id": "f28_mnpvkgu4mn7ej", "x": 6, "y": 10, "type": "prop", "name": "Leader Desk" },
         { "id": "f29_mnpvkgu4mn7ej", "x": 7, "y": 10, "type": "prop", "name": "Leader Desk" },
         { "id": "f36_mnpw306kdt2hs", "x": 8, "y": 10, "type": "prop", "name": "Researcher Noodle Table", "hiddenReward": "REWARD_CREDITS_100" },
-        { "id": "f12_mnpw3e99rnlkc", "x": 7, "y": 7, "type": "prop", "name": "Tall Table C", "hiddenReward": "REWARD_CREDITS_50" },
-        { "id": "f11_mnpw3e99rnlkc", "x": 7, "y": 6, "type": "prop", "name": "Tall Table C", "hiddenReward": "REWARD_CREDITS_50" },
         { "id": "f32_mnpw3rq4lso0t", "x": 10, "y": 6, "type": "prop", "name": "Medical Sleep Pod", "hiddenReward": "REWARD_BIOMASS_20" },
         { "id": "f33_mnpw3rq4lso0t", "x": 11, "y": 6, "type": "prop", "name": "Medical Sleep Pod", "hiddenReward": "REWARD_BIOMASS_20" },
         { "id": "f82_mnpw6l5i24qs4", "x": 5, "y": 5, "type": "prop", "name": "Grand Cryo Pod (2x2)", "hiddenReward": "REWARD_BIOMASS_50" },
@@ -105,8 +101,6 @@ export const medicalExperienceRoom = {
         { "id": "f58_mnpwwmka66f46", "x": 11, "y": 4, "type": "prop", "name": "Small Storage Cabinet" },
         { "id": "f112_mnpwwwxz749nl", "x": 2, "y": 4, "type": "prop", "name": "Mobile Monitor Cabinet" },
         { "id": "f111_mnpwwwxz749nl", "x": 2, "y": 3, "type": "prop", "name": "Mobile Monitor Cabinet" },
-        { "id": "f105_mnpwx9di1e7m7", "x": 2, "y": 5, "type": "prop", "name": "Warning Sign (Front)" },
-        { "id": "f105_mnpwxidf1531m", "x": 2, "y": 6, "type": "prop", "name": "Warning Sign (Front)" },
         { "id": "f48_mnpwxr4geuqok", "x": 4, "y": 7, "type": "prop", "name": "Box Labeled Hand" },
         { "id": "f108_mnpwxxunmcud1", "x": 13, "y": 10, "type": "prop", "name": "Mr-Slim Robot" },
         { "id": "f107_mnpwxxunmcud1", "x": 13, "y": 9, "type": "prop", "name": "Mr-Slim Robot" },
@@ -117,11 +111,21 @@ export const medicalExperienceRoom = {
         { "id": "f106_mnpwyde3i7w7d", "x": 10, "y": 3, "type": "prop", "name": "Warning Sign (Side)" },
         { "id": "f106_mnpwydrl5wzwt", "x": 11, "y": 3, "type": "prop", "name": "Warning Sign (Side)" },
         { "id": "f48_mnpwysyubg3y0", "x": 12, "y": 10, "type": "prop", "name": "Box Labeled Hand" },
-        { "id": "f48_mnpwz7rpr6le5", "x": 1, "y": 4, "type": "prop", "name": "Box Labeled Hand" }
+        { "id": "f48_mnpwz7rpr6le5", "x": 1, "y": 4, "type": "prop", "name": "Box Labeled Hand" },
+        { "id": "f105_mnq2if7rzj6ct", "x": 2, "y": 9, "type": "prop", "name": "Warning Sign (Front)" },
+        { "id": "f105_mnq2ifl8z0l6q", "x": 2, "y": 8, "type": "prop", "name": "Warning Sign (Front)" },
+        { "id": "f9_mnq2kusu36xj7", "x": 6, "y": 8, "type": "prop", "name": "Protein Sequencer A" },
+        { "id": "f12_mnq2lg6fkjmvo", "x": 7, "y": 7, "type": "prop", "name": "Tall Table C" },
+        { "id": "f11_mnq2lg6fkjmvo", "x": 7, "y": 6, "type": "prop", "name": "Tall Table C" },
+        { "id": "f57_mnq2m63xbjomw", "x": 7, "y": 9, "type": "prop", "name": "Leader Desk B (Vertical)", "hiddenReward": "REWARD_CREDITS_50" },
+        { "id": "f56_mnq2m63xbjomw", "x": 7, "y": 8, "type": "prop", "name": "Leader Desk B (Vertical)", "hiddenReward": "REWARD_CREDITS_50" },
+        { "id": "f35_mnq2mjhw3czep", "x": 2, "y": 5, "type": "prop", "name": "Anatomical Skeleton", "hiddenReward": "REWARD_CREDITS_10" },
+        { "id": "f34_mnq2mjhw3czep", "x": 2, "y": 4, "type": "prop", "name": "Anatomical Skeleton", "hiddenReward": "REWARD_CREDITS_10" }
     ],
     doors: [
         { "x": 0, "y": 7, "targetZone": "human", "targetX": 13, "targetY": 13 }
     ]
+
 
 
 };

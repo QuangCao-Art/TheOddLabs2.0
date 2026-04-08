@@ -7,9 +7,13 @@ export const AudioManager = {
     ctx: null,
     cache: new Map(),
     isMuted: false,
+    masterVolume: 1.0,
+    musicVolume: 1.0,
+    sfxVolume: 1.0,
     activeMusicSource: null,
     activeMusicId: null,
     musicGain: null,
+    currentMusicVolume: 0, // Base level for current track
 
     /**
      * Initialize the Audio Context.
@@ -34,7 +38,7 @@ export const AudioManager = {
             if (!response.ok) throw new Error(`File not found: ${id}.mp3`);
             
             const arrayBuffer = await response.arrayBuffer();
-            const audioBuffer = await this.ctx.decodeAudioBuffer(arrayBuffer);
+            const audioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
             this.cache.set(id, audioBuffer);
             console.log(`[Audio] Loaded: ${id}`);
         } catch (e) {
@@ -64,7 +68,7 @@ export const AudioManager = {
         source.playbackRate.value = randomPitch;
 
         const gainNode = this.ctx.createGain();
-        gainNode.gain.value = volume;
+        gainNode.gain.value = volume * this.masterVolume * this.sfxVolume;
 
         source.connect(gainNode);
         gainNode.connect(this.ctx.destination);
@@ -124,7 +128,15 @@ export const AudioManager = {
 
         // 2. Load and start new music
         await this.load(id);
-        const buffer = this.cache.get(id);
+        let buffer = this.cache.get(id);
+
+        // Fallback Mechanism: If requested track is missing, try music_main_menu as a placeholder
+        if (!buffer && id !== 'music_main_menu') {
+            console.log(`[Audio] Falling back to music_main_menu for: ${id}`);
+            await this.load('music_main_menu');
+            buffer = this.cache.get('music_main_menu');
+        }
+
         if (!buffer) return;
 
         const source = this.ctx.createBufferSource();
@@ -139,10 +151,13 @@ export const AudioManager = {
         
         source.start(0);
         
+        this.currentMusicVolume = volume;
+        const targetGain = volume * this.masterVolume * this.musicVolume;
+
         try {
-            gain.gain.exponentialRampToValueAtTime(volume, this.ctx.currentTime + fadeDuration);
+            gain.gain.exponentialRampToValueAtTime(Math.max(0.01, targetGain), this.ctx.currentTime + fadeDuration);
         } catch (e) {
-            gain.gain.value = volume; // Fallback
+            gain.gain.value = targetGain; // Fallback
         }
 
         this.activeMusicSource = source;
@@ -170,6 +185,21 @@ export const AudioManager = {
                 ms.stop();
                 this.activeMusicId = null;
                 this.activeMusicSource = null;
+            }
+        }
+    },
+
+    /**
+     * Real-time volume update for active music
+     */
+    updateVolumes() {
+        if (this.activeMusicSource && this.musicGain && this.ctx) {
+            const targetGain = this.currentMusicVolume * this.masterVolume * this.musicVolume;
+            try {
+                // Smooth transition for volume changes
+                this.musicGain.gain.setTargetAtTime(targetGain, this.ctx.currentTime, 0.1);
+            } catch (e) {
+                this.musicGain.gain.value = targetGain;
             }
         }
     }

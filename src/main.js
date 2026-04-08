@@ -67,6 +67,9 @@ const bootAudio = () => {
     const currentScreen = Array.from(document.querySelectorAll('.screen')).find(s => !s.classList.contains('hidden'));
     if (currentScreen) showScreen(currentScreen.id);
     
+    // Sync with persistent settings
+    syncAudioEngineWithSettings();
+    
     window.removeEventListener('click', bootAudio);
     window.removeEventListener('keydown', bootAudio);
 };
@@ -544,6 +547,7 @@ function initPauseMenuEvents() {
                 const debugCheck = document.getElementById('toggle-full-cell-debug');
                 if (skipCheck) skipCheck.checked = SKIP_TUTORIAL;
                 if (debugCheck) debugCheck.checked = FULL_CELL_DEBUG;
+                updateAudioSettingsUI();
                 showScreen('screen-settings');
             } else if (btn.id === 'btn-pause-main-menu') {
                 window.handleAbortExperiment();
@@ -2230,6 +2234,19 @@ function setupEventListeners() {
             updateTeamSlots();
         }
     });
+
+    // --- AUDIO SETTINGS LISTENERS ---
+    const handleVolumeInput = (type, val) => {
+        const normalized = isNaN(val) ? 1.0 : val / 100;
+        gameState.settings[type] = normalized;
+        AudioManager[type] = normalized;
+        if (type !== 'sfxVolume') AudioManager.updateVolumes();
+        saveGameState();
+    };
+
+    document.getElementById('slider-master-volume')?.addEventListener('input', (e) => handleVolumeInput('masterVolume', parseFloat(e.target.value)));
+    document.getElementById('slider-music-volume')?.addEventListener('input', (e) => handleVolumeInput('musicVolume', parseFloat(e.target.value)));
+    document.getElementById('slider-sfx-volume')?.addEventListener('input', (e) => handleVolumeInput('sfxVolume', parseFloat(e.target.value)));
 
     // Main Debug Mode Toggle
     document.getElementById('toggle-skip-tutorial')?.addEventListener('change', (e) => {
@@ -4803,6 +4820,31 @@ async function triggerQuickTransition(callback) {
 
 window.triggerSlowTransition = triggerSlowTransition;
 window.triggerQuickTransition = triggerQuickTransition;
+
+// --- AUDIO SYNC HELPERS ---
+function syncAudioEngineWithSettings() {
+    if (!gameState.settings) return;
+    AudioManager.masterVolume = gameState.settings.masterVolume ?? 1.0;
+    AudioManager.musicVolume = gameState.settings.musicVolume ?? 1.0;
+    AudioManager.sfxVolume = gameState.settings.sfxVolume ?? 1.0;
+    AudioManager.updateVolumes();
+}
+
+function updateAudioSettingsUI() {
+    if (!gameState.settings) return;
+    const master = document.getElementById('slider-master-volume');
+    const music = document.getElementById('slider-music-volume');
+    const sfx = document.getElementById('slider-sfx-volume');
+    
+    const mVal = Math.round(gameState.settings.masterVolume * 100);
+    const muVal = Math.round(gameState.settings.musicVolume * 100);
+    const sVal = Math.round(gameState.settings.sfxVolume * 100);
+
+    if (master) master.value = mVal;
+    if (music) music.value = muVal;
+    if (sfx) sfx.value = sVal;
+}
+
 
 function showScreen(screenId) {
     const currentVisible = Array.from(document.querySelectorAll('.screen')).find(s => !s.classList.contains('hidden'));

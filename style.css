@@ -7997,33 +7997,38 @@ body {
 }
 
 /* Neon Range Slider Styling */
-.debug-builder-form input[type='range'] {
+.neon-slider {
     -webkit-appearance: none;
     appearance: none;
     background: rgba(0, 243, 255, 0.1);
     border: 1px solid rgba(0, 243, 255, 0.3);
-    border-radius: 2px;
+    border-radius: 4px;
+    height: 8px;
+    outline: none;
 }
 
-.debug-builder-form input[type='range']::-webkit-slider-thumb {
+.neon-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     background: var(--neon-cyan);
     border-radius: 2px;
     cursor: pointer;
     box-shadow: 0 0 10px var(--neon-cyan);
+    margin-top: -4px; /* Center thumb vertically on 8px track */
 }
 
-.debug-builder-form input[type='range']::-moz-range-thumb {
-    width: 12px;
-    height: 12px;
+.neon-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
     background: var(--neon-cyan);
     border-radius: 2px;
     cursor: pointer;
     box-shadow: 0 0 10px var(--neon-cyan);
     border: none;
 }
+
+/* End of slider styles */
 
 /* Custom Scrollbar for Settings Panel */
 #settings-panel::-webkit-scrollbar {
@@ -8711,24 +8716,28 @@ body {
     animation: monster-kick-poof-l 0.8s linear forwards !important;
     z-index: 50000 !important;
     will-change: transform, opacity;
+    transform-origin: center !important;
 }
 
 .anim-monster-kick-f {
     animation: monster-kick-poof-f 0.8s linear forwards !important;
     z-index: 50000 !important;
     will-change: transform, opacity;
+    transform-origin: center !important;
 }
 
 .anim-monster-kick-u {
     animation: monster-kick-poof-u 0.8s linear forwards !important;
     z-index: 50000 !important;
     will-change: transform, opacity;
+    transform-origin: center !important;
 }
 
 .anim-monster-kick-r {
     animation: monster-kick-poof-r 0.8s linear forwards !important;
     z-index: 50000 !important;
     will-change: transform, opacity;
+    transform-origin: center !important;
 }
 
 /* Home Run Variants */
@@ -8736,24 +8745,28 @@ body {
     animation: monster-kick-homerun-l 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
     z-index: 50000 !important;
     will-change: transform, opacity;
+    transform-origin: center !important;
 }
 
 .anim-monster-kick-homerun-r {
     animation: monster-kick-homerun-r 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
     z-index: 50000 !important;
     will-change: transform, opacity;
+    transform-origin: center !important;
 }
 
 .anim-monster-kick-homerun-f {
     animation: monster-kick-homerun-f 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
     z-index: 50000 !important;
     will-change: transform, opacity;
+    transform-origin: center !important;
 }
 
 .anim-monster-kick-homerun-u {
     animation: monster-kick-homerun-u 1.5s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
     z-index: 50000 !important;
     will-change: transform, opacity;
+    transform-origin: center !important;
 }
 
 /* Home Run "Plasma Rocket" Thruster System */
@@ -8846,10 +8859,10 @@ body {
 }
 
 @keyframes debris-bounce {
-    0% { transform: scale(1); }
-    30% { transform: scale(1.3, 0.7); } /* Heavier Squash */
-    60% { transform: scale(0.85, 1.15); } /* Heavier Stretch */
-    100% { transform: scale(1); }
+    0% { transform: translateY(-10px) translateZ(0) scale(1); }
+    30% { transform: translateY(-10px) translateZ(0) scale(1.3, 0.7); } /* Heavier Squash */
+    60% { transform: translateY(-10px) translateZ(0) scale(0.85, 1.15); } /* Heavier Stretch */
+    100% { transform: translateY(-10px) translateZ(0) scale(1); }
 }
 
 .anim-debris-bounce {

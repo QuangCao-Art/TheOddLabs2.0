@@ -79,7 +79,14 @@ export const gameState = {
         x: null,
         y: null
     },
-    playerPartyEquips: null // Temporary storage for loading
+    playerPartyEquips: null, // Temporary storage for loading
+    
+    // Audio/System Settings
+    settings: {
+        masterVolume: 1.0,
+        musicVolume: 1.0,
+        sfxVolume: 1.0
+    }
 };
 
 export function applySkipTutorial(isSkip) {
@@ -165,7 +172,8 @@ export function saveGameState() {
         quests: gameState.quests,
         lootedSpots: gameState.lootedSpots || [],
         bioExtractGrid: gameState.bioExtractGrid,
-        lastOverworldPos: gameState.lastOverworldPos
+        lastOverworldPos: gameState.lastOverworldPos,
+        settings: gameState.settings
     };
     
     localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
@@ -218,6 +226,7 @@ export function loadGameState() {
         if (saved.lootedSpots) gameState.lootedSpots = [...saved.lootedSpots];
         if (saved.bioExtractGrid) gameState.bioExtractGrid = [...saved.bioExtractGrid];
         if (saved.lastOverworldPos) gameState.lastOverworldPos = { ...saved.lastOverworldPos };
+        if (saved.settings) gameState.settings = { ...gameState.settings, ...saved.settings };
         
         console.log("Game Loaded Successfully.");
         return true;
