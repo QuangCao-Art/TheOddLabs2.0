@@ -442,7 +442,7 @@ export const Overworld = {
     init() {
         console.log("Overworld Engine Starting...");
         this.resetStates(); // Ensure clean start
-        
+
         // --- NEW: Snapshot pristine maps for "Reset on Entry" ---
         if (!this.pristineZones) {
             this.pristineZones = {};
@@ -522,7 +522,7 @@ export const Overworld = {
                 const isLockedByFlag = door && door.requiredFlag && !window.gameState.storyFlags[door.requiredFlag] && !window.gameState.debugUnlockDoors;
                 const missingItems = door ? (door.requiredItems || (door.requiredItem ? [door.requiredItem] : [])).filter(id => !window.gameState.items.includes(id)) : [];
                 const isLockedByItem = door && missingItems.length > 0 && !window.gameState.debugUnlockDoors && !window.gameState.debugAllItems;
-                
+
                 // --- NEW: Timed Quest Lockdown (Block entry/exit during stress tests) ---
                 const isLockedByQuest = this.activeTimedQuestId !== null;
 
@@ -557,8 +557,8 @@ export const Overworld = {
 
         // Reset kicked state for all objects whenever re-entering a new room
         if (isNewZone) {
-            zone.objects.forEach(o => { 
-                delete o.isKicking; 
+            zone.objects.forEach(o => {
+                delete o.isKicking;
                 delete o.isKicked;
             });
         }
@@ -607,7 +607,7 @@ export const Overworld = {
         document.getElementById('location-name').textContent = zone.name;
         this.updatePlayerPosition();
         this.savePosition();
-        
+
         // --- NEW: Spatial Conflict Audit (Auto-kick furniture overlaps on entry) ---
         const overlapped = zone.objects.filter(obj => {
             const w = obj.width || 1;
@@ -619,11 +619,11 @@ export const Overworld = {
             const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
             const isKickable = (obj.temp === true || (obj.id && obj.id.includes('_wild_')) || (meta && meta.kickable === true));
             if (isKickable && !obj.isKicking) {
-                const dirMap = { 
-                    'up': { dx: 0, dy: -1 }, 
-                    'down': { dx: 0, dy: 1 }, 
-                    'left': { dx: -1, dy: 0 }, 
-                    'right': { dx: 1, dy: 0 } 
+                const dirMap = {
+                    'up': { dx: 0, dy: -1 },
+                    'down': { dx: 0, dy: 1 },
+                    'left': { dx: -1, dy: 0 },
+                    'right': { dx: 1, dy: 0 }
                 };
                 const push = dirMap[this.player.direction] || { dx: 0, dy: 1 };
                 this.kickObject(obj, push.dx, push.dy, true); // Force bypass transition guard
@@ -689,13 +689,13 @@ export const Overworld = {
         if (window.gameState?.showAllHiddenStuff && (obj.hiddenLogId || obj.hiddenItemId || obj.hiddenReward)) {
             // Use unique suffix for spotId if it exists to group multi-tile props
             const suffixMatch = obj.id?.match(/_([a-z0-9]{10,})$/);
-            const spotId = suffixMatch ? 
-                `${this.currentZone}_${suffixMatch[1]}` : 
+            const spotId = suffixMatch ?
+                `${this.currentZone}_${suffixMatch[1]}` :
                 `${this.currentZone}_${obj.x}_${obj.y}`;
 
             const collected = (obj.hiddenLogId && this.logsCollected.includes(obj.hiddenLogId)) ||
-                              (obj.hiddenItemId && window.gameState.items.includes(obj.hiddenItemId)) ||
-                              (obj.hiddenReward && window.gameState.lootedSpots.includes(spotId));
+                (obj.hiddenItemId && window.gameState.items.includes(obj.hiddenItemId)) ||
+                (obj.hiddenReward && window.gameState.lootedSpots.includes(spotId));
 
             const cross = document.createElement('div');
             // Red for Logs, Blue for Items/Rewards, Black if Collected
@@ -1228,7 +1228,7 @@ export const Overworld = {
                 this.activeTimedQuestId = qId;
                 this.timedQuestElapsed = 0;
                 this.questNPCAttached = npc;
-                
+
                 // Re-render to show locked door visuals during the transition
                 this.renderMap(this.currentZone, false, this.player.x, this.player.y);
             }
@@ -1272,7 +1272,7 @@ export const Overworld = {
             const initialBurst = 5;
             const zone = this.zones[this.currentZone];
             const maxSpawns = (zone && zone.maxWildSpawns) || 1;
-            
+
             for (let i = 0; i < Math.min(initialBurst, maxSpawns); i++) {
                 this.spawner.spawnWildMonster();
             }
@@ -1359,21 +1359,21 @@ export const Overworld = {
                 this.cleanupTimedQuest(); // Clear ID before re-rendering original zone
                 if (qProgress.origin) {
                     this.renderMap(qProgress.origin.zone, false, qProgress.origin.x, qProgress.origin.y);
-                    
+
                     // Face the NPC for realism
                     if (npc) {
                         if (npc.y < qProgress.origin.y) this.player.direction = 'up';
                         else if (npc.y > qProgress.origin.y) this.player.direction = 'down';
                         else if (npc.x < qProgress.origin.x) this.player.direction = 'left';
                         else if (npc.x > qProgress.origin.x) this.player.direction = 'right';
-                        
+
                         this.player.currentFrame = (this.player.stepParity * 2);
                         this.updatePlayerPosition();
                     }
                 }
             });
         }
-        
+
         this.spawner.start(); // Restart spawning in original zone
 
         this.isPaused = false;
@@ -1553,13 +1553,13 @@ export const Overworld = {
             if (obj.hiddenReward && window.gameState) {
                 // Use unique suffix for spotId if it exists to group multi-tile props
                 const suffixMatch = obj.id?.match(/_([a-z0-9]{10,})$/);
-                const spotId = suffixMatch ? 
-                    `${this.currentZone}_${suffixMatch[1]}` : 
+                const spotId = suffixMatch ?
+                    `${this.currentZone}_${suffixMatch[1]}` :
                     `${this.currentZoneId || this.currentZone}_${obj.x}_${obj.y}`;
 
                 if (!window.gameState.lootedSpots.includes(spotId)) {
                     this.pendingItemPickup = obj.hiddenReward;
-                    this.pendingItemSpotId = spotId; 
+                    this.pendingItemSpotId = spotId;
                     this.showDialogue('Discovery', ['You found something hidden!']);
                     return;
                 }
@@ -2515,7 +2515,7 @@ export const Overworld = {
     collectItem(itemId, spotId = null) {
         console.log(`Collected Item: ${itemId} (Spot: ${spotId})`);
         this.updateQuestProgress('collect', itemId);
-        
+
         // Register looted spot if using the unified system
         if (spotId && window.gameState) {
             if (!window.gameState.lootedSpots.includes(spotId)) {
@@ -2556,8 +2556,8 @@ export const Overworld = {
 
         // Remove from current zone if it was a world object drop
         const zone = this.zones[this.currentZone];
-        const objIdx = zone.objects.findIndex(o => 
-            (o.hiddenLogId === itemId || o.hiddenItemId === itemId || o.hiddenReward === itemId) && 
+        const objIdx = zone.objects.findIndex(o =>
+            (o.hiddenLogId === itemId || o.hiddenItemId === itemId || o.hiddenReward === itemId) &&
             (o.id.startsWith('item_') || o.id.startsWith('log_'))
         );
         if (objIdx > -1) {
@@ -3107,7 +3107,7 @@ export const Overworld = {
 
             template.tiles.forEach(tile => {
                 // Skip self
-                if (tile.id === prefix && (tile.relX||0) === myRelX && (tile.relY||0) === myRelY) return;
+                if (tile.id === prefix && (tile.relX || 0) === myRelX && (tile.relY || 0) === myRelY) return;
 
                 // Look for a neighbor at exactly the target relative coordinate
                 const tx = rootX + (tile.relX || 0);
@@ -3122,7 +3122,7 @@ export const Overworld = {
                         // Isolation Rule: If both have suffixes, they MUST match
                         if (suffix && oSuffix) return suffix === oSuffix;
                         // Fallback (for legacy maps): Position and Prefix match is enough
-                        return true; 
+                        return true;
                     }
                     return false;
                 });
@@ -3254,6 +3254,9 @@ export const Overworld = {
 
                 if (isHomeRun && (p.id === obj.id || p.type === 'npc')) {
                     this.triggerHomeRunEffects(p, pEl, directionKey);
+                } else if (!isHomeRun && (p.id === obj.id)) {
+                    // --- NEW: Micro-Impact VFX for normal kicks ---
+                    this.spawnKickImpactParticles(p.x * this.tileSize, p.y * this.tileSize, (p.width || 1) * this.tileSize, (p.height || 1) * this.tileSize, directionKey);
                 }
 
                 setTimeout(() => { if (pEl.parentNode) pEl.parentNode.removeChild(pEl); }, 2000);
@@ -3309,7 +3312,7 @@ export const Overworld = {
             plumeCount++;
         }, 16);
     },
-    
+
     transformBreakable(oldParts, templateName) {
         const zone = this.zones[this.currentZone];
         const template = window.FURNITURE_TEMPLATES && window.FURNITURE_TEMPLATES[templateName];
@@ -3353,7 +3356,7 @@ export const Overworld = {
     spawnBreakParticles(emitX, emitY, isLarge) {
         const mapEl = document.getElementById('overworld-map');
         const count = isLarge ? 30 : 20;
-        const energyColors = ['#ffffff', '#fffbed', '#fff0b3', '#4db8ff', '#ffd24d']; 
+        const energyColors = ['#ffffff', '#fffbed', '#fff0b3', '#4db8ff', '#ffd24d'];
 
         for (let i = 0; i < count; i++) {
             const angle = Math.random() * Math.PI * 2;
@@ -3407,11 +3410,11 @@ export const Overworld = {
             puff.className = 'smoke-plume-puff';
             puff.style.left = emitX + 'px';
             puff.style.top = emitY + 'px';
-            puff.style.setProperty('--drift-x', `${driftX * 1.5}px`);
-            puff.style.setProperty('--drift-y', `${driftY * 1.5}px`);
+            puff.style.setProperty('--drift-x', `${driftX * 3.0}px`);
+            puff.style.setProperty('--drift-y', `${driftY * 3.0}px`);
             puff.style.setProperty('--spark-color', energyColors[Math.floor(Math.random() * energyColors.length)]);
 
-            const size = 30 + Math.random() * 50;
+            const size = 40 + Math.random() * 60;
             const dot = document.createElement('span');
             dot.style.width = size + 'px';
             dot.style.height = size + 'px';
@@ -3424,8 +3427,8 @@ export const Overworld = {
                 spark.className = 'thruster-spark';
                 spark.style.left = emitX + 'px';
                 spark.style.top = emitY + 'px';
-                spark.style.setProperty('--drift-x', `${driftX * 1.8}px`);
-                spark.style.setProperty('--drift-y', `${driftY * 1.8}px`);
+                spark.style.setProperty('--drift-x', `${driftX * 3.0}px`);
+                spark.style.setProperty('--drift-y', `${driftY * 3.0}px`);
                 spark.style.setProperty('--spark-color', '#ffde59');
                 spark.style.setProperty('--spark-size', `${Math.random() * 30 + 10}px`);
                 mapEl.appendChild(spark);
@@ -3458,6 +3461,59 @@ export const Overworld = {
 
         mapEl.appendChild(puff);
         setTimeout(() => { if (puff.parentNode) puff.remove(); }, 500);
+    },
+
+    spawnKickImpactParticles(curX, curY, width, height, directionKey) {
+        const mapEl = document.getElementById('overworld-map');
+        let emitX = curX + width / 2;
+        let emitY = curY + height / 2;
+
+        const driftX = (directionKey === 'l' ? 10 : (directionKey === 'r' ? -10 : (Math.random() - 0.5) * 20));
+        const driftY = (directionKey === 'u' ? 10 : (directionKey === 'f' ? -10 : (Math.random() - 0.5) * 20));
+
+        // 5 puffs for a 'thud' burst feel
+        for (let i = 0; i < 5; i++) {
+            const puff = document.createElement('div');
+            puff.className = 'smoke-plume-puff';
+            puff.style.left = emitX + 'px';
+            puff.style.top = emitY + 'px';
+            
+            // RANDOM RADIAL BURST logic
+            const angle = Math.random() * Math.PI * 2;
+            const force = 15 + Math.random() * 25;
+            const randDriftX = (Math.cos(angle) * force) + (driftX * 1.5);
+            const randDriftY = (Math.sin(angle) * force) + (driftY * 1.5);
+
+            puff.style.setProperty('--drift-x', `${randDriftX}px`);
+            puff.style.setProperty('--drift-y', `${randDriftY}px`);
+
+            const size = 20 + Math.random() * 30;
+            const dot = document.createElement('span');
+            dot.style.width = size + 'px';
+            dot.style.height = size + 'px';
+            puff.appendChild(dot);
+            mapEl.appendChild(puff);
+            setTimeout(() => { if (puff.parentNode) puff.parentNode.removeChild(puff); }, 800);
+
+            if (Math.random() < 0.8) {
+                const spark = document.createElement('div');
+                spark.className = 'thruster-spark';
+                spark.style.left = emitX + 'px';
+                spark.style.top = emitY + 'px';
+                
+                // Stars burst even further
+                const sparkForce = force * 1.4;
+                const sDriftX = (Math.cos(angle) * sparkForce) + (driftX * 2);
+                const sDriftY = (Math.sin(angle) * sparkForce) + (driftY * 2);
+
+                spark.style.setProperty('--drift-x', `${sDriftX}px`);
+                spark.style.setProperty('--drift-y', `${sDriftY}px`);
+                spark.style.setProperty('--spark-color', '#ffde59');
+                spark.style.setProperty('--spark-size', `${Math.random() * 25 + 15}px`);
+                mapEl.appendChild(spark);
+                setTimeout(() => { if (spark.parentNode) spark.parentNode.removeChild(spark); }, 400);
+            }
+        }
     }
 };
 
