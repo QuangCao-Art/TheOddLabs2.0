@@ -38,7 +38,7 @@
     height: 64px;
     box-sizing: border-box;
     /* TILESYSTEM: Official Lab_TileSet_01 asset */
-    background-image: url('./assets/images/Lab_TileSet_01.png');
+    background-image: url('../../../assets/images/Lab_TileSet_01.png');
     background-size: 512px 512px;
     /* Set a large size to accommodate the coords, we can adjust if needed */
     background-repeat: no-repeat;
@@ -316,7 +316,7 @@
 }
 
 .incubator {
-    background: url('./assets/images/T_AlphaContaner.png') no-repeat center;
+    background: url('../../../assets/images/T_AlphaContaner.png') no-repeat center;
     background-size: contain;
 }
 
@@ -360,27 +360,27 @@
 }
 
 .npc.jenzi {
-    background-image: url('./assets/images/T_Char_Sprite_Jenzi_01.png');
+    background-image: url('../../../assets/images/T_Char_Sprite_Jenzi_01.png');
 }
 
 .npc.lana {
-    background-image: url('./assets/images/T_Char_Sprite_Lana_01.png');
+    background-image: url('../../../assets/images/T_Char_Sprite_Lana_01.png');
 }
 
 .npc.dyzes {
-    background-image: url('./assets/images/T_Char_Sprite_Dyzes_01.png');
+    background-image: url('../../../assets/images/T_Char_Sprite_Dyzes_01.png');
 }
 
 .npc.capsain {
-    background-image: url('./assets/images/T_Char_Sprite_Director_01.png');
+    background-image: url('../../../assets/images/T_Char_Sprite_Director_01.png');
 }
 
 .npc.npc_male {
-    background-image: url('./assets/images/T_Char_Sprite_NPC_Male_01.png');
+    background-image: url('../../../assets/images/T_Char_Sprite_NPC_Male_01.png');
 }
 
 .npc.npc_female {
-    background-image: url('./assets/images/T_Char_Sprite_NPC_Female_01.png');
+    background-image: url('../../../assets/images/T_Char_Sprite_NPC_Female_01.png');
 }
 
 .no-transition {
@@ -399,7 +399,7 @@
 #overworld-map .tile {
     width: 64px;
     height: 64px;
-    background-image: url('./assets/images/Lab_TileSet_01.png');
+    background-image: url('../../../assets/images/Lab_TileSet_01.png');
     background-size: 512px 512px;
     float: left;
 }
@@ -408,14 +408,14 @@
 #overworld-map .world-object.trigger,
 #overworld-map .world-object.sign,
 #overworld-map .world-object.cell {
-    background-image: url('./assets/images/Lab_TileSet_02.png');
+    background-image: url('../../../assets/images/Lab_TileSet_02.png');
     background-size: 512px 512px;
     transform: translateY(-10px) translateZ(0);
     backface-visibility: hidden;
 }
 
 #overworld-map .world-object.wild-cell {
-    background-image: url('./assets/images/Lab_TileSet_Cells.png');
+    background-image: url('../../../assets/images/Lab_TileSet_Cells.png');
     width: 64px !important;
     height: 64px !important;
     margin-top: 0 !important;
@@ -424,7 +424,7 @@
 }
 
 .world-object.tileset-03 {
-    background-image: url('./assets/images/Lab_TileSet_03.png') !important;
+    background-image: url('../../../assets/images/Lab_TileSet_03.png') !important;
     background-size: 512px 512px !important;
 }
 
@@ -923,7 +923,7 @@
 .world-object.prop.f118,
 .world-object.prop.f119,
 .world-object.prop.f120 {
-    background-image: url('./assets/images/Lab_TileSet_03.png') !important;
+    background-image: url('../../../assets/images/Lab_TileSet_03.png') !important;
     background-size: 512px 512px !important;
 }
 

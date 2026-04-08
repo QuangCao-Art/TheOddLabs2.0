@@ -1,1 +1,13 @@
 /assets/Source
+*.bak
+*.old
+*.tmp
+_backups/
+.DS_Store
+Thumbs.db
+node_modules/
+dist/
+build/
+.vscode/
+*.pyc
+__pycache__/
