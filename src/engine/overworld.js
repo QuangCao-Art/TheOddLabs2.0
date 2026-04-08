@@ -354,10 +354,10 @@ export const Overworld = {
         'f112': { hasCollision: true, info: "A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time!" },
         'f113': { hasCollision: false, info: "An empty specimen tank. Its occupants seem to have... moved on." },
         'f114': { hasCollision: true, info: "An empty specimen tank. Its occupants seem to have... moved on." },
-        'f115': { hasCollision: false, info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
-        'f116': { hasCollision: true, info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
-        'f117': { hasCollision: false, info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
-        'f118': { hasCollision: true, info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
+        'f115': { hasCollision: false, breakable: true, breaksInto: 'TANK_SHATTERED', info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
+        'f116': { hasCollision: true, breakable: true, breaksInto: 'TANK_SHATTERED', info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
+        'f117': { hasCollision: false, breakable: true, breaksInto: 'TANK_BROKEN', info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
+        'f118': { hasCollision: true, breakable: true, breaksInto: 'TANK_BROKEN', info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
         'f119': { hasCollision: true, info: "Jagged glass shards and a rusted frame. Leave it to the cleaning crew; your fingers will thank you." },
         'f120': { hasCollision: true, kickable: true, info: "Fragmented remains of a tank. Oddly lightweight for its size." },
 
@@ -537,8 +537,13 @@ export const Overworld = {
         // 4. DRAW OBJECTS
         this.refreshLogs(); // Sync logs from state (accounting for debug mode)
 
-        // Reset kicked state for all objects whenever re-entering a room
-        zone.objects.forEach(o => { delete o.isKicking; });
+        // Reset kicked state for all objects whenever re-entering a new room
+        if (isNewZone) {
+            zone.objects.forEach(o => { 
+                delete o.isKicking; 
+                delete o.isKicked;
+            });
+        }
 
         // Log #001 is now hidden in the Red Specimen Tank via main.js trigger
         if (id === 'lobby') {
@@ -558,7 +563,10 @@ export const Overworld = {
             }
         }
 
-        zone.objects.forEach(obj => this.renderObject(obj, mapEl));
+        zone.objects.forEach(obj => {
+            if (obj.isKicked) return;
+            this.renderObject(obj, mapEl);
+        });
 
         // 5. RE-ATTACH & COORDINATE SYNC
         if (!playerSprite) {
@@ -1013,7 +1021,7 @@ export const Overworld = {
         // 1. Prefer Kickable
         let obstacle = candidates.find(o => {
             const m = this.getFurnitureMeta(o.id, o.customSprite);
-            return (o.temp === true || (o.id && o.id.includes('_wild_')) || (m && m.kickable === true));
+            return (o.temp === true || (o.id && o.id.includes('_wild_')) || (m && (m.kickable === true || m.breakable === true)));
         });
 
         // 2. If no kickable, prefer Colliding
@@ -1029,7 +1037,7 @@ export const Overworld = {
 
         if (obstacle) {
             const meta = this.getFurnitureMeta(obstacle.id, obstacle.customSprite);
-            const isKickable = (obstacle.temp === true || (obstacle.id && obstacle.id.includes('_wild_')) || (meta && meta.kickable === true));
+            const isKickable = (obstacle.temp === true || (obstacle.id && obstacle.id.includes('_wild_')) || (meta && (meta.kickable === true || meta.breakable === true)));
 
             if (isKickable && !obstacle.isKicking && this.player.isSprinting) {
                 this.kickObject(obstacle, dx, dy);
@@ -3025,6 +3033,7 @@ export const Overworld = {
 
     kickObject(obj, dx, dy, force = false) {
         if ((this.isTransitioning && !force) || this.isPaused || obj.isKicking) return;
+        const wasSprinting = this.player.isSprinting;
         obj.isKicking = true;
 
         const el = document.getElementById(`npc-${obj.id}`);
@@ -3065,11 +3074,18 @@ export const Overworld = {
                 const oSuffixMatch = o.id.match(/_([a-zA-Z0-9]+)$/);
                 const oSuffix = oSuffixMatch ? oSuffixMatch[1] : null;
 
+                // --- STRATEGY: Isolate by Suffix ---
+                // If both have suffixes but they don't match, they are definitely DIFFERENT objects.
+                if (suffix && oSuffix && suffix !== oSuffix) return false;
+
                 // Match if: 
-                // 1. Exact suffix match (Standard protocol)
-                // 2. OR both belong to a known furniture set AND are adjacent
+                // 1. Exact suffix match (Grouped by tool)
                 const isSuffixMatch = suffixMatch && (oSuffix === suffix);
-                const isSetMatch = mySet && mySet.includes(oPrefix);
+                
+                // 2. Fallback for legacy data/unlabeled parts: 
+                // Cardinally adjacent parts of the same known furniture set.
+                const dist = Math.abs(o.x - obj.x) + Math.abs(o.y - obj.y);
+                const isSetMatch = mySet && mySet.includes(oPrefix) && oPrefix !== prefix && dist === 1;
 
                 if (!isSuffixMatch && !isSetMatch) return false;
 
@@ -3163,8 +3179,22 @@ export const Overworld = {
 
             // LOGICAL TILE FREEDOM: Remove from collision objects exactly when unpaused
             const partIds = parts.map(p => p.id);
+            const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
+
+            // --- STAGE 2: BRANCHING (Kick vs Break) ---
+            if (meta && meta.breakable && wasSprinting) {
+                if (screen) screen.classList.remove(shakeClass);
+                this.transformBreakable(parts, meta.breaksInto);
+                return;
+            }
+
             if (zone && zone.objects) {
-                // Permanently remove NPCs (Wild Monsters); leave Props in the array to be reset on zone change
+                // Permanently remove NPCs (Wild Monsters); flag Props to hide until zone change
+                zone.objects.forEach(o => {
+                    if (partIds.includes(o.id) && o.type !== 'npc') {
+                        o.isKicked = true;
+                    }
+                });
                 zone.objects = zone.objects.filter(o => o.type !== 'npc' || !partIds.includes(o.id));
             }
             if (this.spawner && this.spawner.activeMonsters) {
@@ -3243,6 +3273,78 @@ export const Overworld = {
             this.spawnHomerunParticles(curX, curY, rect.width, rect.height, directionKey);
             plumeCount++;
         }, 16);
+    },
+    
+    transformBreakable(oldParts, templateName) {
+        const zone = this.zones[this.currentZone];
+        const template = window.FURNITURE_TEMPLATES && window.FURNITURE_TEMPLATES[templateName];
+        if (!zone || !template) return;
+
+        // 1. Identify Base Position & VFX Center
+        // We find the part with the highest Y (lowest in the 1x2 set) to place the debris.
+        const basePart = oldParts.reduce((prev, curr) => (curr.y > prev.y ? curr : prev), oldParts[0]);
+        const centerX = (oldParts.reduce((sum, p) => sum + p.x, 0) / oldParts.length) * this.tileSize + (this.tileSize / 2);
+        const centerY = (oldParts.reduce((sum, p) => sum + p.y, 0) / oldParts.length) * this.tileSize + (this.tileSize / 2);
+
+        // 2. Remove Old Parts
+        const partIds = oldParts.map(p => p.id);
+        zone.objects = zone.objects.filter(o => !partIds.includes(o.id));
+
+        // 3. Instantiate New Furniture
+        const suffix = `_${Math.random().toString(36).substr(2, 9)}`;
+        template.tiles.forEach(tile => {
+            zone.objects.push({
+                id: tile.id + suffix,
+                x: basePart.x + (tile.relX || 0),
+                y: basePart.y + (tile.relY || 0),
+                type: 'prop',
+                name: template.name + (tile.name ? ` (${tile.name})` : '')
+            });
+        });
+
+        // 4. Redraw & Trigger VFX
+        this.renderMap(this.currentZone, false, this.player.x, this.player.y);
+        this.spawnBreakParticles(centerX, centerY, oldParts.length > 1);
+    },
+
+    spawnBreakParticles(emitX, emitY, isLarge) {
+        const mapEl = document.getElementById('overworld-map');
+        const count = isLarge ? 30 : 20;
+        const energyColors = ['#ffffff', '#fffbed', '#fff0b3', '#4db8ff', '#ffd24d']; 
+
+        for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const force = Math.random() * (isLarge ? 120 : 70) + 30;
+            const driftX = Math.cos(angle) * force;
+            const driftY = Math.sin(angle) * force;
+
+            const puff = document.createElement('div');
+            puff.className = 'smoke-plume-puff';
+            puff.style.left = emitX + 'px';
+            puff.style.top = emitY + 'px';
+            puff.style.setProperty('--drift-x', `${driftX}px`);
+            puff.style.setProperty('--drift-y', `${driftY}px`);
+            puff.style.setProperty('--spark-color', energyColors[Math.floor(Math.random() * energyColors.length)]);
+
+            const size = (isLarge ? 25 : 15) + Math.random() * 20;
+            const dot = document.createElement('span');
+            dot.style.width = size + 'px';
+            dot.style.height = size + 'px';
+            puff.appendChild(dot);
+            mapEl.appendChild(puff);
+            setTimeout(() => { if (puff.parentNode) puff.parentNode.removeChild(puff); }, 600);
+
+            // High frequency of stars for the "Break" feel
+            if (Math.random() < 0.5) {
+                const spark = document.createElement('div');
+                spark.className = 'thruster-spark';
+                spark.style.left = emitX + 'px';
+                spark.style.top = emitY + 'px';
+                spark.style.setProperty('--spark-color', '#fff');
+                mapEl.appendChild(spark);
+                setTimeout(() => { if (spark.parentNode) spark.parentNode.removeChild(spark); }, 400);
+            }
+        }
     },
 
     spawnHomerunParticles(curX, curY, width, height, directionKey) {

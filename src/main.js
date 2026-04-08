@@ -9,6 +9,7 @@ import { SYNTHESIS_RECIPES } from './data/synthesis.js';
 import { QUESTS, MAIN_QUEST_LOGS } from './data/quests.js';
 import { BioExtract } from './ui/bio_extract.js';
 import { BuilderMode } from './engine/builder.js';
+import { FURNITURE_TEMPLATES } from './data/furniture.js';
 
 // Initialize UI Modules
 if (BioExtract) BioExtract.init();
@@ -18,6 +19,7 @@ window.gameState = gameState;
 window.Overworld = Overworld;
 window.BioExtract = BioExtract;
 window.BuilderMode = BuilderMode;
+window.FURNITURE_TEMPLATES = FURNITURE_TEMPLATES;
 
 // DOM References
 const interactivePentagon = document.getElementById('interactive-pentagon');
