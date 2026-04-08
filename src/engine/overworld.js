@@ -352,6 +352,14 @@ export const Overworld = {
         'f110': { hasCollision: true, info: "An oversized cultivation dish designed for Cells. It's the same model used in the main lab, but standing two stories tall." },
         'f111': { hasCollision: false, info: "A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time!" },
         'f112': { hasCollision: true, info: "A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time!" },
+        'f113': { hasCollision: false, info: "An empty specimen tank. Its occupants seem to have... moved on." },
+        'f114': { hasCollision: true, info: "An empty specimen tank. Its occupants seem to have... moved on." },
+        'f115': { hasCollision: false, info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
+        'f116': { hasCollision: true, info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
+        'f117': { hasCollision: false, info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
+        'f118': { hasCollision: true, info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
+        'f119': { hasCollision: true, info: "Jagged glass shards and a rusted frame. Leave it to the cleaning crew; your fingers will thank you." },
+        'f120': { hasCollision: true, kickable: true, info: "Fragmented remains of a tank. Oddly lightweight for its size." },
 
         // --- ENCOUNTER CELLS ---
         'c0': { hasCollision: true, info: "A wild Stemmy is wandering." },
@@ -3041,7 +3049,12 @@ export const Overworld = {
                 ['f42', 'f43', 'f44', 'f45', 'f46', 'f47'],
                 ['f52', 'f53', 'f54', 'f55'],
                 ['f84', 'f85'], ['f86', 'f87'], ['f88', 'f89'],
-                ['f107', 'f108']
+                ['f107', 'f108'],
+                ['f109', 'f110'],
+                ['f111', 'f112'],
+                ['f113', 'f114'],
+                ['f115', 'f116'],
+                ['f117', 'f118']
             ];
 
             const mySet = linkedSets.find(set => set.includes(prefix));

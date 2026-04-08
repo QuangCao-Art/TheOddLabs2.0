@@ -271,6 +271,35 @@ export const FURNITURE_TEMPLATES = {
             { id: 'f112', relX: 0, relY: 0, name: 'Bottom' },
             { id: 'f111', relX: 0, relY: -1, name: 'Top' }
         ]
+    },
+    TANK_EMPTY: {
+        name: 'Specimen Tank (Empty)',
+        tiles: [
+            { id: 'f114', relX: 0, relY: 0, name: 'Tank Base' },
+            { id: 'f113', relX: 0, relY: -1, name: 'Tank Top' }
+        ]
+    },
+    TANK_OLD: {
+        name: 'Weathered Antique Tank',
+        tiles: [
+            { id: 'f116', relX: 0, relY: 0, name: 'Tank Base' },
+            { id: 'f115', relX: 0, relY: -1, name: 'Tank Top' }
+        ]
+    },
+    TANK_CRACKED: {
+        name: 'Precarious Cracked Tank',
+        tiles: [
+            { id: 'f118', relX: 0, relY: 0, name: 'Tank Base' },
+            { id: 'f117', relX: 0, relY: -1, name: 'Tank Top' }
+        ]
+    },
+    TANK_SHATTERED: {
+        name: 'Shattered Tank Remains',
+        tiles: [{ id: 'f119', relX: 0, relY: 0 }]
+    },
+    TANK_BROKEN: {
+        name: 'Broken Tank Debris',
+        tiles: [{ id: 'f120', relX: 0, relY: 0 }]
     }
 };
 

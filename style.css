@@ -5455,7 +5455,15 @@ body {
 .world-object.prop.f109,
 .world-object.prop.f110,
 .world-object.prop.f111,
-.world-object.prop.f112 {
+.world-object.prop.f112,
+.world-object.prop.f113,
+.world-object.prop.f114,
+.world-object.prop.f115,
+.world-object.prop.f116,
+.world-object.prop.f117,
+.world-object.prop.f118,
+.world-object.prop.f119,
+.world-object.prop.f120 {
     background-image: url('./assets/images/Lab_TileSet_03.png') !important;
     background-size: 512px 512px !important;
 }
@@ -5592,6 +5600,38 @@ body {
 
 .world-object.prop.f112 {
     background-position: calc(-1792px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f113 {
+    background-position: calc(-768px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f114 {
+    background-position: calc(-768px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f115 {
+    background-position: calc(-1024px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f116 {
+    background-position: calc(-1024px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f117 {
+    background-position: calc(-1280px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f118 {
+    background-position: calc(-1280px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f119 {
+    background-position: calc(-1024px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f120 {
+    background-position: calc(-1280px / 4) calc(-1792px / 4);
 }
 
 .world-object.prop.StoragePod-Top,

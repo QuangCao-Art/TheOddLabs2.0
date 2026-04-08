@@ -185,6 +185,14 @@ Used for advanced lab equipment and specialized props. Texture asset: `Lab_TileS
 | **f110** | HugeTwoStoryPetryDish-Bottom | 1536px | 1536px | Yes | An oversized cultivation dish designed for Cells. It's the same model used in the main lab, but standing two stories tall. |
 | **f111** | MobileMonitorCabinet-Top | 1792px | 1280px | No | A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time! |
 | **f112** | MobileMonitorCabinet-Bottom | 1792px | 1536px | Yes | A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time! |
+| **f113** | EmptyTank-Top | 768px | 1280px | No | An empty specimen tank. Its occupants seem to have... moved on. |
+| **f114** | EmptyTank-Bottom | 768px | 1536px | Yes | An empty specimen tank. Its occupants seem to have... moved on. |
+| **f115** | OldWeatheredTank-Top | 1024px | 1280px | No | A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments. |
+| **f116** | OldWeatheredTank-Bottom | 1024px | 1536px | Yes | A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments. |
+| **f117** | CrackedTank-Top | 1280px | 1280px | No | A fragile tank covered in fractures, even a sneeze can take it down! |
+| **f118** | CrackedTank-Bottom | 1280px | 1536px | Yes | A fragile tank covered in fractures, even a sneeze can take it down! |
+| **f119** | ShatteredTank-Remains | 1024px | 1792px | Yes | Jagged glass shards and a rusted frame. Leave it for the cleaning crew; your fingers will thank you. |
+| **f120** | BrokenTank-Debris | 1280px | 1792px | Yes | Fragmented remains of a tank. Oddly lightweight for its size. |
 
 ---
 
