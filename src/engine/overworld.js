@@ -442,6 +442,16 @@ export const Overworld = {
     init() {
         console.log("Overworld Engine Starting...");
         this.resetStates(); // Ensure clean start
+        
+        // --- NEW: Snapshot pristine maps for "Reset on Entry" ---
+        if (!this.pristineZones) {
+            this.pristineZones = {};
+            for (let id in this.zones) {
+                // We use JSON stringify/parse for a deep clone of the static map data
+                this.pristineZones[id] = JSON.stringify(this.zones[id]);
+            }
+        }
+
         setTimeout(() => {
             const lastPos = window.gameState.lastOverworldPos;
             if (lastPos && lastPos.zone && lastPos.x !== null && lastPos.y !== null) {
@@ -464,14 +474,19 @@ export const Overworld = {
      */
     renderMap(zoneId, forceSpawn = false, targetX = null, targetY = null) {
         const id = zoneId || this.currentZone || 'lobby';
+        const isNewZone = id !== this.currentZone || forceSpawn;
+
+        // --- NEW: Implement "Reset on Entry" via Clone ---
+        if (isNewZone && this.pristineZones && this.pristineZones[id]) {
+            this.zones[id] = JSON.parse(this.pristineZones[id]);
+        }
+
+        const zone = this.zones[id];
 
         // Update Bio-Extract visuals if we are entering or rendering the extraction room
         if (id === 'bioExtraction') {
             this.updateBioExtractVisuals();
         }
-
-        const zone = this.zones[id];
-        const isNewZone = id !== this.currentZone || forceSpawn;
 
         // --- NEW: Spawner Cleanup (Prevent timer leaks on zone change) ---
         if (isNewZone && this.spawner) {
@@ -482,8 +497,11 @@ export const Overworld = {
         const playerSprite = document.getElementById('player-sprite');
 
         // 1. LOCK VISUALS (Prevent jerky movement during redraw)
-        if (mapEl) mapEl.classList.add('no-transition');
-        if (playerSprite) playerSprite.classList.add('no-transition');
+        // 1. CLEAR & TRANSITION LOCK (Only on room change to prevent camera/sprite sliding)
+        if (isNewZone) {
+            if (mapEl) mapEl.classList.add('no-transition');
+            if (playerSprite) playerSprite.classList.add('no-transition');
+        }
 
         // 2. DETACH PLAYER (Temporarily)
         if (playerSprite && playerSprite.parentElement === mapEl) {
@@ -631,6 +649,12 @@ export const Overworld = {
             obj.customSprite.split(' ').forEach(cls => {
                 if (cls) el.classList.add(cls);
             });
+        }
+
+        // --- NEW: Debris Pop Juice ---
+        if (obj.isNewDebris) {
+            el.classList.add('anim-debris-bounce');
+            delete obj.isNewDebris; // Run only once
         }
 
         // Derive gender/sprite class (npc_male, npc_female)
@@ -1011,46 +1035,60 @@ export const Overworld = {
         }
 
         // Object Collision Check (Priority: Kickable > Colliding > Hidden)
-        const candidates = zone.objects.filter(obj => {
-            if (obj.isKicking) return false;
+        const allCandidates = zone.objects.filter(obj => {
             const w = obj.width || 1;
             const h = obj.height || 1;
             return nextX >= obj.x && nextX < obj.x + w && nextY >= obj.y && nextY < obj.y + h;
         });
 
-        // 1. Prefer Kickable
-        let obstacle = candidates.find(o => {
+        // For interactions (kicking/breaking), we only target non-moving objects.
+        const interactableCandidates = allCandidates.filter(obj => !obj.isKicking);
+
+        // 1. Identify Collision Blockers vs Interactables
+        // Movement Blocking (Ignore objects flying away so the player can move into the tile)
+        const isPathBlocked = interactableCandidates.some(o => {
             const m = this.getFurnitureMeta(o.id, o.customSprite);
-            return (o.temp === true || (o.id && o.id.includes('_wild_')) || (m && (m.kickable === true || m.breakable === true)));
+            return !m || m.hasCollision !== false;
         });
 
-        // 2. If no kickable, prefer Colliding
-        if (!obstacle) {
-            obstacle = candidates.find(o => {
+        // Interaction Shielding (Include objects flying away so you can't 'reach through' them)
+        const isTileShielded = allCandidates.some(o => {
+            const m = this.getFurnitureMeta(o.id, o.customSprite);
+            return !m || m.hasCollision !== false;
+        });
+
+        const bestInteractable = interactableCandidates
+            .filter(o => {
                 const m = this.getFurnitureMeta(o.id, o.customSprite);
-                return !m || m.hasCollision !== false;
-            });
+                return (o.temp === true || (o.id && o.id.includes('_wild_')) || (m && (m.kickable === true || m.breakable === true)));
+            })
+            .sort((a, b) => {
+                const ma = this.getFurnitureMeta(a.id, a.customSprite);
+                const mb = this.getFurnitureMeta(b.id, b.customSprite);
+                const scoreA = (!ma || ma.hasCollision !== false) ? 1 : 0;
+                const scoreB = (!mb || mb.hasCollision !== false) ? 1 : 0;
+                return scoreB - scoreA; // Solid objects first
+            })[0];
+
+        if (bestInteractable) {
+            const m = this.getFurnitureMeta(bestInteractable.id, bestInteractable.customSprite);
+            const interactableIsSolid = !m || m.hasCollision !== false;
+
+            // --- SOLID SHIELDING ---
+            if (!bestInteractable.isKicking && this.player.isSprinting) {
+                // If the thing we want to hit is NOT solid, 
+                // but the tile is currently shielded by something solid (like flying debris), block it!
+                if (interactableIsSolid || !isTileShielded) {
+                    this.kickObject(bestInteractable, dx, dy);
+                    this.updatePlayerPosition();
+                    return;
+                }
+            }
         }
 
-        // 3. Last fallback (anything else at the tile)
-        if (!obstacle) obstacle = candidates[0];
-
-        if (obstacle) {
-            const meta = this.getFurnitureMeta(obstacle.id, obstacle.customSprite);
-            const isKickable = (obstacle.temp === true || (obstacle.id && obstacle.id.includes('_wild_')) || (meta && (meta.kickable === true || meta.breakable === true)));
-
-            if (isKickable && !obstacle.isKicking && this.player.isSprinting) {
-                this.kickObject(obstacle, dx, dy);
-                this.updatePlayerPosition();
-                return;
-            }
-
-            if (meta && meta.hasCollision === false) {
-                // Pass through non-collidable (e.g. tank tops)
-            } else {
-                this.updatePlayerPosition();
-                return;
-            }
+        if (isPathBlocked) {
+            this.updatePlayerPosition();
+            return;
         }
 
         // 4. Perform Movement
@@ -3042,60 +3080,57 @@ export const Overworld = {
         const zone = this.zones[this.currentZone];
         if (!zone) return;
 
-        // --- Proximity-Linkage for Multi-tile Furniture ---
+        // --- SYSTEMATIC BLUEPRINT-AWARE LINKAGE ---
         const parts = [obj];
         const suffixMatch = obj.id.match(/_([a-zA-Z0-9]+)$/);
-        if (suffixMatch && obj.type === 'prop') {
-            const suffix = suffixMatch[1];
-            const prefix = obj.id.split('_')[0];
+        const suffix = suffixMatch ? suffixMatch[1] : null;
+        const prefix = obj.id.split('_')[0];
 
-            // Known Linked Furniture Sets (Top+Bottom or Large Multi-parts)
-            const linkedSets = [
-                ['f20', 'f21'], ['f22', 'f23'], ['f24', 'f25'],
-                ['f28', 'f29'], ['f30', 'f31'], ['f32', 'f33'],
-                ['f61', 'f62'], ['f76', 'f77', 'f78', 'f79'],
-                ['f38', 'f39', 'f40', 'f41'],
-                ['f42', 'f43', 'f44', 'f45', 'f46', 'f47'],
-                ['f52', 'f53', 'f54', 'f55'],
-                ['f84', 'f85'], ['f86', 'f87'], ['f88', 'f89'],
-                ['f107', 'f108'],
-                ['f109', 'f110'],
-                ['f111', 'f112'],
-                ['f113', 'f114'],
-                ['f115', 'f116'],
-                ['f117', 'f118']
-            ];
+        // Locate the blueprint this part belongs to
+        let template = null;
+        let myRelX = 0, myRelY = 0;
 
-            const mySet = linkedSets.find(set => set.includes(prefix));
+        for (const key in window.FURNITURE_TEMPLATES) {
+            const t = window.FURNITURE_TEMPLATES[key];
+            const part = t.tiles.find(tile => tile.id === prefix);
+            if (part) {
+                template = t;
+                myRelX = part.relX || 0;
+                myRelY = part.relY || 0;
+                break;
+            }
+        }
 
-            const linked = zone.objects.filter(o => {
-                if (o.id === obj.id) return false;
-                const oPrefix = o.id.split('_')[0];
-                const oSuffixMatch = o.id.match(/_([a-zA-Z0-9]+)$/);
-                const oSuffix = oSuffixMatch ? oSuffixMatch[1] : null;
+        if (template && obj.type === 'prop') {
+            const rootX = obj.x - myRelX;
+            const rootY = obj.y - myRelY;
 
-                // --- STRATEGY: Isolate by Suffix ---
-                // If both have suffixes but they don't match, they are definitely DIFFERENT objects.
-                if (suffix && oSuffix && suffix !== oSuffix) return false;
+            template.tiles.forEach(tile => {
+                // Skip self
+                if (tile.id === prefix && (tile.relX||0) === myRelX && (tile.relY||0) === myRelY) return;
 
-                // Match if: 
-                // 1. Exact suffix match (Grouped by tool)
-                const isSuffixMatch = suffixMatch && (oSuffix === suffix);
-                
-                // 2. Fallback for legacy data/unlabeled parts: 
-                // Cardinally adjacent parts of the same known furniture set.
-                const dist = Math.abs(o.x - obj.x) + Math.abs(o.y - obj.y);
-                const isSetMatch = mySet && mySet.includes(oPrefix) && oPrefix !== prefix && dist === 1;
+                // Look for a neighbor at exactly the target relative coordinate
+                const tx = rootX + (tile.relX || 0);
+                const ty = rootY + (tile.relY || 0);
 
-                if (!isSuffixMatch && !isSetMatch) return false;
+                const partner = zone.objects.find(o => {
+                    const oPrefix = o.id.split('_')[0];
+                    const oSuffixMatch = o.id.match(/_([a-zA-Z0-9]+)$/);
+                    const oSuffix = oSuffixMatch ? oSuffixMatch[1] : null;
 
-                // Final proximity check (1 tile radius)
-                return Math.abs(o.x - obj.x) <= 1 && Math.abs(o.y - obj.y) <= 1;
-            });
+                    if (o.x === tx && o.y === ty && oPrefix === tile.id) {
+                        // Isolation Rule: If both have suffixes, they MUST match
+                        if (suffix && oSuffix) return suffix === oSuffix;
+                        // Fallback (for legacy maps): Position and Prefix match is enough
+                        return true; 
+                    }
+                    return false;
+                });
 
-            linked.forEach(o => {
-                o.isKicking = true;
-                parts.push(o);
+                if (partner) {
+                    partner.isKicking = true;
+                    parts.push(partner);
+                }
             });
         }
 
@@ -3286,24 +3321,32 @@ export const Overworld = {
         const centerX = (oldParts.reduce((sum, p) => sum + p.x, 0) / oldParts.length) * this.tileSize + (this.tileSize / 2);
         const centerY = (oldParts.reduce((sum, p) => sum + p.y, 0) / oldParts.length) * this.tileSize + (this.tileSize / 2);
 
-        // 2. Remove Old Parts
+        // 2. Remove Old Parts (Data & DOM)
         const partIds = oldParts.map(p => p.id);
         zone.objects = zone.objects.filter(o => !partIds.includes(o.id));
+        partIds.forEach(id => {
+            const el = document.getElementById(`npc-${id}`);
+            if (el) el.remove();
+        });
 
-        // 3. Instantiate New Furniture
+        // 3. Instantiate & Render New Furniture (Surgically)
+        const mapEl = document.getElementById('overworld-map');
         const suffix = `_${Math.random().toString(36).substr(2, 9)}`;
         template.tiles.forEach(tile => {
-            zone.objects.push({
+            const newObj = {
                 id: tile.id + suffix,
                 x: basePart.x + (tile.relX || 0),
                 y: basePart.y + (tile.relY || 0),
                 type: 'prop',
+                customSprite: tile.id,
+                isNewDebris: true, // Trigger the bounce animation
                 name: template.name + (tile.name ? ` (${tile.name})` : '')
-            });
+            };
+            zone.objects.push(newObj);
+            this.renderObject(newObj, mapEl);
         });
 
-        // 4. Redraw & Trigger VFX
-        this.renderMap(this.currentZone, false, this.player.x, this.player.y);
+        // 4. Trigger VFX (No full redraw needed, camera and flying objects stay smooth!)
         this.spawnBreakParticles(centerX, centerY, oldParts.length > 1);
     },
 
@@ -3314,7 +3357,7 @@ export const Overworld = {
 
         for (let i = 0; i < count; i++) {
             const angle = Math.random() * Math.PI * 2;
-            const force = Math.random() * (isLarge ? 120 : 70) + 30;
+            const force = Math.random() * (isLarge ? 70 : 50) + 20;
             const driftX = Math.cos(angle) * force;
             const driftY = Math.sin(angle) * force;
 
@@ -3326,23 +3369,26 @@ export const Overworld = {
             puff.style.setProperty('--drift-y', `${driftY}px`);
             puff.style.setProperty('--spark-color', energyColors[Math.floor(Math.random() * energyColors.length)]);
 
-            const size = (isLarge ? 25 : 15) + Math.random() * 20;
+            const size = (isLarge ? 40 : 25) + Math.random() * 40;
             const dot = document.createElement('span');
             dot.style.width = size + 'px';
             dot.style.height = size + 'px';
             puff.appendChild(dot);
             mapEl.appendChild(puff);
-            setTimeout(() => { if (puff.parentNode) puff.parentNode.removeChild(puff); }, 600);
+            setTimeout(() => { if (puff.parentNode) puff.parentNode.removeChild(puff); }, 1200);
 
             // High frequency of stars for the "Break" feel
-            if (Math.random() < 0.5) {
+            if (Math.random() < 0.6) {
                 const spark = document.createElement('div');
                 spark.className = 'thruster-spark';
                 spark.style.left = emitX + 'px';
                 spark.style.top = emitY + 'px';
-                spark.style.setProperty('--spark-color', '#fff');
+                spark.style.setProperty('--drift-x', `${driftX * 1.8}px`);
+                spark.style.setProperty('--drift-y', `${driftY * 1.8}px`);
+                spark.style.setProperty('--spark-color', '#ffde59');
+                spark.style.setProperty('--spark-size', `${Math.random() * 30 + 10}px`);
                 mapEl.appendChild(spark);
-                setTimeout(() => { if (spark.parentNode) spark.parentNode.removeChild(spark); }, 400);
+                setTimeout(() => { if (spark.parentNode) spark.parentNode.removeChild(spark); }, 500);
             }
         }
     },
@@ -3356,31 +3402,34 @@ export const Overworld = {
         const driftX = (directionKey === 'l' ? 20 : (directionKey === 'r' ? -20 : (Math.random() - 0.5) * 40));
         const driftY = (directionKey === 'u' ? 20 : (directionKey === 'f' ? -20 : (Math.random() - 0.5) * 40));
 
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 4; i++) {
             const puff = document.createElement('div');
             puff.className = 'smoke-plume-puff';
             puff.style.left = emitX + 'px';
             puff.style.top = emitY + 'px';
-            puff.style.setProperty('--drift-x', `${driftX}px`);
-            puff.style.setProperty('--drift-y', `${driftY}px`);
-            puff.style.setProperty('--spark-color', energyColors[Math.floor(Math.random() * 3)]);
+            puff.style.setProperty('--drift-x', `${driftX * 1.5}px`);
+            puff.style.setProperty('--drift-y', `${driftY * 1.5}px`);
+            puff.style.setProperty('--spark-color', energyColors[Math.floor(Math.random() * energyColors.length)]);
 
-            const size = 15 + Math.random() * 25;
+            const size = 30 + Math.random() * 50;
             const dot = document.createElement('span');
             dot.style.width = size + 'px';
             dot.style.height = size + 'px';
             puff.appendChild(dot);
             mapEl.appendChild(puff);
-            setTimeout(() => { if (puff.parentNode) puff.parentNode.removeChild(puff); }, 500);
+            setTimeout(() => { if (puff.parentNode) puff.parentNode.removeChild(puff); }, 1200);
 
-            if (Math.random() < 0.3) {
+            if (Math.random() < 0.7) {
                 const spark = document.createElement('div');
                 spark.className = 'thruster-spark';
                 spark.style.left = emitX + 'px';
                 spark.style.top = emitY + 'px';
-                spark.style.setProperty('--spark-color', energyColors[Math.floor(Math.random() * 3)]);
+                spark.style.setProperty('--drift-x', `${driftX * 1.8}px`);
+                spark.style.setProperty('--drift-y', `${driftY * 1.8}px`);
+                spark.style.setProperty('--spark-color', '#ffde59');
+                spark.style.setProperty('--spark-size', `${Math.random() * 30 + 10}px`);
                 mapEl.appendChild(spark);
-                setTimeout(() => { if (spark.parentNode) spark.parentNode.removeChild(spark); }, 300);
+                setTimeout(() => { if (spark.parentNode) spark.parentNode.removeChild(spark); }, 500);
             }
         }
     },

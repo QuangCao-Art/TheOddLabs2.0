@@ -10,9 +10,9 @@ description: Add a New Asset to the Game & Builder Tool
 **MANDATORY**: Whenever this workflow is triggered or mentioned, the assistant MUST provide the following and ask the user to fill it out:
 
 ```markdown
-| Furniture ID | Description | X Position | Y Position | Have Collision | Kickable | Key Item | Info |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| f107 | Name | (X) | (Y) | (Yes/No) | (Yes/No) | (Yes/No) | (Tooltip) |
+| Furniture ID | Description | X Position | Y Position | Have Collision | Kickable | Breakable | Breaks Into | Info |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| f107 | Name | (X) | (Y) | (Yes/No) | (Yes/No) | (Yes/No/Debris) | (TemplateID) | (Tooltip) |
 ```
 
 ### 1. Identify the Sprite
@@ -40,27 +40,23 @@ Update [furniture.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/fur
 1.  Locate `FURNITURE_TEMPLATES`.
 2.  Add a new template entry for the object.
     - For multi-tile objects, specify the `relX` and `relY` for each part.
-    ```javascript
     NEW_OBJECT: { 
         name: 'Human Readable Name', 
-        tiles: [{ id: 'f105', relX: 0, relY: 0 }] 
+        tiles: [{ id: 'f105', relX: 0, relY: 0 }] // Core linkage depends on these rel coordinates!
     }
     ```
 
 ### 5. Finalize Metadata
 Update [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/overworld.js).
 1.  Locate `furnitureMetadata`.
-2.  Add the ID with its collision status and description text.
+2.  Add the ID with its collision status, description text, and breakable settings.
     ```javascript
-    'f105': { hasCollision: true, info: "A mysterious new lab device." }
-    ```
-
-### 5.5 Register Furniture Linkage
-**MANDATORY for multi-tile objects** (e.g., 2-tile high robots/plants):
-1.  Locate `linkedSets` within the `kickObject` function.
-2.  Add a new array containing the IDs that should be kicked together.
-    ```javascript
-    ['f107', 'f108'],
+    'f105': { 
+        hasCollision: true, 
+        info: "A mysterious new lab device.",
+        breakable: true,          // Set to true for destructible objects
+        breaksInto: 'DEBRIS_ID'   // Key from FURNITURE_TEMPLATES for the debris
+    }
     ```
 
 ### 6. Place in a Zone (Optional)
