@@ -181,6 +181,13 @@ export const FURNITURE_TEMPLATES = {
             { id: 'f84', relX: 0, relY: -1, name: 'Top' }
         ]
     },
+    BED_A: {
+        name: 'Medical Sleep Pod',
+        tiles: [
+            { id: 'f32', relX: 0, relY: 0, name: 'Left' },
+            { id: 'f33', relX: 1, relY: 0, name: 'Right' }
+        ]
+    },
     BIO_EXTRACTOR: {
         name: 'Bio Extractor Industrial',
         tiles: [

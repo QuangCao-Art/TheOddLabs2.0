@@ -1077,9 +1077,9 @@ export const Overworld = {
 
             // --- SOLID SHIELDING ---
             if (!bestInteractable.isKicking && this.player.isSprinting) {
-                // If the thing we want to hit is NOT solid, 
-                // but the tile is currently shielded by something solid (like flying debris), block it!
-                if (interactableIsSolid || !isTileShielded) {
+                // To trigger a sprint-kick, the part must be solid (interactableIsSolid).
+                // The linkage system in kickObject will automatically handle non-solid partners.
+                if (interactableIsSolid) {
                     this.kickObject(bestInteractable, dx, dy);
                     this.updatePlayerPosition();
                     return;
