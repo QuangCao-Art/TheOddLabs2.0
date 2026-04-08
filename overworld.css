@@ -1,0 +1,1198 @@
+/* OVERWORLD SYSTEM - SEGMENTED FROM style.css */
+#screen-overworld {
+    background: #0a0a0f;
+    /* Match root bg */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    z-index: 5;
+    /* Ensure it stays above container background visuals if any */
+}
+
+#overworld-viewport {
+    flex: 1;
+    position: relative;
+    background: #0a0a0f;
+    overflow: hidden;
+    border: 2px solid var(--glass);
+    box-shadow: inset 0 0 50px rgba(0, 243, 255, 0.1);
+}
+
+#overworld-map {
+    position: absolute;
+    display: grid;
+    left: 0;
+    top: 0;
+    will-change: transform;
+}
+
+.no-transition {
+    transition: none !important;
+}
+
+.tile {
+    width: 64px;
+    height: 64px;
+    box-sizing: border-box;
+    /* TILESYSTEM: Official Lab_TileSet_01 asset */
+    background-image: url('./assets/images/Lab_TileSet_01.png');
+    background-size: 512px 512px;
+    /* Set a large size to accommodate the coords, we can adjust if needed */
+    background-repeat: no-repeat;
+    border: none;
+}
+
+/* OFFICIAL TILES (Lab_TileSet_01 v2.0) */
+.t-0 {
+    background-position: -0px -0px;
+}
+
+/* Corners-Top-Left */
+.t-1 {
+    background-position: -128px -0px;
+}
+
+/* Corners-Top-Right */
+.t-2 {
+    background-position: -0px -128px;
+}
+
+/* Corners-Bottom-Left */
+.t-3 {
+    background-position: -128px -128px;
+}
+
+/* Corners-Bottom-Right */
+.t-4 {
+    background-position: -192px -0px;
+}
+
+/* Corners-Inner-Top-Left */
+.t-5 {
+    background-position: -256px -0px;
+}
+
+/* Corners-Inner-Top-Right */
+.t-6 {
+    background-position: -192px -64px;
+}
+
+/* Corners-Inner-Bottom-Left */
+.t-7 {
+    background-position: -256px -64px;
+}
+
+/* Corners-Inner-Bottom-Right */
+.t-8 {
+    background-position: -64px -0px;
+}
+
+/* WallEdge-Top */
+.t-9 {
+    background-position: -64px -128px;
+}
+
+/* WallEdge-Bottom */
+.t-10 {
+    background-position: -0px -64px;
+}
+
+.t-0 {
+    background-position: calc(-0px / 4) calc(-0px / 4);
+}
+
+.t-1 {
+    background-position: calc(-512px / 4) calc(-0px / 4);
+}
+
+.t-2 {
+    background-position: calc(-0px / 4) calc(-512px / 4);
+}
+
+.t-3 {
+    background-position: calc(-512px / 4) calc(-512px / 4);
+}
+
+.t-4 {
+    background-position: calc(-768px / 4) calc(-0px / 4);
+}
+
+.t-5 {
+    background-position: calc(-1024px / 4) calc(-0px / 4);
+}
+
+.t-6 {
+    background-position: calc(-768px / 4) calc(-256px / 4);
+}
+
+.t-7 {
+    background-position: calc(-1024px / 4) calc(-256px / 4);
+}
+
+.t-8 {
+    background-position: calc(-256px / 4) calc(-0px / 4);
+}
+
+.t-9 {
+    background-position: calc(-256px / 4) calc(-512px / 4);
+}
+
+.t-10 {
+    background-position: calc(-0px / 4) calc(-256px / 4);
+}
+
+.t-11 {
+    background-position: calc(-512px / 4) calc(-256px / 4);
+}
+
+.t-12 {
+    background-position: calc(-256px / 4) calc(-256px / 4);
+}
+
+/* Room Layout Mappings */
+.t-13 {
+    background-position: calc(-256px / 4) calc(-1280px / 4);
+}
+
+/* EmptyFill */
+.t-14 {
+    background-position: calc(-256px / 4) calc(-768px / 4);
+}
+
+/* Floor-Basic */
+.t-15 {
+    background-position: calc(-256px / 4) calc(-1024px / 4);
+}
+
+/* Wall-Middle-Top */
+.t-16 {
+    background-position: calc(0px / 4) calc(-768px / 4);
+}
+
+/* Wall-Middle-Bottom */
+.t-17 {
+    background-position: calc(0px / 4) calc(-1024px / 4);
+}
+
+/* Wall-Left-Top */
+.t-18 {
+    background-position: calc(-512px / 4) calc(-768px / 4);
+}
+
+/* Wall-Left-Bottom */
+.t-19 {
+    background-position: calc(-512px / 4) calc(-1024px / 4);
+}
+
+/* Wall-Right-Top */
+/* --- Door Mappings --- */
+/* Door-Edge-Bottom-Close */
+.t-20 {
+    background-position: calc(-768px / 4) calc(-512px / 4);
+}
+
+/* Door-Edge-Bottom-Open */
+.t-21 {
+    background-position: calc(-1024px / 4) calc(-512px / 4);
+}
+
+/* Door-Basic-Close */
+.t-22 {
+    background-position: calc(-768px / 4) calc(-768px / 4);
+}
+
+/* Door-Basic-Open */
+.t-23 {
+    background-position: calc(-1024px / 4) calc(-768px / 4);
+}
+
+/* Door-Edge-Left-Close */
+.t-24 {
+    background-position: calc(-1280px / 4) calc(-256px / 4);
+}
+
+/* Door-Edge-Right-Close */
+.t-25 {
+    background-position: calc(-1536px / 4) calc(-256px / 4);
+}
+
+/* Door-Edge-Left-Open */
+.t-26 {
+    background-position: calc(-1280px / 4) calc(-512px / 4);
+}
+
+/* Door-Edge-Right-Open */
+.t-27 {
+    background-position: calc(-1536px / 4) calc(-512px / 4);
+}
+
+/* Door-Basic-Locked */
+.t-28 {
+    background-position: calc(-768px / 4) calc(-1024px / 4);
+}
+
+/* Door-Edge-Bottom-Locked */
+.t-29 {
+    background-position: calc(-1024px / 4) calc(-1024px / 4);
+}
+
+/* Door-Edge-Left-Locked */
+.t-30 {
+    background-position: calc(-1280px / 4) calc(-1024px / 4);
+}
+
+/* Door-Edge-Right-Locked */
+.t-31 {
+    background-position: calc(-1536px / 4) calc(-1024px / 4);
+}
+
+/* Window-Basic */
+.t-32 {
+    background-position: calc(-1280px / 4) calc(-768px / 4);
+}
+
+/* Window-FullWall */
+.t-33 {
+    background-position: calc(-1536px / 4) calc(-768px / 4);
+}
+
+/* Door-Secret-Open */
+.t-34 {
+    background-position: calc(-768px / 4) calc(-1280px / 4);
+}
+
+/* Door-Edge-Bottom-Secret-Open */
+.t-35 {
+    background-position: calc(-1024px / 4) calc(-1280px / 4);
+}
+
+/* Door-Edge-Right-Secret-Open */
+.t-36 {
+    background-position: calc(-1280px / 4) calc(-1280px / 4);
+}
+
+/* Door-Edge-Left-Secret-Open */
+.t-37 {
+    background-position: calc(-1536px / 4) calc(-1280px / 4);
+}
+
+/* Floor-SideDeco */
+.t-38 {
+    background-position: calc(-0px / 4) calc(-1280px / 4);
+}
+
+/* Hidden-Door-Basic-Closed (Matches Wall-Center-Bottom ID 15) */
+.t-39 {
+    background-position: calc(-256px / 4) calc(-1024px / 4);
+}
+
+/* Hidden-Door-Bottom-Closed (Matches WallEdge-Bottom ID 9) */
+.t-40 {
+    background-position: calc(-256px / 4) calc(-512px / 4);
+}
+
+/* Hidden-Door-Right-Closed (Matches Wall-Right-Side ID 11) */
+.t-41 {
+    background-position: calc(-512px / 4) calc(-256px / 4);
+}
+
+/* Hidden-Door-Left-Closed (Matches Wall-Left-Side ID 10) */
+.t-42 {
+    background-position: calc(-0px / 4) calc(-256px / 4);
+}
+
+.tile.interactable {
+    cursor: pointer;
+}
+
+/* WORLD OBJECTS */
+.world-object {
+    position: absolute;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.incubator {
+    background: url('./assets/images/T_AlphaContaner.png') no-repeat center;
+    background-size: contain;
+}
+
+/* NPCs & CHARACTERS */
+.npc {
+    width: 90px !important;
+    height: 90px !important;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    margin-top: -36px;
+    /* (90 - 64) + 10 shift */
+    margin-left: -13px;
+    /* (90 - 64) / 2 Center */
+    z-index: 6;
+    background-size: 360px 360px !important;
+    background-repeat: no-repeat !important;
+}
+
+.npc.wild-stemmy {
+    background-size: contain !important;
+    margin-top: -10px;
+    /* Slight adjustment for better overworld alignment */
+}
+
+/* Directional Facing for NPCs (Offset based on 89.6px frames) */
+.npc.face-down {
+    background-position: 0px 0px;
+}
+
+.npc.face-up {
+    background-position: 0px -90px;
+}
+
+.npc.face-right {
+    background-position: 0px -180px;
+}
+
+.npc.face-left {
+    background-position: 0px -270px;
+}
+
+.npc.jenzi {
+    background-image: url('./assets/images/T_Char_Sprite_Jenzi_01.png');
+}
+
+.npc.lana {
+    background-image: url('./assets/images/T_Char_Sprite_Lana_01.png');
+}
+
+.npc.dyzes {
+    background-image: url('./assets/images/T_Char_Sprite_Dyzes_01.png');
+}
+
+.npc.capsain {
+    background-image: url('./assets/images/T_Char_Sprite_Director_01.png');
+}
+
+.npc.npc_male {
+    background-image: url('./assets/images/T_Char_Sprite_NPC_Male_01.png');
+}
+
+.npc.npc_female {
+    background-image: url('./assets/images/T_Char_Sprite_NPC_Female_01.png');
+}
+
+.no-transition {
+    transition: none !important;
+}
+
+#overworld-map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.7s ease-out;
+    /* Subtle cinematic camera lead */
+    will-change: transform;
+}
+
+#overworld-map .tile {
+    width: 64px;
+    height: 64px;
+    background-image: url('./assets/images/Lab_TileSet_01.png');
+    background-size: 512px 512px;
+    float: left;
+}
+
+#overworld-map .world-object.prop,
+#overworld-map .world-object.trigger,
+#overworld-map .world-object.sign,
+#overworld-map .world-object.cell {
+    background-image: url('./assets/images/Lab_TileSet_02.png');
+    background-size: 512px 512px;
+    transform: translateY(-10px) translateZ(0);
+    backface-visibility: hidden;
+}
+
+#overworld-map .world-object.wild-cell {
+    background-image: url('./assets/images/Lab_TileSet_Cells.png');
+    width: 64px !important;
+    height: 64px !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    background-size: 512px 512px !important;
+}
+
+.world-object.tileset-03 {
+    background-image: url('./assets/images/Lab_TileSet_03.png') !important;
+    background-size: 512px 512px !important;
+}
+
+#overworld-map .world-object.render-top {
+    z-index: 110 !important;
+}
+
+/* Efficiency Badge - Global */
+.efficiency-badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 22px;
+    height: 22px;
+    background: #0a0f14;
+    color: var(--neon-cyan);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--neon-cyan);
+    z-index: 120;
+    pointer-events: none;
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+}
+
+/* Furniture Tileset 03 Mapping */
+.world-object.prop.VendingMachine-TopLeft {
+    background-position: calc(-0px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.VendingMachine-TopRight {
+    background-position: calc(-256px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.VendingMachine-BottomLeft {
+    background-position: calc(-0px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.VendingMachine-BottomRight {
+    background-position: calc(-256px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.BattleMachine-TopLeft {
+    background-position: calc(-512px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.BattleMachine-TopRight {
+    background-position: calc(-768px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.BattleMachine-BottomLeft {
+    background-position: calc(-512px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.BattleMachine-BottomRight {
+    background-position: calc(-768px / 4) calc(-512px / 4);
+}
+
+/* --- Furniture Tileset 02 Mapping (f0-f63) --- */
+.world-object.prop.chairA-L,
+.world-object.prop.f0 {
+    background-position: calc(-0px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.chairA-R,
+.world-object.prop.f1 {
+    background-position: calc(-256px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.chairA-F,
+.world-object.prop.f2 {
+    background-position: calc(-512px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.tableA,
+.world-object.prop.f3 {
+    background-position: calc(-768px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.tableB-L,
+.world-object.prop.f4 {
+    background-position: calc(-1024px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.tableB-R,
+.world-object.prop.f5 {
+    background-position: calc(-1280px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.wallHangingA,
+.world-object.prop.f6 {
+    background-position: calc(-1536px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.tableComputerA,
+.world-object.prop.f7 {
+    background-position: calc(-0px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.tableLabCylindersA,
+.world-object.prop.f8 {
+    background-position: calc(-256px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.tableDeviceA,
+.world-object.prop.f9 {
+    background-position: calc(-512px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.tableC-T,
+.world-object.prop.f11 {
+    background-position: calc(-768px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.tableC-B,
+.world-object.prop.f12 {
+    background-position: calc(-768px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.labTankGreen-T,
+.world-object.prop.f13 {
+    background-position: calc(-0px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.labTankGreen-B,
+.world-object.prop.f14 {
+    background-position: calc(-0px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.labTankBlue-T,
+.world-object.prop.f15 {
+    background-position: calc(-256px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.labTankBlue-B,
+.world-object.prop.f16 {
+    background-position: calc(-256px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.wallHangingB,
+.world-object.prop.f17 {
+    background-position: calc(-1792px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.potPlantA-T,
+.world-object.prop.f18 {
+    background-position: calc(-1536px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.potPlantA-B,
+.world-object.prop.f19 {
+    background-position: calc(-1536px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.potPlantB-T,
+.world-object.prop.f20 {
+    background-position: calc(-1792px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.potPlantB-B,
+.world-object.prop.f21 {
+    background-position: calc(-1792px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.labTankRed-T,
+.world-object.prop.f22 {
+    background-position: calc(-512px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.labTankRed-B,
+.world-object.prop.f23 {
+    background-position: calc(-512px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.potPlantC-T,
+.world-object.prop.f24 {
+    background-position: calc(-1792px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.potPlantC-B,
+.world-object.prop.f25 {
+    background-position: calc(-1792px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.tableD-L,
+.world-object.prop.f26 {
+    background-position: calc(-1024px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.tableD-R,
+.world-object.prop.f27 {
+    background-position: calc(-1280px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.tableLeaderA-L,
+.world-object.prop.f28 {
+    background-position: calc(-1024px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.tableLeaderA-R,
+.world-object.prop.f29 {
+    background-position: calc(-1280px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.tableDirectorA-L,
+.world-object.prop.f30 {
+    background-position: calc(-1024px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.tableDirectorA-R,
+.world-object.prop.f31 {
+    background-position: calc(-1280px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.bedA-L,
+.world-object.prop.f32 {
+    background-position: calc(-1024px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.bedA-R,
+.world-object.prop.f33 {
+    background-position: calc(-1280px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.skeletonA-T,
+.world-object.prop.f34 {
+    background-position: calc(-1536px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.skeletonA-B,
+.world-object.prop.f35 {
+    background-position: calc(-1536px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.tableNoodleA,
+.world-object.prop.f36 {
+    background-position: calc(-1024px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.emptyNoodleBowlA,
+.world-object.prop.f37 {
+    background-position: calc(-1280px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.incubatorA-TL,
+.world-object.prop.f38 {
+    background-position: calc(-0px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.incubatorA-TR,
+.world-object.prop.f39 {
+    background-position: calc(-256px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.incubatorA-BL,
+.world-object.prop.f40 {
+    background-position: calc(-0px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.incubatorA-BR,
+.world-object.prop.f41 {
+    background-position: calc(-256px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.megaIncubatorA-TL,
+.world-object.prop.f42 {
+    background-position: calc(-512px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.megaIncubatorA-TR,
+.world-object.prop.f43 {
+    background-position: calc(-768px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.megaIncubatorA-midL,
+.world-object.prop.f44 {
+    background-position: calc(-512px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.megaIncubatorA-midR,
+.world-object.prop.f45 {
+    background-position: calc(-768px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.megaIncubatorA-BL,
+.world-object.prop.f46 {
+    background-position: calc(-512px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.megaIncubatorA-BR,
+.world-object.prop.f47 {
+    background-position: calc(-768px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.boxHandA,
+.world-object.prop.f48 {
+    background-position: calc(-768px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.keyItem-DataPad,
+.world-object.prop.f49 {
+    background-position: calc(-1280px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.keyItem-RoomKey,
+.world-object.prop.f50 {
+    background-position: calc(-1536px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.keyItem-SauceBottle,
+.world-object.prop.f51 {
+    background-position: calc(-1792px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.Cabinet-Big-TopLeft,
+.world-object.prop.f52 {
+    background-position: calc(-1536px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.Cabinet-Big-TopRight,
+.world-object.prop.f53 {
+    background-position: calc(-1792px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.Cabinet-Big-BottomLeft,
+.world-object.prop.f54 {
+    background-position: calc(-1536px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.Cabinet-Big-BottomRight,
+.world-object.prop.f55 {
+    background-position: calc(-1792px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.TableLeaderB-Top,
+.world-object.prop.f56 {
+    background-position: calc(-1024px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.TableLeaderB-Bottom,
+.world-object.prop.f57 {
+    background-position: calc(-1024px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.Cabinet-Small,
+.world-object.prop.f58 {
+    background-position: calc(-1280px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.PotPlant-Small,
+.world-object.prop.f59 {
+    background-position: calc(-768px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.Cartonbox-Small,
+.world-object.prop.f60 {
+    background-position: calc(-512px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.Cartonbox-Pile-Top,
+.world-object.prop.f61 {
+    background-position: calc(-256px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.Cartonbox-Pile-Bottom,
+.world-object.prop.f62 {
+    background-position: calc(-256px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.KeyItem-SecretCard,
+.world-object.prop.f63 {
+    background-position: calc(-0px / 4) calc(-1792px / 4);
+}
+
+/* Encounter Cell Tileset (Lab_TileSet_Cells) Mapping */
+.world-object.cell.stemmy,
+.world-object.wild-cell.stemmy,
+.pickup-cell-sprite.stemmy,
+.world-object.wild-cell.c0,
+.pickup-cell-sprite.c0 {
+    background-position: calc(-0px / 4) calc(-0px / 4);
+}
+
+.world-object.cell.cambihil,
+.world-object.wild-cell.cambihil,
+.pickup-cell-sprite.cambihil,
+.world-object.wild-cell.c1,
+.pickup-cell-sprite.c1 {
+    background-position: calc(-0px / 4) calc(-256px / 4);
+}
+
+.world-object.cell.lydrosome,
+.world-object.wild-cell.lydrosome,
+.pickup-cell-sprite.lydrosome,
+.world-object.wild-cell.c2,
+.pickup-cell-sprite.c2 {
+    background-position: calc(-0px / 4) calc(-512px / 4);
+}
+
+.world-object.cell.nitrophil,
+.world-object.wild-cell.nitrophil,
+.pickup-cell-sprite.nitrophil,
+.world-object.wild-cell.c3,
+.pickup-cell-sprite.c3 {
+    background-position: calc(-0px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.Cartonbox-Small {
+    background-position: calc(-512px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.Cartonbox-Pile-Top {
+    background-position: calc(-256px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.Cartonbox-Pile-Bottom {
+    background-position: calc(-256px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.KeyItem-SecretCard {
+    background-position: calc(-0px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.KeyItem-DataPad {
+    background-position: calc(-1280px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.KeyItem-RoomKey {
+    background-position: calc(-1536px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.KeyItem-SauceBottle {
+    background-position: calc(-1792px / 4) calc(-1792px / 4);
+}
+
+/* --- Lab_TileSet_03 Furniture (f64+) --- */
+.world-object.prop.f64,
+.world-object.prop.f65,
+.world-object.prop.f66,
+.world-object.prop.f67,
+.world-object.prop.f68,
+.world-object.prop.f69,
+.world-object.prop.f70,
+.world-object.prop.f71,
+.world-object.prop.f72,
+.world-object.prop.f73,
+.world-object.prop.f74,
+.world-object.prop.f75,
+.world-object.prop.f76,
+.world-object.prop.f77,
+.world-object.prop.f78,
+.world-object.prop.f79,
+.world-object.prop.f80,
+.world-object.prop.f81,
+.world-object.prop.f82,
+.world-object.prop.f83,
+.world-object.prop.f84,
+.world-object.prop.f85,
+.world-object.prop.f86,
+.world-object.prop.f87,
+.world-object.prop.f88,
+.world-object.prop.f89,
+.world-object.prop.f90,
+.world-object.prop.f91,
+.world-object.prop.f92,
+.world-object.prop.f93,
+.world-object.prop.f94,
+.world-object.prop.f95,
+.world-object.prop.f96,
+.world-object.prop.f97,
+.world-object.prop.f98,
+.world-object.prop.f99,
+.world-object.prop.f100,
+.world-object.prop.f101,
+.world-object.prop.f102,
+.world-object.prop.f103,
+.world-object.prop.f104,
+.world-object.prop.f105,
+.world-object.prop.f106,
+.world-object.prop.f107,
+.world-object.prop.f108,
+.world-object.prop.f109,
+.world-object.prop.f110,
+.world-object.prop.f111,
+.world-object.prop.f112,
+.world-object.prop.f113,
+.world-object.prop.f114,
+.world-object.prop.f115,
+.world-object.prop.f116,
+.world-object.prop.f117,
+.world-object.prop.f118,
+.world-object.prop.f119,
+.world-object.prop.f120 {
+    background-image: url('./assets/images/Lab_TileSet_03.png') !important;
+    background-size: 512px 512px !important;
+}
+
+.world-object.prop.keyItem-OldDataStick,
+.world-object.prop.f64 {
+    background-position: calc(-0px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.CryoPod-Left,
+.world-object.prop.f65 {
+    background-position: calc(-256px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.CryoPod-Right,
+.world-object.prop.f66 {
+    background-position: calc(-512px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.VendingMachine-TopLeft,
+.world-object.prop.f67 {
+    background-position: calc(-0px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.VendingMachine-TopRight,
+.world-object.prop.f68 {
+    background-position: calc(-256px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.VendingMachine-BottomLeft,
+.world-object.prop.f69 {
+    background-position: calc(-0px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.VendingMachine-BottomRight,
+.world-object.prop.f70 {
+    background-position: calc(-256px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.BattleMachine-TopLeft,
+.world-object.prop.f71 {
+    background-position: calc(-512px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.BattleMachine-TopRight,
+.world-object.prop.f72 {
+    background-position: calc(-768px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.BattleMachine-BottomLeft,
+.world-object.prop.f73 {
+    background-position: calc(-512px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.BattleMachine-BottomRight,
+.world-object.prop.f74 {
+    background-position: calc(-768px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.Item-CollectibleCard,
+.world-object.prop.f75 {
+    background-position: calc(-768px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.Bookshelf-TopLeft,
+.world-object.prop.f76 {
+    background-position: calc(-1024px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.Bookshelf-TopRight,
+.world-object.prop.f77 {
+    background-position: calc(-1280px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.Bookshelf-BottomLeft,
+.world-object.prop.f78 {
+    background-position: calc(-1024px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.Bookshelf-BottomRight,
+.world-object.prop.f79 {
+    background-position: calc(-1280px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.CryoPodBig-TopLeft,
+.world-object.prop.f80 {
+    background-position: calc(-1536px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.CryoPodBig-TopRight,
+.world-object.prop.f81 {
+    background-position: calc(-1792px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.CryoPodBig-BottomLeft,
+.world-object.prop.f82 {
+    background-position: calc(-1536px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.CryoPodBig-BottomRight,
+.world-object.prop.f83 {
+    background-position: calc(-1792px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.WarningSign-Front,
+.world-object.prop.f105 {
+    background-position: calc(-512px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.WarningSign-Side,
+.world-object.prop.f106 {
+    background-position: calc(-768px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.f107 {
+    background-position: calc(-1024px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.f108 {
+    background-position: calc(-1024px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.f109 {
+    background-position: calc(-1536px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f110 {
+    background-position: calc(-1536px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f111 {
+    background-position: calc(-1792px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f112 {
+    background-position: calc(-1792px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f113 {
+    background-position: calc(-768px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f114 {
+    background-position: calc(-768px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f115 {
+    background-position: calc(-1024px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f116 {
+    background-position: calc(-1024px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f117 {
+    background-position: calc(-1280px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f118 {
+    background-position: calc(-1280px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f119 {
+    background-position: calc(-1024px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f120 {
+    background-position: calc(-1280px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.StoragePod-Top,
+.world-object.prop.f84 {
+    background-position: calc(-1792px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.StoragePod-Bottom,
+.world-object.prop.f85 {
+    background-position: calc(-1792px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.HealthyAncientPlant-Top,
+.world-object.prop.f86 {
+    background-position: calc(-1536px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.HealthyAncientPlant-Bottom,
+.world-object.prop.f87 {
+    background-position: calc(-1536px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.DeadAncientPlant-Top,
+.world-object.prop.f88 {
+    background-position: calc(-1280px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.DeadAncientPlant-Bottom,
+.world-object.prop.f89 {
+    background-position: calc(-1280px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.f90 {
+    background-position: calc(-1024px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.EmptyPot,
+.world-object.prop.f91 {
+    background-position: calc(-1280px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.CellAccelerator-TopLeft,
+.world-object.prop.f92 {
+    background-position: calc(-0px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.CellAccelerator-TopMid,
+.world-object.prop.f93 {
+    background-position: calc(-256px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.CellAccelerator-TopRight,
+.world-object.prop.f94 {
+    background-position: calc(-512px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.CellAccelerator-MidLeft,
+.world-object.prop.f95 {
+    background-position: calc(-0px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.CellAccelerator-MidMid,
+.world-object.prop.f96 {
+    background-position: calc(-256px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.CellAccelerator-MidRight,
+.world-object.prop.f97 {
+    background-position: calc(-512px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.CellAccelerator-BottomLeft,
+.world-object.prop.f98 {
+    background-position: calc(-0px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.CellAccelerator-BottomMid,
+.world-object.prop.f99 {
+    background-position: calc(-256px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.CellAccelerator-BottomRight,
+.world-object.prop.f100 {
+    background-position: calc(-512px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.Item-CellBlueprint,
+.world-object.prop.f101 {
+    background-position: calc(-1536px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.Item-BioMass,
+.world-object.prop.f102 {
+    background-position: calc(-1792px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.HugePetryDish,
+.world-object.prop.f103 {
+    background-position: calc(-0px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.Item-LabCredit,
+.world-object.prop.f104 {
+    background-position: calc(-256px / 4) calc(-768px / 4);
+}
