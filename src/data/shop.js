@@ -51,7 +51,7 @@ export const SHOP_ITEMS = {
         iconClass: 'icon-blueprint',
         price: 900,
         sellPrice: 0,
-        oneTime: true
+        oneTime: false
     }
 };
 

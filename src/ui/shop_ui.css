@@ -10,7 +10,7 @@
 
 .shop-panel {
     width: 1000px;
-    height: auto;
+    height: 650px; /* Fixed height to force scroll on list */
     max-height: 90vh; /* Don't exceed 90% of screen height */
     background: rgba(0, 10, 20, 0.7);
     backdrop-filter: blur(20px);
@@ -44,11 +44,11 @@
 }
 
 .shop-balance .label {
-    font-size: 0.75rem;
+    font-size: 0.7rem; /* Adjusted for Orbitron */
     color: rgba(255, 255, 255, 0.6);
     margin-bottom: 5px;
-    letter-spacing: 1px;
-    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 1.5px;
+    font-family: 'Orbitron', sans-serif;
     font-weight: 700;
 }
 
@@ -83,7 +83,7 @@
     letter-spacing: 2px;
     cursor: pointer;
     transition: all 0.3s;
-    border-radius: 5px;
+    border-radius: 40px; /* Upgraded to pill shape */
 }
 
 .shop-tab-btn:hover {
@@ -177,7 +177,7 @@
 }
 
 .shop-item-icon {
-    width: 48px; /* Slightly larger to show sprites clearly */
+    width: 48px; /* Balanced size for list */
     height: 48px;
     background: rgba(0, 243, 255, 0.05); /* Lighter background for the icon container */
     display: flex;
@@ -193,37 +193,33 @@
     overflow: visible;
 }
 
-/* Shop Icon Classes (reusing Lab_TileSet_03) */
-.icon-biomass {
+/* Shop Icon Base Mappings */
+.icon-biomass, .icon-blueprint {
     background-image: url('../../assets/images/Lab_TileSet_03.png') !important;
-    background-size: calc(2048px * 48 / 256) auto !important; /* Scale 2048px tileset so 256px sprite fits in 48px */
+    background-repeat: no-repeat !important;
+}
+
+/* Small Icons (48px scale for List) */
+.shop-item-icon.icon-biomass {
+    background-size: calc(2048px * 48 / 256) auto !important;
     background-position: calc(-1792px * 48 / 256) calc(-0px * 48 / 256) !important;
 }
-
-.icon-blueprint {
-    background-image: url('../../assets/images/Lab_TileSet_03.png') !important;
+.shop-item-icon.icon-blueprint {
     background-size: calc(2048px * 48 / 256) auto !important;
     background-position: calc(-1536px * 48 / 256) calc(-0px * 48 / 256) !important;
-    /* Stroke already handled globally on icon class */
 }
 
-/* Scale for Detail Image (320px container, 160px sprite) */
+/* Detail View Hero Icon (150px scale) */
 .shop-detail-img.icon-biomass {
-    background-size: calc(2048px * 160 / 256) auto !important;
-    background-position: calc(-1792px * 160 / 256) calc(-0px * 160 / 256) !important;
+    background-size: calc(2048px * 150 / 256) auto !important;
+    background-position: calc(-1792px * 150 / 256) calc(-0px * 150 / 256) !important;
 }
-
 .shop-detail-img.icon-blueprint {
-    background-size: calc(2048px * 160 / 256) auto !important;
-    background-position: calc(-1536px * 160 / 256) calc(-0px * 160 / 256) !important;
+    background-size: calc(2048px * 150 / 256) auto !important;
+    background-position: calc(-1536px * 150 / 256) calc(-0px * 150 / 256) !important;
 }
 
-/* Scale for Quantity Modal Icon (matches .qmodal-item-info size approx) */
-.qmodal-item-icon {
-    width: 64px;
-    height: 64px;
-    background-repeat: no-repeat;
-}
+/* Quantity Modal Icon (64px scale) */
 .qmodal-item-icon.icon-biomass {
     background-size: calc(2048px * 64 / 256) auto !important;
     background-position: calc(-1792px * 64 / 256) calc(-0px * 64 / 256) !important;
@@ -231,13 +227,20 @@
 .qmodal-item-icon.icon-blueprint {
     background-size: calc(2048px * 64 / 256) auto !important;
     background-position: calc(-1536px * 64 / 256) calc(-0px * 64 / 256) !important;
-    filter: drop-shadow(1px 0 0 white) drop-shadow(-1px 0 0 white) drop-shadow(0 1px 0 white) drop-shadow(0 -1px 0 white);
+}
+
+.qmodal-item-icon {
+    width: 64px; /* Reduced for better modal balance */
+    height: 64px;
+    background-repeat: no-repeat;
+    /* Hero Stroke */
+    filter: drop-shadow(2px 0 0 white) drop-shadow(-2px 0 0 white) drop-shadow(0 2px 0 white) drop-shadow(0 -2px 0 white);
 }
 
 .shop-item-name {
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Orbitron', sans-serif;
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 0.95rem; /* Slightly smaller for Orbitron scale */
     color: #eee;
 }
 
@@ -245,13 +248,14 @@
     background: rgba(255, 215, 0, 0.05);
     border: 1px solid #ffd700;
     color: #ffd700;
-    padding: 6px 12px;
+    padding: 6px 16px;
     font-family: 'Orbitron', sans-serif;
-    font-size: 0.85rem;
-    border-radius: 4px;
+    font-size: 0.8rem; /* Slightly smaller for Orbitron */
+    border-radius: 40px; /* Rounded pill shape */
     cursor: pointer;
-    transition: all 0.2s;
-    min-width: 80px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 140px; /* Unified width to fit 'Missing Resource' */
+    text-align: center;
 }
 
 .shop-item-price-btn:hover {
@@ -264,6 +268,18 @@
     border-color: var(--neon-cyan);
     color: var(--neon-cyan);
     background: rgba(0, 243, 255, 0.05);
+}
+
+.shop-item-price-btn.locked {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.3);
+    cursor: default;
+}
+
+.shop-item-price-btn.locked:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
 .shop-item-price-btn.sell:hover {
@@ -285,9 +301,12 @@
 }
 
 .shop-detail-img {
-    width: 160px;
-    height: 160px;
-    margin: 0 auto 20px auto;
+    width: 150px; /* Reduced Hero Icon Size */
+    height: 150px;
+    flex-shrink: 0; /* Prevent distorting into an oval */
+    min-width: 150px;
+    min-height: 150px;
+    margin: 0 auto 5px auto; /* Minimal margin */
     background: rgba(0, 10, 20, 0.7); /* Standard Glass Background */
     backdrop-filter: blur(20px);
     border: none;
@@ -309,16 +328,19 @@
     text-align: center;
     margin-top: 10px;
     letter-spacing: 2px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
 }
 
 .shop-detail-desc {
     color: rgba(255, 255, 255, 0.8);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin: 10px 0;
+    font-size: 1.05rem; /* Increased size slightly for Rajdhani readability */
+    line-height: 1.5;
+    margin: 10px 0 5px 0; /* Reduced bottom margin */
     font-family: 'Rajdhani', sans-serif;
-    min-height: 100px;
+    min-height: auto; /* Removed 100px fixed height */
     text-align: center; /* Centering description as well for symmetry */
+    letter-spacing: 0.5px;
 }
 
 .shop-action-btn {
@@ -352,7 +374,7 @@
 
 /* Quantity Modal Styles */
 .quantity-modal {
-    width: 400px;
+    width: 480px;
     text-align: center;
 }
 
@@ -364,13 +386,13 @@
 }
 
 .qmodal-item-info {
-    font-size: 1.5rem;
-    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem; /* Adjusted for Orbitron */
+    font-family: 'Orbitron', sans-serif;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
+    gap: 12px;
 }
 
 .quantity-selector {
@@ -387,7 +409,7 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
     font-size: 1.5rem;
-    border-radius: 5px;
+    border-radius: 50%; /* Perfect circles for +/- */
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -423,8 +445,8 @@
 }
 
 .qmodal-subtraction {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.95rem;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem; /* Adjusted for Orbitron scale */
     color: rgba(255, 255, 255, 0.5);
     margin-top: -10px;
     letter-spacing: 1px;

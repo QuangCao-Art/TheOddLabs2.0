@@ -12,6 +12,7 @@
 #bio-extract-panel {
     width: 98vw;
     max-width: 1400px;
+    height: 800px; /* Fixed height to allow grid scrolling */
     max-height: 95vh;
     background: rgba(0, 10, 20, 0.7);
     backdrop-filter: blur(20px);
@@ -138,7 +139,7 @@
     border: 1px solid var(--neon-cyan);
     color: var(--neon-cyan);
     padding: 5px 20px;
-    border-radius: 20px;
+    border-radius: 40px; /* Upgraded to pill shape */
     font-family: 'Rajdhani', sans-serif;
     font-size: 0.95rem;
     font-weight: 700;
@@ -235,7 +236,7 @@
     margin: 20px 0;
     padding: 15px;
     background: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
+    border-radius: 40px; /* Upgraded to pill shape */
     border-left: 3px solid var(--neon-cyan);
     text-align: center;
     width: 100%;

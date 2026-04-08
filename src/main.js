@@ -6564,32 +6564,72 @@ window.openSynthesisMenu = function () {
     }
 };
 
+function canAffordSynthesis(recipe) {
+    if (!recipe || !recipe.requirements) return false;
+    return recipe.requirements.every(req => {
+        let current = 0;
+        if (req.type === 'resource') {
+            current = gameState[req.id] || 0;
+        } else if (req.type === 'item') {
+            current = (gameState.items || []).filter(i => i === req.id).length;
+        }
+        return current >= req.amount;
+    });
+}
+
+function canAffordShopItem(item, mode) {
+    if (!item) return false;
+    if (mode === 'buy') {
+        const price = item.price || 0;
+        return gameState.credits >= price;
+    } else {
+        // Sell tab: Only biomass is sellable for now
+        if (item.id === 'biomass') return gameState.biomass > 0;
+        return false;
+    }
+}
+
 function renderSynthesisItems() {
     const listEl = document.getElementById('synthesis-item-list');
     if (!listEl) return;
     listEl.innerHTML = '';
 
     SYNTHESIS_RECIPES.forEach(recipe => {
+        const isSelected = selectedSynthesisMonster && selectedSynthesisMonster.id === recipe.id;
         const card = document.createElement('div');
-        card.className = 'shop-item-card';
+        card.className = `shop-item-card ${isSelected ? 'selected' : ''}`;
         card.dataset.id = recipe.id;
-        if (selectedSynthesisMonster && selectedSynthesisMonster.id === recipe.id) {
-            card.classList.add('selected');
-        }
 
-        const efficiencyHtml = `<div class="efficiency-badge">0</div>`;
-
+        const canAfford = canAffordSynthesis(recipe);
+        const btnClass = canAfford ? 'active' : 'locked';
+        const displayEfficiency = 0; // Placeholder for expansion
+        
         card.innerHTML = `
             <div class="shop-item-info">
                 <div class="shop-item-icon ${recipe.iconClass}">
-                    ${efficiencyHtml}
+                    <div class="efficiency-badge">${displayEfficiency}</div>
                 </div>
                 <div class="shop-item-name">${recipe.name}</div>
             </div>
-            <div class="shop-item-price-btn">SYNTHESIS</div>
+            <button class="shop-item-price-btn synthesis ${btnClass}">
+                ${canAfford ? 'INITIALIZE' : 'Missing Resource'}
+            </button>
         `;
 
-        card.onclick = () => selectSynthesisItem(recipe);
+        // Card click selects the item
+        card.addEventListener('click', () => selectSynthesisItem(recipe));
+
+        // Button click triggers synthesis if affordable
+        const actionBtn = card.querySelector('.shop-item-price-btn');
+        actionBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent re-selecting card
+            selectSynthesisItem(recipe); // Still select it to show requirements
+            
+            if (canAfford) {
+                document.getElementById('synthesis-confirm-modal')?.classList.remove('hidden');
+            }
+        });
+
         listEl.appendChild(card);
     });
 }
@@ -6648,9 +6688,6 @@ function updateSynthesisRequirements(recipe) {
         `;
         reqListEl.appendChild(item);
     });
-
-    const actionBtn = document.getElementById('btn-synthesis-action');
-    if (actionBtn) actionBtn.disabled = !allMet;
 }
 
 document.getElementById('btn-synthesis-action')?.addEventListener('click', () => {
@@ -6844,7 +6881,6 @@ function renderShopItems() {
     listEl.innerHTML = '';
 
     if (shopState.activeTab === 'buy') {
-        // Only show items not already owned if oneTime
         Object.values(SHOP_ITEMS).forEach(item => {
             if (item.oneTime && gameState.items.includes(item.id)) return;
 
@@ -6852,7 +6888,6 @@ function renderShopItems() {
             listEl.appendChild(card);
         });
     } else {
-        // Sell tab: Only show Biomass if we have any
         if (gameState.biomass > 0) {
             const item = SHOP_ITEMS['biomass'];
             const card = createShopItemCard(item, item.sellPrice, 'LC');
@@ -6862,7 +6897,6 @@ function renderShopItems() {
         }
     }
 
-    // Auto-select first if none selected
     if (!shopState.selectedItemId && listEl.children.length > 0) {
         const firstId = listEl.children[0].dataset.id;
         if (firstId) selectShopItem(firstId);
@@ -6873,28 +6907,40 @@ function renderShopItems() {
 
 function createShopItemCard(item, price, currency) {
     const div = document.createElement('div');
-    div.className = `shop-item-card ${shopState.selectedItemId === item.id ? 'selected' : ''}`;
+    const isSelected = shopState.selectedItemId === item.id;
+    div.className = `shop-item-card ${isSelected ? 'selected' : ''}`;
     div.dataset.id = item.id;
 
     const isSell = shopState.activeTab === 'sell';
-    const btnText = isSell ? `SELL (${price})` : `BUY (${price})`;
+    const canAfford = canAffordShopItem(item, shopState.activeTab);
+    
+    let btnText;
+    if (canAfford) {
+        btnText = isSell ? `SELL (${price})` : `${price} LC`;
+    } else {
+        btnText = "Missing Resource";
+    }
+    
     const btnClass = isSell ? 'sell' : '';
+    const statusClass = canAfford ? 'active' : 'locked';
 
     div.innerHTML = `
         <div class="shop-item-info">
             <div class="shop-item-icon ${item.iconClass || ''}">${item.icon || ''}</div>
             <div class="shop-item-name">${item.name}</div>
         </div>
-        <button class="shop-item-price-btn ${btnClass}">${btnText}</button>
+        <button class="shop-item-price-btn ${btnClass} ${statusClass}">${btnText}</button>
     `;
 
     div.addEventListener('click', () => selectShopItem(item.id));
 
-    const buyBtn = div.querySelector('.shop-item-price-btn');
-    buyBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Don't trigger card selection
+    const actionBtn = div.querySelector('.shop-item-price-btn');
+    actionBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         selectShopItem(item.id);
-        openQuantityModal(item, shopState.activeTab);
+        if (canAfford) {
+            openQuantityModal(item, shopState.activeTab);
+        }
     });
 
     return div;

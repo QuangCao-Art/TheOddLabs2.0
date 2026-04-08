@@ -119,27 +119,7 @@ body {
     background-clip: padding-box;
 }
 
-/* Universal Item Icons (256px sprites on 2048px sheet) */
-/* Universal Item Icons (256px sprites on 2048px sheet) */
-.icon-biomass,
-.icon-blueprint,
-.key-item-sprite.f101,
-.key-item-sprite.f102 {
-    background-image: url('./assets/images/Lab_TileSet_03.png') !important;
-    background-repeat: no-repeat !important;
-    background-size: 512px auto !important;
-    /* Forces correct scale to avoid bleeding */
-}
-
-.icon-biomass,
-.key-item-sprite.f102 {
-    background-position: calc(-1792px / 4) calc(-0px / 4) !important;
-}
-
-.icon-blueprint,
-.key-item-sprite.f101 {
-    background-position: calc(-1536px / 4) calc(-0px / 4) !important;
-}
+/* Redesigned Stack Counter - White Circle Style */
 
 /* Redesigned Stack Counter - White Circle Style */
 .item-stack-count {
@@ -1756,7 +1736,7 @@ body {
     cursor: pointer;
     box-shadow: 0 0 10px var(--color-player), inset 0 0 5px var(--color-player);
     transition: all 0.3s;
-    border-radius: 20px;
+    border-radius: 40px; /* Upgraded to pill shape */
 }
 
 .btn-neon:hover:not(.disabled) {
@@ -3239,7 +3219,7 @@ body {
     border-radius: 50%;
     border: 1px solid var(--neon-cyan);
     z-index: 110;
-    box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+    box-shadow: none; /* Removed glow */
     white-space: nowrap;
 }
 
@@ -3530,6 +3510,25 @@ body {
 .key-item-sprite.f90 {
     background-image: url('./assets/images/Lab_TileSet_03.png') !important;
     background-position: calc(-1024px / 4) calc(-0px / 4);
+    background-size: 512px 512px !important;
+}
+
+.key-item-sprite.f101 {
+    background-image: url('./assets/images/Lab_TileSet_03.png') !important;
+    background-position: calc(-1536px / 4) calc(-0px / 4);
+    background-size: 512px 512px !important;
+}
+
+.key-item-sprite.f102 {
+    background-image: url('./assets/images/Lab_TileSet_03.png') !important;
+    background-position: calc(-1792px / 4) calc(-0px / 4);
+    background-size: 512px 512px !important;
+}
+
+.key-item-sprite.f104 {
+    background-image: url('./assets/images/Lab_TileSet_03.png') !important;
+    background-position: calc(-256px / 4) calc(-768px / 4);
+    background-size: 512px 512px !important;
 }
 
 .key-item-sprite.nitrophil-sprite {
@@ -6070,7 +6069,7 @@ body {
     font-size: 1.2rem;
     padding: 10px 15px;
     text-align: center;
-    border-radius: 5px;
+    border-radius: 40px; /* Upgraded to pill shape */
     outline: none;
     transition: all 0.2s;
 }
@@ -6094,7 +6093,7 @@ body {
     font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 40px; /* Upgraded to pill shape */
     transition: all 0.2s;
 }
 
@@ -8047,7 +8046,7 @@ body {
     /* Reduced to compact layout */
     background: rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 30px;
+    border-radius: 40px; /* Upgraded to pill shape */
     padding: 20px;
     display: flex;
     align-items: center;
@@ -8067,7 +8066,7 @@ body {
     height: 220px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
+    border-radius: 40px; /* Upgraded to pill shape */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -8435,7 +8434,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-radius: 12px;
+    border-radius: 40px; /* Upgraded to pill shape */
     box-shadow: 0 0 50px rgba(0, 243, 255, 0.1);
 }
 
@@ -8463,7 +8462,7 @@ body {
     padding: 12px 35px;
     font-size: 0.9rem;
     letter-spacing: 2px;
-    border-radius: 30px;
+    border-radius: 40px; /* Upgraded to pill shape */
     transition: all 0.2s ease-out;
 }
 
@@ -9605,6 +9604,10 @@ body {
 
 .debug-hidden-log.blue {
     color: #00f3ff; /* Vibrant Neon Cyan */
+}
+
+.debug-hidden-log.black {
+    color: #000;
 }
 
 /* Builder Mode Debug Controls */

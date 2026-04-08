@@ -657,14 +657,13 @@ export const Overworld = {
                               (obj.hiddenItemId && window.gameState.items.includes(obj.hiddenItemId)) ||
                               (obj.hiddenReward && window.gameState.lootedSpots.includes(spotId));
 
-            if (!collected) {
-                const cross = document.createElement('div');
-                // Red for Logs, Blue for Items/Rewards
-                const isItem = !!(obj.hiddenItemId || obj.hiddenReward);
-                cross.className = `debug-hidden-log ${isItem ? 'blue' : 'red'}`;
-                cross.innerText = 'X';
-                el.appendChild(cross);
-            }
+            const cross = document.createElement('div');
+            // Red for Logs, Blue for Items/Rewards, Black if Collected
+            const isItem = !!(obj.hiddenItemId || obj.hiddenReward);
+            const colorClass = collected ? 'black' : (isItem ? 'blue' : 'red');
+            cross.className = `debug-hidden-log ${colorClass}`;
+            cross.innerText = 'X';
+            el.appendChild(cross);
         }
 
         if (obj.proximityTrigger) {
