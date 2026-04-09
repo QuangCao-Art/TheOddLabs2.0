@@ -6665,6 +6665,11 @@ window.animateResourceHUD = function(type, amount) {
     
     el.innerText = current;
 
+    // AUDIO: Play satisfying ticker tick SFX
+    if (AudioManager && typeof AudioManager.play === 'function') {
+        AudioManager.play('resource_collect', 0.3, 0.15);
+    }
+
     if (current < el._visualTarget) {
         // 50ms provides a clear "tick-tick-tick" rhythm
         setTimeout(() => window.animateResourceHUD(type, 0), 50);

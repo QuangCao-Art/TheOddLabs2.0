@@ -3059,6 +3059,13 @@ export const Overworld = {
         if (obj.type === 'npc') materials = 'monster';
         AudioManager.playImpact(materials);
 
+        // --- PRE-ROLL LOOT FOR AUDIO SYNC ---
+        const lootResult = this.calculateLoot(obj, isHomeRun);
+        if (lootResult) {
+            AudioManager.play('resource_burst', 0.4, 0.1);
+        }
+        obj._pendingLoot = lootResult; // Attach result for the delayed visual call
+
         const hitStopTime = isHomeRun ? 500 : 300;
         const shakeClass = isHomeRun ? 'anim-screen-shake-heavy' : 'anim-screen-shake';
 
@@ -3422,7 +3429,35 @@ export const Overworld = {
      * Handles rolling for and spawning resource loot upon furniture interaction.
      */
     dropLoot(obj, isHomerun, directionKey) {
-        if (!obj || obj.type === 'npc') return; // Only props drop loot
+        if (!obj) return;
+        
+        // Use pre-rolled result if available for perfect audio sync
+        let reward = obj._pendingLoot;
+        obj._pendingLoot = null;
+
+        // If no pre-roll was done, roll now
+        if (!reward) {
+            reward = this.calculateLoot(obj, isHomerun);
+        }
+
+        if (reward && reward.rewardType) {
+            const amount = reward.amount;
+            const rewardType = reward.rewardType;
+
+            // Update State
+            if (rewardType === 'lc') window.gameState.credits = (window.gameState.credits || 0) + amount;
+            else window.gameState.biomass = (window.gameState.biomass || 0) + amount;
+            
+            // Visual Particles
+            this.spawnLootParticles(obj.x, obj.y, rewardType, amount, directionKey);
+        }
+    },
+
+    /**
+     * Logical Loot Calculator - Separated from visuals for audio sync
+     */
+    calculateLoot(obj, isHomerun) {
+        if (!obj) return null;
         
         const zone = this.zones[this.currentZone];
         const isLimited = zone && zone.dropPoolLimit;
@@ -3436,39 +3471,31 @@ export const Overworld = {
         };
 
         let selectedPool = '01';
+
         if (isLimited) {
             selectedPool = '01';
-        } else if (isHomerun) {
-            selectedPool = Math.random() < 0.5 ? '03' : '04';
+        } else if (obj.type === 'npc') {
+            if (isHomerun) selectedPool = '04';
+            else selectedPool = Math.random() < 0.5 ? '02' : '03';
         } else {
-            const roll = Math.random();
-            if (roll < 0.33) selectedPool = '01';
-            else if (roll < 0.66) selectedPool = '02';
-            else selectedPool = '03';
+            if (isHomerun) selectedPool = Math.random() < 0.5 ? '03' : '04';
+            else {
+                const roll = Math.random();
+                if (roll < 0.33) selectedPool = '01';
+                else if (roll < 0.66) selectedPool = '02';
+                else selectedPool = '03';
+            }
         }
 
         const pool = pools[selectedPool];
         const resultRoll = Math.random() * 100;
         
-        let rewardType = null;
-        let amount = 0;
-
         if (resultRoll < pool.lc) {
-            rewardType = 'lc';
-            amount = pool.lcQty;
+            return { rewardType: 'lc', amount: pool.lcQty };
         } else if (resultRoll < (pool.lc + pool.bm)) {
-            rewardType = 'bm';
-            amount = pool.bmQty;
+            return { rewardType: 'bm', amount: pool.bmQty };
         }
-
-        if (rewardType) {
-            // Update State
-            if (rewardType === 'lc') window.gameState.credits = (window.gameState.credits || 0) + amount;
-            else window.gameState.biomass = (window.gameState.biomass || 0) + amount;
-            
-            // Visual Particles
-            this.spawnLootParticles(obj.x, obj.y, rewardType, amount, directionKey);
-        }
+        return null;
     },
 
     spawnLootParticles(tileX, tileY, type, amount, directionKey) {
