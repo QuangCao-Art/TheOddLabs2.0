@@ -39,7 +39,7 @@ export const BioExtract = {
     },
 
     close() {
-        document.getElementById('screen-bio-extract').classList.add('hidden');
+        window.hideWithFade('screen-bio-extract');
         if (window.Overworld) {
             window.Overworld.isPaused = false;
             // Force re-render to show updated grid cells immediately on exit
@@ -112,6 +112,16 @@ export const BioExtract = {
 
             icon.onclick = () => {
                 this.selectedSlotIdx = null; // Deselect grid slot
+                this.updateDetailPanel(monster);
+            };
+
+            icon.onmouseenter = () => {
+                this.selectedSlotIdx = null;
+                this.updateDetailPanel(monster);
+            };
+
+            icon.onmouseenter = () => {
+                this.selectedSlotIdx = null;
                 this.updateDetailPanel(monster);
             };
 
@@ -190,6 +200,18 @@ export const BioExtract = {
             }
 
             slotEl.onclick = () => {
+                this.selectedSlotIdx = i;
+                this.renderGrid();
+                this.updateDetailPanel();
+            };
+
+            slotEl.onmouseenter = () => {
+                this.selectedSlotIdx = i;
+                this.renderGrid();
+                this.updateDetailPanel();
+            };
+
+            slotEl.onmouseenter = () => {
                 this.selectedSlotIdx = i;
                 this.renderGrid();
                 this.updateDetailPanel();

@@ -756,7 +756,7 @@ body {
     border-radius: 70px;
     padding: 15px 50px;
     box-sizing: border-box;
-    z-index: 5000;
+    z-index: 15000;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -855,7 +855,31 @@ body {
     }
 }
 
-/* --- INVENTORY MODAL --- */
+.glass-panel.pill-modal {
+    border-radius: 40px !important;
+    padding: 40px !important;
+    max-width: 450px !important;
+    width: 90% !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-buttons.vertical-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.modal-buttons.vertical-stack .btn-neon {
+    width: 100%;
+    justify-content: center;
+    border-radius: 40px;
+    padding: 12px 30px;
+}
+
+/* --- MONSTER MODAL --- */
 .hidden {
     display: none !important;
 }
@@ -3024,6 +3048,23 @@ body {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+    display: none !important; /* Keep display none for stability, we will handle fade in JS */
+}
+
+.overlay.modal-closing {
+    display: flex !important; /* Force display during fade out */
+    opacity: 0 !important;
+    transition: opacity 0.3s ease-out !important;
+    pointer-events: none !important;
+}
+
+.overlay.modal-closing .glass-panel,
+.overlay.modal-closing .modal-content,
+.overlay.modal-closing .starter-modal,
+.modal-overlay.modal-closing .glass-panel,
+.modal-overlay.modal-closing .modal-content {
+    transform: scale(0.85); /* Shrink toward center */
+    transition: transform 0.3s ease-out !important;
 }
 
 .preview-content {
@@ -4222,7 +4263,7 @@ body {
 }
 
 #pre-battle-dialogue-box {
-    z-index: 10;
+    z-index: 15000;
 }
 
 /* Bio-Scan Effect */
@@ -4895,9 +4936,9 @@ body {
 /* --- INCUBATOR SYSTEM & HEALING SEQUENCE (Hand-Drawn High-Fidelity) --- */
 #screen-incubator-menu,
 #screen-incubator-heal {
-    background: rgba(0, 0, 0, 0.4) !important;
-    backdrop-filter: none !important;
-    transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
+    background: rgba(0, 5, 10, 0.85) !important;
+    backdrop-filter: blur(8px) !important;
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
 }
 
 #screen-incubator-heal.hidden {
@@ -5269,7 +5310,7 @@ body {
     width: 100vw;
     height: 100vh;
     background: #000;
-    z-index: 20000;
+    z-index: 100001; /* Must stay above modals (99999) */
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
     pointer-events: none;
@@ -5449,8 +5490,11 @@ body {
     max-width: 450px;
     width: 90%;
     padding: 40px;
-    text-align: center;
-    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 40px; /* Upgraded to pill shape to match pause */
+    box-shadow: 0 0 50px rgba(0, 243, 255, 0.1);
 }
 
 #confirm-subtitle {
@@ -5473,9 +5517,20 @@ body {
 
 .confirm-buttons {
     display: flex;
+    flex-direction: column; /* Match Pause Menu vertical stack for high fidelity */
     gap: 15px;
+    width: 100%;
+    margin: 30px 0;
+}
+
+.confirm-buttons .btn-neon {
+    width: 100%;
     justify-content: center;
-    margin-top: 10px;
+    padding: 12px 35px;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    border-radius: 40px; /* Upgraded to pill shape */
+    transition: all 0.2s ease-out;
 }
 
 .confirm-hint {
@@ -5552,15 +5607,18 @@ body {
 
 /* Base Style for Red/Warning Buttons in Menus */
 .pause-buttons .btn-neon.alert-btn,
-.confirm-buttons .btn-neon.alert-btn {
+.confirm-buttons .btn-neon.alert-btn,
+.vertical-stack .btn-neon.alert-btn {
     border-color: rgba(255, 51, 51, 0.4) !important;
     color: #ff5555 !important;
     box-shadow: 0 0 10px rgba(255, 51, 51, 0.2), inset 0 0 5px rgba(255, 51, 51, 0.2) !important;
 }
 
-/* Hover & Selection Harmony - Matches Image Correct Style */
+/* Hover & Selection Harmony - Standardized across Pause/Confirm/Standardized Modals */
 .pause-buttons .btn-neon:hover,
-.pause-buttons .btn-neon.nav-selected {
+.pause-buttons .btn-neon.nav-selected,
+.vertical-stack .btn-neon:hover,
+.vertical-stack .btn-neon.nav-selected {
     transform: scale(1.05) !important;
     background: var(--color-player) !important;
     color: var(--bg-color) !important;
@@ -5568,9 +5626,11 @@ body {
     border-color: var(--color-player) !important;
 }
 
-/* Special case for the Red button in Pause Menu - Matches Proceed Button Hover */
+/* Special case for the Red button - Matches Proceed Button Hover */
 .pause-buttons .btn-neon.alert-btn:hover,
-.pause-buttons .btn-neon.alert-btn.nav-selected {
+.pause-buttons .btn-neon.alert-btn.nav-selected,
+.vertical-stack .btn-neon.alert-btn:hover,
+.vertical-stack .btn-neon.alert-btn.nav-selected {
     background: rgba(255, 51, 51, 0.2) !important;
     color: #ffcccc !important;
     box-shadow: 0 0 30px rgba(255, 51, 51, 0.5) !important;

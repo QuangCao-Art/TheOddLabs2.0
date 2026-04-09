@@ -487,7 +487,7 @@ window.showItemPickupModal = (itemId, onClose) => {
     setTimeout(() => { inputReady = true; }, 600); // Increased buffer to prevent accidental skipping
 
     function close() {
-        modal.classList.add('hidden');
+        window.hideWithFade(modal);
         window.removeEventListener('keydown', keyHandler);
         if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
         if (onClose) onClose();
@@ -511,6 +511,17 @@ window.showItemPickupModal = (itemId, onClose) => {
  * @param {string} message - The question/body text
  * @param {function} onConfirm - Callback if "Yes" is clicked
  */
+// --- UI TRANSITION HELPERS ---
+window.hideWithFade = (elementOrId) => {
+    const el = typeof elementOrId === 'string' ? document.getElementById(elementOrId) : elementOrId;
+    if (!el) return;
+    el.classList.add('modal-closing');
+    setTimeout(() => {
+        el.classList.add('hidden');
+        el.classList.remove('modal-closing');
+    }, 300);
+};
+
 // --- PAUSE MENU LOGIC ---
 let pauseInputReady = false;
 let pauseNavIndex = 0;
@@ -527,7 +538,7 @@ window.togglePauseMenu = (show) => {
         updatePauseSelection();
         setTimeout(() => { pauseInputReady = true; }, 250);
     } else {
-        screen.classList.add('hidden');
+        window.hideWithFade(screen);
         if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
     }
 };
@@ -607,6 +618,10 @@ window.showConfirmModal = (title, message, onConfirm, manualCleanup = false, hid
 
     updateConfirmSelection();
 
+    // Mouse Sync
+    btnYes.addEventListener('mouseenter', () => { confirmNavIndex = 0; updateConfirmSelection(); });
+    btnNo.addEventListener('mouseenter', () => { confirmNavIndex = 1; updateConfirmSelection(); });
+
     const handleYes = () => {
         cleanup(!manualCleanup);
         if (onConfirm) onConfirm();
@@ -651,7 +666,7 @@ window.showConfirmModal = (title, message, onConfirm, manualCleanup = false, hid
     const handleMouseEnterNo = () => { confirmNavIndex = 1; updateConfirmSelection(); };
 
     const cleanup = (hideUI = true) => {
-        if (hideUI) screen.classList.add('hidden');
+        if (hideUI) window.hideWithFade(screen);
         window.removeEventListener('keydown', handleKeydown, true);
         btnYes.removeEventListener('mouseenter', handleMouseEnterYes);
         btnNo.removeEventListener('mouseenter', handleMouseEnterNo);
@@ -696,7 +711,7 @@ window.showPromptModal = (title, message, defaultValue, onConfirm) => {
     input.select();
 
     const cleanup = () => {
-        modal.classList.add('hidden');
+        window.hideWithFade(modal);
         btnConfirm.onclick = null;
         btnCancel.onclick = null;
         input.onkeydown = null;
@@ -815,8 +830,8 @@ function initStarterSelectionEvents() {
         resetGame();
 
         // Close both dialogs and resume overworld
-        dialog.classList.add('hidden');
-        document.getElementById('starter-selection-modal').classList.add('hidden');
+        window.hideWithFade(dialog);
+        window.hideWithFade('starter-selection-modal');
         if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
 
         addLog(`Acquired [${selectedStarterId.toUpperCase()}] as initial Cell.`);
@@ -832,17 +847,26 @@ function initStarterSelectionEvents() {
         }, 200);
     }
 
-    // Click a card to select + open confirm dialog
-    cards.forEach((card, i) => {
+    // Selection triggers
+    cards.forEach((card, idx) => {
         card.addEventListener('click', () => {
-            selectCard(i);
+            if (!starterInputReady) return;
+            selectCard(idx);
             openConfirmDialog();
+        });
+        
+        card.addEventListener('mouseenter', () => {
+            if (!starterInputReady) return;
+            selectCard(idx);
         });
     });
 
     // YES / NO buttons
-    btnYes.addEventListener('click', commitStarter);
-    btnNo.addEventListener('click', closeConfirmDialog);
+    btnYes.addEventListener('click', () => { if (starterInputReady) commitStarter(); });
+    btnNo.addEventListener('click', () => { if (starterInputReady) closeConfirmDialog(); });
+
+    btnYes.addEventListener('mouseenter', () => { if (starterInputReady) setConfirmFocus(0); });
+    btnNo.addEventListener('mouseenter', () => { if (starterInputReady) setConfirmFocus(1); });
 
     // Keyboard
     window.addEventListener('keydown', (e) => {
@@ -1632,7 +1656,7 @@ function setupEventListeners() {
     });
 
     document.getElementById('btn-close-card')?.addEventListener('click', () => {
-        document.getElementById('monster-card-modal').classList.add('hidden');
+        window.hideWithFade('monster-card-modal');
         if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
     });
 
@@ -1709,7 +1733,7 @@ function setupEventListeners() {
 
     // Inventory Controls
     document.getElementById('btn-inventory-back')?.addEventListener('click', () => {
-        document.getElementById('screen-inventory').classList.add('hidden');
+        window.hideWithFade('screen-inventory');
         invNav.active = false;
         Overworld.isPaused = false;
     });
@@ -1746,7 +1770,7 @@ function setupEventListeners() {
         });
 
         previewOverlay.addEventListener('click', () => {
-            previewOverlay.classList.add('hidden');
+            window.hideWithFade(previewOverlay);
         });
     }
 
@@ -2002,7 +2026,7 @@ function setupEventListeners() {
                 // If in inventory, ESC returns to overworld
                 e.preventDefault();
                 e.stopImmediatePropagation();
-                inventoryOverlay.classList.add('hidden');
+                window.hideWithFade(inventoryOverlay);
                 invNav.active = false;
                 Overworld.isPaused = false;
                 return;
@@ -2072,7 +2096,7 @@ function setupEventListeners() {
                     Overworld.isPaused = true;
                     updateInvNav(true);
                 } else {
-                    inventoryOverlay.classList.add('hidden');
+                    window.hideWithFade(inventoryOverlay);
                     invNav.active = false;
                     Overworld.isPaused = false;
                 }
@@ -3227,6 +3251,9 @@ function renderInventory() {
         emptyMsg.onclick = () => {
             updateDetail("DATABASE: THE VOID", "This log is as empty as a lab fridge on a Monday. Either your eyes are closed, or you're allergic to reading. Go pester Jenzi; she’s basically a walking encyclopedia (and way more talkative than this screen).", null);
         };
+        emptyMsg.onmouseenter = () => {
+            updateDetail("DATABASE: THE VOID", "This log is as empty as a lab fridge on a Monday. Either your eyes are closed, or you're allergic to reading. Go pester Jenzi; she’s basically a walking encyclopedia (and way more talkative than this screen).", null);
+        };
         logList.appendChild(emptyMsg);
         const cardContainer = detailCard ? detailCard.closest('.detail-card-container') : null;
         if (cardContainer) cardContainer.style.display = 'none';
@@ -3271,6 +3298,10 @@ function renderInventory() {
                 } else {
                     updateDetail(`LOCKED LOG #${log.id}`, "DATA IS CURRENTLY ENCRYPTED. \n\nExplore furniture in the overworld to initialize decryption sequence for this memory fragment.", null);
                 }
+            };
+            item.onmouseenter = () => {
+                invNav.itemIndex = i;
+                updateInvNav(false);
             };
             logList.appendChild(item);
         });
@@ -3366,6 +3397,10 @@ function renderInventory() {
                         updateInvNav(false);
                         updateDetail(item.name.toUpperCase(), item.desc, item.img ? `assets/images/${item.img}` : 'assets/images/Card_Placeholder.png');
                     };
+                    slot.onmouseenter = () => {
+                        invNav.itemIndex = i;
+                        updateInvNav(false);
+                    };
                 }
             }
             grid.appendChild(slot);
@@ -3409,7 +3444,7 @@ function renderInventory() {
         if (currentTabId === 'status') {
             updateDetail("OCCUPANCY: ZERO", "This containment unit is so clean, you could eat off the floor (please don't). It’s a literal 'G-host' town in here! Go find Jenzi; she’ll help you find something that actually has a pulse.", null);
         }
-        placeholder.onclick = () => {
+        placeholder.onmouseenter = () => {
             updateDetail("OCCUPANCY: ZERO", "This containment unit is so clean, you could eat off the floor (please don't). It’s a literal 'G-host' town in here! Go find Jenzi; she’ll help you find something that actually has a pulse.", null);
         };
         statusList.appendChild(placeholder);
@@ -3539,6 +3574,10 @@ function renderInventory() {
                 const cardImg = `assets/images/Card_${iconNameClick}.png`;
                 updateDetail(cell.name.toUpperCase(), cell.lore, cardImg, statsGridHtml);
             };
+            item.onmouseenter = () => {
+                invNav.itemIndex = index;
+                updateInvNav(false);
+            };
             statusList.appendChild(item);
         });
     }
@@ -3615,6 +3654,10 @@ function renderQuestMenu() {
             const qDesc = `<i style="color: #88ccff; opacity: 0.8;">"${mData.narrative}"</i><br><br><b>CURRENT OBJECTIVE:</b><br>${mData.objective}`;
             updateDetail(qTitle, qDesc, 'assets/images/Card_Placeholder.png');
         };
+        item.onmouseenter = () => {
+            invNav.itemIndex = 0;
+            updateInvNav(false);
+        };
         questList.appendChild(item);
         visualIndex++;
     }
@@ -3664,6 +3707,10 @@ function renderQuestMenu() {
 
                 const qDesc = qData.description + "<br><br><b>REWARD:</b><br>" + rewardText;
                 updateDetail(qTitle, qDesc, 'assets/images/Card_Placeholder.png');
+            };
+            item.onmouseenter = () => {
+                invNav.itemIndex = currentIndex;
+                updateInvNav(false);
             };
             questList.appendChild(item);
             visualIndex++;
@@ -5311,6 +5358,10 @@ function renderCellStorage() {
             openMonsterCard(monster.baseId || monster.name.toLowerCase());
         };
 
+        icon.onmouseenter = () => {
+            openMonsterCard(monster.baseId || monster.name.toLowerCase());
+        };
+
         grid.appendChild(icon);
     });
 
@@ -5429,6 +5480,13 @@ function updateTeamSlots() {
         }
 
         slot.onclick = () => {
+            if (monster) {
+                catalystState.activeMonsterIdx = idx;
+                renderManagementHub();
+            }
+        };
+
+        slot.onmouseenter = () => {
             if (monster) {
                 catalystState.activeMonsterIdx = idx;
                 renderManagementHub();
@@ -6481,6 +6539,15 @@ window.openIncubatorMenu = function () {
     // Initialize keyboard selection
     window.selectedIncubatorIndex = 0;
     updateIncubatorSelection();
+
+    // Mouse Sync for Incubator Buttons
+    const buttons = document.querySelectorAll('#screen-incubator-menu .btn-neon');
+    buttons.forEach((btn, idx) => {
+        btn.addEventListener('mouseenter', () => {
+            window.selectedIncubatorIndex = idx;
+            updateIncubatorSelection();
+        });
+    });
 };
 
 function updateIncubatorSelection() {
@@ -6490,16 +6557,16 @@ function updateIncubatorSelection() {
     const buttons = menu.querySelectorAll('.btn-neon');
     buttons.forEach((btn, index) => {
         if (index === window.selectedIncubatorIndex) {
-            btn.classList.add('selected');
+            btn.classList.add('nav-selected');
         } else {
-            btn.classList.remove('selected');
+            btn.classList.remove('nav-selected');
         }
     });
 }
 
 window.closeIncubatorMenu = function() {
     if (incubatorIsHealing) return; // Prevent closing during active sync
-    document.getElementById('screen-incubator-menu').classList.add('hidden');
+    window.hideWithFade('screen-incubator-menu');
     document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
     if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
 }
@@ -6516,7 +6583,7 @@ window.startHealSequence = async function(context = 'manual') {
     });
 
     if (allHealthy && context === 'manual') {
-        document.getElementById('screen-incubator-menu')?.classList.add('hidden');
+        window.hideWithFade('screen-incubator-menu');
         document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
         Overworld.showDialogue("INCUBATOR OS", ["SCAN COMPLETE: All biometric signatures are at baseline maintenance levels. No intervention required."]);
         if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
@@ -6644,9 +6711,9 @@ window.startHealSequence = async function(context = 'manual') {
         m.pp = 1; // Maintenance baseline
     });
 
-    // Handle Defeat Penalty (50 Credits)
+    // Handle Defeat Penalty (30 Credits)
     if (context === 'defeat') {
-        const penalty = 50;
+        const penalty = 30;
         if (window.changeResource) {
             window.changeResource('lc', -penalty);
         } else {
@@ -7000,8 +7067,9 @@ function renderSynthesisItems() {
             </button>
         `;
 
-        // Card click selects the item
+        // Card click/hover selection
         card.addEventListener('click', () => selectSynthesisItem(recipe));
+        card.addEventListener('mouseenter', () => selectSynthesisItem(recipe));
 
         // Button click triggers synthesis if affordable
         const actionBtn = card.querySelector('.shop-item-price-btn');
@@ -7083,16 +7151,16 @@ document.getElementById('btn-synthesis-action')?.addEventListener('click', () =>
 document.getElementById('btn-synthesis-confirm')?.addEventListener('click', () => {
     if (selectedSynthesisMonster) {
         handleSynthesis(selectedSynthesisMonster.id);
-        document.getElementById('synthesis-confirm-modal')?.classList.add('hidden');
+        window.hideWithFade('synthesis-confirm-modal');
     }
 });
 
 document.getElementById('btn-synthesis-cancel')?.addEventListener('click', () => {
-    document.getElementById('synthesis-confirm-modal')?.classList.add('hidden');
+    window.hideWithFade('synthesis-confirm-modal');
 });
 
 document.getElementById('btn-synthesis-close')?.addEventListener('click', () => {
-    document.getElementById('screen-synthesis')?.classList.add('hidden');
+    window.hideWithFade('screen-synthesis');
     if (typeof Overworld !== 'undefined') {
         Overworld.isPaused = false;
         document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
@@ -7152,7 +7220,7 @@ async function handleSynthesis(monsterId) {
 }
 
 async function startSynthesisAnimation(monsterId, destination) {
-    document.getElementById('screen-synthesis')?.classList.add('hidden');
+    window.hideWithFade('screen-synthesis');
     const animScreen = document.getElementById('screen-synthesis-animation');
     if (!animScreen) return;
 
@@ -7319,6 +7387,7 @@ function createShopItemCard(item, price, currency) {
     `;
 
     div.addEventListener('click', () => selectShopItem(item.id));
+    div.addEventListener('mouseenter', () => selectShopItem(item.id));
 
     const actionBtn = div.querySelector('.shop-item-price-btn');
     actionBtn.addEventListener('click', (e) => {
@@ -7375,7 +7444,7 @@ function openQuantityModal(item, mode) {
 }
 
 function closeQuantityModal() {
-    document.getElementById('shop-quantity-modal')?.classList.add('hidden');
+    window.hideWithFade('shop-quantity-modal');
 }
 
 function updateQuantityTotal() {
@@ -7499,7 +7568,7 @@ function handleShopAction() {
 // Initial Listeners for Shop UI
 function initShopEventListeners() {
     document.getElementById('btn-shop-close')?.addEventListener('click', () => {
-        document.getElementById('screen-shop').classList.add('hidden');
+        window.hideWithFade('screen-shop');
         Overworld.isPaused = false;
     });
 

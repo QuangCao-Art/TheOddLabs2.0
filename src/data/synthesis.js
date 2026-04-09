@@ -15,7 +15,8 @@ export const SYNTHESIS_RECIPES = [
         description: 'Modified defensive unit with explosive enzymatic properties.',
         requirements: [
             { id: 'biomass', name: 'BIOMASS', amount: 150, type: 'resource' },
-            { id: 'blueprint_nitrophil', name: 'NITROPHIL BLUEPRINT', amount: 1, type: 'item' }
+            { id: 'blueprint_nitrophil', name: 'NITROPHIL BLUEPRINT', amount: 1, type: 'item' },
+            { id: 'blueprint_stemmy', name: 'STEMMY BLUEPRINT', amount: 1, type: 'item' }
         ],
         iconClass: 'icon-nitrophil'
     },
@@ -25,7 +26,8 @@ export const SYNTHESIS_RECIPES = [
         description: 'Botanical-derived entity with high regenerative capacity.',
         requirements: [
             { id: 'biomass', name: 'BIOMASS', amount: 150, type: 'resource' },
-            { id: 'blueprint_cambihil', name: 'CAMBIHIL BLUEPRINT', amount: 1, type: 'item' }
+            { id: 'blueprint_cambihil', name: 'CAMBIHIL BLUEPRINT', amount: 1, type: 'item' },
+            { id: 'blueprint_stemmy', name: 'STEMMY BLUEPRINT', amount: 1, type: 'item' }
         ],
         iconClass: 'icon-cambihil'
     },
@@ -35,7 +37,8 @@ export const SYNTHESIS_RECIPES = [
         description: 'Tactical unit designed for long-range enzymatic projection.',
         requirements: [
             { id: 'biomass', name: 'BIOMASS', amount: 150, type: 'resource' },
-            { id: 'blueprint_lydrosome', name: 'LYDROSOME BLUEPRINT', amount: 1, type: 'item' }
+            { id: 'blueprint_lydrosome', name: 'LYDROSOME BLUEPRINT', amount: 1, type: 'item' },
+            { id: 'blueprint_stemmy', name: 'STEMMY BLUEPRINT', amount: 1, type: 'item' }
         ],
         iconClass: 'icon-lydrosome'
     }
