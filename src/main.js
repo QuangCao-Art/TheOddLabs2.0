@@ -1,4 +1,4 @@
-import { gameState, applySkipTutorial, applyFullCellDebug, SKIP_TUTORIAL, FULL_CELL_DEBUG, saveGameState, loadGameState, resetGameState } from './engine/state.js';
+import { gameState, applySkipTutorial, applyFullCellDebug, SKIP_TUTORIAL, FULL_CELL_DEBUG, saveGameState, loadGameState, resetGameState, saveSystemSettings, loadSystemSettings } from './engine/state.js';
 import { resolveTurn, getDistance, checkOverload, getModifiedStats } from './engine/combat.js';
 import { AI } from './engine/ai.js';
 import { MONSTERS } from './data/monsters.js';
@@ -884,22 +884,24 @@ function init() {
         console.log("Odd Labs 2.0 Initializing...");
 
         // Setup mandatory engine components
+        // 1. Initial State Loading
+        loadSystemSettings(); // Load volume/debug settings before any UI is shown
         loadCustomPresets();
         setupNodePositions();
+
+        // 2. Event Listeners
         initStarterSelectionEvents();
         initPauseMenuEvents();
         setupEventListeners();
 
-        // Populate Debug UI
+        // 3. Engine Components
         populateDebugRosters();
+        resetGame(); // Populate parties based on potentially empty initial state
 
-        // Centralized Reset handles all Profile/Preset/State initialization
-        resetGame();
-
-        // Initialize Builder Mode
         if (BuilderMode) BuilderMode.init();
 
-        // Starts the premium entry sequence instead of a direct show
+        // 4. GUI & Boot sequence
+        syncAudioEngineWithSettings(); // Apply the loaded settings even before interaction
         playStartupSequence();
         console.log("Initialization Complete.");
     } catch (e) {
@@ -985,6 +987,7 @@ function setupEventListeners() {
     document.getElementById('btn-open-settings')?.addEventListener('click', () => {
         document.getElementById('toggle-skip-tutorial').checked = SKIP_TUTORIAL;
         document.getElementById('toggle-full-cell-debug').checked = FULL_CELL_DEBUG;
+        updateAudioSettingsUI(); // Ensure sliders match actual volume
         showScreen('screen-settings');
     });
 
@@ -2238,10 +2241,17 @@ function setupEventListeners() {
     // --- AUDIO SETTINGS LISTENERS ---
     const handleVolumeInput = (type, val) => {
         const normalized = isNaN(val) ? 1.0 : val / 100;
+        
+        // Safety initialization
+        if (!gameState.settings) gameState.settings = { masterVolume: 1.0, musicVolume: 1.0, sfxVolume: 1.0 };
+        
         gameState.settings[type] = normalized;
         AudioManager[type] = normalized;
+        
         if (type !== 'sfxVolume') AudioManager.updateVolumes();
-        saveGameState();
+        
+        // Only save settings, never the full progress from a volume move!
+        saveSystemSettings();
     };
 
     document.getElementById('slider-master-volume')?.addEventListener('input', (e) => handleVolumeInput('masterVolume', parseFloat(e.target.value)));

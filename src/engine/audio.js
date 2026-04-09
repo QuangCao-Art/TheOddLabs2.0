@@ -193,13 +193,14 @@ export const AudioManager = {
      * Real-time volume update for active music
      */
     updateVolumes() {
-        if (this.activeMusicSource && this.musicGain && this.ctx) {
+        if (this.activeMusicSource && this.musicGain && this.ctx && this.ctx.state === 'running') {
             const targetGain = this.currentMusicVolume * this.masterVolume * this.musicVolume;
             try {
                 // Smooth transition for volume changes
-                this.musicGain.gain.setTargetAtTime(targetGain, this.ctx.currentTime, 0.1);
+                this.musicGain.gain.setTargetAtTime(Math.max(0.01, targetGain), this.ctx.currentTime, 0.1);
             } catch (e) {
-                this.musicGain.gain.value = targetGain;
+                // Fallback for extreme cases
+                this.musicGain.gain.value = Math.max(0.01, targetGain);
             }
         }
     }

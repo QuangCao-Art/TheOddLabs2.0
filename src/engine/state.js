@@ -1,5 +1,9 @@
 import { MONSTERS } from '../data/monsters.js';
 
+// --- PERSISTENCE KEYS ---
+const SAVE_KEY = 'oddlabs_save_data';
+const SETTINGS_KEY = 'oddlabs_settings';
+
 export let SKIP_TUTORIAL = false;
 export let FULL_CELL_DEBUG = false;
 
@@ -143,10 +147,13 @@ export function applyFullCellDebug(isFull) {
     });
 }
 
-// --- SAVE & LOAD SYSTEM ---
-const SAVE_KEY = 'oddlabs_save_data';
-
 export function saveGameState() {
+    // SECURITY: If there's no active party, we don't save progress to avoid overwriting a valid save from the menu
+    if (!gameState.profiles.player.party || gameState.profiles.player.party.length === 0) {
+        console.warn("[Save] Aborting game save: No active squad detected. (This prevents menu-based save wipes)");
+        return;
+    }
+
     // We only save raw data, not the full live Party objects (which are rebuilt on load)
     const saveData = {
         exp: gameState.exp,
@@ -172,12 +179,22 @@ export function saveGameState() {
         quests: gameState.quests,
         lootedSpots: gameState.lootedSpots || [],
         bioExtractGrid: gameState.bioExtractGrid,
-        lastOverworldPos: gameState.lastOverworldPos,
-        settings: gameState.settings
+        lastOverworldPos: gameState.lastOverworldPos
+        // Note: settings are now handled by saveSystemSettings()
     };
     
     localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
-    console.log("Game Saved Successfully (Efficiency Data included).");
+    console.log("Game Progress Saved Successfully.");
+}
+
+export function saveSystemSettings() {
+    const settingsData = {
+        settings: gameState.settings,
+        SKIP_TUTORIAL: SKIP_TUTORIAL,
+        FULL_CELL_DEBUG: FULL_CELL_DEBUG
+    };
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settingsData));
+    console.log("System Settings Saved.");
 }
 
 export function loadGameState() {
@@ -226,12 +243,31 @@ export function loadGameState() {
         if (saved.lootedSpots) gameState.lootedSpots = [...saved.lootedSpots];
         if (saved.bioExtractGrid) gameState.bioExtractGrid = [...saved.bioExtractGrid];
         if (saved.lastOverworldPos) gameState.lastOverworldPos = { ...saved.lastOverworldPos };
-        if (saved.settings) gameState.settings = { ...gameState.settings, ...saved.settings };
         
-        console.log("Game Loaded Successfully.");
+        console.log("Game Progress Loaded Successfully.");
         return true;
     } catch (e) {
         console.error("Failed to load game state:", e);
+        return false;
+    }
+}
+
+export function loadSystemSettings() {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (!raw) return false;
+
+    try {
+        const saved = JSON.parse(raw);
+        if (saved.settings) {
+            gameState.settings = { ...gameState.settings, ...saved.settings };
+        }
+        if (saved.SKIP_TUTORIAL !== undefined) SKIP_TUTORIAL = saved.SKIP_TUTORIAL;
+        if (saved.FULL_CELL_DEBUG !== undefined) FULL_CELL_DEBUG = saved.FULL_CELL_DEBUG;
+        
+        console.log("System Settings Loaded.");
+        return true;
+    } catch (e) {
+        console.error("Failed to load settings:", e);
         return false;
     }
 }
