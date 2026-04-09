@@ -6711,26 +6711,29 @@ window.startHealSequence = async function(context = 'manual') {
         m.pp = 1; // Maintenance baseline
     });
 
-    // Handle Defeat Penalty (30 Credits)
-    if (context === 'defeat') {
-        const penalty = 30;
-        if (window.changeResource) {
-            window.changeResource('lc', -penalty);
-        } else {
-            gameState.credits = Math.max(0, (gameState.credits || 0) - penalty);
-            if (window.updateResourceHUD) window.updateResourceHUD();
-        }
-    }
-
-    if (gameState.settings?.autoSave) {
-        if (typeof saveGame !== 'undefined') saveGame();
-        if (typeof saveGameState !== 'undefined') saveGameState();
-    }
+    // Data logic applied above. UI sequence follows.
 
     if (statusText) statusText.textContent = "SYNCHRONIZATION SUCCESSFUL";
     if (scanLine) scanLine.classList.remove('animate-heal-scan');
 
-    await new Promise(r => setTimeout(r, 800));
+    await new Promise(r => setTimeout(r, 500)); // Brief pause for final layout sync
+    if (statusText) statusText.textContent = "SYNCHRONIZATION SUCCESSFUL";
+
+    // Wait for manual confirmation (follows user request for "stay at the end")
+    await new Promise(resolve => {
+        let inputReady = false;
+        setTimeout(() => { inputReady = true; }, 500); // safety buffer
+
+        const handleHealDoneKey = (e) => {
+            if (!inputReady) return;
+            const key = e.key.toLowerCase();
+            if (key === 'f' || key === 'enter') {
+                window.removeEventListener('keydown', handleHealDoneKey);
+                resolve();
+            }
+        };
+        window.addEventListener('keydown', handleHealDoneKey);
+    });
 
     // Choose Protocol Variations
     let protocolLabel = "INCUBATOR OS";
@@ -6755,13 +6758,32 @@ window.startHealSequence = async function(context = 'manual') {
 
     const randomLine = messageVariations[Math.floor(Math.random() * messageVariations.length)];
 
-    // Setup the completion listener BEFORE showing dialogue
-    Overworld.onDialogueComplete = () => {
-        healScreen.classList.add('hidden');
-        document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
-        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
-        incubatorIsHealing = false; // UNLOCK
-    };
+    // CLEANUP UI BEFORE DIALOGUE (Prevents layering conflicts and follows user request)
+    healScreen.classList.add('hidden');
+    document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
+    incubatorIsHealing = false; // UNLOCK
+    
+    if (typeof Overworld !== 'undefined') {
+        Overworld.isPaused = false;
+        Overworld.onDialogueComplete = null; // Clear to prevent accidental double-triggers
+    }
+
+    // Handle Defeat Penalty (30 Credits) - MOVED: AFTER sequence close
+    if (context === 'defeat') {
+        const penalty = 30;
+        if (window.changeResource) {
+            window.changeResource('lc', -penalty);
+        } else {
+            gameState.credits = Math.max(0, (gameState.credits || 0) - penalty);
+            if (window.updateResourceHUD) window.updateResourceHUD();
+        }
+    }
+
+    // Auto-save the new state (including the penalty)
+    if (gameState.settings?.autoSave) {
+        if (typeof saveGame !== 'undefined') saveGame();
+        if (typeof saveGameState !== 'undefined') saveGameState();
+    }
 
     Overworld.showDialogue(protocolLabel, [randomLine]);
 }
