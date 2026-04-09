@@ -184,6 +184,8 @@ export const Overworld = {
     pendingSynthesisMenu: false, // New flag for synthesis terminal flow
     deferredItemPickup: null, // For rewards that trigger after dialogue
     onDialogueComplete: null, // Callback for when current dialogue ends
+    battleSourceZone: null, // Tracks where a wild battle started
+    pendingWildInstanceId: null, // TRACKS THE SPECIFIC BARCODE ID
     gameLoopActive: false,
 
     resetStates() {
@@ -292,10 +294,8 @@ export const Overworld = {
                 this.collectItem(reward.id);
                 msg = `Acquired ${reward.type.toUpperCase()}: ${reward.id}.`;
             } else if (reward.type === 'resource') {
-                if (window.gameState) {
-                    if (reward.id === 'credits') window.gameState.credits += (reward.amount || 0);
-                    if (reward.id === 'biomass') window.gameState.biomass += (reward.amount || 0);
-                    if (window.updateResourceHUD) window.updateResourceHUD();
+                if (window.changeResource) {
+                    window.changeResource(reward.id === 'credits' ? 'lc' : 'bm', reward.amount || 0);
                 }
                 msg = `Acquired ${reward.amount} ${reward.id.toUpperCase()}.`;
             }
@@ -616,15 +616,16 @@ export const Overworld = {
         window.addEventListener('keydown', (e) => {
             if (document.getElementById('screen-overworld').classList.contains('hidden')) return;
             if (e.key.toLowerCase() === 'f') {
-                // If dialogue is active, always allow F to advance/speed up
-                if (this.isDialogueActive) {
+                // If dialogue is active, always allow F to advance/speed up (unless transitioning)
+                if (this.isDialogueActive && !this.isTransitioning) {
                     this.interact();
-                } else if (!this.isPaused && !e.repeat && !this.isStartingQuest) {
-                    // Block interaction during timed quests
+                } else if (!this.isPaused && !this.isTransitioning && !e.repeat && !this.isStartingQuest) {
+                    // Block interaction during transitions or if paused
                     if (this.activeTimedQuestId) return;
 
                     // Safety check: Don't interact if any UI overlay/modal is visible
-                    const hasOverlay = document.querySelector('.overlay:not(.hidden), .modal-overlay:not(.hidden), .modal-overlay.active');
+                    // Added zone-transition-overlay to the check
+                    const hasOverlay = document.querySelector('.overlay:not(.hidden), .modal-overlay:not(.hidden), .modal-overlay.active, #zone-transition-overlay:not(.hidden), #game-over-overlay:not(.hidden)');
                     if (!hasOverlay) {
                         this.interact();
                     }
@@ -1344,7 +1345,12 @@ export const Overworld = {
     },
 
     interact() {
-        if (this.isPaused || this.isTransitioning) return;
+        const gameOverVisible = document.getElementById('game-over-overlay') && !document.getElementById('game-over-overlay').classList.contains('hidden');
+        
+        // Allow interaction if dialogue is active (to advance it), even if paused/transitioning
+        if (!this.isDialogueActive) {
+            if (this.isPaused || this.isTransitioning || gameOverVisible) return;
+        }
 
         const now = Date.now();
         if (now - this.lastInteractTime < 150) return;
@@ -1394,8 +1400,10 @@ export const Overworld = {
 
                 this.spawner.stop(); // Stop wild spawns when interacting with one
                 if (this.checkActiveSquad()) {
+                    this.battleSourceZone = this.currentZone; // TRACK SOURCE ZONE
                     this.pendingWildEncounter = true;
                     this.pendingWildMonsterId = npc.monsterId;
+                    this.pendingWildInstanceId = npc.id; // SAVE THE BARCODE
                     this.showDialogue(mName, [`A wild ${mName} is wandering.`]);
                 } else {
                     this.showDialogue(mName, [`A wild ${mName} is wandering. You need an active squad to engage!`]);
@@ -1588,8 +1596,19 @@ export const Overworld = {
         console.log(`Talking to: ${npc.name}${bossWon ? ' (BOSS WON)' : ''} | PostBattle: ${isPostBattle}`);
         this.currentDialoguePartner = npc.id;
 
-        // Make NPC face the player
+        // Make NPC face the player, and Player face the NPC
         const oppDirections = { 'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left' };
+        
+        // Calculate player facing based on relative position
+        const dx = npc.x - this.player.x;
+        const dy = npc.y - this.player.y;
+        if (Math.abs(dx) > Math.abs(dy)) {
+            this.player.direction = dx > 0 ? 'right' : 'left';
+        } else if (dy !== 0) {
+            this.player.direction = dy > 0 ? 'down' : 'up';
+        }
+        this.updatePlayerPosition(); // Visual sync
+
         npc.direction = oppDirections[this.player.direction] || 'down';
 
         const npcEl = document.getElementById(`npc-${npc.id}`);
@@ -2403,10 +2422,8 @@ export const Overworld = {
                 if (window.gameState) window.gameState.logs = [...this.logsCollected];
             }
         } else if (itemType === 'resource') {
-            if (window.gameState) {
-                if (itemInfo.resourceType === 'credits') window.gameState.credits += (itemInfo.amount || 0);
-                if (itemInfo.resourceType === 'biomass') window.gameState.biomass += (itemInfo.amount || 0);
-                if (window.updateResourceHUD) window.updateResourceHUD();
+            if (window.changeResource) {
+                window.changeResource(itemInfo.resourceType === 'credits' ? 'lc' : 'bm', itemInfo.amount || 0);
             }
         } else if (itemType === 'card') {
             if (window.gameState) {
@@ -2672,10 +2689,16 @@ export const Overworld = {
         // Handle pending wild encounters
         if (this.pendingWildEncounter) {
             const mId = this.pendingWildMonsterId || 'stemmy';
+            const instanceId = this.pendingWildInstanceId;
+            
             this.pendingWildEncounter = false;
             this.pendingWildMonsterId = null;
+            this.pendingWildInstanceId = null;
+
             setTimeout(() => {
-                window.dispatchEvent(new CustomEvent('start-wild-encounter', { detail: { id: mId } }));
+                window.dispatchEvent(new CustomEvent('start-wild-encounter', { 
+                    detail: { id: mId, instanceId: instanceId } 
+                }));
             }, 200);
         }
 
@@ -2916,34 +2939,49 @@ export const Overworld = {
             }
         },
 
-        despawnMonster(monsterId) {
+        despawnMonster(monsterId, zoneId = null) {
             const mRecord = this.activeMonsters.find(m => m.id === monsterId);
-            if (!mRecord) return;
-
+            
+            // Visual Cleanup
             const el = document.getElementById(`npc-${monsterId}`);
             if (el) {
                 el.classList.remove('anim-monster-breathing', 'anim-monster-pop');
                 el.classList.add('anim-recall-exit');
-            }
-
-            setTimeout(() => {
-                const zone = Overworld.zones[Overworld.currentZone];
+                setTimeout(() => { 
+                    if (el.parentNode) el.remove(); 
+                    
+                    // DATA CLEANUP (Moved inside timeout for sync)
+                    const targetZoneId = zoneId || Overworld.currentZone;
+                    const zone = Overworld.zones[targetZoneId];
+                    if (zone && zone.objects) {
+                        zone.objects = zone.objects.filter(obj => {
+                            if (obj.id !== monsterId) return true;
+                            const isWild = obj.id.includes('_wild_') || obj.temp === true;
+                            return !isWild;
+                        });
+                    }
+                    this.activeMonsters = this.activeMonsters.filter(m => m.id !== monsterId);
+                }, 800);
+            } else {
+                // No element (e.g. Recovery flow), do instant data cleanup
+                const targetZoneId = zoneId || Overworld.currentZone;
+                const zone = Overworld.zones[targetZoneId];
                 if (zone && zone.objects) {
-                    zone.objects = zone.objects.filter(obj => obj.id !== monsterId);
+                    zone.objects = zone.objects.filter(obj => {
+                        if (obj.id !== monsterId) return true;
+                        const isWild = obj.id.includes('_wild_') || obj.temp === true;
+                        return !isWild;
+                    });
                 }
                 this.activeMonsters = this.activeMonsters.filter(m => m.id !== monsterId);
-                if (el && el.parentNode) el.remove();
-
-                // Trigger cooldown to eventually replace the despawned monster
-                this.startCooldown();
-            }, 400);
+            }
         },
 
-        despawnCurrent() {
+        despawnCurrent(zoneId = null) {
             // Find the monster that was just in battle from global state
             const opponentId = window.catalystState && window.catalystState.battleOpponentId;
             if (opponentId) {
-                this.despawnMonster(opponentId);
+                this.despawnMonster(opponentId, zoneId);
             }
         }
     },
@@ -3444,11 +3482,7 @@ export const Overworld = {
             const amount = reward.amount;
             const rewardType = reward.rewardType;
 
-            // Update State
-            if (rewardType === 'lc') window.gameState.credits = (window.gameState.credits || 0) + amount;
-            else window.gameState.biomass = (window.gameState.biomass || 0) + amount;
-            
-            // Visual Particles
+            // Visual Particles (Accounting is handled on HIT in animateResourceHUD/changeResource)
             this.spawnLootParticles(obj.x, obj.y, rewardType, amount, directionKey);
         }
     },
@@ -3591,8 +3625,12 @@ export const Overworld = {
                 setTimeout(() => {
                     if (particle.parentNode) particle.parentNode.removeChild(particle);
                     this.triggerHUDBounce(targetBox);
-                    if (window.animateResourceHUD) window.animateResourceHUD(type, 1);
-                    else if (window.updateResourceHUD) window.updateResourceHUD();
+                    
+                    if (window.changeResource) {
+                        window.changeResource(type, 1);
+                    } else if (window.updateResourceHUD) {
+                        window.updateResourceHUD();
+                    }
                 }, 900);
             }, 1000 + (i * 120) + (Math.random() * 250)); // Randomized arrival jitter (250ms)
         }

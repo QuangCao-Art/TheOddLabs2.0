@@ -34,10 +34,14 @@ const moveButtons = document.querySelectorAll('.move-btn');
 
 // --- DEBUG WEALTH ---
 document.getElementById('btn-debug-rich')?.addEventListener('click', () => {
-    gameState.credits += 5000;
-    gameState.biomass += 500;
-    if (window.updateResourceHUD) window.updateResourceHUD();
-    else if (typeof updateResourceHUD === 'function') updateResourceHUD();
+    if (window.changeResource) {
+        window.changeResource('lc', 5000);
+        window.changeResource('bm', 500);
+    } else {
+        gameState.credits += 5000;
+        gameState.biomass += 500;
+        if (window.updateResourceHUD) window.updateResourceHUD();
+    }
 
     // Update active menus if open
     const shopBM = document.getElementById('shop-bm-balance');
@@ -1109,6 +1113,8 @@ function setupEventListeners() {
         }
 
         const monsterId = e.detail.id || 'stemmy';
+        const instanceId = e.detail.instanceId; // THE BARCODE
+        
         const profileId = `${monsterId}_wild`;
         const playerRg = gameState.profiles.player.level || 0;
 
@@ -1139,6 +1145,7 @@ function setupEventListeners() {
         executeQuickEquip('balanced', profileId, 0);
 
         catalystState.battleOpponentId = profileId;
+        catalystState.overworldId = instanceId; // STORE BARCODE FOR CLEANUP
         if (typeof Overworld !== 'undefined') Overworld.stopLoop();
         startPreBattleSequence(profileId);
     });
@@ -1511,47 +1518,99 @@ function setupEventListeners() {
         });
     });
 
-    document.getElementById('btn-continue-overworld')?.addEventListener('click', () => {
+    document.getElementById('btn-continue-overworld')?.addEventListener('click', async () => {
         const btn = document.getElementById('btn-continue-overworld');
         const isRecovery = btn.innerText === 'RECOVER AT LOBBY';
 
-        triggerSlowTransition(() => {
+        // --- NEW: Capture targets BEFORE state resets ---
+        // Priority: overworldId (true barcode) > battleOpponentId (legacy type)
+        const opponentId = catalystState.overworldId || catalystState.battleOpponentId;
+        const isWild = opponentId && (opponentId.includes('_wild_') || opponentId.includes('_wild'));
+
+        triggerSlowTransition(async () => {
             document.getElementById('game-over-overlay').classList.add('hidden');
             showScreen('screen-overworld');
 
             if (typeof Overworld !== 'undefined') {
                 // Reset any stuck flags (movement, dialogue) before resuming
                 Overworld.resetStates();
+                // RE-LOCK immediately after reset to prevent race condition interaction with NPC
+                Overworld.isPaused = true;
+                Overworld.isTransitioning = true; // Block interaction during extraction/teleport flow
 
                 if (isRecovery) {
-                    // Faint System: Set party to 1 HP and teleport to lobby
+                    // 1. Faint System: Set party to 1 HP (briefly, before incinerator)
                     gameState.profiles.player.party.forEach(mon => {
-                        if (mon) mon.currentHp = 1;
+                        if (mon) mon.currentHp = Math.max(1, mon.currentHp || 0);
                     });
 
-                    // --- CLEANUP WILD SPAWNER ---
-                    if (catalystState.battleOpponentId && catalystState.battleOpponentId.includes('_wild')) {
-                        Overworld.spawner.despawnCurrent();
+                    // --- CLEANUP WILD SPAWNER (Targeted) ---
+                    if (isWild) {
+                        Overworld.spawner.despawnMonster(opponentId, Overworld.battleSourceZone);
                     }
 
-                    // Force load lobby and set safe position (center-ish)
-                    Overworld.renderMap('lobby', true, 5, 5);
-                    gameState.playerPos = { x: 5, y: 5 }; // Safe entrance coords
-                    Overworld.playerX = 5;
-                    Overworld.playerY = 5;
+                    // 3. Teleport to Lobby near the Incubator (2, 4)
+                    // The incubator itself is at (2, 2). (2, 4) puts the player right in front of it.
+                    Overworld.renderMap('lobby', false, 2, 4);
+                    gameState.playerPos = { x: 2, y: 4 };
+                    
+                    if (Overworld.player) {
+                        Overworld.player.x = 2;
+                        Overworld.player.y = 4;
+                        Overworld.player.targetX = 2;
+                        Overworld.player.targetY = 4;
+                        Overworld.player.direction = 'up'; // Correct property name
+                        Overworld.updatePlayerPosition(); // Force visual sync
+                    }
+
+                    // 4. Auto-Trigger Healing and Dialogue after a short settlement delay
+                    setTimeout(async () => {
+                        // Triggers the visual healing sequence
+                        await startHealSequence();
+
+                        // 3. Deduct Credits (Penalty) - Now AFTER healing
+                        const penalty = 50;
+                        if (window.changeResource) {
+                            window.changeResource('lc', -penalty);
+                        } else {
+                            gameState.credits = Math.max(0, (gameState.credits || 0) - penalty);
+                            if (window.updateResourceHUD) window.updateResourceHUD();
+                        }
+
+                        // 4. Play Randomized Medical Advisory Dialogue
+                        const variations = [
+                            "Bio-sync complete! Your molecular structural integrity is now 100% sassier.",
+                            "Incubator mist: 50 Credits. Your Cells smelling like fresh lavender: Priceless.",
+                            "Next time, try not to get kicked so hard. It's expensive to patch your cells back together!"
+                        ];
+                        const randomLine = variations[Math.floor(Math.random() * variations.length)];
+                        Overworld.showDialogue("MEDICAL ADVISORY", [randomLine]);
+                        
+                        // Release flags ONLY when dialogue is finished
+                        Overworld.onDialogueComplete = () => {
+                            Overworld.isPaused = false;
+                            Overworld.isTransitioning = false;
+                        };
+                    }, 800);
 
                     btn.innerText = 'CONTINUE TO GAME'; // Reset for next time
                 } else {
-                    // --- WILD ENCOUNTER CLEANUP ---
-                    if (catalystState.battleOpponentId && catalystState.battleOpponentId.includes('_wild')) {
-                        Overworld.spawner.despawnCurrent();
+                    // --- CLEANUP WILD SPAWNER (Targeted) ---
+                    if (isWild) {
+                        // Delay by 300ms to ensure the overworld is visible before animating the recall
+                        setTimeout(() => {
+                            Overworld.spawner.despawnMonster(opponentId, Overworld.battleSourceZone);
+                        }, 300);
                     }
+                    
+                    // RELEASE INTERACTION LOCK
+                    Overworld.isPaused = false;
+                    Overworld.isTransitioning = false;
                 }
 
                 Overworld.startLoop();
 
                 // --- STORY HOOK: Jenzi post-battle dialogue ---
-                const opponentId = catalystState.battleOpponentId;
                 if ((window.gameState.storyFlags.jenziFirstBattleDone || opponentId === 'jenzi_tutorial') && !window.gameState.logs.includes('Log001')) {
                     // Hide Log #001 in the Red Specimen Tank instead of spawning on floor
                     const lobbyZone = Overworld.zones['lobby'];
@@ -4498,6 +4557,9 @@ function updateOverworldEXPBar() {
 }
 
 function showGameOver(isFailure, forceOverlay = false) {
+    // Lock overworld interaction IMMEDIATELY on failure to prevent race conditions
+    if (typeof Overworld !== 'undefined' && isFailure) Overworld.isPaused = true;
+
     // Safeguard: Prevent multiple calls if already showing
     if (!document.getElementById('game-over-overlay').classList.contains('hidden') && !forceOverlay) return;
 
@@ -4558,6 +4620,7 @@ function showGameOver(isFailure, forceOverlay = false) {
     const isTutorialLoss = isFailure && opponentId === 'jenzi_tutorial';
 
     if (overlay && title && msg) {
+        if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
         if (isFailure && !isTutorialLoss) {
             title.innerHTML = `THE EXPERIMENT HAS <span class="neon-text" style="color: #ff3333; text-shadow: 0 0 10px #ff3333;">FAILED!</span>`;
 
@@ -4677,9 +4740,14 @@ function showGameOver(isFailure, forceOverlay = false) {
         const expNeededForLevel = expCap - expFloor;
         const initialPercent = Math.max(0, Math.min((initialExpRelative / expNeededForLevel) * 100, 100));
 
+        if (window.changeResource) {
+            if (creditsEarned > 0) window.changeResource('lc', creditsEarned);
+            if (biomassEarned > 0) window.changeResource('bm', biomassEarned);
+        } else {
+            gameState.credits += creditsEarned;
+            gameState.biomass += biomassEarned;
+        }
         gameState.exp += expEarned;
-        gameState.credits += creditsEarned;
-        gameState.biomass += biomassEarned;
 
         // Log the rewards
         if (expEarned > 0 || creditsEarned > 0) {
@@ -6257,6 +6325,7 @@ function createMonsterInstance(id, existing = null) {
     const monster = {
         ...data,
         id: id,
+        monsterId: id, // DNA LINK: Always refers to the species template
         instanceId: existing ? existing.instanceId : 'mon_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
         currentNode: null,
         blockedNodes: [],
@@ -6345,9 +6414,17 @@ function applyBonuses(party, level, forceHeal = true) {
     party.forEach(monster => {
         if (!monster) return;
 
+        // DNA RECOVERY: If monsterId is missing, try to recover it from the id
+        if (!monster.monsterId && monster.id) {
+            const speciesId = monster.id.includes('_') ? monster.id.split('_')[0] : monster.id;
+            if (MONSTERS[speciesId]) {
+                monster.monsterId = speciesId;
+            }
+        }
+
         // BUG FIX: Create a snapshot of 'base' stats if they don't exist 
         // This ensures getModifiedStats has a static starting point for non-registered monsters.
-        if (monster.id && !MONSTERS[monster.id]) {
+        if (monster.id && !MONSTERS[monster.monsterId || monster.id]) {
             if (monster.baseHp === undefined) {
                 monster.baseHp = monster.hp || 100;
                 monster.baseAtk = monster.atk || 10;
@@ -6420,13 +6497,13 @@ function updateIncubatorSelection() {
     });
 }
 
-function closeIncubatorMenu() {
+window.closeIncubatorMenu = function() {
     document.getElementById('screen-incubator-menu').classList.add('hidden');
     document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
     if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
 }
 
-async function startHealSequence() {
+window.startHealSequence = async function() {
     // Hide menu without removing blur
     document.getElementById('screen-incubator-menu').classList.add('hidden');
 
@@ -6624,58 +6701,101 @@ window.updateResourceHUD = function () {
     if (logCount) logCount.innerText = (gameState.collectedLogs ? gameState.collectedLogs.length : 0);
 };
 
+// Universal Resource API
+window.changeResource = function(type, amount) {
+    if (!type || amount === 0) return;
+    
+    const isLC = type.toLowerCase() === 'lc';
+    const isBM = type.toLowerCase() === 'bm';
+    
+    if (isLC) {
+        gameState.credits = Math.max(0, (gameState.credits || 0) + amount);
+    } else if (isBM) {
+        gameState.biomass = Math.max(0, (gameState.biomass || 0) + amount);
+    } else {
+        return; // Unsupported type for this specific feedback system
+    }
+
+    // Trigger visual feedback
+    window.spawnResourcePopup(isLC ? 'lc' : 'bm', amount);
+    window.animateResourceHUD(isLC ? 'lc' : 'bm', amount);
+};
+
+window.spawnResourcePopup = function(type, amount) {
+    const parentId = type === 'lc' ? 'hud-lc-val' : 'hud-bm-val';
+    const valEl = document.getElementById(parentId);
+    if (!valEl) return;
+
+    // The container is the grand-parent (resource-item) for better anchoring
+    const container = valEl.closest('.resource-item');
+    if (!container) return;
+
+    const popup = document.createElement('div');
+    const isGain = amount >= 0;
+    const moodClass = isGain ? 'gain' : 'loss';
+    popup.className = `resource-popup ${type}-${moodClass}`;
+    
+    const prefix = amount >= 0 ? '+' : '';
+    popup.innerText = `${prefix}${amount}`;
+    
+    container.appendChild(popup);
+    
+    // Auto cleanup
+    setTimeout(() => popup.remove(), 1200);
+};
+
 window.animateResourceHUD = function(type, amount) {
     const id = type === 'lc' ? 'hud-lc-val' : 'hud-bm-val';
     const el = document.getElementById(id);
     if (!el) return;
 
-    // Initialize targets if first run
-    if (el._visualTarget === undefined) {
-        el._visualTarget = parseInt(el.innerText) || 0;
-    }
-
-    // Accumulate the amount to count up to
-    if (amount > 0) {
-        el._visualTarget += amount;
-    }
+    // Set target from current state
+    const gameActual = (type === 'lc' ? gameState.credits : gameState.biomass) || 0;
+    el._visualTarget = gameActual;
 
     // If already animating, let the existing loop handle the new target
-    if (el._isAnimating && amount > 0) return;
+    if (el._isAnimating) return;
 
     el._isAnimating = true;
-    let current = parseInt(el.innerText) || 0;
     
-    // Safety check: if gameState actually has more than our target (e.g. from other sources)
-    const gameActual = (type === 'lc' ? gameState.credits : gameState.biomass) || 0;
-    if (el._visualTarget < gameActual) el._visualTarget = gameActual;
+    const tick = () => {
+        let current = parseInt(el.innerText) || 0;
+        
+        if (current === el._visualTarget) {
+            el._isAnimating = false;
+            return;
+        }
 
-    if (current >= el._visualTarget) {
-        el.innerText = el._visualTarget;
-        el._isAnimating = false;
-        return;
-    }
+        const diff = el._visualTarget - current;
+        const isUp = diff > 0;
+        
+        // Force counting each number (step = 1) unless the difference is massive
+        let step = isUp ? 1 : -1;
+        if (Math.abs(diff) > 100) {
+            step = Math.ceil(Math.abs(diff) / 15) * (isUp ? 1 : -1);
+        }
+        
+        current += step;
+        
+        // Overshoot protection
+        if (isUp && current > el._visualTarget) current = el._visualTarget;
+        if (!isUp && current < el._visualTarget) current = el._visualTarget;
+        
+        el.innerText = current;
 
-    // Force counting each number (step = 1) unless the difference is massive
-    let step = 1;
-    const diff = el._visualTarget - current;
-    if (diff > 100) step = Math.ceil(diff / 20); // Still speed up for huge jumps
-    
-    current += step;
-    if (current > el._visualTarget) current = el._visualTarget;
-    
-    el.innerText = current;
+        // AUDIO: Play satisfying ticker tick SFX (Gain only or both? Let's do both but lower volume for ticks)
+        if (AudioManager && typeof AudioManager.play === 'function') {
+            AudioManager.play('resource_collect', 0.2, 0.15);
+        }
 
-    // AUDIO: Play satisfying ticker tick SFX
-    if (AudioManager && typeof AudioManager.play === 'function') {
-        AudioManager.play('resource_collect', 0.3, 0.15);
-    }
+        if (current !== el._visualTarget) {
+            setTimeout(tick, 40); // 40ms provides a clear "tick-tick-tick" rhythm
+        } else {
+            el._isAnimating = false;
+        }
+    };
 
-    if (current < el._visualTarget) {
-        // 50ms provides a clear "tick-tick-tick" rhythm
-        setTimeout(() => window.animateResourceHUD(type, 0), 50);
-    } else {
-        el._isAnimating = false;
-    }
+    tick();
 };
 
 window.openShopMenu = function () {
@@ -7221,11 +7341,17 @@ function handleShopAction() {
     if (shopState.activeTab === 'buy') {
         const totalCost = item.price * qty;
         if (gameState.credits >= totalCost) {
-            gameState.credits -= totalCost;
-
-            if (item.id === 'biomass') {
-                gameState.biomass += qty;
+            if (window.changeResource) {
+                window.changeResource('lc', -totalCost);
+                if (item.id === 'biomass') {
+                    window.changeResource('bm', qty);
+                }
             } else {
+                gameState.credits -= totalCost;
+                if (item.id === 'biomass') gameState.biomass += qty;
+            }
+
+            if (item.id !== 'biomass') {
                 // Multi-buy support (e.g. Blueprints if oneTime: false)
                 for (let i = 0; i < qty; i++) {
                     if (item.oneTime && (gameState.items || []).includes(item.id)) continue;
@@ -7241,8 +7367,13 @@ function handleShopAction() {
     } else {
         // Sell
         if (item.id === 'biomass' && gameState.biomass >= qty) {
-            gameState.biomass -= qty;
-            gameState.credits += (item.sellPrice * qty);
+            if (window.changeResource) {
+                window.changeResource('bm', -qty);
+                window.changeResource('lc', item.sellPrice * qty);
+            } else {
+                gameState.biomass -= qty;
+                gameState.credits += (item.sellPrice * qty);
+            }
             console.log(`Sold ${qty}x Biomass`);
             closeQuantityModal();
             updateShopUI();

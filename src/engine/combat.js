@@ -239,9 +239,12 @@ export function checkOverload(cell) {
 }
 
 export function getModifiedStats(monster, playerLevel = 1) {
-    const lookup = MONSTERS[monster.id];
+    // BUG FIX: Try monsterId (the DNA template) if the instance id is unique
+    const speciesId = monster.monsterId || monster.id;
+    const lookup = MONSTERS[speciesId];
+    
     const base = lookup ? lookup : {
-        maxHp: monster.baseHp || monster.hp || 100,
+        maxHp: monster.baseHp || 100, // Do NOT default to monster.hp here
         atk: monster.baseAtk || monster.atk || 10,
         def: monster.baseDef || monster.def || 10,
         spd: monster.baseSpd || monster.spd || 10,
