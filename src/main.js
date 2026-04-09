@@ -2250,10 +2250,29 @@ function setupEventListeners() {
         
         if (type !== 'sfxVolume') AudioManager.updateVolumes();
         
+        // Auto-unmute when moving sliders (Standard UX)
+        if (gameState.settings.isMuted) {
+            gameState.settings.isMuted = false;
+            AudioManager.isMuted = false;
+            updateAudioSettingsUI();
+        }
+
         // Only save settings, never the full progress from a volume move!
         saveSystemSettings();
     };
 
+    const handleMuteToggle = () => {
+        if (!gameState.settings) gameState.settings = { masterVolume: 1.0, musicVolume: 1.0, sfxVolume: 1.0, isMuted: false };
+        
+        gameState.settings.isMuted = !gameState.settings.isMuted;
+        AudioManager.isMuted = gameState.settings.isMuted;
+        AudioManager.updateVolumes();
+        
+        updateAudioSettingsUI();
+        saveSystemSettings();
+    };
+
+    document.getElementById('btn-mute-toggle')?.addEventListener('click', handleMuteToggle);
     document.getElementById('slider-master-volume')?.addEventListener('input', (e) => handleVolumeInput('masterVolume', parseFloat(e.target.value)));
     document.getElementById('slider-music-volume')?.addEventListener('input', (e) => handleVolumeInput('musicVolume', parseFloat(e.target.value)));
     document.getElementById('slider-sfx-volume')?.addEventListener('input', (e) => handleVolumeInput('sfxVolume', parseFloat(e.target.value)));
@@ -4837,6 +4856,7 @@ function syncAudioEngineWithSettings() {
     AudioManager.masterVolume = gameState.settings.masterVolume ?? 1.0;
     AudioManager.musicVolume = gameState.settings.musicVolume ?? 1.0;
     AudioManager.sfxVolume = gameState.settings.sfxVolume ?? 1.0;
+    AudioManager.isMuted = gameState.settings.isMuted ?? false;
     AudioManager.updateVolumes();
 }
 
@@ -4845,6 +4865,7 @@ function updateAudioSettingsUI() {
     const master = document.getElementById('slider-master-volume');
     const music = document.getElementById('slider-music-volume');
     const sfx = document.getElementById('slider-sfx-volume');
+    const muteBtn = document.getElementById('btn-mute-toggle');
     
     const mVal = Math.round(gameState.settings.masterVolume * 100);
     const muVal = Math.round(gameState.settings.musicVolume * 100);
@@ -4853,6 +4874,10 @@ function updateAudioSettingsUI() {
     if (master) master.value = mVal;
     if (music) music.value = muVal;
     if (sfx) sfx.value = sVal;
+
+    if (muteBtn) {
+        muteBtn.classList.toggle('active', gameState.settings.isMuted);
+    }
 }
 
 
@@ -6588,17 +6613,65 @@ window.addEventListener('load', init);
 window.updateResourceHUD = function () {
     const lcVal = document.getElementById('hud-lc-val');
     const bmVal = document.getElementById('hud-bm-val');
+    
+    // Safety check to avoid overwriting ongoing animations if values match
+    if (lcVal && !lcVal._isAnimating) lcVal.innerText = gameState.credits || 0;
+    if (bmVal && !bmVal._isAnimating) bmVal.innerText = gameState.biomass || 0;
+
     const rgVal = document.getElementById('overworld-rg-val');
     const logCount = document.getElementById('log-count');
+    if (rgVal) rgVal.innerText = gameState.rapidGather || 0;
+    if (logCount) logCount.innerText = (gameState.collectedLogs ? gameState.collectedLogs.length : 0);
+};
 
-    if (lcVal) lcVal.innerText = gameState.credits || 0;
-    if (bmVal) bmVal.innerText = gameState.biomass || 0;
-    if (rgVal) rgVal.innerText = (gameState.playerLevel ?? (gameState.profiles && gameState.profiles.player ? gameState.profiles.player.level : 1));
+window.animateResourceHUD = function(type, amount) {
+    const id = type === 'lc' ? 'hud-lc-val' : 'hud-bm-val';
+    const el = document.getElementById(id);
+    if (!el) return;
 
-    if (logCount && typeof Overworld !== 'undefined') {
-        logCount.innerText = Overworld.logsCollected.length;
+    // Initialize targets if first run
+    if (el._visualTarget === undefined) {
+        el._visualTarget = parseInt(el.innerText) || 0;
     }
-}
+
+    // Accumulate the amount to count up to
+    if (amount > 0) {
+        el._visualTarget += amount;
+    }
+
+    // If already animating, let the existing loop handle the new target
+    if (el._isAnimating && amount > 0) return;
+
+    el._isAnimating = true;
+    let current = parseInt(el.innerText) || 0;
+    
+    // Safety check: if gameState actually has more than our target (e.g. from other sources)
+    const gameActual = (type === 'lc' ? gameState.credits : gameState.biomass) || 0;
+    if (el._visualTarget < gameActual) el._visualTarget = gameActual;
+
+    if (current >= el._visualTarget) {
+        el.innerText = el._visualTarget;
+        el._isAnimating = false;
+        return;
+    }
+
+    // Force counting each number (step = 1) unless the difference is massive
+    let step = 1;
+    const diff = el._visualTarget - current;
+    if (diff > 100) step = Math.ceil(diff / 20); // Still speed up for huge jumps
+    
+    current += step;
+    if (current > el._visualTarget) current = el._visualTarget;
+    
+    el.innerText = current;
+
+    if (current < el._visualTarget) {
+        // 50ms provides a clear "tick-tick-tick" rhythm
+        setTimeout(() => window.animateResourceHUD(type, 0), 50);
+    } else {
+        el._isAnimating = false;
+    }
+};
 
 window.openShopMenu = function () {
     shopInputReady = false;

@@ -3,6 +3,7 @@ export const cellPlayGround = {
     width: 17,
     height: 13,
     spawn: { x: 15, y: 6 },
+    dropPoolLimit: true,
     layout: [
         [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
         [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],

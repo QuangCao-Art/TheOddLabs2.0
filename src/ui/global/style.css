@@ -6620,3 +6620,92 @@ body {
 }
 
 
+
+/* --- KICK DROP LOOT SYSTEM --- */
+.loot-resource-icon {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    z-index: 60000;
+    pointer-events: none;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+    will-change: transform, opacity, left, top;
+    --base-scale: 0.9;
+    opacity: 0;
+    transform: scale(0);
+}
+
+.loot-resource-icon.lc {
+    background-image: url('../../../assets/images/Lab_TileSet_03.png');
+    background-size: 512px 512px;
+    background-position: calc(-256px / 4) calc(-768px / 4);
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+}
+
+.loot-resource-icon.biomass {
+    background-image: url('../../../assets/images/Lab_TileSet_03.png');
+    background-size: 512px 512px;
+    background-position: calc(-1792px / 4) calc(-0px / 4);
+    filter: drop-shadow(0 0 8px rgba(0, 255, 100, 0.6));
+}
+
+/* Burst Animations - Completely Linear Slide (No Hops, No Pops) */
+@keyframes loot-burst-l {
+    0% { transform: translate(0, 0) rotate(0deg) scale(0.8); opacity: 0; }
+    100% { transform: translate(var(--spread-x), var(--spread-y)) rotate(var(--spin-total)) scale(var(--base-scale)); opacity: 1; }
+}
+
+@keyframes loot-burst-r {
+    0% { transform: translate(0, 0) rotate(0deg) scale(0.8); opacity: 0; }
+    100% { transform: translate(var(--spread-x), var(--spread-y)) rotate(var(--spin-total)) scale(var(--base-scale)); opacity: 1; }
+}
+
+@keyframes loot-burst-u {
+    0% { transform: translate(0, 0) rotate(0deg) scale(0.8); opacity: 0; }
+    100% { transform: translate(var(--spread-x), var(--spread-y)) rotate(var(--spin-total)) scale(var(--base-scale)); opacity: 1; }
+}
+
+@keyframes loot-burst-f {
+    0% { transform: translate(0, 0) rotate(0deg) scale(0.8); opacity: 0; }
+    100% { transform: translate(var(--spread-x), var(--spread-y)) rotate(var(--spin-total)) scale(var(--base-scale)); opacity: 1; }
+}
+
+/* Fly to HUD Animation - Snappy and Opaque until impact */
+@keyframes loot-fly-to-hud {
+    0% { 
+        left: var(--start-x); 
+        top: var(--start-y); 
+        transform: rotate(var(--start-spin, 0deg)) scale(var(--base-scale));
+        opacity: 1;
+    }
+    66% {
+        opacity: 1;
+        filter: brightness(1.5);
+    }
+    100% { 
+        left: var(--target-x); 
+        top: var(--target-y); 
+        transform: rotate(var(--fly-spin, 720deg)) scale(1);
+        opacity: 0;
+        filter: brightness(2) blur(1px);
+    }
+}
+
+#resource-hud .resource-item {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Resource Box Feedback */
+@keyframes resource-box-pop {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.3, 0.7); }
+    60% { transform: scale(0.8, 1.2); }
+    100% { transform: scale(1); }
+}
+
+.resource-item.anim-pop {
+    animation: resource-box-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}

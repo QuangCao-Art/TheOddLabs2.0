@@ -89,7 +89,8 @@ export const gameState = {
     settings: {
         masterVolume: 1.0,
         musicVolume: 1.0,
-        sfxVolume: 1.0
+        sfxVolume: 1.0,
+        isMuted: false
     }
 };
 

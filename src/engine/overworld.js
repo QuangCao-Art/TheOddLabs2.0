@@ -3106,8 +3106,12 @@ export const Overworld = {
             if (meta && meta.breakable && wasSprinting) {
                 if (screen) screen.classList.remove(shakeClass);
                 this.transformBreakable(parts, meta.breaksInto);
+                this.dropLoot(obj, isHomeRun, directionKey);
                 return;
             }
+
+            // Standard Kick Loot
+            this.dropLoot(obj, isHomeRun, directionKey);
 
             if (zone && zone.objects) {
                 // Permanently remove NPCs (Wild Monsters); flag Props to hide until zone change
@@ -3246,7 +3250,7 @@ export const Overworld = {
             this.renderObject(newObj, mapEl);
         });
 
-        // 4. Trigger VFX (No full redraw needed, camera and flying objects stay smooth!)
+        // 4. Trigger VFX
         this.spawnBreakParticles(centerX, centerY, oldParts.length > 1);
     },
 
@@ -3410,6 +3414,178 @@ export const Overworld = {
                 mapEl.appendChild(spark);
                 setTimeout(() => { if (spark.parentNode) spark.parentNode.removeChild(spark); }, 400);
             }
+        }
+    },
+
+    /**
+     * --- KICK DROP LOOT SYSTEM ---
+     * Handles rolling for and spawning resource loot upon furniture interaction.
+     */
+    dropLoot(obj, isHomerun, directionKey) {
+        if (!obj || obj.type === 'npc') return; // Only props drop loot
+        
+        const zone = this.zones[this.currentZone];
+        const isLimited = zone && zone.dropPoolLimit;
+
+        // Pool Definitions
+        const pools = {
+            '01': { nothing: 50, lc: 25, bm: 25, lcQty: 1, bmQty: 1 },
+            '02': { nothing: 30, lc: 35, bm: 35, lcQty: 2, bmQty: 2 },
+            '03': { nothing: 0,  lc: 50, bm: 50, lcQty: 3, bmQty: 2 },
+            '04': { nothing: 0,  lc: 50, bm: 50, lcQty: 5, bmQty: 3 }
+        };
+
+        let selectedPool = '01';
+        if (isLimited) {
+            selectedPool = '01';
+        } else if (isHomerun) {
+            selectedPool = Math.random() < 0.5 ? '03' : '04';
+        } else {
+            const roll = Math.random();
+            if (roll < 0.33) selectedPool = '01';
+            else if (roll < 0.66) selectedPool = '02';
+            else selectedPool = '03';
+        }
+
+        const pool = pools[selectedPool];
+        const resultRoll = Math.random() * 100;
+        
+        let rewardType = null;
+        let amount = 0;
+
+        if (resultRoll < pool.lc) {
+            rewardType = 'lc';
+            amount = pool.lcQty;
+        } else if (resultRoll < (pool.lc + pool.bm)) {
+            rewardType = 'bm';
+            amount = pool.bmQty;
+        }
+
+        if (rewardType) {
+            // Update State
+            if (rewardType === 'lc') window.gameState.credits = (window.gameState.credits || 0) + amount;
+            else window.gameState.biomass = (window.gameState.biomass || 0) + amount;
+            
+            // Visual Particles
+            this.spawnLootParticles(obj.x, obj.y, rewardType, amount, directionKey);
+        }
+    },
+
+    spawnLootParticles(tileX, tileY, type, amount, directionKey) {
+        const viewport = document.getElementById('game-container');
+        const mapEl = document.getElementById('overworld-map');
+        if (!viewport || !mapEl) return;
+
+        const mapRect = mapEl.getBoundingClientRect();
+        
+        // Target HUD Elements
+        const hudId = type === 'lc' ? 'hud-lc-val' : 'hud-bm-val';
+        const targetEl = document.getElementById(hudId);
+        const targetBox = targetEl ? targetEl.parentElement : null;
+        if (!targetBox) return;
+        const targetRect = targetBox.getBoundingClientRect();
+
+        // Calculate spawn Screen coordinates
+        const startX = mapRect.left + (tileX * this.tileSize) + (this.tileSize / 2);
+        const startY = mapRect.top + (tileY * this.tileSize) + (this.tileSize / 2);
+
+        for (let i = 0; i < amount; i++) {
+            const particle = document.createElement('div');
+            particle.className = `loot-resource-icon ${type === 'lc' ? 'lc' : 'biomass'}`;
+            
+            // Multi-variable Randomization
+            let spreadX = 0, spreadY = 0;
+            const randDist = Math.random() * 250 + 250; // 250-500px total spread
+            const randArc = Math.random() * 40 - 20;   // Minimal +/- 20px vertical variance
+            
+            if (directionKey === 'l') {
+                spreadX = -randDist;
+                spreadY = randArc;
+            } else if (directionKey === 'r') {
+                spreadX = randDist;
+                spreadY = randArc;
+            } else if (directionKey === 'u') {
+                spreadX = Math.random() * 200 - 100;
+                spreadY = -randDist * 0.5; // Up-kicks still scatter slightly upwards
+            } else { // 'f'
+                spreadX = Math.random() * 200 - 100;
+                spreadY = randDist * 0.5;
+            }
+
+            const spinTotal = (Math.random() * 360 + 360) * (Math.random() > 0.5 ? 1 : -1);
+            const baseScale = 0.9 + (Math.random() * 0.4 - 0.2); // 20% variance around 0.9
+
+            particle.style.setProperty('--spread-x', `${spreadX}px`);
+            particle.style.setProperty('--spread-y', `${spreadY}px`);
+            particle.style.setProperty('--spin-total', `${spinTotal}deg`);
+            particle.style.setProperty('--base-scale', baseScale);
+
+            // WORLD SPACE SPAWN
+            const tileCenterX = (tileX * this.tileSize) + (this.tileSize / 2);
+            const tileCenterY = (tileY * this.tileSize) + (this.tileSize / 2);
+            
+            particle.style.left = `${tileCenterX - 32}px`;
+            particle.style.top = `${tileCenterY - 32}px`;
+            
+            particle.style.animation = `loot-burst-${directionKey} 1.0s ease-out forwards`;
+            mapEl.appendChild(particle);
+
+            // Phase 2: Predictive Handover to SCREEN SPACE and Fly to HUD
+            setTimeout(() => {
+                if (!particle.parentNode) return;
+                
+                // 1. CALCULATE MATHEMATICAL FINAL POSITION (PREDICTIVE)
+                const currentMapRect = mapEl.getBoundingClientRect();
+                const exactFinalX = currentMapRect.left + tileCenterX + spreadX - 32;
+                const exactFinalY = currentMapRect.top + tileCenterY + spreadY - 32;
+
+                // 2. SEAMLESS HANDOVER TO VIEWPORT
+                particle.style.animation = 'none';
+                viewport.appendChild(particle);
+                
+                // Set exactly at the predicted landing spot
+                particle.style.left = `${exactFinalX}px`;
+                particle.style.top = `${exactFinalY}px`;
+                particle.style.transform = `rotate(${spinTotal}deg) scale(${baseScale})`;
+                
+                void particle.offsetWidth; // Reflow for new animation
+
+                // 3. START FLIGHT
+                particle.style.setProperty('--start-x', `${exactFinalX}px`);
+                particle.style.setProperty('--start-y', `${exactFinalY}px`);
+                particle.style.setProperty('--target-x', `${targetRect.left + targetRect.width / 2 - 32}px`);
+                particle.style.setProperty('--target-y', `${targetRect.top + targetRect.height / 2 - 32}px`);
+                particle.style.setProperty('--start-spin', `${spinTotal}deg`);
+                particle.style.setProperty('--fly-spin', `${spinTotal + 720}deg`);
+
+                particle.style.animation = 'loot-fly-to-hud 0.9s cubic-bezier(0.45, 0, 0.55, 1) forwards';
+
+                // Cleanup and feedback
+                setTimeout(() => {
+                    if (particle.parentNode) particle.parentNode.removeChild(particle);
+                    this.triggerHUDBounce(targetBox);
+                    if (window.animateResourceHUD) window.animateResourceHUD(type, 1);
+                    else if (window.updateResourceHUD) window.updateResourceHUD();
+                }, 900);
+            }, 1000 + (i * 120) + (Math.random() * 250)); // Randomized arrival jitter (250ms)
+        }
+    },
+
+    triggerHUDBounce(el) {
+        if (!el) return;
+        el.classList.remove('anim-pop');
+        void el.offsetWidth;
+        el.classList.add('anim-pop');
+        
+        // Trigger a tiny flash on the value itself
+        const val = el.querySelector('.resource-value');
+        if (val) {
+            val.style.color = '#fff';
+            val.style.textShadow = '0 0 15px #fff';
+            setTimeout(() => {
+                val.style.color = '';
+                val.style.textShadow = '';
+            }, 200);
         }
     }
 };

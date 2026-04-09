@@ -152,10 +152,18 @@ export const AudioManager = {
         source.start(0);
         
         this.currentMusicVolume = volume;
-        const targetGain = volume * this.masterVolume * this.musicVolume;
+        const muteFactor = this.isMuted ? 0 : 1;
+        const targetGain = volume * this.masterVolume * this.musicVolume * muteFactor;
 
         try {
-            gain.gain.exponentialRampToValueAtTime(Math.max(0.01, targetGain), this.ctx.currentTime + fadeDuration);
+            // Exponential ramps cannot hit 0, so we use a functionally silent minimum (0.0001)
+            const rampTarget = Math.max(0.0001, targetGain);
+            gain.gain.exponentialRampToValueAtTime(rampTarget, this.ctx.currentTime + fadeDuration);
+            
+            // If target was true zero, schedule a hard cut to 0 after the fade
+            if (targetGain < 0.0001) {
+                gain.gain.setValueAtTime(0, this.ctx.currentTime + fadeDuration + 0.1);
+            }
         } catch (e) {
             gain.gain.value = targetGain; // Fallback
         }
@@ -194,13 +202,15 @@ export const AudioManager = {
      */
     updateVolumes() {
         if (this.activeMusicSource && this.musicGain && this.ctx && this.ctx.state === 'running') {
-            const targetGain = this.currentMusicVolume * this.masterVolume * this.musicVolume;
+            const muteFactor = this.isMuted ? 0 : 1;
+            const targetGain = this.currentMusicVolume * this.masterVolume * this.musicVolume * muteFactor;
             try {
-                // Smooth transition for volume changes
-                this.musicGain.gain.setTargetAtTime(Math.max(0.01, targetGain), this.ctx.currentTime, 0.1);
+                // setTargetAtTime can target 0 safely and will smoothly approach silence
+                const finalTarget = targetGain < 0.001 ? 0 : targetGain;
+                this.musicGain.gain.setTargetAtTime(finalTarget, this.ctx.currentTime, 0.1);
             } catch (e) {
                 // Fallback for extreme cases
-                this.musicGain.gain.value = Math.max(0.01, targetGain);
+                this.musicGain.gain.value = targetGain;
             }
         }
     }
