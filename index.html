@@ -37,7 +37,8 @@
         .btn-mute img {
             width: 20px;
             height: 20px;
-            filter: brightness(0) saturate(100%) invert(84%) sepia(50%) saturate(4522%) hue-rotate(145deg) brightness(105%) contrast(106%); /* Cyan filter */
+            filter: brightness(0) saturate(100%) invert(84%) sepia(50%) saturate(4522%) hue-rotate(145deg) brightness(105%) contrast(106%);
+            /* Cyan filter */
             transition: all 0.3s ease;
         }
 
@@ -54,9 +55,10 @@
         }
 
         .btn-mute.active img {
-            filter: brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(4000%) hue-rotate(330deg) brightness(100%) contrast(110%); /* Red filter */
+            filter: brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(4000%) hue-rotate(330deg) brightness(100%) contrast(110%);
+            /* Red filter */
         }
-        
+
         .btn-mute:active {
             transform: scale(0.9);
         }
@@ -120,8 +122,9 @@
         <!-- Settings Screen -->
         <div id="screen-settings" class="screen hidden">
             <div id="settings-panel" class="glass-panel">
-                <h2 class="neon-text" style="text-align: center; margin-bottom: 40px; font-size: 2.5rem; letter-spacing: 4px;">SYSTEM <span
-                        class="white-text">SETTINGS</span></h2>
+                <h2 class="neon-text"
+                    style="text-align: center; margin-bottom: 40px; font-size: 2.5rem; letter-spacing: 4px;">SYSTEM
+                    <span class="white-text">SETTINGS</span></h2>
 
                 <!-- Audio Sensory Section -->
                 <div id="sound-settings-panel"
@@ -129,7 +132,8 @@
                     <h3 class="neon-text"
                         style="font-size: 1.4rem; margin-bottom: 5px; text-align: center; color: var(--neon-cyan); letter-spacing: 2px;">
                         AUDIO SENSORY OUTPUTS</h3>
-                    <p style="text-align: center; font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-bottom: 25px; font-family: 'Rajdhani', sans-serif;">
+                    <p
+                        style="text-align: center; font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-bottom: 25px; font-family: 'Rajdhani', sans-serif;">
                         [ WARNING: Keep your finger off the mute button, human needs music. ]</p>
 
                     <div class="setting-row"
@@ -165,12 +169,14 @@
                     <h3 class="neon-text"
                         style="font-size: 1.4rem; margin-bottom: 5px; text-align: center; color: var(--neon-cyan); letter-spacing: 2px;">
                         TEMPORAL ANCHOR PROTOCOLS</h3>
-                    <p style="text-align: center; font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-bottom: 25px; font-family: 'Rajdhani', sans-serif;">
+                    <p
+                        style="text-align: center; font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-bottom: 25px; font-family: 'Rajdhani', sans-serif;">
                         [ ADVISORY: Because 'oops game crash forget to save' is not funny. ]</p>
 
                     <div class="setting-row"
                         style="display: flex; flex-direction: column; align-items: center; margin-bottom: 5px; font-family: 'Orbitron', sans-serif; color: #fff;">
-                        <button id="btn-autosave-toggle" class="btn-neon" style="width: auto; min-width: 220px; white-space: nowrap; padding: 12px 25px; font-size: 0.85rem; margin-top: 10px;">
+                        <button id="btn-autosave-toggle" class="btn-neon"
+                            style="width: auto; min-width: 220px; white-space: nowrap; padding: 12px 25px; font-size: 0.85rem; margin-top: 10px;">
                             AUTO-SYNC: OFFLINE
                         </button>
                     </div>
@@ -1334,7 +1340,8 @@
         <!-- Incubator Interaction Menu -->
         <div id="screen-incubator-menu" class="overlay hidden">
             <div class="modal glass-panel">
-                <h2 class="neon-text" style="text-align: center; margin-bottom: 25px; font-size: 1.8rem;">BIOLOGICAL <span class="white-text">INCUBATOR</span></h2>
+                <h2 class="neon-text" style="text-align: center; margin-bottom: 25px; font-size: 1.8rem;">BIOLOGICAL
+                    <span class="white-text">INCUBATOR</span></h2>
                 <p>System authorized. Select biological maintenance protocol:</p>
                 <div class="modal-buttons">
                     <button id="btn-incubator-heal" class="btn-neon">HEAL CELL</button>
@@ -1555,7 +1562,7 @@
     </div>
 
     </div>
-    
+
     <!-- TIMED QUEST UI -->
     <div id="quest-countdown-overlay" class="hidden">3</div>
     <div id="quest-timer-hud" class="hidden">
