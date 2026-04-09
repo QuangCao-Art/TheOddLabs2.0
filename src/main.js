@@ -1008,7 +1008,7 @@ function setupEventListeners() {
 
     // INCUBATOR SYSTEM
     document.getElementById('btn-incubator-close')?.addEventListener('click', () => closeIncubatorMenu());
-    document.getElementById('btn-incubator-heal')?.addEventListener('click', () => startHealSequence());
+    document.getElementById('btn-incubator-heal')?.addEventListener('click', () => window.startHealSequence());
 
     // DRAG AND DROP LOGIC
     selectionCore.addEventListener('mousedown', startDrag);
@@ -1563,34 +1563,9 @@ function setupEventListeners() {
                         Overworld.updatePlayerPosition(); // Force visual sync
                     }
 
-                    // 4. Auto-Trigger Healing and Dialogue after a short settlement delay
+                    // 4. Trigger Hardened Medical Protocol (Unified)
                     setTimeout(async () => {
-                        // Triggers the visual healing sequence
-                        await startHealSequence();
-
-                        // 3. Deduct Credits (Penalty) - Now AFTER healing
-                        const penalty = 50;
-                        if (window.changeResource) {
-                            window.changeResource('lc', -penalty);
-                        } else {
-                            gameState.credits = Math.max(0, (gameState.credits || 0) - penalty);
-                            if (window.updateResourceHUD) window.updateResourceHUD();
-                        }
-
-                        // 4. Play Randomized Medical Advisory Dialogue
-                        const variations = [
-                            "Bio-sync complete! Your molecular structural integrity is now 100% sassier.",
-                            "Incubator mist: 50 Credits. Your Cells smelling like fresh lavender: Priceless.",
-                            "Next time, try not to get kicked so hard. It's expensive to patch your cells back together!"
-                        ];
-                        const randomLine = variations[Math.floor(Math.random() * variations.length)];
-                        Overworld.showDialogue("MEDICAL ADVISORY", [randomLine]);
-                        
-                        // Release flags ONLY when dialogue is finished
-                        Overworld.onDialogueComplete = () => {
-                            Overworld.isPaused = false;
-                            Overworld.isTransitioning = false;
-                        };
+                        await window.startHealSequence('defeat');
                     }, 800);
 
                     btn.innerText = 'CONTINUE TO GAME'; // Reset for next time
@@ -2332,6 +2307,15 @@ function setupEventListeners() {
     };
 
     document.getElementById('btn-mute-toggle')?.addEventListener('click', handleMuteToggle);
+    
+    const handleAutoSaveToggle = () => {
+        if (!gameState.settings) gameState.settings = { masterVolume: 1.0, musicVolume: 1.0, sfxVolume: 1.0, isMuted: false, autoSave: false };
+        gameState.settings.autoSave = !gameState.settings.autoSave;
+        updateSystemSettingsUI();
+        saveSystemSettings();
+    };
+    document.getElementById('btn-autosave-toggle')?.addEventListener('click', handleAutoSaveToggle);
+
     document.getElementById('slider-master-volume')?.addEventListener('input', (e) => handleVolumeInput('masterVolume', parseFloat(e.target.value)));
     document.getElementById('slider-music-volume')?.addEventListener('input', (e) => handleVolumeInput('musicVolume', parseFloat(e.target.value)));
     document.getElementById('slider-sfx-volume')?.addEventListener('input', (e) => handleVolumeInput('sfxVolume', parseFloat(e.target.value)));
@@ -4754,6 +4738,9 @@ function showGameOver(isFailure, forceOverlay = false) {
             console.log(`Battle Rewards: ${creditsEarned} LC, ${biomassEarned} Biomass, ${expEarned} EXP`);
         }
 
+        // Auto-save rewards (Optional/Debug Toggle)
+        if (gameState.settings?.autoSave) saveGameState();
+
         if (expContainer) expContainer.classList.remove('hidden');
 
         // Check Level Up!
@@ -4929,11 +4916,16 @@ function syncAudioEngineWithSettings() {
 }
 
 function updateAudioSettingsUI() {
+    updateSystemSettingsUI();
+}
+
+function updateSystemSettingsUI() {
     if (!gameState.settings) return;
     const master = document.getElementById('slider-master-volume');
     const music = document.getElementById('slider-music-volume');
     const sfx = document.getElementById('slider-sfx-volume');
     const muteBtn = document.getElementById('btn-mute-toggle');
+    const autoSaveBtn = document.getElementById('btn-autosave-toggle');
     
     const mVal = Math.round(gameState.settings.masterVolume * 100);
     const muVal = Math.round(gameState.settings.musicVolume * 100);
@@ -4945,6 +4937,11 @@ function updateAudioSettingsUI() {
 
     if (muteBtn) {
         muteBtn.classList.toggle('active', gameState.settings.isMuted);
+    }
+
+    if (autoSaveBtn) {
+        autoSaveBtn.classList.toggle('active', gameState.settings.autoSave);
+        autoSaveBtn.innerText = gameState.settings.autoSave ? 'AUTO-SYNC: ACTIVE' : 'AUTO-SYNC: OFFLINE';
     }
 }
 
@@ -6456,7 +6453,10 @@ function applyBonuses(party, level, forceHeal = true) {
 /**
  * INCUBATOR SYSTEM
  */
+let incubatorIsHealing = false; // Medical Lockout Flag
+
 window.openIncubatorMenu = function () {
+    if (incubatorIsHealing) return; // Prevent menu during healing
     incubatorInputReady = false;
     setTimeout(() => { incubatorInputReady = true; }, 250);
     const party = gameState.profiles.player.party;
@@ -6498,100 +6498,207 @@ function updateIncubatorSelection() {
 }
 
 window.closeIncubatorMenu = function() {
+    if (incubatorIsHealing) return; // Prevent closing during active sync
     document.getElementById('screen-incubator-menu').classList.add('hidden');
     document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
     if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
 }
 
-window.startHealSequence = async function() {
+window.startHealSequence = async function(context = 'manual') {
+    if (incubatorIsHealing) return;
+    const party = gameState.profiles.player.party;
+    const activeMonsters = party.filter(m => m !== null);
+    
+    // PRE-CHECK: If all active monsters are healthy, don't play the sequence
+    const allHealthy = activeMonsters.every(m => {
+        const mod = getModifiedStats(m, gameState.profiles.player.level);
+        return m.hp >= mod.maxHp && m.pp === 1; // Maintenance state is 1 PP
+    });
+
+    if (allHealthy && context === 'manual') {
+        document.getElementById('screen-incubator-menu')?.classList.add('hidden');
+        document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
+        Overworld.showDialogue("INCUBATOR OS", ["SCAN COMPLETE: All biometric signatures are at baseline maintenance levels. No intervention required."]);
+        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
+        return;
+    }
+
+    incubatorIsHealing = true; // LOCKOUT ON
+
     // Hide menu without removing blur
-    document.getElementById('screen-incubator-menu').classList.add('hidden');
+    document.getElementById('screen-incubator-menu')?.classList.add('hidden');
 
     const healScreen = document.getElementById('screen-incubator-heal');
+    if (!healScreen) return;
     healScreen.classList.remove('hidden');
 
     const statusText = document.getElementById('heal-status-text');
     const scanLine = document.getElementById('heal-scan-line');
-    statusText.textContent = "INITIALIZING BIO-SYNC...";
+    if (statusText) statusText.textContent = context === 'defeat' ? "EMERGENCY STABILIZATION..." : "INITIALIZING BIO-SYNC...";
 
     // Clear previous state
-    const slots = document.querySelectorAll('.heal-slot');
+    const slots = healScreen.querySelectorAll('.heal-slot');
     slots.forEach(s => {
-        s.classList.remove('active');
+        s.classList.remove('active', 'scanning');
         s.removeAttribute('data-monster');
-        const bar = s.querySelector('.heal-stat-bar');
-        bar.classList.remove('charged');
-        s.querySelector('.heal-fill').style.width = '0%';
-        s.querySelector('.slot-portrait').classList.remove('anim-monster-pop');
+        s.querySelectorAll('.status-bar-fill').forEach(f => {
+            f.style.width = '0%';
+            f.classList.remove('charged', 'lysis');
+            f.style.opacity = '1';
+        });
+        const fill = s.querySelector('.chamber-battery');
+        if (fill) fill.style.height = '';
     });
 
-    await new Promise(r => setTimeout(r, 600));
+    // Step 1: Sequential Placement
+    const placementOrder = [0, 1, 2];
+    for (const partyIdx of placementOrder) {
+        const monster = party[partyIdx];
+        if (!monster) continue;
 
-    // 1. Load Monsters into slots
-    const party = gameState.profiles.player.party;
-    for (let i = 0; i < 3; i++) {
-        const monster = party[i];
-        if (monster) {
-            const slot = slots[i];
-            const portrait = slot.querySelector('.slot-portrait');
+        const slotEl = healScreen.querySelector(`.heal-slot[data-slot="${partyIdx}"]`);
+        if (slotEl) {
+            slotEl.setAttribute('data-monster', monster.monsterId || monster.id.split('_')[0]);
+            
+            const mod = getModifiedStats(monster, gameState.profiles.player.level);
+            const currentHpPct = Math.min(100, (monster.hp / mod.maxHp) * 100);
+            
+            const ppVal = monster.pp || 0;
+            const isLysis = ppVal < 0;
+            const currentPpPct = Math.min(100, (Math.abs(ppVal) / mod.maxPp) * 100);
 
-            // Use tileset mapping via data attribute
-            slot.setAttribute('data-monster', monster.id);
+            const hpFill = slotEl.querySelector('.hp-bar .status-bar-fill');
+            const ppFill = slotEl.querySelector('.pp-bar .status-bar-fill');
+            
+            if (hpFill) {
+                hpFill.classList.add('no-transition');
+                hpFill.style.width = `${currentHpPct}%`;
+                if (currentHpPct >= 99) hpFill.classList.add('charged');
+                setTimeout(() => hpFill.classList.remove('no-transition'), 50);
+            }
+            if (ppFill) {
+                ppFill.classList.add('no-transition');
+                if (isLysis) ppFill.classList.add('lysis');
+                ppFill.style.width = `${currentPpPct}%`;
+                ppFill.style.opacity = isLysis ? '1' : '0.6';
+                setTimeout(() => ppFill.classList.remove('no-transition'), 50);
+            }
 
-            slot.classList.add('active');
-            portrait.classList.add('anim-monster-pop');
-            await new Promise(r => setTimeout(r, 300));
+            await new Promise(r => setTimeout(r, 100));
+            slotEl.classList.add('active');
+            await new Promise(r => setTimeout(r, 450));
         }
     }
 
-    statusText.textContent = "SCANNING BIOLOGICAL SIGNATURES...";
-    await new Promise(r => setTimeout(r, 600));
+    // Step 2: Synchronized Scan Sweep
+    await new Promise(r => setTimeout(r, 400));
+    if (statusText) statusText.textContent = "SCANNING CELLULAR INTEGRITY...";
+    if (scanLine) scanLine.classList.add('animate-heal-scan');
+    
+    // Sync battery charging with scan position (Scan is 2.5s Total)
+    const syncDelays = { "1": 700, "0": 1300, "2": 2100 };
+    Object.keys(syncDelays).forEach(slotId => {
+        const partyIdx = parseInt(slotId);
+        setTimeout(async () => {
+            const slotEl = healScreen.querySelector(`.heal-slot[data-slot="${slotId}"]`);
+            const monster = party[partyIdx];
+            if (slotEl && slotEl.classList.contains('active') && monster) {
+                slotEl.classList.add('scanning');
+                
+                const mod = getModifiedStats(monster, gameState.profiles.player.level);
+                
+                // Vital Restoration
+                const hpFill = slotEl.querySelector('.hp-bar .status-bar-fill');
+                if (hpFill) {
+                    hpFill.style.width = '100%';
+                    hpFill.classList.add('charged');
+                }
 
-    // 2. Start Scan Animation
-    scanLine.classList.add('animate-heal-scan');
+                // Potential Stabilization (Lysis -> Ability)
+                const ppFill = slotEl.querySelector('.pp-bar .status-bar-fill');
+                if (ppFill) {
+                    const isLysis = monster.pp < 0;
+                    if (isLysis) {
+                        ppFill.style.width = '0%';
+                        setTimeout(() => {
+                            ppFill.classList.remove('lysis');
+                            ppFill.style.width = `${(1 / mod.maxPp) * 100}%`;
+                            ppFill.style.opacity = '0.3';
+                        }, 800);
+                    } else {
+                        ppFill.style.width = `${(1 / mod.maxPp) * 100}%`;
+                        ppFill.style.opacity = '0.3';
+                    }
+                }
+            }
+        }, syncDelays[slotId]);
+    });
 
-    // 3. Dynamic Filling (Battery metaphor)
-    for (let i = 0; i < 3; i++) {
-        const monster = party[i];
-        if (!monster) continue;
+    // Step 3: Persistence & Dialogue Selection
+    await new Promise(r => setTimeout(r, 3200));
 
-        // Punchy timing: wait for scan line to sweep
-        await new Promise(r => setTimeout(r, 600));
+    // Apply Actual Data Changes
+    activeMonsters.forEach(m => {
+        const mod = getModifiedStats(m, gameState.profiles.player.level);
+        m.hp = mod.maxHp;
+        m.pp = 1; // Maintenance baseline
+    });
 
-        statusText.textContent = `RESTORING: ${monster.id.toUpperCase()}...`;
-        const slot = slots[i];
-        const fill = slot.querySelector('.heal-fill');
-        const bar = slot.querySelector('.heal-stat-bar');
-
-        fill.style.width = '100%';
-        bar.classList.add('charged'); // Changes background to green
-
-        // Actual state restoration
-        const mod = getModifiedStats(monster, gameState.profiles.player.level);
-        monster.hp = mod.maxHp;
-        monster.pp = 1; // Reset to default starting PP
+    // Handle Defeat Penalty (50 Credits)
+    if (context === 'defeat') {
+        const penalty = 50;
+        if (window.changeResource) {
+            window.changeResource('lc', -penalty);
+        } else {
+            gameState.credits = Math.max(0, (gameState.credits || 0) - penalty);
+            if (window.updateResourceHUD) window.updateResourceHUD();
+        }
     }
+
+    if (gameState.settings?.autoSave) {
+        if (typeof saveGame !== 'undefined') saveGame();
+        if (typeof saveGameState !== 'undefined') saveGameState();
+    }
+
+    if (statusText) statusText.textContent = "SYNCHRONIZATION SUCCESSFUL";
+    if (scanLine) scanLine.classList.remove('animate-heal-scan');
 
     await new Promise(r => setTimeout(r, 800));
-    scanLine.classList.remove('animate-heal-scan');
-    statusText.textContent = "MAINTENANCE COMPLETE. ALL CELLS STABILIZED.";
-    statusText.style.color = "#00ff88";
 
-    await new Promise(r => setTimeout(r, 1500));
-
-    // Final cleanup and return to overworld
-    healScreen.classList.add('hidden');
-    statusText.style.color = ""; // Reset color
-
-    if (typeof Overworld !== 'undefined') {
-        document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
-        Overworld.isPaused = false;
-        Overworld.isTransitioning = false;
-        // No need to showScreen('screen-overworld') as it was never hidden
+    // Choose Protocol Variations
+    let protocolLabel = "INCUBATOR OS";
+    let messageVariations = [];
+    
+    if (context === 'defeat') {
+        protocolLabel = "MEDICAL ADVISORY";
+        messageVariations = [
+            "Emergency bio-sync complete. Structural integrity re-established at 100%.",
+            "Incubator mist applied. Tip: Try not to get kicked so hard next time!",
+            "Maintenance termination: Critical failure resolved. Your Cells are recovered.",
+            "Structural stabilization successful. Your molecular integrity is now much sassier."
+        ];
+    } else {
+        messageVariations = [
+            "MAINTENANCE PROTOCOL TERMINATED. Biometric potential restored to 100%.",
+            "STABILIZATION COMPLETE. Molecular integrity achieved. Your Cells feel the love!",
+            "BIO-SYNC SUCCESSFUL. Peak cellular vitality re-established.",
+            "ADVISORY: Structural integrity baseline achieved. Healthy happy Cells: Priceless."
+        ];
     }
+
+    const randomLine = messageVariations[Math.floor(Math.random() * messageVariations.length)];
+
+    // Setup the completion listener BEFORE showing dialogue
+    Overworld.onDialogueComplete = () => {
+        healScreen.classList.add('hidden');
+        document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
+        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
+        incubatorIsHealing = false; // UNLOCK
+    };
+
+    Overworld.showDialogue(protocolLabel, [randomLine]);
 }
 
-// Final Initialization
 /**
  * Executes a high-quality startup sequence for the game:
  * 1. Shows company logo splash with fade in/out
@@ -7040,6 +7147,8 @@ async function handleSynthesis(monsterId) {
 
     // Animation
     await startSynthesisAnimation(monsterId, destination);
+
+    if (gameState.settings?.autoSave) saveGameState();
 }
 
 async function startSynthesisAnimation(monsterId, destination) {
@@ -7363,6 +7472,8 @@ function handleShopAction() {
             console.log(`Purchased ${qty}x ${item.name}`);
             closeQuantityModal();
             updateShopUI();
+            
+            if (gameState.settings?.autoSave) saveGameState();
         }
     } else {
         // Sell
@@ -7377,6 +7488,8 @@ function handleShopAction() {
             console.log(`Sold ${qty}x Biomass`);
             closeQuantityModal();
             updateShopUI();
+
+            if (gameState.settings?.autoSave) saveGameState();
 
             if (gameState.biomass <= 0) shopState.selectedItemId = null;
         }

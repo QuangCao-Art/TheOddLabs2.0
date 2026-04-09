@@ -280,7 +280,9 @@ export const Overworld = {
         });
 
         if (changed) {
-            saveGameState();
+            if (gameState.settings?.autoSave) {
+                saveGameState();
+            }
         }
     },
 
@@ -2456,7 +2458,7 @@ export const Overworld = {
         }
 
         // Show pickup modal instead of dialogue
-        saveGameState(); // Auto-save after pickup
+        if (gameState.settings?.autoSave) saveGameState(); // Auto-save after pickup (if enabled)
         this.isPaused = true;
         const showModal = window.showItemPickupModal || window.showDatapadPickupModal;
         if (showModal) {

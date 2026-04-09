@@ -123,11 +123,14 @@
                 <h2 class="neon-text" style="text-align: center; margin-bottom: 40px; font-size: 2.5rem; letter-spacing: 4px;">SYSTEM <span
                         class="white-text">SETTINGS</span></h2>
 
+                <!-- Audio Sensory Section -->
                 <div id="sound-settings-panel"
-                    style="margin-bottom: 30px; padding: 25px; background: rgba(0, 243, 255, 0.05); border: 2px solid rgba(0, 243, 255, 0.2); border-radius: 12px;">
+                    style="margin-bottom: 25px; padding: 25px; background: rgba(0, 243, 255, 0.05); border: 2px solid rgba(0, 243, 255, 0.2); border-radius: 12px;">
                     <h3 class="neon-text"
-                        style="font-size: 1.6rem; margin-bottom: 25px; text-align: center; color: var(--neon-cyan); letter-spacing: 2px;">
-                        AUDIO CONFIGURATION</h3>
+                        style="font-size: 1.4rem; margin-bottom: 5px; text-align: center; color: var(--neon-cyan); letter-spacing: 2px;">
+                        AUDIO SENSORY OUTPUTS</h3>
+                    <p style="text-align: center; font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-bottom: 25px; font-family: 'Rajdhani', sans-serif;">
+                        [ WARNING: Keep your finger off the mute button, human needs music. ]</p>
 
                     <div class="setting-row"
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; font-family: 'Orbitron', sans-serif; color: #fff;">
@@ -153,6 +156,23 @@
                         <label style="font-size: 0.85rem; flex: 0.4;">SFX VOLUME</label>
                         <input type="range" id="slider-sfx-volume" min="0" max="100" step="1" value="100"
                             class="neon-slider" style="flex: 1; cursor: pointer;">
+                    </div>
+                </div>
+
+                <!-- Temporal Sync Section (Auto-Save) -->
+                <div id="autosave-settings-panel"
+                    style="margin-bottom: 30px; padding: 25px; background: rgba(0, 243, 255, 0.05); border: 2px solid rgba(0, 243, 255, 0.2); border-radius: 12px;">
+                    <h3 class="neon-text"
+                        style="font-size: 1.4rem; margin-bottom: 5px; text-align: center; color: var(--neon-cyan); letter-spacing: 2px;">
+                        TEMPORAL ANCHOR PROTOCOLS</h3>
+                    <p style="text-align: center; font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-bottom: 25px; font-family: 'Rajdhani', sans-serif;">
+                        [ ADVISORY: Because 'oops game crash forget to save' is not funny. ]</p>
+
+                    <div class="setting-row"
+                        style="display: flex; flex-direction: column; align-items: center; margin-bottom: 5px; font-family: 'Orbitron', sans-serif; color: #fff;">
+                        <button id="btn-autosave-toggle" class="btn-neon" style="width: auto; min-width: 220px; white-space: nowrap; padding: 12px 25px; font-size: 0.85rem; margin-top: 10px;">
+                            AUTO-SYNC: OFFLINE
+                        </button>
                     </div>
                 </div>
 
@@ -1314,12 +1334,10 @@
         <!-- Incubator Interaction Menu -->
         <div id="screen-incubator-menu" class="overlay hidden">
             <div class="modal glass-panel">
-                <h2 class="neon-text">INCUBATOR UNIT <span style="color: var(--color-bio);">CONNECTED</span></h2>
+                <h2 class="neon-text" style="text-align: center; margin-bottom: 25px; font-size: 1.8rem;">BIOLOGICAL <span class="white-text">INCUBATOR</span></h2>
                 <p>System authorized. Select biological maintenance protocol:</p>
                 <div class="modal-buttons">
                     <button id="btn-incubator-heal" class="btn-neon">HEAL CELL</button>
-                    <button id="btn-incubator-create" class="btn-neon disabled" title="Research Data Incomplete">CREATE
-                        CELL (PH)</button>
                     <button id="btn-incubator-close" class="btn-neon">CLOSE</button>
                 </div>
             </div>
@@ -1328,24 +1346,56 @@
         <!-- Incubator Healing Sequence -->
         <div id="screen-incubator-heal" class="overlay hidden">
             <div id="incubator-heal-container">
-                <div id="incubator-capsule">
+                <div id="incubator-capsule" class="pill-capsule">
                     <div id="heal-slots">
-                        <div class="heal-slot" data-slot="0">
+                        <!-- Left Side (Slot 1) -->
+                        <div class="heal-slot side-slot" data-slot="1">
+                            <div class="chamber-battery"></div>
+                            <div class="energy-vortex"></div>
                             <div class="slot-portrait"></div>
-                            <div class="heal-stat-bar">
-                                <div class="heal-fill"></div>
+                            <div class="status-bar-rack">
+                                <div class="status-bar hp-bar">
+                                    <div class="status-bar-fill"></div>
+                                    <div class="status-bar-cap"></div>
+                                </div>
+                                <div class="status-bar pp-bar">
+                                    <div class="status-bar-fill"></div>
+                                    <div class="status-bar-cap"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="heal-slot" data-slot="1">
+
+                        <!-- Center Focus (Slot 0) -->
+                        <div class="heal-slot middle-slot" data-slot="0">
+                            <div class="chamber-battery"></div>
+                            <div class="energy-vortex"></div>
                             <div class="slot-portrait"></div>
-                            <div class="heal-stat-bar">
-                                <div class="heal-fill"></div>
+                            <div class="status-bar-rack">
+                                <div class="status-bar hp-bar">
+                                    <div class="status-bar-fill"></div>
+                                    <div class="status-bar-cap"></div>
+                                </div>
+                                <div class="status-bar pp-bar">
+                                    <div class="status-bar-fill"></div>
+                                    <div class="status-bar-cap"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="heal-slot" data-slot="2">
+
+                        <!-- Right Side (Slot 2) -->
+                        <div class="heal-slot side-slot" data-slot="2">
+                            <div class="chamber-battery"></div>
+                            <div class="energy-vortex"></div>
                             <div class="slot-portrait"></div>
-                            <div class="heal-stat-bar">
-                                <div class="heal-fill"></div>
+                            <div class="status-bar-rack">
+                                <div class="status-bar hp-bar">
+                                    <div class="status-bar-fill"></div>
+                                    <div class="status-bar-cap"></div>
+                                </div>
+                                <div class="status-bar pp-bar">
+                                    <div class="status-bar-fill"></div>
+                                    <div class="status-bar-cap"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1353,7 +1403,7 @@
                 <div id="heal-scan-overlay">
                     <div id="heal-scan-line"></div>
                 </div>
-                <div id="heal-status-text" class="neon-text">INITIALIZING BIO-SYNC...</div>
+                <div id="heal-status-text">INITIALIZING BIO-SYNC...</div>
             </div>
         </div>
 
