@@ -17,6 +17,14 @@ Place your `.mp3` files in `assets/audio/` using the following exact names:
 | **Monsters** | `impact_monster.mp3` | Fleshy squish layer for **Wild Cells** (Auto-assigned). |
 | **Homerun** | `kick_homerun.mp3` | Explosive launch and woosh sound. |
 | **Shatter** | `shatter_tank.mp3` | The heavy crash for broken tanks. |
+| **LC Loot** | `resource_collect_lc.mp3` | Ticking sound for credit collection (loop). |
+| **BM Loot** | `resource_collect_bm.mp3` | Ticking sound for biomass collection (loop). |
+| **LC Transaction** | `resource_spend_lc.mp3` | One-time "Kaching" for purchases/sales. |
+| **BM Transaction** | `resource_spend_bm.mp3` | One-time sound for biomass spending. |
+| **Footstep (Tile)** | `footstep_tile.mp3` | **(Default)** Soft click for polished lab floors. |
+| **Footstep (Metal)** | `footstep_metal.mp3` | Metallic clang for industrial/engine rooms. |
+| **Footstep (Water)** | `footstep_water.mp3` | Splash sound for flooded or aquatic zones. |
+| **Footstep (Grass)** | `footstep_grass.mp3` | Rustling sound for the Botanic Sector. |
 
 ### 2. Music (BGM) Convention
 Background music loops automatically and cross-fades during screen transitions.
@@ -31,6 +39,18 @@ Background music loops automatically and cross-fades during screen transitions.
 1.  **Defaults**: If a furniture item has NO material tag, it will only play `impact_base.mp3`.
 2.  **Fallback**: If you define a material (e.g., `glass`) but haven't provided the file yet, the engine will safely skip that layer without crashing.
 3.  **Monsters**: Any object with `type: 'npc'` automatically plays the `monster` layer.
+4.  **Footsteps**: The engine always attempts to play `footstep_[tag].mp3`. If the file is missing, it **fails gracefully and falls back to `footstep_tile.mp3`**.
+
+### 3. Assigning Footstep Tags to Maps
+To change the walking sound for a whole map, add the `footstepTag` to the map's export object (e.g., in `atrium.js` or `oldMachine.js`):
+
+```javascript
+export const oldMachine = {
+    name: 'THE OLD MACHINE',
+    footstepTag: 'metal', // Options: tile | metal | water | grass
+    // ... rest of map data
+};
+```
 
 ### 3. Assigning Materials to Furniture
 To give a specific object a unique sound, add the `material` tag in `overworld.js` -> `furnitureMetadata`:

@@ -35,8 +35,8 @@ const moveButtons = document.querySelectorAll('.move-btn');
 // --- DEBUG WEALTH ---
 document.getElementById('btn-debug-rich')?.addEventListener('click', () => {
     if (window.changeResource) {
-        window.changeResource('lc', 5000);
-        window.changeResource('bm', 500);
+        window.changeResource('lc', 5000, false);
+        window.changeResource('bm', 500, false);
     } else {
         gameState.credits += 5000;
         gameState.biomass += 500;
@@ -73,6 +73,9 @@ const bootAudio = () => {
 
     // Sync with persistent settings
     syncAudioEngineWithSettings();
+
+    // Enable automatic sounds for all buttons, nodes, and tabs
+    AudioManager.initGlobalUISounds();
 
     window.removeEventListener('click', bootAudio);
     window.removeEventListener('keydown', bootAudio);
@@ -4790,8 +4793,8 @@ function showGameOver(isFailure, forceOverlay = false) {
         const initialPercent = Math.max(0, Math.min((initialExpRelative / expNeededForLevel) * 100, 100));
 
         if (window.changeResource) {
-            if (creditsEarned > 0) window.changeResource('lc', creditsEarned);
-            if (biomassEarned > 0) window.changeResource('bm', biomassEarned);
+            if (creditsEarned > 0) window.changeResource('lc', creditsEarned, true);
+            if (biomassEarned > 0) window.changeResource('bm', biomassEarned, true);
         } else {
             gameState.credits += creditsEarned;
             gameState.biomass += biomassEarned;
@@ -6818,7 +6821,7 @@ window.startHealSequence = async function (context = 'manual') {
     if (context === 'defeat') {
         const penalty = 30;
         if (window.changeResource) {
-            window.changeResource('lc', -penalty);
+            window.changeResource('lc', -penalty, false);
         } else {
             gameState.credits = Math.max(0, (gameState.credits || 0) - penalty);
             if (window.updateResourceHUD) window.updateResourceHUD();
@@ -6854,6 +6857,12 @@ function playStartupSequence() {
     // Phase 0: Initial State
     splash.classList.remove('hidden');
     splash.style.opacity = '1';
+
+    // Stealthy start for Audio Engine & Pre-loading
+    if (AudioManager.init) {
+        AudioManager.init();
+        AudioManager.initPreload();
+    }
 
     // Phase 1: Splash Logo Fade In
     setTimeout(() => {
@@ -6944,7 +6953,7 @@ window.updateResourceHUD = function () {
 };
 
 // Universal Resource API
-window.changeResource = function (type, amount) {
+window.changeResource = function (type, amount, isLoot = true) {
     if (!type || amount === 0) return;
 
     const isLC = type.toLowerCase() === 'lc';
@@ -6958,9 +6967,15 @@ window.changeResource = function (type, amount) {
         return; // Unsupported type for this specific feedback system
     }
 
+    // AUDIO: One-time spending/receiving sound if not loot
+    if (!isLoot && AudioManager && typeof AudioManager.play === 'function') {
+        const soundTag = isLC ? 'resource_spend_lc' : 'resource_spend_bm';
+        AudioManager.play(soundTag, 0.4, 0.1);
+    }
+
     // Trigger visual feedback
     window.spawnResourcePopup(isLC ? 'lc' : 'bm', amount);
-    window.animateResourceHUD(isLC ? 'lc' : 'bm', amount);
+    window.animateResourceHUD(isLC ? 'lc' : 'bm', amount, isLoot);
 };
 
 window.spawnResourcePopup = function (type, amount) {
@@ -6986,7 +7001,7 @@ window.spawnResourcePopup = function (type, amount) {
     setTimeout(() => popup.remove(), 1200);
 };
 
-window.animateResourceHUD = function (type, amount) {
+window.animateResourceHUD = function (type, amount, isLoot = true) {
     const id = type === 'lc' ? 'hud-lc-val' : 'hud-bm-val';
     const el = document.getElementById(id);
     if (!el) return;
@@ -7025,9 +7040,10 @@ window.animateResourceHUD = function (type, amount) {
 
         el.innerText = current;
 
-        // AUDIO: Play satisfying ticker tick SFX (Gain only or both? Let's do both but lower volume for ticks)
-        if (AudioManager && typeof AudioManager.play === 'function') {
-            AudioManager.play('resource_collect', 0.2, 0.15);
+        // AUDIO: Play satisfying ticker tick SFX (Loot only)
+        if (isLoot && AudioManager && typeof AudioManager.play === 'function') {
+            const soundTag = (type === 'lc') ? 'resource_collect_lc' : 'resource_collect_bm';
+            AudioManager.play(soundTag, 0.2, 0.15);
         }
 
         if (current !== el._visualTarget) {
@@ -7588,9 +7604,9 @@ function handleShopAction() {
         const totalCost = item.price * qty;
         if (gameState.credits >= totalCost) {
             if (window.changeResource) {
-                window.changeResource('lc', -totalCost);
+                window.changeResource('lc', -totalCost, false);
                 if (item.id === 'biomass') {
-                    window.changeResource('bm', qty);
+                    window.changeResource('bm', qty, false);
                 }
             } else {
                 gameState.credits -= totalCost;
@@ -7616,8 +7632,8 @@ function handleShopAction() {
         // Sell
         if (item.id === 'biomass' && gameState.biomass >= qty) {
             if (window.changeResource) {
-                window.changeResource('bm', -qty);
-                window.changeResource('lc', item.sellPrice * qty);
+                window.changeResource('bm', -qty, false);
+                window.changeResource('lc', item.sellPrice * qty, false);
             } else {
                 gameState.biomass -= qty;
                 gameState.credits += (item.sellPrice * qty);

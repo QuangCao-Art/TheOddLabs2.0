@@ -67,6 +67,14 @@ Update [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/o
     }
     ```
 
+> [!TIP]
+> **Advanced: Chained Breakables (Multi-Stage Destruction)**:
+> The system supports infinite chaining. To create a 3-stage breakable machine:
+> 1.  **Stage 1 (Pristine)**: `breakable: true`, `breaksInto: 'MACHINE_DAMAGED_TEMPLATE'`.
+> 2.  **Stage 2 (Damaged)**: `breakable: true`, `breaksInto: 'MACHINE_DEBRIS_TEMPLATE'`.
+> 3.  **Stage 3 (Debris)**: `kickable: true`, `breakable: false`. (This stage flies away when hit).
+
+
 ### 6. Place in a Zone (Optional)
 If you need to place the new furniture immediately:
 1.  Identify the target zone file in [src/data/maps/](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/maps/).

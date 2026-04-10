@@ -28,6 +28,7 @@ import { cellPlayGround } from '../data/maps/cellPlayGround.js';
 import { nursery } from '../data/maps/nursery.js';
 import { medicalExperienceRoom } from '../data/maps/medicalExperienceRoom.js';
 import { secretCryoChamber } from '../data/maps/secretCryoChamber.js';
+import { oldMachine } from '../data/maps/oldMachine.js';
 
 export const Overworld = {
     randomPools: {
@@ -238,7 +239,8 @@ export const Overworld = {
         cellPlayGround,
         nursery,
         medicalExperienceRoom,
-        secretCryoChamber
+        secretCryoChamber,
+        oldMachine
     },
     furnitureMetadata,
 
@@ -297,7 +299,7 @@ export const Overworld = {
                 msg = `Acquired ${reward.type.toUpperCase()}: ${reward.id}.`;
             } else if (reward.type === 'resource') {
                 if (window.changeResource) {
-                    window.changeResource(reward.id === 'credits' ? 'lc' : 'bm', reward.amount || 0);
+                    window.changeResource(reward.id === 'credits' ? 'lc' : 'bm', reward.amount || 0, true);
                 }
                 msg = `Acquired ${reward.amount} ${reward.id.toUpperCase()}.`;
             }
@@ -481,7 +483,7 @@ export const Overworld = {
         this.updatePlayerPosition();
         this.savePosition();
 
-        // --- NEW: Spatial Conflict Audit (Auto-kick furniture overlaps on entry) ---
+        // --- NEW: Spatial Conflict Audit (Auto-kick/break furniture overlaps on entry) ---
         const overlapped = zone.objects.filter(obj => {
             const w = obj.width || 1;
             const h = obj.height || 1;
@@ -490,8 +492,10 @@ export const Overworld = {
 
         overlapped.forEach(obj => {
             const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
-            const isKickable = (obj.temp === true || (obj.id && obj.id.includes('_wild_')) || (meta && meta.kickable === true));
-            if (isKickable && !obj.isKicking) {
+            // Inclusion: Kickables, Wild Monsters, AND Breakables
+            const isInteractable = (obj.temp === true || (obj.id && obj.id.includes('_wild_')) || (meta && (meta.kickable === true || meta.breakable === true)));
+            
+            if (isInteractable && !obj.isKicking) {
                 const dirMap = {
                     'up': { dx: 0, dy: -1 },
                     'down': { dx: 0, dy: 1 },
@@ -499,7 +503,7 @@ export const Overworld = {
                     'right': { dx: 1, dy: 0 }
                 };
                 const push = dirMap[this.player.direction] || { dx: 0, dy: 1 };
-                this.kickObject(obj, push.dx, push.dy, true); // Force bypass transition guard
+                this.kickObject(obj, push.dx, push.dy, true); // Force bypass transition/pause guards
             }
         });
 
@@ -981,8 +985,10 @@ export const Overworld = {
         this.player.currentFrame = this.player.stepParity * 2;
         this.updatePlayerPosition();
 
-        // Spawn Footstep VFX
-        this.spawnFootstep(this.player.x - dx, this.player.y - dy, this.player.isSprinting);
+        // Spawn Footstep VFX & Audio
+        const tag = zone?.footstepTag || 'tile';
+        this.spawnFootstep(this.player.x - dx, this.player.y - dy, this.player.isSprinting, tag);
+        AudioManager.playFootstep(tag);
     },
 
     handleAutomatedInteractions() {
@@ -2425,7 +2431,7 @@ export const Overworld = {
             }
         } else if (itemType === 'resource') {
             if (window.changeResource) {
-                window.changeResource(itemInfo.resourceType === 'credits' ? 'lc' : 'bm', itemInfo.amount || 0);
+                window.changeResource(itemInfo.resourceType === 'credits' ? 'lc' : 'bm', itemInfo.amount || 0, true);
             }
         } else if (itemType === 'card') {
             if (window.gameState) {
@@ -3150,7 +3156,8 @@ export const Overworld = {
             const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
 
             // --- STAGE 2: BRANCHING (Kick vs Break) ---
-            if (meta && meta.breakable && wasSprinting) {
+            // If the kick was forced by the Spatial Audit (force=true), always break if breakable
+            if (meta && meta.breakable && (wasSprinting || force)) {
                 if (screen) screen.classList.remove(shakeClass);
                 this.transformBreakable(parts, meta.breaksInto);
                 this.dropLoot(obj, isHomeRun, directionKey);
@@ -3295,6 +3302,20 @@ export const Overworld = {
             };
             zone.objects.push(newObj);
             this.renderObject(newObj, mapEl);
+
+            // --- RECURSIVE AUDIT: Auto-clear debris spawned under player ---
+            if (newObj.x === this.player.x && newObj.y === this.player.y) {
+                const debrisMeta = this.getFurnitureMeta(newObj.id, newObj.customSprite);
+                // Only kick it if it's solid/kickable/breakable
+                if (debrisMeta && (debrisMeta.kickable !== false || debrisMeta.breakable === true)) {
+                    // Small delay to allow the debris to actually render before launching it
+                    setTimeout(() => {
+                        const dirMap = { 'up': { dx: 0, dy: -1 }, 'down': { dx: 0, dy: 1 }, 'left': { dx: -1, dy: 0 }, 'right': { dx: 1, dy: 0 }};
+                        const push = dirMap[this.player.direction] || { dx: 0, dy: 1 };
+                        this.kickObject(newObj, push.dx, push.dy, true);
+                    }, 50);
+                }
+            }
         });
 
         // 4. Trigger VFX
@@ -3385,12 +3406,12 @@ export const Overworld = {
         }
     },
 
-    spawnFootstep(x, y, isSprinting = false) {
+    spawnFootstep(x, y, isSprinting = false, tag = 'tile') {
         const mapEl = document.getElementById('overworld-map');
         if (!mapEl) return;
 
         const puff = document.createElement('div');
-        puff.className = 'footstep-puff';
+        puff.className = `footstep-puff surf-${tag}`;
 
         const count = 3;
         for (let i = 0; i < count; i++) {
@@ -3629,7 +3650,7 @@ export const Overworld = {
                     this.triggerHUDBounce(targetBox);
 
                     if (window.changeResource) {
-                        window.changeResource(type, 1);
+                        window.changeResource(type, 1, true);
                     } else if (window.updateResourceHUD) {
                         window.updateResourceHUD();
                     }

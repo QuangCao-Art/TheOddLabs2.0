@@ -48,16 +48,25 @@ export const AudioManager = {
     },
 
     /**
-     * Play a sound with randomized pitch and optional layering
+     * Play a sound with randomized pitch and optional layering.
+     * Async ensure that the sound plays even if it needs to be loaded first.
+     * @returns {Promise<boolean>} True if sound was played successfully.
      */
-    play(id, volume = 0.5, pitchVar = 0.1) {
-        if (this.isMuted || !this.ctx) return;
+    async play(id, volume = 0.5, pitchVar = 0.1) {
+        if (this.isMuted || !this.ctx) return false;
         
-        const buffer = this.cache.get(id);
+        let buffer = this.cache.get(id);
         if (!buffer) {
-            // Attempt to load if not cached (best effort)
-            this.load(id);
-            return;
+            // Wait for load if not cached (no more silent first-plays)
+            await this.load(id);
+            buffer = this.cache.get(id);
+        }
+        
+        if (!buffer) return false;
+
+        // Ensure ctx is resumed (safeguard against transient suspension)
+        if (this.ctx.state === 'suspended') {
+            try { await this.ctx.resume(); } catch(e) {}
         }
 
         const source = this.ctx.createBufferSource();
@@ -74,6 +83,7 @@ export const AudioManager = {
         gainNode.connect(this.ctx.destination);
 
         source.start(0);
+        return true;
     },
 
     /**
@@ -213,5 +223,66 @@ export const AudioManager = {
                 this.musicGain.gain.value = targetGain;
             }
         }
+    },
+
+    /**
+     * Stealth Pre-load essential UI assets.
+     * Should be called during splash screen.
+     */
+    initPreload() {
+        const essentials = ['music_main_menu', 'click', 'hover', 'footstep_tile'];
+        essentials.forEach(id => this.load(id));
+    },
+
+    /**
+     * Play a footstep sound based on a material tag.
+     * Fallback to 'tile' if the specific variety is missing.
+     */
+    async playFootstep(tag) {
+        const soundId = `footstep_${tag}`;
+        const played = await this.play(soundId, 0.25, 0.15); // Slightly quieter, higher pitch var
+        
+        // Fallback Mechanism: If specialized sound fails, try 'tile'
+        if (!played && tag !== 'tile') {
+            // Only try tile if we haven't already tried it
+            await this.play('footstep_tile', 0.25, 0.15);
+        }
+    },
+
+    /**
+     * Attach global listeners for UI interaction sounds.
+     * Using Event Delegation for maximum performance and compatibility with dynamic elements.
+     */
+    initGlobalUISounds() {
+        const interactiveSelector = 'button, .btn, .node, .tab-btn, .move-btn, .shop-tab-btn, [role="button"], [data-audio]';
+        
+        // 1. Global Click Sound
+        window.addEventListener('click', (e) => {
+            const target = e.target.closest(interactiveSelector);
+            if (target && !target.classList.contains('no-audio')) {
+                // Exclude range sliders (they handle their own volume-synced audio)
+                if (target.tagName === 'INPUT' && target.type === 'range') return;
+                this.play('click', 0.35, 0.1);
+            }
+        }, { capture: true, passive: true });
+
+        // 2. Global Hover Sound
+        // Use 'mouseover' for delegation, but track state to prevent multi-triggers on same element
+        this._lastHovered = null;
+        window.addEventListener('mouseover', (e) => {
+            const target = e.target.closest(interactiveSelector);
+            if (target && target !== this._lastHovered && !target.classList.contains('no-audio')) {
+                if (target.tagName === 'INPUT' && target.type === 'range') return;
+                this.play('hover', 0.15, 0.05);
+                this._lastHovered = target;
+            }
+        }, { capture: true, passive: true });
+
+        window.addEventListener('mouseout', (e) => {
+            const target = e.target.closest(interactiveSelector);
+            if (target === this._lastHovered) {
+                this._lastHovered = null;
+            }
+        }, { capture: true, passive: true });
     }
 };

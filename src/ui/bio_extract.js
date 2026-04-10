@@ -454,7 +454,12 @@ export const BioExtract = {
         if (!slot || !slot.isReady) return;
 
         const amount = Math.floor(slot.biomassStored);
-        window.gameState.biomass += amount;
+        if (window.changeResource) {
+            window.changeResource('bm', amount, true);
+        } else {
+            window.gameState.biomass += amount;
+            if (window.updateResourceHUD) window.updateResourceHUD();
+        }
         
         // Reset cycle
         const level = slot.monster.extractEfficiency || 0;
@@ -465,7 +470,6 @@ export const BioExtract = {
 
         this.updateBalances();
         this.renderAll();
-        if (window.updateResourceHUD) window.updateResourceHUD();
         console.log(`Collected ${amount} Biomass.`);
     },
 

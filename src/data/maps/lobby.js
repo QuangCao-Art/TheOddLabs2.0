@@ -1,5 +1,6 @@
 export const lobby = {
     name: 'LAB LOBBY',
+    footstepTag: 'tile',
     width: 11,
     height: 8,
     spawn: { x: 5, y: 6 },

@@ -39,6 +39,6 @@ export const entertainment = {
     doors: [
         { x: 9, y: 6, targetZone: 'atrium', targetX: 1, targetY: 10 },
         { x: 7, y: 2, targetZone: 'kitchen', targetX: 7, targetY: 6, requiredFlag: 'botanicSectorUnlocked' },
-        { x: 0, y: 6, targetZone: 'cellPlayGround', targetX: 15, targetY: 6 }
+        { x: 0, y: 6, targetZone: 'cellPlayGround', targetX: 15, targetY: 7 }
     ]
 };
