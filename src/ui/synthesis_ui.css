@@ -18,8 +18,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.75rem; /* Slightly smaller for Orbitron */
+    font-family: var(--font-tactical);
+    font-size: var(--fs-label);
     letter-spacing: 0.5px;
 }
 
@@ -32,7 +32,7 @@
 }
 
 .requirement-val {
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
     font-weight: 700;
 }
 
@@ -220,7 +220,7 @@
 
 #synthesis-status-text {
     margin-top: 40px;
-    font-size: 1.2rem;
+    font-size: var(--fs-body-lg);
     letter-spacing: 3px;
     text-align: center;
     min-height: 1.5em;
@@ -244,7 +244,8 @@
     text-align: center;
     margin-top: 10px;
     letter-spacing: 2px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-body);
     font-weight: 700;
 }
 

@@ -342,8 +342,8 @@
     left: 50%;
     transform: translateX(-50%);
     width: max-content;
-    font-size: 1rem;
-    font-family: 'Orbitron', sans-serif;
+    font-size: var(--fs-body);
+    font-family: var(--font-tactical);
     color: rgba(255, 255, 255, 0.6);
     text-shadow: 0 0 10px black;
     font-weight: 900;
@@ -688,9 +688,9 @@
     left: 50%;
     transform: translateX(-50%);
     color: var(--color-match);
-    font-size: 1.4rem;
+    font-size: var(--fs-h2);
     font-weight: 900;
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px var(--color-match);
     z-index: 500;
     pointer-events: none;
@@ -708,9 +708,9 @@
     left: 50%;
     transform: translateX(-50%);
     color: var(--color-far);
-    font-size: 1.4rem;
+    font-size: var(--fs-h2);
     font-weight: 900;
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px var(--color-far);
     z-index: 500;
     pointer-events: none;
@@ -723,9 +723,9 @@
     left: 50%;
     transform: translateX(-50%);
     color: #00f2fe;
-    font-size: 1.4rem;
+    font-size: var(--fs-h2);
     font-weight: 900;
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px #00f2fe;
     z-index: 501;
     pointer-events: none;
@@ -748,9 +748,9 @@
     left: 50%;
     transform: translateX(-50%);
     color: var(--color-lysis);
-    font-size: 1.4rem;
+    font-size: var(--fs-h2);
     font-weight: 900;
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px var(--color-lysis);
     z-index: 501;
     pointer-events: none;
@@ -852,8 +852,8 @@
 }
 
 .bar-label {
-    font-size: 0.6rem;
-    font-family: 'Orbitron', sans-serif;
+    font-size: var(--fs-tiny);
+    font-family: var(--font-tactical);
     color: var(--color-player);
     width: 38px;
     /* Slightly wider for icon */
@@ -890,8 +890,8 @@
 }
 
 .bar-value {
-    font-size: 0.65rem;
-    font-family: 'Orbitron', sans-serif;
+    font-size: var(--fs-tiny);
+    font-family: var(--font-tactical);
     min-width: 65px;
     text-align: right;
     color: #fff;
@@ -900,8 +900,8 @@
 }
 
 .name {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.1rem;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-body-lg);
     letter-spacing: 2px;
     color: white;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
@@ -939,8 +939,8 @@
 }
 
 .log-line {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.1rem;
+    font-family: var(--font-main);
+    font-size: var(--fs-body-lg);
     font-weight: 500;
     letter-spacing: 1px;
     color: rgba(255, 255, 255, 0.9);
@@ -952,17 +952,17 @@
 
 .log-line:nth-last-child(2) {
     opacity: 0.7;
-    font-size: 1rem;
+    font-size: var(--fs-body);
 }
 
 .log-line:nth-last-child(3) {
     opacity: 0.4;
-    font-size: 0.95rem;
+    font-size: var(--fs-btn);
 }
 
 .log-line:nth-last-child(4) {
     opacity: 0.15;
-    font-size: 0.9rem;
+    font-size: var(--fs-label);
 }
 
 .log-line .tag {
@@ -1009,16 +1009,16 @@
 }
 
 .turn-indicator {
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
     font-weight: 900;
-    font-size: 1.2rem;
+    font-size: var(--fs-body-lg);
     color: var(--color-near);
     text-shadow: 0 0 10px var(--color-near);
     margin-bottom: 5px;
 }
 
 .phase-label {
-    font-size: 0.9rem;
+    font-size: var(--fs-btn);
     letter-spacing: 3px;
     opacity: 0.6;
 }
@@ -1115,7 +1115,7 @@
 .character-vitals .name {
     width: 100%;
     text-align: center;
-    font-size: 1.05rem;
+    font-size: var(--fs-body);
     font-weight: 600;
     letter-spacing: 2px;
     margin-bottom: 4px;
@@ -1130,7 +1130,7 @@
 }
 
 .rg-label {
-    font-size: 0.75rem;
+    font-size: var(--fs-label);
     color: #fff;
     /* Changed to white */
     opacity: 0.9;
@@ -1138,7 +1138,7 @@
     padding: 2px 8px;
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
     letter-spacing: 1.5px;
     font-weight: bold;
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
@@ -1180,7 +1180,7 @@
 }
 
 .stat-label {
-    font-size: 0.8rem;
+    font-size: var(--fs-label);
     color: rgba(255, 255, 255, 0.4);
     letter-spacing: 2px;
     font-weight: 800;
@@ -1190,8 +1190,8 @@
 }
 
 .stat-value {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.1rem;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-body-lg);
     color: white;
     font-weight: 900;
     text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
@@ -1210,8 +1210,8 @@
 }
 
 .stat-bonus {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.85rem;
+    font-family: var(--font-main);
+    font-size: var(--fs-btn);
     font-weight: 700;
     letter-spacing: 0.5px;
 }
@@ -1482,13 +1482,13 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 1.8rem;
+    font-size: var(--fs-h1);
     opacity: 0.9;
     visibility: visible;
 }
 
 #info-move-name {
-    font-size: 1rem;
+    font-size: var(--fs-body);
     font-weight: 900;
     letter-spacing: 2px;
     margin-bottom: 8px;
@@ -1497,10 +1497,10 @@
 }
 
 #info-move-desc {
-    font-size: 0.8rem;
+    font-size: var(--fs-btn);
     line-height: 1.4;
     opacity: 0.9;
-    font-family: 'Rajdhani', sans-serif;
+    font-family: var(--font-main);
 }
 
 @keyframes slide-up-info {
@@ -1535,9 +1535,9 @@
 }
 
 .move-name {
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: var(--fs-btn);
     letter-spacing: 1px;
     margin-bottom: 2px;
 }
@@ -1545,7 +1545,7 @@
 .move-stats-row {
     display: flex;
     gap: 8px;
-    font-size: 0.75rem;
+    font-size: var(--fs-label);
     opacity: 0.8;
     white-space: nowrap;
 }
@@ -1561,7 +1561,7 @@
 }
 
 .move-type {
-    font-size: 0.65rem;
+    font-size: var(--fs-tiny);
     text-transform: uppercase;
     color: white;
     opacity: 0.7;
@@ -1573,8 +1573,8 @@
     border: 2px solid var(--color-player);
     color: var(--color-player);
     padding: 12px 45px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.2rem;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-body-lg);
     cursor: pointer;
     box-shadow: 0 0 10px var(--color-player), inset 0 0 5px var(--color-player);
     transition: all 0.3s;
@@ -1604,8 +1604,8 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: rgba(255, 255, 255, 0.5);
     padding: 6px 15px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.7rem;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-label);
     cursor: pointer;
     border-radius: 10px;
     letter-spacing: 2px;
@@ -1900,9 +1900,9 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
     font-weight: 900;
-    font-size: 2.5rem;
+    font-size: var(--fs-hero);
     letter-spacing: 4px;
     z-index: 400;
     pointer-events: none;

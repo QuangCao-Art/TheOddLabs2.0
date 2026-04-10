@@ -3,7 +3,7 @@
     gap: 10px;
     z-index: 100;
     pointer-events: none;
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
 }
 
 .resource-item {
@@ -28,7 +28,7 @@
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 1rem;
+    font-size: var(--fs-body);
     font-weight: 900;
     pointer-events: none;
     z-index: 1000;
@@ -91,7 +91,7 @@
 
 
 .resource-label {
-    font-size: 0.65rem;
+    font-size: var(--fs-tiny);
     color: rgba(255, 255, 255, 0.5);
     line-height: 1;
     display: flex;
@@ -112,7 +112,7 @@
 }
 
 .resource-value {
-    font-size: 1.1rem;
+    font-size: var(--fs-body-lg);
     font-weight: 900;
     color: #fff;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);

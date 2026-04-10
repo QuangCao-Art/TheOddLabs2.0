@@ -442,8 +442,8 @@
     height: 22px;
     background: #0a0f14;
     color: var(--neon-cyan);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.85rem;
+    font-family: var(--font-main);
+    font-size: var(--fs-label);
     font-weight: 700;
     display: flex;
     align-items: center;

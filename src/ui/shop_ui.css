@@ -44,17 +44,17 @@
 }
 
 .shop-balance .label {
-    font-size: 0.7rem; /* Adjusted for Orbitron */
+    font-size: var(--fs-label); /* Adjusted for Orbitron */
     color: rgba(255, 255, 255, 0.6);
     margin-bottom: 5px;
     letter-spacing: 1.5px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
     font-weight: 700;
 }
 
 .shop-balance .value {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.5rem; /* Reduced from 1.8rem */
+    font-family: var(--font-tactical);
+    font-size: var(--fs-h2);
     font-weight: 900;
     line-height: 1;
 }
@@ -78,8 +78,8 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: rgba(255, 255, 255, 0.5);
     padding: 10px 25px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.8rem;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-btn);
     letter-spacing: 2px;
     cursor: pointer;
     transition: all 0.3s;
@@ -185,7 +185,7 @@
     justify-content: center;
     border-radius: 50%;
     border: 1px solid rgba(0, 243, 255, 0.3);
-    font-size: 1.2rem;
+    font-size: var(--fs-body-lg);
     background-repeat: no-repeat;
     /* White Stroke for the icon sprite itself */
     filter: drop-shadow(1px 0 0 white) drop-shadow(-1px 0 0 white) drop-shadow(0 1px 0 white) drop-shadow(0 -1px 0 white);
@@ -238,9 +238,9 @@
 }
 
 .shop-item-name {
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
     font-weight: 700;
-    font-size: 0.95rem; /* Slightly smaller for Orbitron scale */
+    font-size: var(--fs-body);
     color: #eee;
 }
 
@@ -249,8 +249,8 @@
     border: 1px solid #ffd700;
     color: #ffd700;
     padding: 6px 16px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.8rem; /* Slightly smaller for Orbitron */
+    font-family: var(--font-tactical);
+    font-size: var(--fs-btn);
     border-radius: 40px; /* Rounded pill shape */
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -316,7 +316,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3.5rem;
+    font-size: var(--fs-hero);
     background-repeat: no-repeat;
     /* White Stroke Standard for all detail images (the sprites) */
     filter: drop-shadow(2px 0 0 white) drop-shadow(-2px 0 0 white) drop-shadow(0 2px 0 white) drop-shadow(0 -2px 0 white);
@@ -328,16 +328,16 @@
     text-align: center;
     margin-top: 10px;
     letter-spacing: 2px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-tactical);
     font-weight: 700;
 }
 
 .shop-detail-desc {
     color: rgba(255, 255, 255, 0.8);
-    font-size: 1.05rem; /* Increased size slightly for Rajdhani readability */
+    font-size: var(--fs-body);
     line-height: 1.5;
     margin: 10px 0 5px 0; /* Reduced bottom margin */
-    font-family: 'Rajdhani', sans-serif;
+    font-family: var(--font-main);
     min-height: auto; /* Removed 100px fixed height */
     text-align: center; /* Centering description as well for symmetry */
     letter-spacing: 0.5px;
@@ -349,8 +349,8 @@
     background: rgba(0, 243, 255, 0.05);
     border: 1px solid var(--neon-cyan);
     color: var(--neon-cyan);
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.9rem;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-btn);
     font-weight: 900;
     letter-spacing: 2px;
     border-radius: 30px;
@@ -386,8 +386,8 @@
 }
 
 .qmodal-item-info {
-    font-size: 1.1rem; /* Adjusted for Orbitron */
-    font-family: 'Orbitron', sans-serif;
+    font-size: var(--fs-body-lg); 
+    font-family: var(--font-tactical);
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -408,7 +408,7 @@
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
-    font-size: 1.5rem;
+    font-size: var(--fs-h2);
     border-radius: 50%; /* Perfect circles for +/- */
     cursor: pointer;
     transition: all 0.2s;
@@ -426,8 +426,8 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: var(--neon-cyan);
     text-align: center;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.2rem;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-body-lg);
     border-radius: 5px;
 }
 
@@ -439,14 +439,14 @@
 }
 
 .qmodal-total {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.1rem;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-body-lg);
     color: rgba(255, 255, 255, 0.7);
 }
 
 .qmodal-subtraction {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.8rem; /* Adjusted for Orbitron scale */
+    font-family: var(--font-tactical);
+    font-size: var(--fs-btn); 
     color: rgba(255, 255, 255, 0.5);
     margin-top: -10px;
     letter-spacing: 1px;

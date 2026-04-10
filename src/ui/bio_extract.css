@@ -122,8 +122,8 @@
     height: 26px;
     background: #0a0f14;
     color: var(--neon-cyan);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.95rem;
+    font-family: var(--font-main);
+    font-size: var(--fs-body);
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -140,8 +140,8 @@
     color: var(--neon-cyan);
     padding: 5px 20px;
     border-radius: 40px; /* Upgraded to pill shape */
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.95rem;
+    font-family: var(--font-main);
+    font-size: var(--fs-body);
     font-weight: 700;
     margin: 10px 0;
     text-align: center;
@@ -215,15 +215,15 @@
 }
 
 .stat-mini {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.85rem;
+    font-family: var(--font-main);
+    font-size: var(--fs-btn);
     color: rgba(255, 255, 255, 0.8);
     white-space: nowrap;
 }
 
 .stat-bonus-text {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.75rem;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-label);
     color: var(--neon-cyan);
     text-align: center;
     font-weight: 700;
@@ -252,16 +252,16 @@
 }
 
 .timer {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.8rem;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-h1);
     color: var(--neon-cyan);
     letter-spacing: 2px;
     text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
 }
 
 .amount {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 2rem;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-h1);
     color: #fff;
     display: flex;
     align-items: center;
@@ -301,7 +301,7 @@
 
 .extraction-status .label {
     display: block;
-    font-size: 0.9rem;
+    font-size: var(--fs-btn);
     color: var(--neon-cyan);
     margin-bottom: 5px;
     letter-spacing: 1px;
@@ -309,8 +309,8 @@
 }
 
 .extraction-status .value {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.2rem;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-body-lg);
     font-weight: 700;
 }
 
@@ -346,13 +346,13 @@
     text-align: center;
     width: 100%;
     margin: 10px 0;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.2rem;
+    font-family: var(--font-tactical);
+    font-size: var(--fs-body-lg);
     color: #fff;
 }
 
 #bio-extract-cell-name.guide-text {
-    font-size: 0.85rem;
+    font-size: var(--fs-btn);
     text-transform: none;
     line-height: 1.4;
     color: rgba(255, 255, 255, 0.4);
@@ -360,7 +360,7 @@
     margin: 0;
     padding: 0 20px;
     font-weight: 400;
-    font-family: 'Rajdhani', sans-serif;
+    font-family: var(--font-main);
     letter-spacing: 1px;
     width: 100%;
     max-width: 300px;

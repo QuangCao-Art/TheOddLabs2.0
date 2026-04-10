@@ -1645,6 +1645,10 @@ function setupEventListeners() {
 
     // Unified Management Hub Controls -> Now Player Inventory
     document.getElementById('btn-open-inventory')?.addEventListener('click', () => {
+        // Prevent opening if another modal/overlay is active
+        const hasOverlay = document.querySelector('.overlay:not(.hidden), .modal-overlay:not(.hidden), .modal-overlay.active, #screen-confirm:not(.hidden), #screen-pause:not(.hidden)');
+        if (hasOverlay) return;
+
         inventoryInputReady = false;
         setTimeout(() => { inventoryInputReady = true; }, 250);
         renderInventory();
@@ -2074,17 +2078,10 @@ function setupEventListeners() {
                 return;
             }
 
-            // Prevent opening inventory if another interactive overlay is open
-            const activeOverlays = [
-                'screen-shop', 'screen-synthesis', 'screen-bio-extract',
-                'screen-incubator-menu', 'screen-incubator-heal'
-            ];
-            const isAnyOtherMenuOpen = activeOverlays.some(id => {
-                const el = document.getElementById(id);
-                return el && !el.classList.contains('hidden');
-            });
-
-            if (isOverworld && inventoryOverlay && !isAnyOtherMenuOpen) {
+            // Prevent opening inventory if another interactive overlay/modal is open
+            const hasOverlay = document.querySelector('.overlay:not(.hidden), .modal-overlay:not(.hidden), .modal-overlay.active, #screen-confirm:not(.hidden), #screen-pause:not(.hidden)');
+            
+            if (isOverworld && inventoryOverlay && !hasOverlay) {
                 if (!isInvOpen) {
                     inventoryInputReady = false;
                     setTimeout(() => { inventoryInputReady = true; }, 250);
@@ -3256,7 +3253,7 @@ function renderInventory() {
         };
         logList.appendChild(emptyMsg);
         const cardContainer = detailCard ? detailCard.closest('.detail-card-container') : null;
-        if (cardContainer) cardContainer.style.display = 'none';
+        // Removed global hide; visibility is now managed by tab-specific detail updates.
     } else {
         const clearLogNewStatus = (logId, element) => {
             if (gameState.unseenLogs.includes(logId)) {
@@ -3302,6 +3299,11 @@ function renderInventory() {
             item.onmouseenter = () => {
                 invNav.itemIndex = i;
                 updateInvNav(false);
+                if (isRevealed) {
+                    updateDetail(`${log.id.toUpperCase()}:<br>${log.title}`, log.text, null);
+                } else {
+                    updateDetail(`LOCKED LOG #${log.id}`, "DATA IS CURRENTLY ENCRYPTED. \n\nExplore furniture in the overworld to initialize decryption sequence for this memory fragment.", null);
+                }
             };
             logList.appendChild(item);
         });
@@ -3400,6 +3402,7 @@ function renderInventory() {
                     slot.onmouseenter = () => {
                         invNav.itemIndex = i;
                         updateInvNav(false);
+                        updateDetail(item.name.toUpperCase(), item.desc, item.img ? `assets/images/${item.img}` : 'assets/images/Card_Placeholder.png');
                     };
                 }
             }
@@ -3577,6 +3580,9 @@ function renderInventory() {
             item.onmouseenter = () => {
                 invNav.itemIndex = index;
                 updateInvNav(false);
+                const iconNameHover = cell.name.charAt(0).toUpperCase() + cell.name.slice(1);
+                const cardImg = `assets/images/Card_${iconNameHover}.png`;
+                updateDetail(cell.name.toUpperCase(), cell.lore, cardImg, statsGridHtml);
             };
             statusList.appendChild(item);
         });
@@ -3657,6 +3663,9 @@ function renderQuestMenu() {
         item.onmouseenter = () => {
             invNav.itemIndex = 0;
             updateInvNav(false);
+            const qTitle = mData.title.toUpperCase();
+            const qDesc = `<i style="color: #88ccff; opacity: 0.8;">"${mData.narrative}"</i><br><br><b>CURRENT OBJECTIVE:</b><br>${mData.objective}`;
+            updateDetail(qTitle, qDesc, 'assets/images/Card_Placeholder.png');
         };
         questList.appendChild(item);
         visualIndex++;
@@ -3711,6 +3720,18 @@ function renderQuestMenu() {
             item.onmouseenter = () => {
                 invNav.itemIndex = currentIndex;
                 updateInvNav(false);
+                const qTitle = qData.title.toUpperCase();
+                let rewardText = "";
+                if (qData.reward && qData.reward.type === 'resource_multi' && Array.isArray(qData.reward.rewards)) {
+                    rewardText = qData.reward.rewards.map(r => {
+                        const amt = r.amount ? ` x${r.amount}` : "";
+                        return (r.id || "Unknown").toUpperCase() + amt;
+                    }).join("<br>");
+                } else if (qData.reward) {
+                    rewardText = (qData.reward.id || "???").toUpperCase() + (qData.reward.amount ? " x" + qData.reward.amount : "");
+                }
+                const qDesc = qData.description + "<br><br><b>REWARD:</b><br>" + rewardText;
+                updateDetail(qTitle, qDesc, 'assets/images/Card_Placeholder.png');
             };
             questList.appendChild(item);
             visualIndex++;
