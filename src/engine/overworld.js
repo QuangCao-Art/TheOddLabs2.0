@@ -35,7 +35,7 @@ export const Overworld = {
             ["Welcome to Odd Labs!", "Please keep your badge visible at all times and avoid the bio-hazard chutes."],
             ["New here? Try to interact with computers, furniture, and people.", "It's the only way to uncover hidden data logs and gossip about the Director's lunch habits."],
             ["Keep your eye on the prize! Open your Cell-Inventory and Squad menu to manage your team.", "You can swap your active Cells and check their current membrane health there."],
-            ["Your Research Grade (RG) is the primary measure of your scientific standing.", "Every time your RG level increases, you'll receive a new tactical C-Card to upgrade your Cell's combat capabilities."],
+            ["Your Research Grade (RG) is the primary measure of your scientific standing.", "Every time your RG level increases, you'll receive a new tactical C-Chip to upgrade your Cell's combat capabilities."],
             ["The Main Atrium is the heart of Odd Labs—most wings connect right back to it.", "If you ever feel lost, just head toward the largest machine in the center of the facility."],
             ["Check every corner! Some of our best research logs are tucked away in abandoned desks or old test tanks.", "If it looks interesting, it probably has a story to tell."],
             ["If your Cells are looking a bit sluggish, take them to an Incubator unit.", "A quick session in the restorative mist will have them back to full strength in no time."],
@@ -2091,24 +2091,24 @@ export const Overworld = {
             if (isPostBattle) {
                 if (bossWon) {
                     lines = [
-                        "Predictable. You won't win without using a calibrated Catalyst Box to boost your stats. // You lacked the tactical effects needed to penetrate my defense.",
+                        "Predictable. You won't win without using a calibrated Catalyst Hub to boost your stats. // You lacked the tactical effects needed to penetrate my defense.",
                         "Access your Inventory to slot new cards and see the results in your next battle. It's the best part of the job!"
                     ];
                 } else {
                     lines = [
                         "Inquiry! How did you bypass my dermal bio-ceramics? A high-frequency sync? Fascinating.",
-                        "Pro-tip: Check your Catalyst Box in the Inventory menu to slot your rewards and boost your stats.",
+                        "Pro-tip: Check your Catalyst Hub in the Inventory menu to slot your rewards and boost your stats.",
                         "Increasing your Research Grade will unlock even more slots for skills and passive effects. Truly revolutionary!"
                     ];
                 }
             } else if (!isBattleDone) {
                 lines = [
-                    "Salutations! I'm Biologist Blundur. Have you heard of the C-Card system? // They're bio-synthetic boosters that significantly enhance your Cell's stats.",
-                    "Slotting them into your Catalyst Box is essential for maximizing your tactical advantage. // Ready to see how much of a difference a good build makes?"
+                    "Salutations! I'm Biologist Blundur. Have you heard of the C-Chip system? // They're bio-synthetic boosters that significantly enhance your Cell's stats.",
+                    "Slotting them into your Catalyst Hub is essential for maximizing your tactical advantage. // Ready to see how much of a difference a good build makes?"
                 ];
                 this.pendingBattleEncounter = 'blundur';
             } else {
-                lines = ["Check your Catalyst Box frequently and slot new cards. It's the only way to reach peak efficiency!"];
+                lines = ["Check your Catalyst Hub frequently and slot new cards. It's the only way to reach peak efficiency!"];
             }
         } else if (npc.id === 'saito' && (lines.length === 1 && lines[0] === "...")) {
             if (isPostBattle) {
@@ -2281,13 +2281,13 @@ export const Overworld = {
         } else if (npc.id === 'white' && (lines.length === 1 && lines[0] === "...")) {
             if (isPostBattle) {
                 if (bossWon) {
-                    lines = ["See? Perfection in PP management and a solid C-Card build. That's how you win—luck has nothing to do with it!"];
+                    lines = ["See? Perfection in PP management and a solid C-Chip build. That's how you win—luck has nothing to do with it!"];
                 } else {
-                    lines = ["Wait... did you just out-manage my PP? Fine, maybe your C-Card strategy was just slightly better... for now!"];
+                    lines = ["Wait... did you just out-manage my PP? Fine, maybe your C-Chip strategy was just slightly better... for now!"];
                 }
             } else if (!isBattleDone) {
                 lines = [
-                    "I'm telling you, the MAP system is pure luck! // The real pros win through superior PP management and C-Card strategy.",
+                    "I'm telling you, the MAP system is pure luck! // The real pros win through superior PP management and C-Chip strategy.",
                     "Here, I'll prove it by crushing this intern with pure tactical efficiency!"
                 ];
                 this.pendingBattleEncounter = 'white';
@@ -2429,8 +2429,8 @@ export const Overworld = {
             }
         } else if (itemType === 'card') {
             if (window.gameState) {
-                if (!window.gameState.profiles.player.cardBox.includes(itemId)) {
-                    window.gameState.profiles.player.cardBox.push(itemId);
+                if (!window.gameState.items.includes(itemId)) {
+                    window.gameState.items.push(itemId);
                 }
             }
         } else if (itemType === 'blueprint') {

@@ -1,8 +1,8 @@
-# Research Grade (RG) System & Leader Cards
+# Research Grade (RG) System & Leader Chips
 
 ## RG Reward Table
 
-| RG | Card(s) Received | Primary Stat | Tier |
+| RG | Chip(s) Received | Primary Stat | Tier |
 |:---|:---|:---|:---|
 | 1 | 2x Muscle Fiber Overdrive (+5) | Attack | 1 (S+0) |
 | 2 | 2x Dermal Hardening (+5) | Defense | 1 (S+0) |
@@ -25,9 +25,9 @@
 | 19 | 1x Muscle Fiber Overdrive MAX (+40), 1x Dermal Hardening MAX (+40) | Atk/Def | 1/1 |
 | 20 | **Lead: Molecular Dissolver** | Lead | L |
 
-## Leader Card Effects
+## Leader Chip Effects
 
-Leader cards are **Passive**. Having them in the `cardBox` unlocks specific tactical advantages.
+Leader chips are **Passive**. Having them in the `chipBox` unlocks specific tactical advantages.
 
 | Leader | Type | Effect |
 |:---|:---|:---|

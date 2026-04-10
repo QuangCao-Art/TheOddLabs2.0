@@ -1,4 +1,4 @@
-export const CARDS = {
+export const CHIPS = {
     // TIER 1: Core Stats | Slot +0
     atk_5: { id: 'atk_5', name: 'Muscle Fiber Overdrive (+5)', tier: 1, stats: { atk: 5 }, slots: 0, rarity: 'common', desc: 'Lacing the tissue with high-tensile actin filaments for a minor punch.' },
     atk_10: { id: 'atk_10', name: 'Muscle Fiber Overdrive (+10)', tier: 1, stats: { atk: 10 }, slots: 0, rarity: 'uncommon', desc: 'Mid-grade actin reinforcement for consistent physical output.' },

@@ -10,7 +10,7 @@
 | Runtime | Vanilla HTML + CSS + JS (ES Modules) | No build step needed |
 | Main logic | `src/main.js` (~183KB, ~4300 lines) | Monolithic, all game systems in one file |
 | Engine | `src/engine/overworld.js`, `state.js` | Modular, well-separated |
-| Data | `src/data/monsters.js`, `cards.js` | Clean data tables |
+| Data | `src/data/monsters.js`, `chips.js` | Clean data tables |
 | Storage | `localStorage` (presets only today) | No save system yet |
 | Assets | `assets/images/` | Static PNGs |
 
@@ -22,7 +22,7 @@
 > **Readiness: HIGH** — `gameState.credits` already exists but is never awarded or spent.
 
 - **What's needed:** A shop screen (HTML overlay), a `shopInventory` data table, and credit award logic in the battle reward handler.
-- **Hooks already in place:** `gameState.credits`, `gameState.items[]`, `gameState.profiles.player.cardBox[]`.
+- **Hooks already in place:** `gameState.credits`, `gameState.items[]`, `gameState.profiles.player.chipBox[]`.
 - **Complexity:** Medium — new screen + UI wiring. No engine changes needed.
 - **Suggested flow:** After battle → award credits → player can visit a "Lab Store" NPC in overworld → buy cards, healing items, or synthesis materials.
 
@@ -62,7 +62,7 @@ function saveGame(slot = 0) {
     const data = {
         storyFlags: gameState.storyFlags,
         playerTeam: gameState.playerTeam,
-        cardBox: gameState.profiles.player.cardBox,
+        chipBox: gameState.profiles.player.chipBox,
         credits: gameState.credits,
         items: gameState.items,
         logs: gameState.logs,

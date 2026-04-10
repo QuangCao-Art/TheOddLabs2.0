@@ -157,7 +157,7 @@ export const botanic = {
             battleEncounterId: "clips",
             dialogue: [
                 "New intern, right? You're entering a sector where one Basic skill just isn't enough to manage the tactical load.",
-                "Have you heard of the 'Second Brain'? It's a special card that unlocks an additional skill slot just by being in your squad's Catalyst Box.",
+                "Have you heard of the 'Second Brain'? It's a special card that unlocks an additional skill slot just by being in your squad's Catalyst Hub.",
                 "Let's see if you're ready for that kind of growth!"
             ],
             npcWinDialogue: [

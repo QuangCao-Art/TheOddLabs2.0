@@ -3,7 +3,7 @@ import { resolveTurn, getDistance, checkOverload, getModifiedStats } from './eng
 import { AI } from './engine/ai.js';
 import { MONSTERS } from './data/monsters.js';
 import { Overworld } from './engine/overworld.js';
-import { CARDS, LEVEL_REWARDS, NPC_PRESETS, NPC_ENCOUNTERS } from './data/cards.js';
+import { CHIPS, LEVEL_REWARDS, NPC_PRESETS, NPC_ENCOUNTERS } from './data/chips.js';
 import { SHOP_ITEMS, shopState } from './data/shop.js';
 import { SYNTHESIS_RECIPES } from './data/synthesis.js';
 import { QUESTS, MAIN_QUEST_LOGS } from './data/quests.js';
@@ -152,7 +152,7 @@ let catalystState = {
     activeProfile: 'player', // 'player', 'opponent', 'lana', etc.
     activeMonsterIdx: 0,
     boxSortMode: 'tier', // 'tier', 'type', or 'rarity'
-    draggedCardId: null,
+    draggedChipId: null,
     dragSourceSlot: null,
     battleOpponentId: 'opponent'
 };
@@ -225,10 +225,8 @@ function handleSavePreset() {
         profile.party.forEach((mon, mIdx) => {
             newPreset.squadSlots[mIdx] = {};
             if (mon) {
-                mon.equippedCards.forEach(card => {
-                    if (card) {
-                        newPreset.squadSlots[mIdx][card.slotIndex] = card.cardId;
-                    }
+                mon.equippedChips.forEach(chip => {
+                    newPreset.squadSlots[mIdx][chip.slotIndex] = chip.chipId;
                 });
             }
         });
@@ -457,10 +455,10 @@ window.showItemPickupModal = (itemId, onClose) => {
 
     const label = document.getElementById('pickup-label');
     if (label) {
-        if (itemId === 'Quest04' || data.type === 'monster') label.textContent = 'CELL ACQUIRED';
+        if (data.type === 'monster' || itemId === 'Quest04') label.textContent = 'CELL ACQUIRED';
         else if (data.type === 'log') label.textContent = 'DATALOG DISCOVERED';
         else if (data.type === 'resource') label.textContent = 'RESOURCE ACQUIRED';
-        else if (data.type === 'card') label.textContent = 'C-CARD ACQUIRED';
+        else if (data.type === 'card') label.textContent = 'COLLECTIBLE CARD DISCOVERED';
         else if (data.type === 'blueprint') label.textContent = 'BLUEPRINT ACQUIRED';
         else label.textContent = 'ITEM ACQUIRED';
     }
@@ -826,7 +824,7 @@ function initStarterSelectionEvents() {
         gameState.profiles.player.team = [selectedStarterId];
         gameState.playerTeam = [selectedStarterId];
         gameState.cellDex = [selectedStarterId];
-        gameState.profiles.player.cardBox = [`card_${selectedStarterId}`, 'atk_1', 'def_1'];
+        gameState.profiles.player.chipBox = [`card_${selectedStarterId}`, 'atk_1', 'def_1'];
         resetGame();
 
         // Close both dialogs and resume overworld
@@ -938,7 +936,7 @@ function init() {
     }
 }
 
-function syncCardsToLevel(profileId, level) {
+function syncChipsToLevel(profileId, level) {
     const profile = gameState.profiles[profileId];
     if (!profile) return;
 
@@ -953,41 +951,40 @@ function syncCardsToLevel(profileId, level) {
     // Account for what is already equipped
     const equipped = [];
     profile.party.forEach(mon => {
-        if (mon && mon.equippedCards) {
-            mon.equippedCards.forEach(ec => equipped.push(ec.cardId));
+        if (mon && mon.equippedChips) {
+            mon.equippedChips.forEach(ec => equipped.push(ec.chipId));
         }
     });
 
     // Final card box = Reward Pool - Equipped
     const finalBox = [...rewardPool];
-    equipped.forEach(cardId => {
-        const index = finalBox.indexOf(cardId);
+    equipped.forEach(chipId => {
+        const index = finalBox.indexOf(chipId);
         if (index > -1) finalBox.splice(index, 1);
     });
 
-    profile.cardBox = finalBox;
-    console.log(`[DEBUG] Syncing ${profile.name} Card Box for RG-${level}. Party Equips: ${equipped.length}, New Box: ${profile.cardBox.length}`);
+    profile.chipBox = finalBox;
+    console.log(`[DEBUG] Syncing ${profile.name} Chip Box for RG-${level}. Party Equips: ${equipped.length}, New Box: ${profile.chipBox.length}`);
 }
 
 /**
- * Checks if a profile possesses a specific leader card, 
- * searching both their card box and equipped slots across the entire party.
+ * Checks if a profile possesses a specific leader chip, 
+ * searching both their chip box and equipped slots across the entire party.
  */
-function hasLeaderCard(profileId, cardId) {
+function hasLeaderChip(profileId, chipId) {
     const profile = gameState.profiles[profileId];
     if (!profile) return false;
 
-    // 1. Check Card Box
-    if (profile.cardBox && profile.cardBox.includes(cardId)) return true;
+    // 1. Check if the chip is in the inventory (box)
+    if (profile.chipBox && profile.chipBox.includes(chipId)) return true;
 
-    // 2. Check Equipped Cards on ALL monsters in party
-    if (profile.party) {
-        for (const monster of profile.party) {
-            if (monster && monster.equippedCards && monster.equippedCards.some(ec => ec.cardId === cardId)) {
-                return true;
-            }
+    // 2. Check Equipped Chips on ALL monsters in party
+    for (const monster of profile.party) {
+        if (monster && monster.equippedChips && monster.equippedChips.some(ec => ec.chipId === chipId)) {
+            return true;
         }
     }
+
     return false;
 }
 
@@ -1159,13 +1156,13 @@ function setupEventListeners() {
         gameState.profiles[profileId] = {
             name: `WILD ${monsterName} (RG-${rg})`,
             level: rg,
-            cardBox: [],
+            chipBox: [],
             team: [monsterId, null, null],
             party: [wildMonster]
         };
 
         // Populate Card Box and Auto-Equip based on RG level
-        syncCardsToLevel(profileId, rg);
+        syncChipsToLevel(profileId, rg);
         executeQuickEquip('balanced', profileId, 0);
 
         catalystState.battleOpponentId = profileId;
@@ -1200,7 +1197,7 @@ function setupEventListeners() {
             gameState.profiles['jenzi_tutorial'] = {
                 name: 'JENZI',
                 level: 0,
-                cardBox: [],
+                chipBox: [],
                 team: [weakerType, null, null],
                 party: [createMonsterInstance(weakerType)]
             };
@@ -1209,13 +1206,13 @@ function setupEventListeners() {
             gameState.profiles['jenzi_atrium'] = {
                 name: 'JENZI',
                 level: 5,
-                cardBox: [],
+                chipBox: [],
                 team: ['stemmy', null, null],
                 party: [createMonsterInstance('stemmy')]
             };
 
             // Generate basic RG-5 cards for Jenzi
-            syncCardsToLevel('jenzi_atrium', 5);
+            syncChipsToLevel('jenzi_atrium', 5);
             executeQuickEquip('balanced', 'jenzi_atrium', 0);
 
             profileId = 'jenzi_atrium';
@@ -1223,33 +1220,33 @@ function setupEventListeners() {
             gameState.profiles['lana_boss'] = {
                 name: 'LANA',
                 level: 10,
-                cardBox: [],
+                chipBox: [],
                 team: ['cambihil', null, null],
                 party: [createMonsterInstance('cambihil')]
             };
-            syncCardsToLevel('lana_boss', 10);
+            syncChipsToLevel('lana_boss', 10);
             executeQuickEquip('survival', 'lana_boss', 0);
             profileId = 'lana_boss';
         } else if (npcId === 'dyzes') {
             gameState.profiles['dyzes_boss'] = {
                 name: 'DYZES',
                 level: 15,
-                cardBox: [],
+                chipBox: [],
                 team: ['nitrophil', null, null],
                 party: [createMonsterInstance('nitrophil')]
             };
-            syncCardsToLevel('dyzes_boss', 15);
+            syncChipsToLevel('dyzes_boss', 15);
             executeQuickEquip('balanced', 'dyzes_boss', 0);
             profileId = 'dyzes_boss';
         } else if (npcId === 'capsain') {
             gameState.profiles['capsain_boss'] = {
                 name: 'CAPSAIN',
                 level: 20,
-                cardBox: [],
+                chipBox: [],
                 team: ['lydrosome', null, null],
                 party: [createMonsterInstance('lydrosome')]
             };
-            syncCardsToLevel('capsain_boss', 20);
+            syncChipsToLevel('capsain_boss', 20);
             executeQuickEquip('balanced', 'capsain_boss', 0);
             profileId = 'capsain_boss';
         } else if (!e.detail.battleEncounterId) {
@@ -1403,7 +1400,7 @@ function setupEventListeners() {
             applyBonuses(gameState.profiles[opponentProfileId].party, gameState.profiles[opponentProfileId].level, true);
 
             // Use official Boss Encounter system: Sync cards to level then auto-equip based on style
-            syncCardsToLevel(opponentProfileId, gameState.profiles[opponentProfileId].level);
+            syncChipsToLevel(opponentProfileId, gameState.profiles[opponentProfileId].level);
             executeQuickEquip(enc.style || 'balanced', opponentProfileId, 0);
         } else if (opponentProfileId === 'jenzi') {
             const logs = gameState.logs ? gameState.logs.length : 0;
@@ -1705,7 +1702,7 @@ function setupEventListeners() {
         if (!isNaN(val)) {
             const profileId = catalystState.activeProfile;
             gameState.profiles[profileId].level = Math.max(0, Math.min(20, val));
-            syncCardsToLevel(profileId, gameState.profiles[profileId].level);
+            syncChipsToLevel(profileId, gameState.profiles[profileId].level);
             applyBonuses(gameState.profiles[profileId].party, gameState.profiles[profileId].level);
             renderManagementHub();
         }
@@ -2367,7 +2364,7 @@ function setupEventListeners() {
         const val = parseInt(e.target.value);
         if (!isNaN(val)) {
             gameState.playerLevel = Math.max(1, Math.min(15, val));
-            syncCardsToLevel('PLAYER', gameState.playerLevel);
+            syncChipsToLevel('PLAYER', gameState.playerLevel);
             renderManagementHub();
         }
     });
@@ -2376,7 +2373,7 @@ function setupEventListeners() {
         const val = parseInt(e.target.value);
         if (!isNaN(val)) {
             gameState.enemyLevel = Math.max(1, Math.min(15, val));
-            syncCardsToLevel('OPPONENT', gameState.enemyLevel);
+            syncChipsToLevel('OPPONENT', gameState.enemyLevel);
             renderManagementHub();
         }
     });
@@ -2478,8 +2475,8 @@ function setupEventListeners() {
         gameState.playerParty = gameState.profiles.player.party.slice(0, 3).filter(m => m !== null);
         gameState.player = gameState.playerParty[0];
 
-        // 1. Sync Cards first to populate cardBox
-        syncCardsToLevel('player', rg);
+        // 1. Sync Chips first to populate chipBox
+        syncChipsToLevel('player', rg);
 
         // 2. Initialize HP/PP (applyBonuses also heals)
         applyBonuses(gameState.playerParty, rg, true);
@@ -2565,10 +2562,10 @@ function updateBattleCard(monsterOrName) {
             setSafe(id, 'innerText', `${val}${suffix}`);
 
             const breakdown = mStats.breakdown ? mStats.breakdown[key] : null;
-            const cardBonus = breakdown ? breakdown.card : 0;
+            const chipBonus = breakdown ? breakdown.chip : 0;
             const effBonus = breakdown ? breakdown.eff : 0;
 
-            setSafe(`${id}-card`, 'innerText', cardBonus > 0 ? `(+${cardBonus}${suffix})` : '');
+            setSafe(`${id}-card`, 'innerText', chipBonus > 0 ? `(+${chipBonus}${suffix})` : '');
             setSafe(`${id}-eff`, 'innerText', effBonus > 0 ? `(+${effBonus}${suffix})` : '');
         };
 
@@ -2641,10 +2638,10 @@ function openMonsterCard(monsterId) {
         const suffix = isPercent ? '%' : '';
         setSafe(`#${idFull}`, 'innerText', `${val}${suffix}`);
 
-        const cardBonus = mStats.breakdown ? mStats.breakdown[key].card : 0;
+        const chipBonus = mStats.breakdown ? mStats.breakdown[key].chip : 0;
         const effBonus = mStats.breakdown ? mStats.breakdown[key].eff : 0;
 
-        setSafe(`#${idFull}-card`, 'innerText', cardBonus > 0 ? `(+${cardBonus}${suffix})` : '');
+        setSafe(`#${idFull}-card`, 'innerText', chipBonus > 0 ? `(+${chipBonus}${suffix})` : '');
         setSafe(`#${idFull}-eff`, 'innerText', effBonus > 0 ? `(+${effBonus}${suffix})` : '');
     };
 
@@ -2741,7 +2738,7 @@ function generateNPCProfile(bossId, rgLevel, roster, style) {
     gameState.profiles[profileId] = {
         name: profileName,
         level: rgLevel,
-        cardBox: [],
+        chipBox: [],
         team: roster,
         party: party,
         style: style,
@@ -2749,7 +2746,7 @@ function generateNPCProfile(bossId, rgLevel, roster, style) {
     };
 
     // Sync cards for the NPC
-    syncCardsToLevel(profileId, rgLevel);
+    syncChipsToLevel(profileId, rgLevel);
 
     // Apply style to all monsters
     party.forEach((mon, idx) => {
@@ -2891,7 +2888,7 @@ function endDrag(e) {
 function updateUI() {
     console.log("[DEBUG] Battle UI Updating...");
     const isPlayerTurn = gameState.currentTurn === 'PLAYER';
-    // Calculate display stats including C-Card bonuses
+    // Calculate display stats including C-Chip bonuses
     const pStats = getModifiedStats(gameState.player, gameState.playerLevel);
     const pPP = gameState.player.pp;
     const pMax = pStats.maxPp;
@@ -2921,16 +2918,16 @@ function updateUI() {
         let unlocked = true;
 
         if (isPellicle) {
-            const playerCardBox = gameState.profiles.player.cardBox || [];
-            if (idx === 1 && !playerCardBox.includes('leader_1')) unlocked = false;
-            if (idx === 2 && !playerCardBox.includes('leader_2')) unlocked = false;
+            const playerChipBox = gameState.profiles.player.chipBox || [];
+            if (idx === 1 && !playerChipBox.includes('leader_1')) unlocked = false;
+            if (idx === 2 && !playerChipBox.includes('leader_2')) unlocked = false;
         }
 
         btn.classList.toggle('locked', !unlocked);
         btn.classList.toggle('disabled', !unlocked || gameState.phase !== 'MOVE_SELECTION');
 
         if (!unlocked) {
-            btn.title = "Requires Leader Card to unlock";
+            btn.title = "Requires Leader Chip to unlock";
         } else {
             btn.removeAttribute('title');
         }
@@ -3088,8 +3085,8 @@ function updateUI() {
     }
 
     // 2. Move buttons (Selection, Validation, and Dynamic Rendering)
-    const hasLeader1 = hasLeaderCard('player', 'leader_1');
-    const hasLeader2 = hasLeaderCard('player', 'leader_2');
+    const hasLeader1 = hasLeaderChip('player', 'leader_1');
+    const hasLeader2 = hasLeaderChip('player', 'leader_2');
 
     moveButtons.forEach((btn, idx) => {
         const move = moveset[idx];
@@ -3456,7 +3453,7 @@ function renderInventory() {
             const item = document.createElement('div');
             item.className = 'status-item glass-panel';
 
-            // Dynamically compute stats including any C-Cards equipped
+            // Dynamically compute stats including any C-Chips equipped
             const stats = getModifiedStats(cell, playerLevel);
             const maxHp = stats.maxHp;
             const maxPp = stats.maxPp;
@@ -3507,24 +3504,24 @@ function renderInventory() {
                     <div class="mini-stat">
                         <span class="stat-label">ATTACK</span>
                         <span class="stat-total">${stats.atk}</span>
-                        ${stats.breakdown.atk.card > 0 ? `<span class="stat-bonus card">[+${stats.breakdown.atk.card}]</span>` : ''}
+                        ${stats.breakdown.atk.chip > 0 ? `<span class="stat-bonus chip">[+${stats.breakdown.atk.chip}]</span>` : ''}
                         ${stats.breakdown.atk.eff > 0 ? `<span class="stat-bonus eff">[+${stats.breakdown.atk.eff}]</span>` : ''}
                     </div>
                     <div class="mini-stat">
                         <span class="stat-label">DEFENSE</span>
                         <span class="stat-total">${stats.def}</span>
-                        ${stats.breakdown.def.card > 0 ? `<span class="stat-bonus card">[+${stats.breakdown.def.card}]</span>` : ''}
+                        ${stats.breakdown.def.chip > 0 ? `<span class="stat-bonus chip">[+${stats.breakdown.def.chip}]</span>` : ''}
                         ${stats.breakdown.def.eff > 0 ? `<span class="stat-bonus eff">[+${stats.breakdown.def.eff}]</span>` : ''}
                     </div>
                     <div class="mini-stat">
                         <span class="stat-label">SPEED</span>
                         <span class="stat-total">${stats.spd}</span>
-                        ${stats.breakdown.spd.card > 0 ? `<span class="stat-bonus card">[+${stats.breakdown.spd.card}]</span>` : ''}
+                        ${stats.breakdown.spd.chip > 0 ? `<span class="stat-bonus chip">[+${stats.breakdown.spd.chip}]</span>` : ''}
                     </div>
                     <div class="mini-stat">
                         <span class="stat-label">CRIT</span>
                         <span class="stat-total">${stats.crit}%</span>
-                        ${stats.breakdown.crit.card > 0 ? `<span class="stat-bonus card">[+${stats.breakdown.crit.card}%]</span>` : ''}
+                        ${stats.breakdown.crit.chip > 0 ? `<span class="stat-bonus chip">[+${stats.breakdown.crit.chip}%]</span>` : ''}
                     </div>
                     <div class="mini-stat efficiency-stat">
                         <span class="stat-label">EFFICIENCY</span>
@@ -3539,9 +3536,9 @@ function renderInventory() {
                     (statKey === 'pp') ? stats.maxPp : stats[statKey];
                 const suffix = isPercent ? '%' : '';
 
-                let cardBonusHtml = '';
-                if (data && data.card > 0) {
-                    cardBonusHtml = `<span class="stat-bonus card">(+${data.card}${suffix})</span>`;
+                let chipBonusHtml = '';
+                if (data && data.chip > 0) {
+                    chipBonusHtml = `<span class="stat-bonus card">(+${data.chip}${suffix})</span>`;
                 }
 
                 let effBonusHtml = '';
@@ -3554,7 +3551,7 @@ function renderInventory() {
                         <span class="stat-label">${label}</span>
                         <span class="stat-value">${total}${suffix}</span>
                         <div class="stat-bonuses-row">
-                            ${cardBonusHtml}
+                            ${chipBonusHtml}
                             ${effBonusHtml}
                         </div>
                     </div>
@@ -3761,8 +3758,8 @@ async function resolvePhase() {
     const opponentProfileId = catalystState.battleOpponentId || 'opponent';
 
     const unlocked = [true];
-    unlocked[1] = hasLeaderCard(opponentProfileId, 'leader_1');
-    unlocked[2] = hasLeaderCard(opponentProfileId, 'leader_2');
+    unlocked[1] = hasLeaderChip(opponentProfileId, 'leader_1');
+    unlocked[2] = hasLeaderChip(opponentProfileId, 'leader_2');
 
     const selectedMove = AI.selectMove(gameState.enemy, isEnemyAttacking, gameState.player, unlocked);
     gameState.enemy.selectedMove = selectedMove.id;
@@ -4817,13 +4814,13 @@ function showGameOver(isFailure, forceOverlay = false) {
 
         while (targetLevel < 20 && gameState.exp >= getExpReqForLevel(targetLevel + 1)) {
             targetLevel++;
-            levelUpText += `<br><span class="neon-text">RG LEVEL UP! [RG-${targetLevel}]</span> - New C-Cards Synced!`;
+            levelUpText += `<br><span class="neon-text">RG LEVEL UP! [RG-${targetLevel}]</span> - New C-Chips Synced!`;
         }
 
         if (targetLevel > currentRg) {
             gameState.profiles.player.level = targetLevel;
             gameState.playerLevel = targetLevel;
-            syncCardsToLevel('player', targetLevel);
+            syncChipsToLevel('player', targetLevel);
         }
 
         // Set Result Messaging
@@ -5070,7 +5067,7 @@ function resetGame() {
                 existingData = gameState.playerPartyData[idx];
             } else if (gameState.playerPartyEquips && gameState.playerPartyEquips[idx]) {
                 // Fallback for older saves (equips only)
-                existingData = { equippedCards: [...gameState.playerPartyEquips[idx]] };
+                existingData = { equippedChips: [...gameState.playerPartyEquips[idx]] };
             }
 
             const mon = createMonsterInstance(id, existingData);
@@ -5081,7 +5078,7 @@ function resetGame() {
     // Filter active squad slice (0,3) to remove nulls left by empty slots
     gameState.playerParty = pProfile.party.slice(0, 3).filter(m => m !== null);
     gameState.playerLevel = pProfile.level;
-    syncCardsToLevel('player', gameState.playerLevel);
+    syncChipsToLevel('player', gameState.playerLevel);
 
     const opponentId = catalystState.battleOpponentId || 'opponent';
     const oProfile = gameState.profiles[opponentId];
@@ -5099,7 +5096,7 @@ function resetGame() {
     }
     gameState.enemyLevel = (enemyLevel ?? 1);
 
-    syncCardsToLevel(opponentId, gameState.enemyLevel);
+    syncChipsToLevel(opponentId, gameState.enemyLevel);
 
     // 2. Persistent HP/PP: Heal enemy, but NOT the player automatically
     applyBonuses(gameState.playerParty, gameState.playerLevel, false);
@@ -5119,7 +5116,7 @@ function resetGame() {
     const enemySpd = gameState.enemy.spd || 10;
 
     // LEADER PERK #4: Initiative Zero
-    const hasLeader4 = gameState.player.equippedCards && gameState.player.equippedCards.some(s => s.cardId === 'leader_4');
+    const hasLeader4 = gameState.player.equippedChips && gameState.player.equippedChips.some(s => s.chipId === 'leader_4');
 
     if (hasLeader4 || playerSpd >= enemySpd) {
         gameState.currentTurn = 'PLAYER';
@@ -5417,13 +5414,13 @@ function stripMonsterEquipment(profileId, partyIdx) {
     const monster = profile.party[partyIdx];
     if (!monster) return;
 
-    const cardsToReturn = [...monster.equippedCards];
+    const cardsToReturn = [...monster.equippedChips];
 
     cardsToReturn.forEach(ec => {
-        profile.cardBox.push(ec.cardId);
+        profile.chipBox.push(ec.chipId);
     });
 
-    monster.equippedCards = [];
+    monster.equippedChips = [];
     monster.currentPresetId = "";
 }
 
@@ -5600,32 +5597,32 @@ function updateCatalystBox() {
         e.stopPropagation();
         const slotSource = catalystState.dragSourceSlot;
         if (slotSource) {
-            unequipCard(slotSource.monsterIdx, slotSource.slotIdx);
+            unequipChip(slotSource.monsterIdx, slotSource.slotIdx);
             addLog(`Module returned to inventory from slot ${slotSource.slotIdx}.`);
         }
     };
 
     const profile = gameState.profiles[catalystState.activeProfile];
-    let box = [...profile.cardBox];
+    let box = [...profile.chipBox];
 
     // Sorting Logic
     const rarityOrder = { 'legendary': 4, 'epic': 3, 'rare': 2, 'uncommon': 1, 'common': 0 };
     const typeOrder = { 'atk': 0, 'def': 1, 'hp': 2, 'spd': 3, 'pp': 4, 'crit': 5, 'leader': 6 };
 
     box.sort((a, b) => {
-        const cardA = CARDS[a];
-        const cardB = CARDS[b];
-        if (!cardA || !cardB) return 0;
+        const chipA = CHIPS[a];
+        const chipB = CHIPS[b];
+        if (!chipA || !chipB) return 0;
 
         if (catalystState.boxSortMode === 'tier') {
             const tierOrder = { '1': 0, '2': 1, '3': 2, 'L': 3 };
-            const diff = tierOrder[cardA.tier] - tierOrder[cardB.tier];
+            const diff = tierOrder[chipA.tier] - tierOrder[chipB.tier];
             if (diff !== 0) return diff;
-            return cardA.name.localeCompare(cardB.name);
+            return chipA.name.localeCompare(chipB.name);
         } else if (catalystState.boxSortMode === 'rarity') {
-            const diff = rarityOrder[cardB.rarity] - rarityOrder[cardA.rarity];
+            const diff = rarityOrder[chipB.rarity] - rarityOrder[chipA.rarity];
             if (diff !== 0) return diff;
-            return cardA.name.localeCompare(cardB.name);
+            return chipA.name.localeCompare(chipB.name);
         } else {
             const getTypeInfo = (c) => {
                 if (c.isLeader) return { type: 'leader', val: 0 };
@@ -5633,47 +5630,39 @@ function updateCatalystBox() {
                 const statVal = c.stats[statKey] || 0;
                 return { type: statKey, val: statVal };
             };
-            const infoA = getTypeInfo(cardA);
-            const infoB = getTypeInfo(cardB);
+            const infoA = getTypeInfo(chipA);
+            const infoB = getTypeInfo(chipB);
             const typeDiff = typeOrder[infoA.type] - typeOrder[infoB.type];
             if (typeDiff !== 0) return typeDiff;
             const valDiff = infoA.val - infoB.val;
             if (valDiff !== 0) return valDiff;
-            return cardA.name.localeCompare(cardB.name);
+            return chipA.name.localeCompare(chipB.name);
         }
     });
 
     const counts = {};
     box.forEach(id => counts[id] = (counts[id] || 0) + 1);
 
-    const uniqueIds = [];
-    const seen = new Set();
-    box.forEach(id => {
-        if (!seen.has(id)) {
-            uniqueIds.push(id);
-            seen.add(id);
-        }
-    });
+    const uniqueIds = [...new Set(profile.chipBox)];
+    uniqueIds.forEach(chipId => {
+        const chip = CHIPS[chipId];
+        if (!chip) return;
 
-    uniqueIds.forEach(cardId => {
-        const card = CARDS[cardId];
-        if (!card) return;
-
-        const count = counts[cardId];
+        const count = counts[chipId];
         const item = document.createElement('div');
-        item.className = `box-card rarity-${card.rarity} tier-${card.tier}`;
+        item.className = `box-card rarity-${chip.rarity} tier-${chip.tier}`;
         item.draggable = true;
 
-        const statsHtml = Object.entries(card.stats || {}).map(([k, v]) => `
+        const statsHtml = Object.entries(chip.stats || {}).map(([k, v]) => `
             <div class="stat-peek">${k.toUpperCase()} +${v}</div>
         `).join('');
 
-        const slotsHtml = card.slots > 0 ? `<div class="slot-peek">SLOT +${card.slots}</div>` : '';
-        const leaderTag = card.isLeader ? `<div class="leader-type-tag">${card.type === 'passive' ? 'P' : 'E'}</div>` : '';
+        const slotsHtml = chip.slots > 0 ? `<div class="slot-peek">SLOT +${chip.slots}</div>` : '';
+        const leaderTag = chip.isLeader ? `<div class="leader-type-tag">${chip.type === 'passive' ? 'P' : 'E'}</div>` : '';
 
         item.innerHTML = `
-            <div class="card-tier-label">T${card.tier}</div>
-            <div class="rarity-label">${card.rarity === 'common' ? '' : card.rarity.charAt(0).toUpperCase()}</div>
+            <div class="card-tier-label">T${chip.tier}</div>
+            <div class="rarity-label">${chip.rarity === 'common' ? '' : chip.rarity.charAt(0).toUpperCase()}</div>
             <div class="card-main-content">
                 ${statsHtml}
                 ${slotsHtml}
@@ -5682,7 +5671,7 @@ function updateCatalystBox() {
             <div class="count">x${count}</div>
         `;
 
-        item.onclick = () => openCardDetail(cardId);
+        item.onclick = () => openChipDetail(chipId);
 
         // Swap Logic: Dropping a slot card here equips this box card into that slot
         let dragCounter = 0; // Prevent flickering when moving over child elements
@@ -5714,24 +5703,24 @@ function updateCatalystBox() {
             if (slotSource) {
                 // FIXED: Explicitly unequip the old card first to ensure it returns to the box
                 // before the new card (this box card) takes its place.
-                unequipCard(slotSource.monsterIdx, slotSource.slotIdx, true);
-                equipCard(slotSource.monsterIdx, slotSource.slotIdx, cardId);
-                addLog(`Tactical Swap: ${CARDS[cardId].name} deployed to slot ${slotSource.slotIdx}.`);
+                unequipChip(slotSource.monsterIdx, slotSource.slotIdx, true);
+                equipChip(slotSource.monsterIdx, slotSource.slotIdx, chipId);
+                addLog(`Tactical Swap: ${CHIPS[chipId].name} deployed to slot ${slotSource.slotIdx}.`);
             }
         };
 
         item.ondragstart = (e) => {
-            catalystState.draggedCardId = cardId;
+            catalystState.draggedChipId = chipId;
             catalystState.dragSourceSide = catalystState.activeSide;
             catalystState.dragSourceProfile = catalystState.activeProfile;
             catalystState.dragSourceSlot = null;
-            e.dataTransfer.setData('text/plain', cardId);
+            e.dataTransfer.setData('text/plain', chipId);
             document.querySelectorAll('.catalyst-slot').forEach(s => s.classList.add('highlight'));
         };
         item.ondragend = () => {
             document.querySelectorAll('.catalyst-slot').forEach(s => s.classList.remove('highlight'));
             catalystState.dragSourceSlot = null;
-            catalystState.draggedCardId = null;
+            catalystState.draggedChipId = null;
             catalystState.dragSourceProfile = null;
         };
         grid.appendChild(item);
@@ -5804,15 +5793,15 @@ function updateCatalystCore() {
     const stats = getModifiedStats(monster, level);
 
     const bonuses = { hp: 0, pp: 0, atk: 0, def: 0, spd: 0, crt: 0 };
-    monster.equippedCards.forEach(ec => {
-        const card = CARDS[ec.cardId];
-        if (card && card.stats) {
-            bonuses.hp += (card.stats.hp || 0);
-            bonuses.pp += (card.stats.pp || 0);
-            bonuses.atk += (card.stats.atk || 0);
-            bonuses.def += (card.stats.def || 0);
-            bonuses.spd += (card.stats.spd || 0);
-            bonuses.crt += (card.stats.crit || 0);
+    monster.equippedChips.forEach(ec => {
+        const chip = CHIPS[ec.chipId];
+        if (chip && chip.stats) {
+            bonuses.hp += (chip.stats.hp || 0);
+            bonuses.pp += (chip.stats.pp || 0);
+            bonuses.atk += (chip.stats.atk || 0);
+            bonuses.def += (chip.stats.def || 0);
+            bonuses.spd += (chip.stats.spd || 0);
+            bonuses.crt += (chip.stats.crit || 0);
         }
     });
 
@@ -5846,57 +5835,59 @@ function updateCatalystCore() {
         slotDiv.style.top = `${pos.y}px`;
         slotDiv.dataset.slotIdx = idx;
 
-        const equippedCard = monster.equippedCards.find(ec => ec.slotIndex === idx);
-        if (equippedCard) {
-            const card = CARDS[equippedCard.cardId];
-            slotDiv.classList.add('occupied', `tier-${card.tier}`);
-            const statsHtml = Object.entries(card.stats || {}).map(([k, v]) => `
-                <div class="stat-peek">${k.toUpperCase()} +${v}</div>
-            `).join('');
-            const slotsHtml = card.slots > 0 ? `<div class="slot-peek">SLOT +${card.slots}</div>` : '';
-            const leaderTag = card.isLeader ? `<div class="leader-type-tag">${card.type === 'passive' ? 'P' : 'E'}</div>` : '';
+        const equippedChip = monster.equippedChips.find(ec => ec.slotIndex === idx);
+        if (equippedChip) {
+            const chip = CHIPS[equippedChip.chipId];
+            if (chip) {
+                slotDiv.classList.add('occupied', `tier-${chip.tier}`);
+                const statsHtml = Object.entries(chip.stats || {}).map(([k, v]) => `
+                    <div class="stat-peek">${k.toUpperCase()} +${v}</div>
+                `).join('');
+                const slotsHtml = chip.slots > 0 ? `<div class="slot-peek">SLOT +${chip.slots}</div>` : '';
+                const leaderTag = chip.isLeader ? `<div class="leader-type-tag">${chip.type === 'passive' ? 'P' : 'E'}</div>` : '';
 
-            slotDiv.innerHTML = `
-                <div class="c-card-ui rarity-${card.rarity} tier-${card.tier}" draggable="true">
-                    <div class="card-tier-label">T${card.tier}</div>
-                    <div class="rarity-label">${card.rarity === 'common' ? '' : card.rarity.charAt(0).toUpperCase()}</div>
-                    <div class="card-main-content">
-                        ${statsHtml}
-                        ${slotsHtml}
+                slotDiv.innerHTML = `
+                    <div class="c-chip-ui rarity-${chip.rarity} tier-${chip.tier}" draggable="true">
+                        <div class="card-tier-label">T${chip.tier}</div>
+                        <div class="rarity-label">${chip.rarity === 'common' ? '' : chip.rarity.charAt(0).toUpperCase()}</div>
+                        <div class="card-main-content">
+                            ${statsHtml}
+                            ${slotsHtml}
+                        </div>
+                        ${leaderTag}
                     </div>
-                    ${leaderTag}
-                </div>
-            `;
+                `;
 
-            const cardEl = slotDiv.querySelector('.c-card-ui');
-            cardEl.ondragstart = (e) => {
-                catalystState.draggedCardId = equippedCard.cardId;
-                catalystState.dragSourceSide = catalystState.activeSide;
-                catalystState.dragSourceProfile = catalystState.activeProfile;
-                catalystState.dragSourceSlot = { monsterIdx: catalystState.activeMonsterIdx, slotIdx: idx };
-                e.dataTransfer.setData('text/plain', equippedCard.cardId);
-                // Highlight empty slots
-                document.querySelectorAll('.catalyst-slot:not(.occupied)').forEach(s => s.classList.add('highlight'));
-            };
+                const chipEl = slotDiv.querySelector('.c-chip-ui');
+                chipEl.ondragstart = (e) => {
+                    catalystState.draggedChipId = equippedChip.chipId;
+                    catalystState.dragSourceSide = catalystState.activeSide;
+                    catalystState.dragSourceProfile = catalystState.activeProfile;
+                    catalystState.dragSourceSlot = { monsterIdx: catalystState.activeMonsterIdx, slotIdx: idx };
+                    e.dataTransfer.setData('text/plain', equippedChip.chipId);
+                    // Highlight empty slots
+                    document.querySelectorAll('.catalyst-slot:not(.occupied)').forEach(s => s.classList.add('highlight'));
+                };
 
-            cardEl.ondragend = () => {
-                document.querySelectorAll('.catalyst-slot').forEach(s => s.classList.remove('highlight'));
-                catalystState.dragSourceSlot = null;
-                catalystState.draggedCardId = null;
-                catalystState.dragSourceProfile = null;
-            };
+                chipEl.ondragend = () => {
+                    document.querySelectorAll('.catalyst-slot').forEach(s => s.classList.remove('highlight'));
+                    catalystState.dragSourceSlot = null;
+                    catalystState.draggedChipId = null;
+                    catalystState.dragSourceProfile = null;
+                };
 
-            slotDiv.onclick = (e) => {
-                if (e.ctrlKey) unequipCard(catalystState.activeMonsterIdx, idx);
-                else openCardDetail(equippedCard.cardId);
-            };
+                slotDiv.onclick = (e) => {
+                    if (e.ctrlKey) unequipChip(catalystState.activeMonsterIdx, idx);
+                    else openChipDetail(equippedChip.chipId);
+                };
+            }
         }
 
         slotDiv.ondragover = (e) => e.preventDefault();
         slotDiv.ondrop = (e) => {
             e.preventDefault();
-            const cardId = e.dataTransfer.getData('text/plain');
-            equipCard(catalystState.activeMonsterIdx, idx, cardId);
+            const chipId = e.dataTransfer.getData('text/plain');
+            equipChip(catalystState.activeMonsterIdx, idx, chipId);
         };
         anchor.appendChild(slotDiv);
     });
@@ -5980,7 +5971,7 @@ function applyPreset(profileId, presetId, silent = false) {
     profile.absoluteFairness = (profileId !== 'player');
 
     // 3. SYNC INVENTORY
-    syncCardsToLevel(profileId, profile.level);
+    syncChipsToLevel(profileId, profile.level);
 
     // 4. SYNC SQUAD COMPOSITION
     const needsPartyInit = profile.party.length === 0 || JSON.stringify(profile.team) !== JSON.stringify(preset.team);
@@ -5998,31 +5989,31 @@ function applyPreset(profileId, presetId, silent = false) {
     profile.party.forEach((mon, mIdx) => {
         if (!mon) return;
 
-        // Clear Existing (force full wipe for NPCs, Player already wipes via syncCardsToLevel implicitly mapping free inventory)
-        mon.equippedCards = [];
+        // Clear Existing (force full wipe for NPCs, Player already wipes via syncChipsToLevel implicitly mapping free inventory)
+        mon.equippedChips = [];
 
         // Slot New
         const slotConfig = (preset.squadSlots && preset.squadSlots[mIdx]) ? preset.squadSlots[mIdx] : {};
-        Object.entries(slotConfig).forEach(([slotIdx, cardId]) => {
+        Object.entries(slotConfig).forEach(([slotIdx, chipId]) => {
             const idx = parseInt(slotIdx);
 
-            // Check if card exists
-            if (CARDS[cardId]) {
+            // Check if chip exists
+            if (CHIPS[chipId]) {
                 const prevIdx = catalystState.activeMonsterIdx;
                 catalystState.activeMonsterIdx = mIdx;
 
                 // For the PLAYER profile, removing from physical inventory is required!
                 if (profileId === 'player') {
-                    const boxIndex = profile.cardBox.indexOf(cardId);
+                    const boxIndex = profile.chipBox.indexOf(chipId);
                     if (boxIndex > -1) {
-                        profile.cardBox.splice(boxIndex, 1);
-                        mon.equippedCards.push({ slotIndex: idx, cardId: cardId });
+                        profile.chipBox.splice(boxIndex, 1);
+                        mon.equippedChips.push({ slotIndex: idx, chipId: chipId });
                     } else {
-                        console.warn(`[PRESET LOAD] Missing card ${cardId} in inventory, skipping equip.`);
+                        console.warn(`[PRESET LOAD] Missing chip ${chipId} in inventory, skipping equip.`);
                     }
                 } else {
                     // NPCs have infinite inventory for their specific static setups
-                    mon.equippedCards.push({ slotIndex: idx, cardId: cardId });
+                    mon.equippedChips.push({ slotIndex: idx, chipId: chipId });
                 }
 
                 catalystState.activeMonsterIdx = prevIdx;
@@ -6059,7 +6050,7 @@ function executeQuickEquip(style, profileId = null, targetMonsterIdx = null) {
 
     // 0. RESET DRAG STATE
     catalystState.dragSourceSlot = null;
-    catalystState.draggedCardId = null;
+    catalystState.draggedChipId = null;
     catalystState.dragSourceProfile = null;
 
     // 1. CLEAR NON-LEADER EQUIPMENT
@@ -6076,40 +6067,40 @@ function executeQuickEquip(style, profileId = null, targetMonsterIdx = null) {
     const styleWeight = weights[style] || weights.balanced;
 
     // Score function for a card
-    const scoreCard = (card) => {
+    const scoreChip = (chip) => {
         let score = 0;
-        if (!card.stats) return 0;
-        Object.entries(card.stats).forEach(([stat, val]) => {
+        if (!chip.stats) return 0;
+        Object.entries(chip.stats).forEach(([stat, val]) => {
             score += (val * (styleWeight[stat] || 1));
         });
-        if (card.slots > 0) score += (card.slots * 50);
+        if (chip.slots > 0) score += (chip.slots * 50);
         return score;
     };
 
-    // 3. SORT CARD BOX
-    let availableCards = [...profile.cardBox]
-        .filter(id => !CARDS[id]?.isLeader)
-        .map(id => ({ id, card: CARDS[id], score: scoreCard(CARDS[id]) }));
+    // 3. SORT CHIP BOX
+    let availableChips = [...profile.chipBox]
+        .filter(id => !CHIPS[id]?.isLeader)
+        .map(id => ({ id, chip: CHIPS[id], score: scoreChip(CHIPS[id]) }));
 
-    availableCards.sort((a, b) => {
+    availableChips.sort((a, b) => {
         const tierMap = { '3': 3, '2': 2, '1': 1 };
-        const tierA = tierMap[a.card.tier] || 0;
-        const tierB = tierMap[b.card.tier] || 0;
+        const tierA = tierMap[a.chip.tier] || 0;
+        const tierB = tierMap[b.chip.tier] || 0;
         if (tierA !== tierB) return tierB - tierA;
         return b.score - a.score;
     });
 
     // 4. RECURSIVE FILLING
     const fillSlots = (slotIdx) => {
-        const isOccupied = monster.equippedCards.some(ec => ec.slotIndex === slotIdx);
+        const isOccupied = monster.equippedChips.some(ec => ec.slotIndex === slotIdx);
         if (isOccupied) return true;
 
-        for (let i = 0; i < availableCards.length; i++) {
-            const candidate = availableCards[i];
-            const success = equipCard(monsterIdx, slotIdx, candidate.id, true, true);
+        for (let i = 0; i < availableChips.length; i++) {
+            const candidate = availableChips[i];
+            const success = equipChip(monsterIdx, slotIdx, candidate.id, true, true);
             if (success) {
-                const cardIdToRemove = candidate.id;
-                availableCards = availableCards.filter(c => c.id !== cardIdToRemove);
+                const chipIdToRemove = candidate.id;
+                availableChips = availableChips.filter(c => c.id !== chipIdToRemove);
                 const currentLayout = calculateSlotLayout(monster);
                 const currentSlot = currentLayout[slotIdx];
                 if (currentSlot && currentSlot.children) {
@@ -6130,9 +6121,9 @@ function executeQuickEquip(style, profileId = null, targetMonsterIdx = null) {
     catalystState.activeMonsterIdx = oldActiveMonsterIdx;
 
     if (profileId === null || profileId === catalystState.activeProfile) {
-        const tiers = monster.equippedCards.reduce((acc, ec) => {
-            const card = CARDS[ec.cardId];
-            if (card && !card.isLeader) acc[card.tier] = (acc[card.tier] || 0) + 1;
+        const tiers = monster.equippedChips.reduce((acc, ec) => {
+            const chip = CHIPS[ec.chipId];
+            if (chip && !chip.isLeader) acc[chip.tier] = (acc[chip.tier] || 0) + 1;
             return acc;
         }, {});
         const tierSummaries = Object.entries(tiers)
@@ -6157,18 +6148,18 @@ function calculateSlotLayout(monster) {
     // We want to ensure that if a preset defines a slot, it exists even if empty
     let currentIndex = 0;
     while (currentIndex < slots.length && slots.length < 10) {
-        const equipped = monster.equippedCards.find(ec => ec.slotIndex === currentIndex);
-        // Also check if ANY card was EVER equipped here, or if it's a base slot
-        // For simplicity: if it has an equipped card, add its children.
+        const equipped = monster.equippedChips.find(ec => ec.slotIndex === currentIndex);
         if (equipped) {
-            const card = CARDS[equipped.cardId];
-            const childCount = card.slots || 0;
-            for (let i = 0; i < childCount; i++) {
-                if (slots.length >= 10) break;
-                const newId = slots.length;
-                const newNode = { id: newId, parent: currentIndex, level: slots[currentIndex].level + 1, children: [] };
-                slots[currentIndex].children.push(newNode);
-                slots.push(newNode);
+            const chip = CHIPS[equipped.chipId];
+            if (chip) {
+                const childCount = chip.slots || 0;
+                for (let i = 0; i < childCount; i++) {
+                    if (slots.length >= 10) break;
+                    const newId = slots.length;
+                    const newNode = { id: newId, parent: currentIndex, level: slots[currentIndex].level + 1, children: [] };
+                    slots[currentIndex].children.push(newNode);
+                    slots.push(newNode);
+                }
             }
         }
         currentIndex++;
@@ -6286,20 +6277,26 @@ function drawConnections(positions, monster) {
     });
 }
 
-function equipCard(monsterIdx, slotIdx, cardId, silent = false, fromPreset = false) {
+function equipChip(monsterIdx, slotIdx, chipId, silent = false, fromPreset = false) {
     const profile = gameState.profiles[catalystState.activeProfile];
     const party = profile.party;
     const monster = party[monsterIdx];
-    const card = CARDS[cardId];
+    const chip = CHIPS[chipId];
+
+    if (!monster) return false;
+    if (!chip) {
+        console.error(`[Equip] Invalid chip ID: ${chipId}`);
+        return false;
+    }
 
     // Allowed move: If dragging from a slot on the SAME monster, skip duplicate check
     const isInternalMove = catalystState.dragSourceSlot &&
         catalystState.dragSourceSlot.monsterIdx === monsterIdx &&
         catalystState.dragSourceProfile === catalystState.activeProfile;
 
-    const hasDuplicate = monster.equippedCards.some(ec => ec.cardId === cardId);
+    const hasDuplicate = monster.equippedChips.some(ec => ec.chipId === chipId);
     if (!isInternalMove && hasDuplicate && !profile.absoluteFairness) {
-        if (!silent) addLog("Cannot equip duplicate cards on same Cell.");
+        if (!silent) addLog("Cannot equip duplicate chips on same Cell.");
         return;
     }
 
@@ -6316,37 +6313,37 @@ function equipCard(monsterIdx, slotIdx, cardId, silent = false, fromPreset = fal
     if (srcSlot) {
         const srcParty = gameState.profiles[srcProfile].party;
         const srcMonster = srcParty[srcSlot.monsterIdx];
-        srcMonster.equippedCards = srcMonster.equippedCards.filter(ec => ec.slotIndex !== srcSlot.slotIdx);
+        srcMonster.equippedChips = srcMonster.equippedChips.filter(ec => ec.slotIndex !== srcSlot.slotIdx);
     } else {
-        const box = gameState.profiles[srcProfile].cardBox;
-        const index = box.indexOf(cardId);
+        const box = gameState.profiles[srcProfile].chipBox;
+        const index = box.indexOf(chipId);
         if (index > -1) box.splice(index, 1);
     }
 
     // 2. Handle target slot replacement
-    const existing = monster.equippedCards.find(ec => ec.slotIndex === slotIdx);
+    const existing = monster.equippedChips.find(ec => ec.slotIndex === slotIdx);
     if (existing) {
-        profile.cardBox.push(existing.cardId);
-        monster.equippedCards = monster.equippedCards.filter(ec => ec.slotIndex !== slotIdx);
+        profile.chipBox.push(existing.chipId);
+        monster.equippedChips = monster.equippedChips.filter(ec => ec.slotIndex !== slotIdx);
         processRecursiveRemoval(monster, slotIdx);
     }
 
-    // 3. Place new card
-    monster.equippedCards.push({ slotIndex: parseInt(slotIdx), cardId: cardId });
+    // 3. Place new chip
+    monster.equippedChips.push({ slotIndex: parseInt(slotIdx), chipId: chipId });
     if (!silent) renderManagementHub();
     return true;
 }
 
-function unequipCard(monsterIdx, slotIdx, silent = false) {
+function unequipChip(monsterIdx, slotIdx, silent = false) {
     const profile = gameState.profiles[catalystState.activeProfile];
     const party = profile.party;
     const monster = party[monsterIdx];
-    const index = monster.equippedCards.findIndex(ec => ec.slotIndex === slotIdx);
+    const index = monster.equippedChips.findIndex(ec => ec.slotIndex === slotIdx);
     if (index === -1) return;
 
     monster.currentPresetId = "";
-    const removed = monster.equippedCards.splice(index, 1)[0];
-    profile.cardBox.push(removed.cardId);
+    const removed = monster.equippedChips.splice(index, 1)[0];
+    profile.chipBox.push(removed.chipId);
 
     processRecursiveRemoval(monster, slotIdx);
     if (!silent) renderManagementHub();
@@ -6360,16 +6357,16 @@ function clearEquippedCards(silent = false, keepLeaders = false) {
     if (!profile || !monster) return;
 
     // 1. Clear current equipment
-    const currentlyEquipped = [...monster.equippedCards];
+    const currentlyEquipped = [...monster.equippedChips];
     currentlyEquipped.forEach(ec => {
-        const isLeader = CARDS[ec.cardId]?.isLeader;
+        const isLeader = CHIPS[ec.chipId]?.isLeader;
         if (keepLeaders && isLeader) return; // Preservation logic
-        unequipCard(monsterIdx, ec.slotIndex, true);
+        unequipChip(monsterIdx, ec.slotIndex, true);
     });
 
     // 2. Full State Refresh: Clear preset ID and Resync Box to current level
     monster.currentPresetId = "";
-    syncCardsToLevel(catalystState.activeProfile, profile.level);
+    syncChipsToLevel(catalystState.activeProfile, profile.level);
 
     if (!silent) {
         addLog(`<span class="tactical">SYSTEM RECALIBRATED:</span> ${monster.name} hardware reset and inventory synchronized to RG-${profile.level}.`);
@@ -6383,14 +6380,14 @@ function processRecursiveRemoval(monster, parentSlotIdx) {
 
     const newPositions = calculateSlotLayout(monster);
     const validIndices = new Set(newPositions.map((_, i) => i));
-    const box = profile.cardBox;
+    const box = profile.chipBox;
 
-    const invalidEquipped = monster.equippedCards.filter(ec => !validIndices.has(ec.slotIndex));
+    const invalidEquipped = monster.equippedChips.filter(ec => !validIndices.has(ec.slotIndex));
     invalidEquipped.forEach(ec => {
-        const idx = monster.equippedCards.indexOf(ec);
+        const idx = monster.equippedChips.indexOf(ec);
         if (idx > -1) {
-            const removed = monster.equippedCards.splice(idx, 1)[0];
-            box.push(removed.cardId);
+            const removed = monster.equippedChips.splice(idx, 1)[0];
+            box.push(removed.chipId);
             processRecursiveRemoval(monster, ec.slotIndex);
         }
     });
@@ -6411,7 +6408,13 @@ function createMonsterInstance(id, existing = null) {
         instanceId: existing ? existing.instanceId : 'mon_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
         currentNode: null,
         blockedNodes: [],
-        equippedCards: existing ? [...existing.equippedCards] : [],
+        equippedChips: existing ? existing.equippedChips.map(ec => {
+            // MIGRATION: Normalize legacy cardId to chipId
+            return {
+                slotIndex: ec.slotIndex,
+                chipId: ec.chipId || ec.cardId
+            };
+        }) : [],
         hp: existing && existing.hp !== undefined ? existing.hp : data.hp,
         pp: existing && existing.pp !== undefined ? existing.pp : 1,
         turnCount: 0,
@@ -6423,23 +6426,39 @@ function createMonsterInstance(id, existing = null) {
 }
 
 
-function openCardDetail(cardId) {
-    const card = CARDS[cardId];
-    if (!card) return;
+function openChipDetail(chipId) {
+    const chip = CHIPS[chipId];
+    if (!chip) return;
 
     const modal = document.getElementById('card-detail-modal');
     if (!modal) return;
     modal.classList.add('active');
 
-    document.getElementById('detail-card-name').textContent = card.name;
-    document.getElementById('detail-card-desc').textContent = card.desc || '';
-    document.getElementById('detail-card-rarity').textContent = card.rarity === 'common' ? '' : card.rarity.toUpperCase();
-    document.getElementById('detail-card-tier').textContent = `TIER ${card.tier} `;
+    document.getElementById('detail-card-name').textContent = chip.name;
+    document.getElementById('detail-card-desc').textContent = chip.desc || '';
+    document.getElementById('detail-card-rarity').textContent = chip.rarity === 'common' ? '' : chip.rarity.toUpperCase();
+    document.getElementById('detail-card-tier').textContent = `TIER ${chip.tier} `;
+
+    const detailStats = document.getElementById('detail-card-stats');
+    detailStats.innerHTML = '';
+    Object.entries(chip.stats || {}).forEach(([k, v]) => {
+        const s = document.createElement('div');
+        s.className = 'stat-item';
+        s.innerHTML = `<span class="label">${k.toUpperCase()}</span><span class="value">+${v}</span>`;
+        detailStats.appendChild(s);
+    });
+
+    if (chip.slots > 0) {
+        const s = document.createElement('div');
+        s.className = 'stat-item';
+        s.innerHTML = `<span class="label">CAPACITY</span><span class="value">+${chip.slots} SLOTS</span>`;
+        detailStats.appendChild(s);
+    }
 
     const typeLabel = document.getElementById('detail-card-type');
-    if (card.isLeader) {
-        typeLabel.innerHTML = `TYPE: <span class="white-text">LEADER [${card.type.toUpperCase()}]</span>`;
-        document.getElementById('detail-leader-tag').textContent = card.type === 'passive' ? 'P' : 'E';
+    if (chip.isLeader) {
+        typeLabel.innerHTML = `TYPE: <span class="white-text">LEADER CHIP [${chip.type.toUpperCase()}]</span>`;
+        document.getElementById('detail-leader-tag').textContent = chip.type === 'passive' ? 'P' : 'E';
     } else {
         typeLabel.innerHTML = `TYPE: <span class="white-text">ENHANCEMENT</span>`;
         document.getElementById('detail-leader-tag').textContent = '';
@@ -7251,7 +7270,7 @@ async function handleSynthesis(monsterId) {
 
     // Determine if it should be marked as going to Squad or Storage
     // The first 3 slots (0-2) are considered the Active Squad.
-    const destination = pProfile.party.length < 3 ? 'ACTIVE SQUAD' : 'CATALYST BOX';
+    const destination = pProfile.party.length < 3 ? 'ACTIVE SQUAD' : 'CATALYST HUB';
 
     // Always push to the player's underlying party/team arrays
     pProfile.party.push(newMonster);

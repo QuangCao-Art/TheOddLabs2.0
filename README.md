@@ -111,7 +111,7 @@ The final damage resolved against HP follows this hierarchy:
 
 ### 4.3 Pellicle Overload (Discharge)
 To prevent "Pellicle Camping," monsters are subject to an energy limit:
-- **Max Limit**: Varies by Cell species (modifiable by C-Cards).
+- **Max Limit**: Varies by Cell species (modifiable by C-Chips).
 - **Discharge Penalty**: Starting a turn with Max PP triggers a **Pellicle Discharge (25% Max HP Damage)**. 
 - **Effect**: The monster suffers **30 HP damage** and resets to **0 PP** before the next phase begins.
 
@@ -300,7 +300,12 @@ The following systems are planned for future integration to build the core RPG l
 
 ### 12.2 Economic Loop & Consumables
 *   **Currency**: Introduce a resource dropped by Stemmy upon defeat (e.g., "Biomass" or "Lab Credits").
-*   **The Shop**: A vendor terminal in the Lobby where players can spend currency on consumable items (healing injectors) or permanent tactical upgrades (C-Cards).
+*   **The Shop**: A vendor terminal in the Lobby where players can spend currency on consumable items (healing injectors) or permanent tactical upgrades (C-Chips).
 
 ### 12.3 Master Save System
-*   **Implementation**: A global save architecture that serializes the overarching `gameState` object (including Overworld X/Y coordinates, unlocked doors, DataLog inventory, current RG Level, and active C-Card Presets) to `localStorage` for cross-session persistence.
+*   **Implementation**: A global save architecture that serializes the overarching `gameState` object (including Overworld X/Y coordinates, unlocked doors, DataLog inventory, current RG Level, and active C-Chip Presets) to `localStorage` for cross-session persistence.
+
+### 12.4 The Catalyst System (Chip System)
+*   **C-Chip (Catalyst Chip)**: Bio-synthetic boosters that contain enhanced DNA. When slotted into a Cell's Catalyst Hub, they significantly enhance core stats and abilities. 
+*   **A-Chip (Action Chip)**: [FUTURE UPDATE] Specialized tactical chips that can be manually activated during battle. Think of them as "Action Cards" that provide temporary boosts or battlefield manipulation.
+*   **Collectible Card**: Rare non-tactical items (like the Stemmy Collectible) that are used purely for collection and lore exploration. These remain distinct from the functional Chip system.

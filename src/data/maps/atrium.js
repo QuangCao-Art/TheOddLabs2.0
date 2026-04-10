@@ -103,19 +103,19 @@ export const atrium = {
             "id": "blundur", "x": 14, "y": 8, "type": "npc", "name": "Researcher Blundur",
             "battleEncounterId": "blundur",
             "dialogue": [
-                "Salutations! I'm Researcher Blundur. Have you heard of the C-Card system?",
+                "Salutations! I'm Researcher Blundur. Have you heard of the C-Chip system?",
                 "They're bio-synthetic boosters that significantly enhance your Cell's stats and unlock powerful new skills and effects.",
-                "Slotting them into your Catalyst Box is essential for maximizing your tactical advantage in battle.",
+                "Slotting them into your Catalyst Hub is essential for maximizing your tactical advantage in battle.",
                 "Ready to see how much of a difference a good build makes?"
             ],
             "npcWinDialogue": [
-                "Predictable. You won't win without using a calibrated Catalyst Box to boost your stats.",
+                "Predictable. You won't win without using a calibrated Catalyst Hub to boost your stats.",
                 "You lacked the tactical effects needed to penetrate my defense.",
                 "Access your Inventory to slot new cards and see the results in your next battle. It's the best part of the job!"
             ],
             "npcLossDialogue": [
                 "Inquiry! How did you bypass my dermal bio-ceramics? A high-frequency sync? Fascinating.",
-                "Pro-tip: Check your Catalyst Box in the Inventory menu to slot your rewards and boost your stats.",
+                "Pro-tip: Check your Catalyst Hub in the Inventory menu to slot your rewards and boost your stats.",
                 "Increasing your Research Grade will unlock even more slots for skills and passive effects. Truly revolutionary!"
             ]
         },

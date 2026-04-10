@@ -320,14 +320,14 @@ A post-mortem on the challenges faced in restoring and refining the node-scale v
     - **Result Reveal (700ms)**: The moment the pattern clears, the **Match/Near/Far** flash begins its 3-iteration reveal (0.35s x 3 = 1.05s total flash) at the base node size. 
 - **Visibility Hardening**: Boosted the result flash priority by increasing CSS specificity to `.node.flash-*` and moved their definitions AFTER the activation classes. This guarantees the final result is always visible even if pattern cleanup has 1-2 frames of lag.
 
-- **Leader Card Integration**:
+- **Leader Chip Integration**:
     - **Dynamic Slot Unlocking**: Implemented passive logic for "The Second Brain" and "The Third Brain," which dynamically enable the 1st and 2nd Pellicle skill slots as the player progresses through RG-5 and RG-9.
     - **Tactical Battle Perks**: 
         - **Neural Initiative**: Overrides speed checks to guarantee player-first priority on turn 1.
         - **Oxidative Energy Burst**: Integrated x2 damage multiplier for the monster's first hit of the battle.
         - **Molecular Dissolver**: Implemented "Ignore Defense" logic, reducing opponent's effective defense to 1.
     - **Intelligent Adversaries**: Updated the AI's "Attack Logic" to be strategically aware of equipped perks, enabling smarter turn-1 openings when using "Oxidative Energy Burst."
-    - **Tactical Log Feedback**: Added specific battle log indicators (e.g., `[PERK] Perk Name: Effect!`) to provide clear visual feedback when Leader Card effects are triggered.
+    - **Tactical Log Feedback**: Added specific battle log indicators (e.g., `[PERK] Perk Name: Effect!`) to provide clear visual feedback when Leader Chip effects are triggered.
 
 ### 2.55 Snapshot Preset System (The "Save File" Pivot)
 Implemented a robust, atomic state management system for NPCs and the Player, treating each configuration as a complete data snapshot rather than dynamic leveling rules.
@@ -340,21 +340,21 @@ Implemented a robust, atomic state management system for NPCs and the Player, tr
 - **The Leading Space Incident**: 
     - **Bug**: A minor string mangling in template literals (`./ assets / images /`) caused widespread 404 errors and broken CSS classes (e.g., `%20Nitrophil.png`). 
     - **Fix**: Hardened all HTML-generation strings to ensure zero whitespace in pathing and class attributes.
-- **Non-Destructive NPC Syncing**: Optimized `syncCardsToLevel` for NPCs to be additive rather than destructive, ensuring they maintain a stable reward pool across repeated preset applications.
+- **Non-Destructive NPC Syncing**: Optimized `syncChipsToLevel` for NPCs to be additive rather than destructive, ensuring they maintain a stable reward pool across repeated preset applications.
 ### 2.56 Quick Equip & UI Refinement (Tactical Calibration)
 A major overhaul of the equipment management system, focusing on automation, inventory integrity, and high-fidelity UX.
 
 - **Two-Row Header Layout**: Restructured the monster header into a two-row format (Primary: Name/RG/Reset | Secondary: Stats/Quick-Equip). This eliminates UI crowding on smaller viewports and balances informational readouts with tactical controls.
-- **Deep Refresh (Clear All)**: Enhanced the "Clear All" functionality to act as a full state recalibration. It now unequips all modules, resets preset IDs, and triggers a `syncCardsToLevel` pass to rebuild the inventory box from current RG rewards.
+- **Deep Refresh (Clear All)**: Enhanced the "Clear All" functionality to act as a full state recalibration. It now unequips all modules, resets preset IDs, and triggers a `syncChipsToLevel` pass to rebuild the inventory box from current RG rewards.
 - **Shared Pool Integrity**: Identified and resolved a critical "Duplication Bug" where the refresh logic was ignoring cards held by other squad members. The system is now **Squad-Aware**, ensuring a single, limited pool of high-tier modules is shared correctly across the entire team.
 - **Smart Prioritization**: Refined the recursive auto-equip algorithm to strictly prioritize **Tier-3 > Tier-2 > Tier-1** modules while explicitly excluding "Leader" cards from the automated pool to preserve unique identities.
 - **Enhanced Direct Manipulation (DND 2.0)**:
     - **Return to Box**: Enabled dragging modules from monster slots back into the empty grid of the card box.
-    - **Tactical Swapping (Atomic Fix)**: Resolved a critical "Card Loss" bug where modules would disappear if dropped directly onto a box card. The fix involves an explicit **Unequip-then-Equip** sequence to guarantee the old card returns to inventory before the slot is occupied.
-- **Leader Card Preservation**: Hardened the system to optionally skip "Leader" cards during unmounting. This preserves the monster's unique identity and core skills during automated stat recalibrations.
+    - **Tactical Swapping (Atomic Fix)**: Resolved a critical "Card Loss" bug where modules would disappear if dropped directly onto a box chip. The fix involves an explicit **Unequip-then-Equip** sequence to guarantee the old card returns to inventory before the slot is occupied.
+- **Leader Chip Preservation**: Hardened the system to optionally skip "Leader" cards during unmounting. This preserves the monster's unique identity and core skills during automated stat recalibrations.
 - **Duplicate Optimization**: Improved the recursive filling algorithm to automatically purge all instances of a successfully equipped `cardId` from its working search pool, preventing redundant cycles and silent "No Duplicates" failures.
-- **Global Inventory Hardening**: Standardized `syncCardsToLevel` to clear the `cardBox` for **all** profiles (Player, Opponent, and NPC) before re-syncing. This prevents the accumulation of "ghost" items in NPCs and ensures a clean tactical slate across the entire environment.
-- **State Sanitization (Final)**: Implemented mandatory cleanup for all drag-related variables (`dragSourceSlot`, `draggedCardId`) at the start of automated protocols to prevent systemic interference from interrupted manual moves.
+- **Global Inventory Hardening**: Standardized `syncChipsToLevel` to clear the `chipBox` for **all** profiles (Player, Opponent, and NPC) before re-syncing. This prevents the accumulation of "ghost" items in NPCs and ensures a clean tactical slate across the entire environment.
+- **State Sanitization (Final)**: Implemented mandatory cleanup for all drag-related variables (`dragSourceSlot`, `draggedChipId`) at the start of automated protocols to prevent systemic interference from interrupted manual moves.
 - **Tactical Narrative Logging**: Integrated detailed summaries into the Bio-Intelligence Feed (Diary), displaying protocol names and success counts for specific card tiers (e.g., `T3x2 T2x1`) to provide lore-friendly feedback for every calibration.
 
 ### 2.57 Wild Encounter Refinement (Stemmy Population Control)
@@ -373,7 +373,7 @@ Implemented a series of visual and logical refinements to the wild encounter sys
     - **Pre-Battle Presence**: Added a mandatory dialogue step upon interacting with wild sprites. The system displays a tactical notification (**"A wild Stemmy is wandering."**) and only proceeds to combat once the player confirms, matching NPC interaction protocols.
 - **Autonomous Scaling & Equipment**: 
     - **Randomized RG Logic**: Implemented a dynamic leveling system where wild monsters are assigned a Research Grade **1 to 5 levels lower** than the player (min RG-0). 
-    - **Automated Calibration**: The system now silently executes a `syncCardsToLevel` and a **Balanced Quick-Equip** pass during encounter initialization. Wild monsters start with 1 PP and a full set of tier-appropriate modules, ensuring they are challenging but fair adversaries.
+    - **Automated Calibration**: The system now silently executes a `syncChipsToLevel` and a **Balanced Quick-Equip** pass during encounter initialization. Wild monsters start with 1 PP and a full set of tier-appropriate modules, ensuring they are challenging but fair adversaries.
 
 ### 2.58 Dynamic Scaling Overhaul & Combat Robustness
 Transitioned the game's core battle penalties and mitigation from static values to dynamic, percentage-based scaling to ensure consistency across all Research Grades and Cell configurations.
@@ -392,3 +392,14 @@ Transitioned the game's core battle penalties and mitigation from static values 
 - **Visual & Logging Fidelity**:
     - **Shield Visibility**: Lowered the visual threshold for damage numbers and logs from **>= 5** to **> 0**. This ensures that even the starting 1 PP (-1 HP) shield is visible to the player as floating feedback and a combat log entry.
     - **Clear Log Syntax**: Standardized `[SHIELDED]` and `[LYSIS]` log categories for immediate tactical recognition.
+
+### 2.59 Unified Catalyst Nomenclature (The "Chip" Overhaul)
+A systematic refactor to resolve structural crashes and unify tactical branding across the engine.
+
+- **Nomenclature Unification**: Renamed all tactical equipment variables, function arguments, and property keys from `card` to **`chip`** (e.g., `cardId` -> `chipId`, `Leader Card` -> `Leader Chip`). This resolves a critical `TypeError` where the renderer expected `chipId` but the equip logic saved as `cardId`.
+- **Architectural Separation**:
+    - **Lore Cards**: Strictly routed to `gameState.items`.
+    - **Tactical Chips**: Strictly routed to `profile.chipBox`.
+    - **Pickup Logic**: Corrected the pickup modal to display **"COLLECTIBLE CARD DISCOVERED"** for lore items, ending the confusion with tactical equipment.
+- **Save Data Migration**: Implemented a "Normalization Layer" in `createMonsterInstance` that automatically detects and converts legacy `cardId` properties into the new `chipId` standard. Existing save files are now automatically repaired upon loading.
+- **Systematic Hardening**: Added defensive null-guards in `calculateSlotLayout` and `updateCatalystCore` to prevent Hub crashes from missing slot data.

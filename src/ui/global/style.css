@@ -256,7 +256,7 @@ body {
     opacity: 0.8;
 }
 
-.catalyst-slot.unavailable .c-card-ui {
+.catalyst-slot.unavailable .c-chip-ui {
     opacity: 0.3;
     filter: grayscale(1);
     pointer-events: none;
@@ -3721,7 +3721,7 @@ body {
     scale: 1.05;
 }
 
-.c-card-ui {
+.c-chip-ui {
     width: 100%;
     height: 100%;
     padding: 8px;
@@ -4059,7 +4059,7 @@ body {
     display: flex;
 }
 
-.card-detail-panel {
+.card-detail-modal {
     width: 800px;
     max-width: 90%;
     padding: 40px;
@@ -4101,7 +4101,7 @@ body {
     transform: rotate(90deg);
 }
 
-.card-detail-layout {
+.modal-body {
     display: flex;
     gap: 40px;
 }

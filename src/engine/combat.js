@@ -1,4 +1,4 @@
-import { CARDS } from '../data/cards.js';
+import { CHIPS } from '../data/chips.js';
 import { gameState } from './state.js';
 import { MONSTERS } from '../data/monsters.js';
 
@@ -44,7 +44,7 @@ export function calculateDamage(attacker, defender, move, dist) {
     let statRatio = attacker.atk / defender.def;
 
     // LEADER PERK #5: Ignore Defense
-    const hasLeader5 = attacker.equippedCards && attacker.equippedCards.some(s => s.cardId === 'leader_5');
+    const hasLeader5 = attacker.equippedChips && attacker.equippedChips.some(s => s.chipId === 'leader_5');
     if (hasLeader5) {
         console.log(`[PERK] Molecular Dissolver: Defense ignored! 🧪⚔️`);
         statRatio = attacker.atk / 1; // Effectively 1 Def
@@ -53,7 +53,7 @@ export function calculateDamage(attacker, defender, move, dist) {
     let baseDamage = ((statRatio * rawPower * 0.5) + 3) * typeEffect * critMult * gpm * randomRoll;
 
     // LEADER PERK #3: x2 First Hit Damage
-    const hasLeader3 = attacker.equippedCards && attacker.equippedCards.some(s => s.cardId === 'leader_3');
+    const hasLeader3 = attacker.equippedChips && attacker.equippedChips.some(s => s.chipId === 'leader_3');
     if (hasLeader3 && attacker.turnCount === 0) {
         console.log(`[PERK] Oxidative Energy Burst: First Hit double damage applied! ⚡⚡`);
         baseDamage *= 2;
@@ -265,28 +265,28 @@ export function getModifiedStats(monster, playerLevel = 1) {
         maxPp: base.maxPp,
         slots: 3,
         breakdown: {
-            atk: { base: base.atk, card: 0, eff: 0 },
-            def: { base: base.def, card: 0, eff: 0 },
-            spd: { base: base.spd, card: 0, eff: 0 },
-            crit: { base: base.crit, card: 0, eff: 0 },
-            hp: { base: base.maxHp, card: 0, eff: 0 },
-            pp: { base: base.maxPp, card: 0, eff: 0 }
+            atk: { base: base.atk, chip: 0, eff: 0 },
+            def: { base: base.def, chip: 0, eff: 0 },
+            spd: { base: base.spd, chip: 0, eff: 0 },
+            crit: { base: base.crit, chip: 0, eff: 0 },
+            hp: { base: base.maxHp, chip: 0, eff: 0 },
+            pp: { base: base.maxPp, chip: 0, eff: 0 }
         }
     };
 
-    if (monster.equippedCards) {
-        monster.equippedCards.forEach(slot => {
-            const card = CARDS[slot.cardId];
-            if (!card) return;
+    if (monster.equippedChips) {
+        monster.equippedChips.forEach(slot => {
+            const chip = CHIPS[slot.chipId];
+            if (!chip) return;
 
-            if (card.stats.hp) { stats.maxHp += card.stats.hp; stats.breakdown.hp.card += card.stats.hp; }
-            if (card.stats.atk) { stats.atk += card.stats.atk; stats.breakdown.atk.card += card.stats.atk; }
-            if (card.stats.def) { stats.def += card.stats.def; stats.breakdown.def.card += card.stats.def; }
-            if (card.stats.spd) { stats.spd += card.stats.spd; stats.breakdown.spd.card += card.stats.spd; }
-            if (card.stats.crit) { stats.crit += card.stats.crit; stats.breakdown.crit.card += card.stats.crit; }
-            if (card.stats.pp) { stats.maxPp += card.stats.pp; stats.breakdown.pp.card += card.stats.pp; }
+            if (chip.stats.hp) { stats.maxHp += chip.stats.hp; stats.breakdown.hp.chip += chip.stats.hp; }
+            if (chip.stats.atk) { stats.atk += chip.stats.atk; stats.breakdown.atk.chip += chip.stats.atk; }
+            if (chip.stats.def) { stats.def += chip.stats.def; stats.breakdown.def.chip += chip.stats.def; }
+            if (chip.stats.spd) { stats.spd += chip.stats.spd; stats.breakdown.spd.chip += chip.stats.spd; }
+            if (chip.stats.crit) { stats.crit += chip.stats.crit; stats.breakdown.crit.chip += chip.stats.crit; }
+            if (chip.stats.pp) { stats.maxPp += chip.stats.pp; stats.breakdown.pp.chip += chip.stats.pp; }
 
-            stats.slots += card.slots;
+            stats.slots += chip.slots;
         });
     }
 

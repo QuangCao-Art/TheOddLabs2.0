@@ -47,21 +47,21 @@ Each major NPC has a "Tactical Snapshot" representing their research progress an
 
 ## Card & Research Progression
 
-As you increase your **Research Grade (RG)**, you unlock more advanced tactical cards.
+As you increase your **Research Grade (RG)**, you unlock more advanced tactical chips.
 
 ### Tier 1: Core Adaptation (RG 1-5)
-Focus on basic stat boosts and initializing your first **Leader Card**.
+Focus on basic stat boosts and initializing your first **Leader Chip**.
 - **RG 1-3**: Core Stats (ATK, DEF, SPD, HP) +5/+10.
 - **RG 5**: Unlock **The Second Brain** (Enables 1st Pellicle move slot).
 
 ### Tier 2: Utility Expansion (RG 6-10)
-Introduction of **Slot+1** cards and advanced analytical precision.
+Introduction of **Slot+1** chips and advanced analytical precision.
 - **RG 6-8**: Stat boosts (+15/+30) and Weak-Point Analysis (Crit).
 - **RG 10**: Unlock **The Third Brain** (Enables 2nd Pellicle move slot).
 
 ### Tier 3: Advanced Optimization (RG 11-15)
-Maximized Tier 1 stat cards, introduction of **Slot+2** cards, and heavy tactical perks.
-- **RG 11**: MAX Tier Stat cards (+40 ATK/DEF, +60 HP).
+Maximized Tier 1 stat chips, introduction of **Slot+2** chips, and heavy tactical perks.
+- **RG 11**: MAX Tier Stat chips (+40 ATK/DEF, +60 HP).
 - **RG 12-14**: Advanced PP generation and vascular scaling.
 - **RG 15**: Unlock **Oxidative Energy Burst** (Elite Leader Perk).
 
@@ -432,10 +432,10 @@ Characters respond differently based on the number of DataLogs you have archived
 ### Researcher Blundur (Atrium)
 
 ### 1. Dialogue
-- **Before Battle**: "Salutations! I'm Biologist Blundur. Have you heard of the C-Card system? // They're bio-synthetic boosters that significantly enhance your Cell's stats and unlock powerful new skills and effects. // Slotting them into your Catalyst Box is essential for maximizing your tactical advantage in battle. // Ready to see how much of a difference a good build makes?"
+- **Before Battle**: "Salutations! I'm Biologist Blundur. Have you heard of the C-Chip system? // They're bio-synthetic boosters that significantly enhance your Cell's stats and unlock powerful new skills and effects. // Slotting them into your Catalyst Hub is essential for maximizing your tactical advantage in battle. // Ready to see how much of a difference a good build makes?"
 - **Pre-battle**: "Simulation initialized. Error margin: 0.01%."
-- **Defeated (Player Wins)**: "Inquiry! How did you bypass my dermal bio-ceramics? A high-frequency sync? Fascinating. // Pro-tip: Check your Catalyst Box in the Inventory menu to slot your rewards and boost your stats. // Increasing your Research Grade will unlock even more slots for skills and passive effects. Truly revolutionary!"
-- **Won (Player Loses)**: "Predictable. You won't win without using a calibrated Catalyst Box to boost your stats. // You lacked the tactical effects needed to penetrate my defense. // Access your Inventory to slot new cards and see the results in your next battle. It's the best part of the job!"
+- **Defeated (Player Wins)**: "Inquiry! How did you bypass my dermal bio-ceramics? A high-frequency sync? Fascinating. // Pro-tip: Check your Catalyst Hub in the Inventory menu to slot your rewards and boost your stats. // Increasing your Research Grade will unlock even more slots for skills and passive effects. Truly revolutionary!"
+- **Won (Player Loses)**: "Predictable. You won't win without using a calibrated Catalyst Hub to boost your stats. // You lacked the tactical effects needed to penetrate my defense. // Access your Inventory to slot new chips and see the results in your next battle. It's the best part of the job!"
 
 ### 2. Monster Team (NPC_ENCOUNTERS)
 - **Monster IDs**: [1 lydrosome]
@@ -492,7 +492,7 @@ Characters respond differently based on the number of DataLogs you have archived
 ### Tech Clips (Botanic Sector)
 
 ### 1. Dialogue
-- **Before Battle**: "New intern, right? You're entering a sector where one Basic skill just isn't enough to manage the tactical load. // Have you heard of the 'Second Brain'? // It's a special card that unlocks an additional skill slot just by being in your squad's Catalyst Box. // Let's see if you're ready for that kind of growth!"
+- **Before Battle**: "New intern, right? You're entering a sector where one Basic skill just isn't enough to manage the tactical load. // Have you heard of the 'Second Brain'? // It's a special card that unlocks an additional skill slot just by being in your squad's Catalyst Hub. // Let's see if you're ready for that kind of growth!"
 - **Pre-battle**: "Processing multiple tactical frequencies... Now!"
 - **NPC Defeated (Player Wins)**: "Solid processing speed! // Remember, the Second Brain card's presence alone grants you that extra Pellicle slot. // It allows you to equip a second active skill, giving you much more control over your Pellicle Points (PP) in battle."
 - **NPC Victorious (Player Loses)**: "Lagging behind? // If a Second Brain isn't enough to save you, maybe you should start looking for a third!"
@@ -612,10 +612,10 @@ Characters respond differently based on the number of DataLogs you have archived
 ### Researcher White (Specimen Storage)
 
 ### 1. Dialogue
-- **Before Battle**: "[Arguing with Cherry] ...I'm telling you, the MAP system is pure luck! // The real pros win through superior PP management and C-Card strategy. It's all about the deck, not the drift! // Here, I'll prove it by crushing this intern with pure tactical efficiency!"
+- **Before Battle**: "[Arguing with Cherry] ...I'm telling you, the MAP system is pure luck! // The real pros win through superior PP management and C-Chip strategy. It's all about the deck, not the drift! // Here, I'll prove it by crushing this intern with pure tactical efficiency!"
 - **Pre-battle**: "Efficiency over luck, every time!"
-- **NPC Victorious (Player Loses)**: "See? Perfection in PP management and a solid C-Card build. That's how you win—luck has nothing to do with it!"
-- **NPC Defeated (Player Wins)**: "Wait... did you just out-manage my PP? Fine, maybe your C-Card strategy was just slightly better... for now!"
+- **NPC Victorious (Player Loses)**: "See? Perfection in PP management and a solid C-Chip build. That's how you win—luck has nothing to do with it!"
+- **NPC Defeated (Player Wins)**: "Wait... did you just out-manage my PP? Fine, maybe your C-Chip strategy was just slightly better... for now!"
 
 ### 2. Monster Team (NPC_ENCOUNTERS)
 - **Monster IDs**: [1 Lydrosome, 1 Nitrophil]
@@ -692,10 +692,10 @@ Characters respond differently based on the number of DataLogs you have archived
 ### Assistant Yunidi (Executive Suite)
 
 #### 1. Dialogue
-- **Before Battle**: "Director Capsain doesn't hire assistants; he hires strategic advantages. // Typical research only focuses on active moves, but the true elite operate through Leader Perks. // These are powerful, passive Tier L cards that rewrite the fundamental laws of the sync. // Ready to face an Executive-grade Perks build?"
+- **Before Battle**: "Director Capsain doesn't hire assistants; he hires strategic advantages. // Typical research only focuses on active moves, but the true elite operate through Leader Perks. // These are powerful, passive Tier L chips that rewrite the fundamental laws of the sync. // Ready to face an Executive-grade Perks build?"
 - **Pre-battle**: "Activating Leader Perk: Strategic Supremacy."
 - **NPC Victorious (Player Loses)**: "Operational oversight. You lacked the high-tier synergy needed to bypass my Perk's influence. // Leader Perks are the foundation of an elite squad. They provide permanent, passive advantages like ignoring defense, guaranteeing first-turn initiative, or massive stat scalers. Without a Perk, you're just a statistic."
-- **NPC Defeated (Player Wins)**: "A victory against the Executive Suite... statistically improbable, yet here you are. // You must have a powerful Leader Perk of your own to have survived that. // Never underestimate the passive influence of Tier L cards. They are the true keys to the suite's power!"
+- **NPC Defeated (Player Wins)**: "A victory against the Executive Suite... statistically improbable, yet here you are. // You must have a powerful Leader Perk of your own to have survived that. // Never underestimate the passive influence of Tier L chips. They are the true keys to the suite's power!"
 
 #### 2. Monster Team (NPC_ENCOUNTERS)
 - **Monster IDs**: [2 Stemmy, 1 Nitrophil]
@@ -717,7 +717,7 @@ These dialogue lines are randomly assigned to generic researchers based on the s
 1. *"Welcome to Odd Labs!// Please keep your badge visible at all times and avoid the bio-hazard chutes."*
 2. *"New here? Try to interact with computers, furniture, and people.// It's the only way to uncover hidden data logs and gossip about the Director's lunch habits."*
 3. *"Keep your eye on the prize! Open your Cell-Inventory and Squad menu to manage your team.// You can swap your active Cells and check their current membrane health there."*
-4. *"Your Research Grade (RG) is the primary measure of your scientific standing.// Every time your RG level increases, you'll receive a new tactical C-Card to upgrade your Cell's combat capabilities."*
+4. *"Your Research Grade (RG) is the primary measure of your scientific standing.// Every time your RG level increases, you'll receive a new tactical C-Chip to upgrade your Cell's combat capabilities."*
 5. *"The Main Atrium is the heart of Odd Labs—most wings connect right back to it.// If you ever feel lost, just head toward the largest machine in the center of the facility."*
 6. *"Check every corner! Some of our best research logs are tucked away in abandoned desks or old test tanks.// If it looks interesting, it probably has a story to tell."*
 7. *"If your Cells are looking a bit sluggish, take them to an Incubator unit.// A quick session in the restorative mist will have them back to full strength in no time."*
@@ -1040,7 +1040,7 @@ This section provides a deep-dive into the biological, historical, and philosoph
 ### Assistant Zibrya (Atrium Side Quest)
 
 #### 1. Dialogue
-- **Offer**: "Hey there, Intern! Did you know the Lab has different kinds of cards? // We use C-Cards for upgrading Cells, but there are also Collectible Cards... just for the sake of collecting! // A true Lab member is one who hunts down every secret card. // Tell you what—if you can defeat 2 Wild Stemmies to help with my research, I'll give you the first spare card I have. // It's a great way to start your collection. What do you say?"
+- **Offer**: "Hey there, Intern! Did you know the Lab has different kinds of cards? // We use C-Chips for upgrading Cells, but there are also Collectible Cards... just for the sake of collecting! // A true Lab member is one who hunts down every secret card. // Tell you what—if you can defeat 2 Wild Stemmies to help with my research, I'll give you the first spare card I have. // It's a great way to start your collection. What do you say?"
 - **Progress**: "How's the hunt going? You've defeated {progress} out of 2 Wild Stemmies so far. Keep at it!"
 - **Complete**: "Congratulations! Stemmy is actually so cool! People say it's lame, but I find it super handy—that little guy has a lot of potential. // As promised, here is your Stemmy Collectible Card! It's super common, but hey, every legendary collection has to start somewhere. // Keep an eye out for others—they could be anywhere!"
 - **Finished**: "Did you know that Jenzy actually makes all these collectible cards herself? She's really good at making stuff, isn't she?"

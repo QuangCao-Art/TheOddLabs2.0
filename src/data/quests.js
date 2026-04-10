@@ -27,7 +27,7 @@ export const QUESTS = {
         dialogue: {
             offer: ["I need a Nitrophil cell for an experiment.", "Could you synthesize one for me?"],
             progress: ["Still waiting on that Nitrophil...", "Remember, you need Biomass and a Blueprint."],
-            complete: ["Perfect specimen!", "Please take this C-Card as payment."],
+            complete: ["Perfect specimen!", "Please take this C-Chip as payment."],
             finished: ["Nitrophil is a fascinating unit, isn't it?"]
         }
     },
@@ -56,8 +56,8 @@ export const QUESTS = {
         description: "Defeat 2 Wild Stemmies to help Assistant Zibrya with her card research.",
         dialogue: {
             offer: [
-                "Hey there, Intern! Did you know the Lab has different kinds of cards?",
-                "We use C-Cards for upgrading Cells, but there are also Collectible Cards... just for the sake of collecting!",
+                "Hey there, Intern! Did you know the Lab uses both tactical Chips and Collectible Cards?",
+                "We use C-Chips for upgrading Cells, but there are also Collectible Cards... just for the sake of collecting!",
                 "A true Lab member is one who hunts down every secret card.",
                 "Tell you what—if you can defeat 2 Wild Stemmies to help with my research, I'll give you the first spare card I have.",
                 "It's a great way to start your collection. What do you say?"
