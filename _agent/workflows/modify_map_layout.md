@@ -29,6 +29,7 @@ This protocol MUST be strictly followed for all map modifications:
     - These tiles stay visually disguised as walls until the player walks into them.
     - Upon interaction (if unlocked), they reveal the **Secret Passage** visuals (IDs **34–37**).
     - Ensure a corresponding entry exists in the `doors` array for the transition to work.
+- **9. NPC_INTEGRITY_PROTOCOL**: Unless explicitly requested by the USER to move or remove them, all `type: "npc"` objects in the target zone MUST be preserved in their original coordinates when applying new furniture layouts.
 
 ### 1. Identify the Target Zone File
 Map data is now modularized into individual files.
