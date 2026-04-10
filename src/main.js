@@ -70,10 +70,10 @@ const bootAudio = () => {
     // If we are already on a screen that needs music, trigger it again now that ctx exists
     const currentScreen = Array.from(document.querySelectorAll('.screen')).find(s => !s.classList.contains('hidden'));
     if (currentScreen) showScreen(currentScreen.id);
-    
+
     // Sync with persistent settings
     syncAudioEngineWithSettings();
-    
+
     window.removeEventListener('click', bootAudio);
     window.removeEventListener('keydown', bootAudio);
 };
@@ -592,7 +592,7 @@ window.showConfirmModal = (title, message, onConfirm, manualCleanup = false, hid
     btnNo.innerText = "CANCEL";
 
     // Initialize state
-    let confirmNavIndex = hideCancel ? 0 : 1; 
+    let confirmNavIndex = hideCancel ? 0 : 1;
     titleEl.innerText = (title || "WARNING").toUpperCase();
     msgEl.innerText = message || "Proceed with operation?";
 
@@ -854,7 +854,7 @@ function initStarterSelectionEvents() {
             selectCard(idx);
             openConfirmDialog();
         });
-        
+
         card.addEventListener('mouseenter', () => {
             if (!starterInputReady) return;
             selectCard(idx);
@@ -1138,7 +1138,7 @@ function setupEventListeners() {
 
         const monsterId = e.detail.id || 'stemmy';
         const instanceId = e.detail.instanceId; // THE BARCODE
-        
+
         const profileId = `${monsterId}_wild`;
         const playerRg = gameState.profiles.player.level || 0;
 
@@ -1344,7 +1344,7 @@ function setupEventListeners() {
         'anreal': 'npc_male',
         'godou': 'npc_male',
         'yunidi': 'npc_female',
-        
+
         // Playground
         'pessi': 'npc_male',
         'kolla': 'npc_female',
@@ -1577,7 +1577,7 @@ function setupEventListeners() {
                     // The incubator itself is at (2, 2). (2, 4) puts the player right in front of it.
                     Overworld.renderMap('lobby', false, 2, 4);
                     gameState.playerPos = { x: 2, y: 4 };
-                    
+
                     if (Overworld.player) {
                         Overworld.player.x = 2;
                         Overworld.player.y = 4;
@@ -1601,7 +1601,7 @@ function setupEventListeners() {
                             Overworld.spawner.despawnMonster(opponentId, Overworld.battleSourceZone);
                         }, 300);
                     }
-                    
+
                     // RELEASE INTERACTION LOCK
                     Overworld.isPaused = false;
                     Overworld.isTransitioning = false;
@@ -2299,15 +2299,15 @@ function setupEventListeners() {
     // --- AUDIO SETTINGS LISTENERS ---
     const handleVolumeInput = (type, val) => {
         const normalized = isNaN(val) ? 1.0 : val / 100;
-        
+
         // Safety initialization
         if (!gameState.settings) gameState.settings = { masterVolume: 1.0, musicVolume: 1.0, sfxVolume: 1.0 };
-        
+
         gameState.settings[type] = normalized;
         AudioManager[type] = normalized;
-        
+
         if (type !== 'sfxVolume') AudioManager.updateVolumes();
-        
+
         // Auto-unmute when moving sliders (Standard UX)
         if (gameState.settings.isMuted) {
             gameState.settings.isMuted = false;
@@ -2321,17 +2321,17 @@ function setupEventListeners() {
 
     const handleMuteToggle = () => {
         if (!gameState.settings) gameState.settings = { masterVolume: 1.0, musicVolume: 1.0, sfxVolume: 1.0, isMuted: false };
-        
+
         gameState.settings.isMuted = !gameState.settings.isMuted;
         AudioManager.isMuted = gameState.settings.isMuted;
         AudioManager.updateVolumes();
-        
+
         updateAudioSettingsUI();
         saveSystemSettings();
     };
 
     document.getElementById('btn-mute-toggle')?.addEventListener('click', handleMuteToggle);
-    
+
     const handleAutoSaveToggle = () => {
         if (!gameState.settings) gameState.settings = { masterVolume: 1.0, musicVolume: 1.0, sfxVolume: 1.0, isMuted: false, autoSave: false };
         gameState.settings.autoSave = !gameState.settings.autoSave;
@@ -4973,7 +4973,7 @@ function updateSystemSettingsUI() {
     const sfx = document.getElementById('slider-sfx-volume');
     const muteBtn = document.getElementById('btn-mute-toggle');
     const autoSaveBtn = document.getElementById('btn-autosave-toggle');
-    
+
     const mVal = Math.round(gameState.settings.masterVolume * 100);
     const muVal = Math.round(gameState.settings.musicVolume * 100);
     const sVal = Math.round(gameState.settings.sfxVolume * 100);
@@ -5008,6 +5008,12 @@ function showScreen(screenId) {
         AudioManager.playBGM('music_overworld', 0.35);
     } else if (screenId === 'screen-battle') {
         AudioManager.playBGM('music_battle', 0.45);
+
+        // --- CLEANUP OVERWORLD STATE ---
+        // Prevents loot animations or HUD pulses from being remembered after battle.
+        if (typeof Overworld !== 'undefined' && Overworld.cleanupLoot) {
+            Overworld.cleanupLoot();
+        }
     }
 
     document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
@@ -5036,7 +5042,7 @@ function resetGame() {
     if (pProfile.party.length === 0) {
         pProfile.party = pProfile.team.map((id, idx) => {
             if (!id) return null;
-            
+
             // Check for saved instance data (Efficiency, HP, PP, etc.)
             let existingData = null;
             if (gameState.playerPartyData && gameState.playerPartyData[idx]) {
@@ -6564,18 +6570,18 @@ function updateIncubatorSelection() {
     });
 }
 
-window.closeIncubatorMenu = function() {
+window.closeIncubatorMenu = function () {
     if (incubatorIsHealing) return; // Prevent closing during active sync
     window.hideWithFade('screen-incubator-menu');
     document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
     if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
 }
 
-window.startHealSequence = async function(context = 'manual') {
+window.startHealSequence = async function (context = 'manual') {
     if (incubatorIsHealing) return;
     const party = gameState.profiles.player.party;
     const activeMonsters = party.filter(m => m !== null);
-    
+
     // PRE-CHECK: If all active monsters are healthy, don't play the sequence
     const allHealthy = activeMonsters.every(m => {
         const mod = getModifiedStats(m, gameState.profiles.player.level);
@@ -6626,17 +6632,17 @@ window.startHealSequence = async function(context = 'manual') {
         const slotEl = healScreen.querySelector(`.heal-slot[data-slot="${partyIdx}"]`);
         if (slotEl) {
             slotEl.setAttribute('data-monster', monster.monsterId || monster.id.split('_')[0]);
-            
+
             const mod = getModifiedStats(monster, gameState.profiles.player.level);
             const currentHpPct = Math.min(100, (monster.hp / mod.maxHp) * 100);
-            
+
             const ppVal = monster.pp || 0;
             const isLysis = ppVal < 0;
             const currentPpPct = Math.min(100, (Math.abs(ppVal) / mod.maxPp) * 100);
 
             const hpFill = slotEl.querySelector('.hp-bar .status-bar-fill');
             const ppFill = slotEl.querySelector('.pp-bar .status-bar-fill');
-            
+
             if (hpFill) {
                 hpFill.classList.add('no-transition');
                 hpFill.style.width = `${currentHpPct}%`;
@@ -6661,7 +6667,7 @@ window.startHealSequence = async function(context = 'manual') {
     await new Promise(r => setTimeout(r, 400));
     if (statusText) statusText.textContent = "SCANNING CELLULAR INTEGRITY...";
     if (scanLine) scanLine.classList.add('animate-heal-scan');
-    
+
     // Sync battery charging with scan position (Scan is 2.5s Total)
     const syncDelays = { "1": 700, "0": 1300, "2": 2100 };
     Object.keys(syncDelays).forEach(slotId => {
@@ -6671,9 +6677,9 @@ window.startHealSequence = async function(context = 'manual') {
             const monster = party[partyIdx];
             if (slotEl && slotEl.classList.contains('active') && monster) {
                 slotEl.classList.add('scanning');
-                
+
                 const mod = getModifiedStats(monster, gameState.profiles.player.level);
-                
+
                 // Vital Restoration
                 const hpFill = slotEl.querySelector('.hp-bar .status-bar-fill');
                 if (hpFill) {
@@ -6738,7 +6744,7 @@ window.startHealSequence = async function(context = 'manual') {
     // Choose Protocol Variations
     let protocolLabel = "INCUBATOR OS";
     let messageVariations = [];
-    
+
     if (context === 'defeat') {
         protocolLabel = "MEDICAL ADVISORY";
         messageVariations = [
@@ -6762,7 +6768,7 @@ window.startHealSequence = async function(context = 'manual') {
     healScreen.classList.add('hidden');
     document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
     incubatorIsHealing = false; // UNLOCK
-    
+
     if (typeof Overworld !== 'undefined') {
         Overworld.isPaused = false;
         Overworld.onDialogueComplete = null; // Clear to prevent accidental double-triggers
@@ -6886,7 +6892,7 @@ window.addEventListener('load', init);
 window.updateResourceHUD = function () {
     const lcVal = document.getElementById('hud-lc-val');
     const bmVal = document.getElementById('hud-bm-val');
-    
+
     // Safety check to avoid overwriting ongoing animations if values match
     if (lcVal && !lcVal._isAnimating) lcVal.innerText = gameState.credits || 0;
     if (bmVal && !bmVal._isAnimating) bmVal.innerText = gameState.biomass || 0;
@@ -6898,12 +6904,12 @@ window.updateResourceHUD = function () {
 };
 
 // Universal Resource API
-window.changeResource = function(type, amount) {
+window.changeResource = function (type, amount) {
     if (!type || amount === 0) return;
-    
+
     const isLC = type.toLowerCase() === 'lc';
     const isBM = type.toLowerCase() === 'bm';
-    
+
     if (isLC) {
         gameState.credits = Math.max(0, (gameState.credits || 0) + amount);
     } else if (isBM) {
@@ -6917,7 +6923,7 @@ window.changeResource = function(type, amount) {
     window.animateResourceHUD(isLC ? 'lc' : 'bm', amount);
 };
 
-window.spawnResourcePopup = function(type, amount) {
+window.spawnResourcePopup = function (type, amount) {
     const parentId = type === 'lc' ? 'hud-lc-val' : 'hud-bm-val';
     const valEl = document.getElementById(parentId);
     if (!valEl) return;
@@ -6930,17 +6936,17 @@ window.spawnResourcePopup = function(type, amount) {
     const isGain = amount >= 0;
     const moodClass = isGain ? 'gain' : 'loss';
     popup.className = `resource-popup ${type}-${moodClass}`;
-    
+
     const prefix = amount >= 0 ? '+' : '';
     popup.innerText = `${prefix}${amount}`;
-    
+
     container.appendChild(popup);
-    
+
     // Auto cleanup
     setTimeout(() => popup.remove(), 1200);
 };
 
-window.animateResourceHUD = function(type, amount) {
+window.animateResourceHUD = function (type, amount) {
     const id = type === 'lc' ? 'hud-lc-val' : 'hud-bm-val';
     const el = document.getElementById(id);
     if (!el) return;
@@ -6953,10 +6959,10 @@ window.animateResourceHUD = function(type, amount) {
     if (el._isAnimating) return;
 
     el._isAnimating = true;
-    
+
     const tick = () => {
         let current = parseInt(el.innerText) || 0;
-        
+
         if (current === el._visualTarget) {
             el._isAnimating = false;
             return;
@@ -6964,19 +6970,19 @@ window.animateResourceHUD = function(type, amount) {
 
         const diff = el._visualTarget - current;
         const isUp = diff > 0;
-        
+
         // Force counting each number (step = 1) unless the difference is massive
         let step = isUp ? 1 : -1;
         if (Math.abs(diff) > 100) {
             step = Math.ceil(Math.abs(diff) / 15) * (isUp ? 1 : -1);
         }
-        
+
         current += step;
-        
+
         // Overshoot protection
         if (isUp && current > el._visualTarget) current = el._visualTarget;
         if (!isUp && current < el._visualTarget) current = el._visualTarget;
-        
+
         el.innerText = current;
 
         // AUDIO: Play satisfying ticker tick SFX (Gain only or both? Let's do both but lower volume for ticks)
@@ -7076,7 +7082,7 @@ function renderSynthesisItems() {
         const canAfford = canAffordSynthesis(recipe);
         const btnClass = canAfford ? 'active' : 'locked';
         const displayEfficiency = 0; // Placeholder for expansion
-        
+
         card.innerHTML = `
             <div class="shop-item-info">
                 <div class="shop-item-icon ${recipe.iconClass}">
@@ -7098,7 +7104,7 @@ function renderSynthesisItems() {
         actionBtn.addEventListener('click', (e) => {
             e.stopPropagation(); // Prevent re-selecting card
             selectSynthesisItem(recipe); // Still select it to show requirements
-            
+
             if (canAfford) {
                 document.getElementById('synthesis-confirm-modal')?.classList.remove('hidden');
             }
@@ -7389,14 +7395,14 @@ function createShopItemCard(item, price, currency) {
 
     const isSell = shopState.activeTab === 'sell';
     const canAfford = canAffordShopItem(item, shopState.activeTab);
-    
+
     let btnText;
     if (canAfford) {
         btnText = isSell ? `SELL (${price})` : `${price} LC`;
     } else {
         btnText = "Missing Resource";
     }
-    
+
     const btnClass = isSell ? 'sell' : '';
     const statusClass = canAfford ? 'active' : 'locked';
 
@@ -7563,7 +7569,7 @@ function handleShopAction() {
             console.log(`Purchased ${qty}x ${item.name}`);
             closeQuantityModal();
             updateShopUI();
-            
+
             if (gameState.settings?.autoSave) saveGameState();
         }
     } else {

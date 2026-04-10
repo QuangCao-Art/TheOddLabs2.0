@@ -1348,7 +1348,7 @@ export const Overworld = {
 
     interact() {
         const gameOverVisible = document.getElementById('game-over-overlay') && !document.getElementById('game-over-overlay').classList.contains('hidden');
-        
+
         // Allow interaction if dialogue is active (to advance it), even if paused/transitioning
         if (!this.isDialogueActive) {
             if (this.isPaused || this.isTransitioning || gameOverVisible) return;
@@ -1600,7 +1600,7 @@ export const Overworld = {
 
         // Make NPC face the player, and Player face the NPC
         const oppDirections = { 'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left' };
-        
+
         // Calculate player facing based on relative position
         const dx = npc.x - this.player.x;
         const dy = npc.y - this.player.y;
@@ -2692,14 +2692,14 @@ export const Overworld = {
         if (this.pendingWildEncounter) {
             const mId = this.pendingWildMonsterId || 'stemmy';
             const instanceId = this.pendingWildInstanceId;
-            
+
             this.pendingWildEncounter = false;
             this.pendingWildMonsterId = null;
             this.pendingWildInstanceId = null;
 
             setTimeout(() => {
-                window.dispatchEvent(new CustomEvent('start-wild-encounter', { 
-                    detail: { id: mId, instanceId: instanceId } 
+                window.dispatchEvent(new CustomEvent('start-wild-encounter', {
+                    detail: { id: mId, instanceId: instanceId }
                 }));
             }, 200);
         }
@@ -2943,15 +2943,15 @@ export const Overworld = {
 
         despawnMonster(monsterId, zoneId = null) {
             const mRecord = this.activeMonsters.find(m => m.id === monsterId);
-            
+
             // Visual Cleanup
             const el = document.getElementById(`npc-${monsterId}`);
             if (el) {
                 el.classList.remove('anim-monster-breathing', 'anim-monster-pop');
                 el.classList.add('anim-recall-exit');
-                setTimeout(() => { 
-                    if (el.parentNode) el.remove(); 
-                    
+                setTimeout(() => {
+                    if (el.parentNode) el.remove();
+
                     // DATA CLEANUP (Moved inside timeout for sync)
                     const targetZoneId = zoneId || Overworld.currentZone;
                     const zone = Overworld.zones[targetZoneId];
@@ -3276,7 +3276,7 @@ export const Overworld = {
         const baseObj = oldParts[0];
         const meta = this.getFurnitureMeta(baseObj.id, baseObj.customSprite);
         const material = (meta && meta.material) ? (Array.isArray(meta.material) ? meta.material[0] : meta.material) : 'glass';
-        
+
         if (material === 'wood') AudioManager.play('shatter_wood', 0.6, 0.1);
         else AudioManager.play('shatter_tank', 0.6, 0.1); // Default for tech/glass
 
@@ -3425,7 +3425,7 @@ export const Overworld = {
             puff.className = 'smoke-plume-puff';
             puff.style.left = emitX + 'px';
             puff.style.top = emitY + 'px';
-            
+
             // RANDOM RADIAL BURST logic
             const angle = Math.random() * Math.PI * 2;
             const force = 15 + Math.random() * 25;
@@ -3448,7 +3448,7 @@ export const Overworld = {
                 spark.className = 'thruster-spark';
                 spark.style.left = emitX + 'px';
                 spark.style.top = emitY + 'px';
-                
+
                 // Stars burst even further
                 const sparkForce = force * 1.4;
                 const sDriftX = (Math.cos(angle) * sparkForce) + (driftX * 2);
@@ -3470,7 +3470,7 @@ export const Overworld = {
      */
     dropLoot(obj, isHomerun, directionKey) {
         if (!obj) return;
-        
+
         // Use pre-rolled result if available for perfect audio sync
         let reward = obj._pendingLoot;
         obj._pendingLoot = null;
@@ -3494,7 +3494,7 @@ export const Overworld = {
      */
     calculateLoot(obj, isHomerun) {
         if (!obj) return null;
-        
+
         const zone = this.zones[this.currentZone];
         const isLimited = zone && zone.dropPoolLimit;
 
@@ -3502,8 +3502,8 @@ export const Overworld = {
         const pools = {
             '01': { nothing: 50, lc: 25, bm: 25, lcQty: 1, bmQty: 1 },
             '02': { nothing: 30, lc: 35, bm: 35, lcQty: 2, bmQty: 2 },
-            '03': { nothing: 0,  lc: 50, bm: 50, lcQty: 3, bmQty: 2 },
-            '04': { nothing: 0,  lc: 50, bm: 50, lcQty: 5, bmQty: 3 }
+            '03': { nothing: 0, lc: 50, bm: 50, lcQty: 3, bmQty: 2 },
+            '04': { nothing: 0, lc: 50, bm: 50, lcQty: 5, bmQty: 3 }
         };
 
         let selectedPool = '01';
@@ -3525,7 +3525,7 @@ export const Overworld = {
 
         const pool = pools[selectedPool];
         const resultRoll = Math.random() * 100;
-        
+
         if (resultRoll < pool.lc) {
             return { rewardType: 'lc', amount: pool.lcQty };
         } else if (resultRoll < (pool.lc + pool.bm)) {
@@ -3540,7 +3540,7 @@ export const Overworld = {
         if (!viewport || !mapEl) return;
 
         const mapRect = mapEl.getBoundingClientRect();
-        
+
         // Target HUD Elements
         const hudId = type === 'lc' ? 'hud-lc-val' : 'hud-bm-val';
         const targetEl = document.getElementById(hudId);
@@ -3555,12 +3555,12 @@ export const Overworld = {
         for (let i = 0; i < amount; i++) {
             const particle = document.createElement('div');
             particle.className = `loot-resource-icon ${type === 'lc' ? 'lc' : 'biomass'}`;
-            
+
             // Multi-variable Randomization
             let spreadX = 0, spreadY = 0;
             const randDist = Math.random() * 250 + 250; // 250-500px total spread
             const randArc = Math.random() * 40 - 20;   // Minimal +/- 20px vertical variance
-            
+
             if (directionKey === 'l') {
                 spreadX = -randDist;
                 spreadY = randArc;
@@ -3586,17 +3586,17 @@ export const Overworld = {
             // WORLD SPACE SPAWN
             const tileCenterX = (tileX * this.tileSize) + (this.tileSize / 2);
             const tileCenterY = (tileY * this.tileSize) + (this.tileSize / 2);
-            
+
             particle.style.left = `${tileCenterX - 32}px`;
             particle.style.top = `${tileCenterY - 32}px`;
-            
+
             particle.style.animation = `loot-burst-${directionKey} 1.0s ease-out forwards`;
             mapEl.appendChild(particle);
 
             // Phase 2: Predictive Handover to SCREEN SPACE and Fly to HUD
             setTimeout(() => {
                 if (!particle.parentNode) return;
-                
+
                 // 1. CALCULATE MATHEMATICAL FINAL POSITION (PREDICTIVE)
                 const currentMapRect = mapEl.getBoundingClientRect();
                 const exactFinalX = currentMapRect.left + tileCenterX + spreadX - 32;
@@ -3605,12 +3605,12 @@ export const Overworld = {
                 // 2. SEAMLESS HANDOVER TO VIEWPORT
                 particle.style.animation = 'none';
                 viewport.appendChild(particle);
-                
+
                 // Set exactly at the predicted landing spot
                 particle.style.left = `${exactFinalX}px`;
                 particle.style.top = `${exactFinalY}px`;
                 particle.style.transform = `rotate(${spinTotal}deg) scale(${baseScale})`;
-                
+
                 void particle.offsetWidth; // Reflow for new animation
 
                 // 3. START FLIGHT
@@ -3627,7 +3627,7 @@ export const Overworld = {
                 setTimeout(() => {
                     if (particle.parentNode) particle.parentNode.removeChild(particle);
                     this.triggerHUDBounce(targetBox);
-                    
+
                     if (window.changeResource) {
                         window.changeResource(type, 1);
                     } else if (window.updateResourceHUD) {
@@ -3643,7 +3643,7 @@ export const Overworld = {
         el.classList.remove('anim-pop');
         void el.offsetWidth;
         el.classList.add('anim-pop');
-        
+
         // Trigger a tiny flash on the value itself
         const val = el.querySelector('.resource-value');
         if (val) {
@@ -3654,6 +3654,20 @@ export const Overworld = {
                 val.style.textShadow = '';
             }, 200);
         }
+    },
+
+    /**
+     * Instantly clears all loot icons and resets HUD animation states.
+     * Called during battle transitions or state resets.
+     */
+    cleanupLoot() {
+        // 1. Remove all active icons from the viewport or map
+        document.querySelectorAll('.loot-resource-icon').forEach(p => p.remove());
+
+        // 2. Clear HUD pulse states
+        document.querySelectorAll('.resource-item').forEach(el => {
+            el.classList.remove('anim-pop');
+        });
     }
 };
 
