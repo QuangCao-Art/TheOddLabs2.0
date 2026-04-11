@@ -14,6 +14,7 @@ export const AudioManager = {
     activeMusicId: null,
     musicGain: null,
     currentMusicVolume: 0, // Base level for current track
+    bgmRequestId: 0,      // Track the latest music request to prevent async races
 
     /**
      * Initialize the Audio Context.
@@ -109,6 +110,10 @@ export const AudioManager = {
     async playBGM(id, volume = 0.4, fadeDuration = 1.0) {
         if (!this.ctx) this.init();
         
+        // 1. Increment request ID immediately to cancel any previous pending loads
+        this.bgmRequestId++;
+        const currentId = this.bgmRequestId;
+
         // Safety: Ensure context is active (bypass browser suspension)
         if (this.ctx.state !== 'running') {
             try { await this.ctx.resume(); } catch (e) { /* background block */ }
@@ -138,12 +143,23 @@ export const AudioManager = {
 
         // 2. Load and start new music
         await this.load(id);
+        
+        // 3. ABORT CHECK: If a newer request has been made while we were loading, stop here
+        if (currentId !== this.bgmRequestId) {
+            console.log(`[Audio] Aborting stale BGM request for: ${id}`);
+            return;
+        }
+
         let buffer = this.cache.get(id);
 
         // Fallback Mechanism: If requested track is missing, try music_main_menu as a placeholder
         if (!buffer && id !== 'music_main_menu') {
             console.log(`[Audio] Falling back to music_main_menu for: ${id}`);
             await this.load('music_main_menu');
+            
+            // Re-check abort after fallback load
+            if (currentId !== this.bgmRequestId) return;
+            
             buffer = this.cache.get('music_main_menu');
         }
 
@@ -189,6 +205,7 @@ export const AudioManager = {
      * Stop all background music with a fade out
      */
     stopBGM(fadeDuration = 0.5) {
+        this.bgmRequestId++; // Cancel any pending loads from playBGM
         if (this.activeMusicSource && this.musicGain) {
             const mg = this.musicGain;
             const ms = this.activeMusicSource;

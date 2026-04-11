@@ -39,10 +39,10 @@ export const furnitureMetadata = {
     'f31': { hasCollision: true, material: 'glass', info: "Carved from obsidian glass. Legend says the Director actually sleeps under it." },
     'f32': { hasCollision: true, info: "A medical pod. Warning: Set to 'Deep Sleep', not 'Quick Nap'. See you in three days." },
     'f33': { hasCollision: true, info: "A medical pod. Warning: Set to 'Deep Sleep', not 'Quick Nap'. See you in three days." },
-    'f34': { hasCollision: false, info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
-    'f35': { hasCollision: true, info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
+    'f34': { hasCollision: false, material: ['bone', 'metal'], info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
+    'f35': { hasCollision: true, kickable: true, material: ['bone', 'metal'], info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
     'f36': { hasCollision: true, info: "Instant noodles. The true fuel of all scientific breakthroughs and 3 AM crying sessions." },
-    'f37': { hasCollision: true, kickable: true, info: "An empty bowl. The salt levels within are high enough to preserve a whole lab tech." },
+    'f37': { hasCollision: true, kickable: true, material: 'plastic', info: "An empty bowl. The salt levels within are high enough to preserve a whole lab tech." },
     'f38': { hasCollision: false, triggerHeal: true, info: "Incubator Unit-01: [STATION READY]" },
     'f39': { hasCollision: false, triggerHeal: true, info: "Incubator Unit-02: [STATION READY]" },
     'f40': { hasCollision: true, triggerHeal: true, info: "Incubator Unit-03: [STATION READY]" },
@@ -53,7 +53,7 @@ export const furnitureMetadata = {
     'f45': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
     'f46': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
     'f47': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-    'f48': { hasCollision: true, kickable: true, info: "Labeled: 'DO NOT SHAKE'." },
+    'f48': { hasCollision: true, kickable: true, material: 'carton', info: "Labeled: 'DO NOT SHAKE'." },
     'f49': { hasCollision: true, info: "Mostly contains encrypted logs, but some files are just high-score records for 'Snake'." },
     'f50': { hasCollision: true, info: "A magnetic keycard. Smells like the Director's expensive cologne." },
     'f51': { hasCollision: true, info: "Label: 'SUPERNOVA SAUCE'. Scoville rating: YES. Lab-certified to burn through metal." },
@@ -64,10 +64,10 @@ export const furnitureMetadata = {
     'f56': { hasCollision: false, info: '"Why do all the tables have to be this messy?" asked the janitor.' },
     'f57': { hasCollision: true, info: '"Why do all the tables have to be this messy?" asked the janitor.' },
     'f58': { hasCollision: true, info: "I can see the little cockroaches crawling out!" },
-    'f59': { hasCollision: true, kickable: true, info: "Looks like a normal plant... or is it?" },
-    'f60': { hasCollision: true, kickable: true, info: "This box is heavier than it looks." },
+    'f59': { hasCollision: true, kickable: true, material: 'plastic', info: "Looks like a normal plant... or is it?" },
+    'f60': { hasCollision: true, kickable: true, material: 'carton', info: "This box is heavier than it looks." },
     'f61': { hasCollision: false, info: "Please don't fall on my head" },
-    'f62': { hasCollision: true, kickable: true, info: "Please don't fall on my head" },
+    'f62': { hasCollision: true, kickable: true, material: 'carton', info: "Please don't fall on my head" },
     'f63': { hasCollision: true, info: "This is the best ultimate super rare card ever!" },
 
     // --- TILESET 03 (f64+) ---
@@ -112,22 +112,26 @@ export const furnitureMetadata = {
     'f102': { hasCollision: true, info: "A container of stabilized raw biological material. It smells faintly of damp earth and limitless potential." },
     'f103': { hasCollision: true, info: "An oversized cultivation dish designed for Cell. It's climate-controlled and remarkably soft—essentially a luxury suite for a Cell." },
     'f104': { hasCollision: true, info: "An internal currency chip exclusive to Labs. What started as a corporate joke became the only way to pay for the 'premium' noodles." },
-    'f105': { hasCollision: true, kickable: true, info: "Nothing can stop me, even when the sign says so." },
-    'f106': { hasCollision: true, kickable: true, info: "Nothing can stop me; turning the sign sideways won't help." },
-    'f107': { hasCollision: false, kickable: true, info: "This skeleton robot has an auto-assemble function; otherwise, it's a real mess." },
-    'f108': { hasCollision: true, kickable: true, info: "This skeleton robot has an auto-assemble function; otherwise, it's a real mess." },
+    'f105': { hasCollision: true, kickable: true, material: 'plastic', info: "Nothing can stop me, even when the sign says so." },
+    'f106': { hasCollision: true, kickable: true, material: 'plastic', info: "Nothing can stop me; turning the sign sideways won't help." },
+    'f107': { hasCollision: false, kickable: true, material: 'bone', info: "This skeleton robot has an auto-assemble function; otherwise, it's a real mess." },
+    'f108': { hasCollision: true, kickable: true, material: 'bone', info: "This skeleton robot has an auto-assemble function; otherwise, it's a real mess." },
     'f109': { hasCollision: false, info: "An oversized cultivation dish designed for Cells. It's the same model used in the main lab, but standing two stories tall." },
     'f110': { hasCollision: true, info: "An oversized cultivation dish designed for Cells. It's the same model used in the main lab, but standing two stories tall." },
     'f111': { hasCollision: false, info: "A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time!" },
     'f112': { hasCollision: true, info: "A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time!" },
     'f113': { hasCollision: false, info: "An empty specimen tank. Its occupants seem to have... moved on." },
     'f114': { hasCollision: true, info: "An empty specimen tank. Its occupants seem to have... moved on." },
-    'f115': { hasCollision: false, breakable: true, breaksInto: 'TANK_BROKEN', info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
-    'f116': { hasCollision: true, breakable: true, breaksInto: 'TANK_BROKEN', info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
-    'f117': { hasCollision: false, breakable: true, breaksInto: 'TANK_SHATTERED', info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
-    'f118': { hasCollision: true, breakable: true, breaksInto: 'TANK_SHATTERED', info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
+    'f115': { hasCollision: false, breakable: true, material: 'glass', breaksInto: 'TANK_BROKEN', info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
+    'f116': { hasCollision: true, breakable: true, material: 'glass', breaksInto: 'TANK_BROKEN', info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
+    'f117': { hasCollision: false, breakable: true, material: 'glass', breaksInto: 'TANK_SHATTERED', info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
+    'f118': { hasCollision: true, breakable: true, material: 'glass', breaksInto: 'TANK_SHATTERED', info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
     'f119': { hasCollision: true, info: "Jagged glass shards and a rusted frame. Leave it to the cleaning crew; your fingers will thank you." },
-    'f120': { hasCollision: true, kickable: true, info: "Fragmented remains of a tank. Oddly lightweight for its size." },
+    'f120': { hasCollision: true, kickable: true, material: 'glass', info: "Fragmented remains of a tank. Oddly lightweight for its size." },
+    'f121': { hasCollision: true, breakable: true, material: 'metal', breaksInto: 'LIDSTEMMY_DEBRIS', info: "A common tank lid. It doesn't seem to be sealed properly; someone might have left it untightened." },
+    'f122': { hasCollision: true, kickable: true, material: 'metal', info: "A tank lid with a small, unpowered Stemmy clinging to it. It seems to have found a cozy spot." },
+    'f123': { hasCollision: true, breakable: true, material: 'metal', breaksInto: 'LID_DEBRIS', info: "A heavily dented and cracked tank lid. One good stomp will likely finish it off." },
+    'f124': { hasCollision: true, kickable: true, material: 'metal', info: "A mangled piece of metal that used to be a tank lid. It's completely beyond repair." },
 
     // --- ENCOUNTER CELLS ---
     'c0': { hasCollision: true, info: "A wild Stemmy is wandering." },
@@ -440,6 +444,22 @@ export const FURNITURE_TEMPLATES = {
     TANK_BROKEN: {
         name: 'Broken Tank Debris',
         tiles: [{ id: 'f120', relX: 0, relY: 0 }]
+    },
+    TANK_LID_LOOSE: {
+        name: 'Tank Lid (Loose)',
+        tiles: [{ id: 'f121', relX: 0, relY: 0 }]
+    },
+    LIDSTEMMY_DEBRIS: {
+        name: 'Tank Lid w/ Stemmy',
+        tiles: [{ id: 'f122', relX: 0, relY: 0 }]
+    },
+    TANK_LID_BROKEN: {
+        name: 'Tank Lid (Broken)',
+        tiles: [{ id: 'f123', relX: 0, relY: 0 }]
+    },
+    LID_DEBRIS: {
+        name: 'Tank Lid (Mangled)',
+        tiles: [{ id: 'f124', relX: 0, relY: 0 }]
     }
 };
 
@@ -471,7 +491,21 @@ export const TERRAIN_PALETTE = [
     // --- Special ---
     { id: 32, name: 'Window (Basic)' },
     { id: 33, name: 'Window (FullWall)' },
-    { id: 38, name: 'Floor (SideDeco)' }
+    { id: 43, name: 'Window (FullWall-Vary01)' },
+    { id: 38, name: 'Floor (SideDeco)' },
+    { id: 44, name: 'Floor (Basic-Dirty)' },
+    { id: 45, name: 'Floor (Diamond)' },
+    { id: 46, name: 'Floor (Stripe-Vertical)' },
+    { id: 47, name: 'Floor (Stripe-Horizontal)' },
+    { id: 48, name: 'Wall (Door-Left-Top)' },
+    { id: 49, name: 'Wall (Door-Left-Bottom)' },
+    { id: 50, name: 'Wall (Door-Mid-Top)' },
+    { id: 51, name: 'Wall (Door-Right-Top)' },
+    { id: 52, name: 'Wall (Door-Right-Bottom)' },
+    { id: 53, name: 'Wall (Pipes-Top)' },
+    { id: 54, name: 'Wall (Pipes-Bottom)' },
+    { id: 55, name: 'Wall (Dirty-Top)' },
+    { id: 56, name: 'Wall (Dirty-Bottom)' }
 ];
 
 export const DOOR_TEMPLATES = {

@@ -6528,6 +6528,27 @@ body {
     display: none;
 }
 
+#builder-reward-panel {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    bottom: 20px;
+    width: 450px;
+    background: rgba(0, 10, 20, 0.95);
+    border: 2px solid var(--neon-cyan);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    z-index: 10000;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+    font-family: var(--font-tactical);
+    color: white;
+}
+
+#builder-reward-panel.hidden {
+    display: none;
+}
+
 .palette-header {
     padding: 15px;
     border-bottom: 2px solid rgba(0, 243, 255, 0.3);
@@ -6651,7 +6672,7 @@ body {
 
 .builder-reward-group label {
     display: block;
-    font-size: var(--fs-tiny);
+    font-size: var(--fs-btn);
     letter-spacing: 1.5px;
     color: rgba(0, 243, 255, 0.6);
     margin-bottom: 8px;
@@ -6666,7 +6687,7 @@ body {
     color: #fff;
     padding: 8px 10px;
     font-family: var(--font-main);
-    font-size: var(--fs-label);
+    font-size: var(--fs-body);
     border-radius: 4px;
     box-sizing: border-box;
     outline: none;
@@ -6678,7 +6699,7 @@ body {
     flex-direction: row;
     gap: 15px;
     margin-top: 10px;
-    max-height: 250px;
+    max-height: 700px;
     overflow-y: auto;
     padding-right: 5px;
 }
@@ -6691,7 +6712,7 @@ body {
 }
 
 .col-label {
-    font-size: var(--fs-tiny);
+    font-size: var(--fs-label);
     color: rgba(0, 243, 255, 0.6);
     letter-spacing: 1.5px;
     margin-bottom: 8px;
@@ -6710,7 +6731,7 @@ body {
 }
 
 .reward-chip {
-    font-size: var(--fs-tiny);
+    font-size: var(--fs-btn);
     padding: 5px 10px;
     background: rgba(0, 243, 255, 0.1);
     border: 1px solid rgba(0, 243, 255, 0.2);
@@ -6868,7 +6889,7 @@ body {
     border: 1px solid rgba(0, 243, 255, 0.2);
     color: rgba(0, 243, 255, 0.5);
     padding: 10px;
-    font-size: var(--fs-tiny);
+    font-size: var(--fs-btn);
     font-weight: bold;
     letter-spacing: 1.5px;
     text-transform: uppercase;

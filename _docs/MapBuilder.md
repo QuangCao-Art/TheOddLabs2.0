@@ -57,6 +57,20 @@ This document serves as the official reference for building levels using the `La
 | **40** | Hidden-Door-Bottom-Closed | 256 | 512 |
 | **41** | Hidden-Door-Right-Closed | 512 | 256 |
 | **42** | Hidden-Door-Left-Closed | 0 | 256 |
+| **43** | Window-FullWall-Vary01 | 1792 | 768 |
+| **44** | Floor-Basic-Dirty | 512 | 1280 |
+| **45** | Floor-Diamond | 0 | 1536 |
+| **46** | Floor-Stripe-Vertical | 256 | 1536 |
+| **47** | Floor-Stripe-Horizontal | 512 | 1536 |
+| **48** | DoorWall-Left-Top | 768 | 1536 |
+| **49** | DoorWall-Left-Bottom | 768 | 1792 |
+| **50** | DoorWall-Mid-Top | 1024 | 1536 |
+| **51** | DoorWall-Right-Top | 1280 | 1536 |
+| **52** | DoorWall-Right-Bottom | 1280 | 1792 |
+| **53** | Wall-Center-Top-Pipes | 1536 | 1536 |
+| **54** | Wall-Center-Top-Pipes | 1536 | 1792 |
+| **55** | Wall-Center-Top-Dirty | 1792 | 1536 |
+| **56** | Wall-Center-Top-Dirty | 1792 | 1792 |
 
 ---
 
@@ -193,6 +207,10 @@ Used for advanced lab equipment and specialized props. Texture asset: `Lab_TileS
 | **f118** | CrackedTank-Bottom | 1280px | 1536px | Yes | A fragile tank covered in fractures, even a sneeze can take it down! |
 | **f119** | ShatteredTank-Remains | 1024px | 1792px | Yes | Jagged glass shards and a rusted frame. Leave it for the cleaning crew; your fingers will thank you. |
 | **f120** | BrokenTank-Debris | 1280px | 1792px | Yes | Fragmented remains of a tank. Oddly lightweight for its size. |
+| **f121** | OldTankTopLid | 768px | 1024px | Yes | A common tank lid. It doesn't seem to be sealed properly; someone might have left it untightened. |
+| **f122** | OldTankTopLidiwitStemmy | 1536px | 1792px | Yes | A tank lid with a small, unpowered Stemmy clinging to it. It seems to have found a cozy spot. |
+| **f123** | BrokenTankTopLid | 768px | 1792px | Yes | A heavily dented and cracked tank lid. One good stomp will likely finish it off. |
+| **f124** | BrokenDamagedTankTopLid | 1792px | 1792px | Yes | A mangled piece of metal that used to be a tank lid. It's completely beyond repair. |
 
 ---
 
@@ -210,8 +228,8 @@ Used for wild cell encounters. Props follow the class convention `.world-object.
 
 
 ## 3. Implementation Logic (Collisions)
-- **Solid (Walls)**: 0-11, 14-20, 22, 24-25, 28-31.
-- **Walkable (Floor)**: 13, 21, 23, 26, 27.
+- **Solid (Walls)**: 0-11, 14-20, 22, 24-25, 28-31, 43, 48-56.
+- **Walkable (Floor)**: 13, 21, 23, 26, 27, 44-47.
 - **Transitional (Doors)**: 20-27.
 
 ## 4. Building 2-Tile High Walls

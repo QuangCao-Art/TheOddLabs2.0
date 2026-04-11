@@ -12,7 +12,7 @@ description: Add a New Asset to the Game & Builder Tool
 ```markdown
 | Furniture ID | Description | X Position | Y Position | Have Collision | Kickable | Breakable | Breaks Into | Material | Info |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| f107 | Name | (X) | (Y) | (Yes/No) | (Yes/No) | (Yes/No/Debris) | (TemplateID) | (wood/glass/liquid) | (Tooltip) |
+| f107 | Name | (X) | (Y) | (Yes/No) | (Yes/No) | (Yes/No/Debris) | (TemplateID) | (wood/glass/liquid/metal/bone/plastic/carton) | (Tooltip) |
 ```
 
 ### 1. Identify the Sprite
@@ -63,7 +63,7 @@ Update [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/o
         info: "A mysterious new lab device.",
         breakable: true,          // Set to true for destructible objects
         breaksInto: 'DEBRIS_ID',  // Template ID found in FURNITURE_TEMPLATES
-        material: 'glass'         // Audio tag: wood | glass | metal | liquid | monster
+        material: 'glass'         // Audio tag: wood | glass | metal | liquid | monster | bone | plastic | carton
     }
     ```
 

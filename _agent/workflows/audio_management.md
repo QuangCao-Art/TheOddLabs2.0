@@ -13,7 +13,11 @@ Place your `.mp3` files in `assets/audio/` using the following exact names:
 | **Base Impact** | `impact_base.mp3` | The core "Thud" played for EVERY kick. |
 | **Wood** | `impact_wood.mp3` | Secondary layer for wooden crates or desks. |
 | **Glass** | `impact_glass.mp3` | High-pitched layer for tanks and tech. |
-| **Liquid** | `impact_liquid.mp3` | Splash layer for speciment tanks. |
+| **Liquid** | `impact_liquid.mp3` | Splash layer for specimen tanks. |
+| **Metal** | `impact_metal.mp3` | Industrial clang for cabinets and machines. |
+| **Bone** | `impact_bone.mp3` | Hollow rattle for skeletal remains. |
+| **Plastic** | `impact_plastic.mp3` | Dull click for signs and light equipment. |
+| **Carton** | `impact_carton.mp3` | Paper/Cardboard thud for boxes. |
 | **Monsters** | `impact_monster.mp3` | Fleshy squish layer for **Wild Cells** (Auto-assigned). |
 | **Homerun** | `kick_homerun.mp3` | Explosive launch and woosh sound. |
 | **Shatter** | `shatter_tank.mp3` | The heavy crash for broken tanks. |
@@ -25,6 +29,8 @@ Place your `.mp3` files in `assets/audio/` using the following exact names:
 | **Footstep (Metal)** | `footstep_metal.mp3` | Metallic clang for industrial/engine rooms. |
 | **Footstep (Water)** | `footstep_water.mp3` | Splash sound for flooded or aquatic zones. |
 | **Footstep (Grass)** | `footstep_grass.mp3` | Rustling sound for the Botanic Sector. |
+| **Footstep (Bone)** | `footstep_bone.mp3` | Clicking sound for skeletal zones. |
+| **Footstep (Plastic)** | `footstep_plastic.mp3` | Soft thud for plastic-covered floors. |
 
 ### 2. Music (BGM) Convention
 Background music loops automatically and cross-fades during screen transitions.
@@ -47,7 +53,7 @@ To change the walking sound for a whole map, add the `footstepTag` to the map's 
 ```javascript
 export const oldMachine = {
     name: 'THE OLD MACHINE',
-    footstepTag: 'metal', // Options: tile | metal | water | grass
+    footstepTag: 'metal', // Options: tile | metal | water | grass | bone | plastic
     // ... rest of map data
 };
 ```
@@ -58,7 +64,7 @@ To give a specific object a unique sound, add the `material` tag in `overworld.j
 ```javascript
 'f118': { 
     hasCollision: true, 
-    material: 'glass' // Options: wood | glass | metal | liquid | monster
+    material: 'glass' // Options: wood | glass | metal | liquid | monster | bone | plastic | carton
 }
 ```
 

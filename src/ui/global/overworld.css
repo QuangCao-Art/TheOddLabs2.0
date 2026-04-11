@@ -304,6 +304,62 @@
     background-position: calc(-0px / 4) calc(-256px / 4);
 }
 
+.t-43 {
+    background-position: calc(-1792px / 4) calc(-768px / 4);
+}
+
+.t-44 {
+    background-position: calc(-512px / 4) calc(-1280px / 4);
+}
+
+.t-45 {
+    background-position: calc(-0px / 4) calc(-1536px / 4);
+}
+
+.t-46 {
+    background-position: calc(-256px / 4) calc(-1536px / 4);
+}
+
+.t-47 {
+    background-position: calc(-512px / 4) calc(-1536px / 4);
+}
+
+.t-48 {
+    background-position: calc(-768px / 4) calc(-1536px / 4);
+}
+
+.t-49 {
+    background-position: calc(-768px / 4) calc(-1792px / 4);
+}
+
+.t-50 {
+    background-position: calc(-1024px / 4) calc(-1536px / 4);
+}
+
+.t-51 {
+    background-position: calc(-1280px / 4) calc(-1536px / 4);
+}
+
+.t-52 {
+    background-position: calc(-1280px / 4) calc(-1792px / 4);
+}
+
+.t-53 {
+    background-position: calc(-1536px / 4) calc(-1536px / 4);
+}
+
+.t-54 {
+    background-position: calc(-1536px / 4) calc(-1792px / 4);
+}
+
+.t-55 {
+    background-position: calc(-1792px / 4) calc(-1536px / 4);
+}
+
+.t-56 {
+    background-position: calc(-1792px / 4) calc(-1792px / 4);
+}
+
 .tile.interactable {
     cursor: pointer;
 }
@@ -1091,6 +1147,30 @@
 
 .world-object.prop.f120 {
     background-position: calc(-1280px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f121 {
+    background-image: url('../../../assets/images/Lab_TileSet_03.png') !important;
+    background-size: 512px 512px !important;
+    background-position: calc(-768px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.f122 {
+    background-image: url('../../../assets/images/Lab_TileSet_03.png') !important;
+    background-size: 512px 512px !important;
+    background-position: calc(-1536px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f123 {
+    background-image: url('../../../assets/images/Lab_TileSet_03.png') !important;
+    background-size: 512px 512px !important;
+    background-position: calc(-768px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f124 {
+    background-image: url('../../../assets/images/Lab_TileSet_03.png') !important;
+    background-size: 512px 512px !important;
+    background-position: calc(-1792px / 4) calc(-1792px / 4);
 }
 
 .world-object.prop.StoragePod-Top,

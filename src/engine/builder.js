@@ -14,6 +14,7 @@ export const BuilderMode = {
     
     // UI Elements
     paletteEl: null,
+    rewardPanelEl: null,
     ghostEl: null,
     
     init() {
@@ -39,11 +40,6 @@ export const BuilderMode = {
             </div>
             <div class="palette-content" id="palette-items"></div>
             <div class="palette-footer">
-                <div class="builder-reward-group">
-                    <label>HIDDEN REWARD ID</label>
-                    <input type="text" id="builder-reward-id" placeholder="e.g. REWARD_CREDITS_50">
-                    <div id="reward-suggestions" class="reward-suggestions"></div>
-                </div>
                 <div class="builder-debug-group">
                     <button id="builder-toggle-hidden" class="builder-debug-btn">SHOW HIDDEN: OFF</button>
                 </div>
@@ -52,6 +48,23 @@ export const BuilderMode = {
         `;
         document.body.appendChild(palette);
         this.paletteEl = palette;
+
+        // Create Reward ID Panel (Left Side)
+        const rewardPanel = document.createElement('div');
+        rewardPanel.id = 'builder-reward-panel';
+        rewardPanel.className = 'hidden';
+        rewardPanel.innerHTML = `
+            <div class="palette-header">
+                <h3>HIDDEN REWARDS</h3>
+            </div>
+            <div class="builder-reward-group">
+                <label>HIDDEN REWARD ID</label>
+                <input type="text" id="builder-reward-id" placeholder="e.g. REWARD_CREDITS_50">
+                <div id="reward-suggestions" class="reward-suggestions"></div>
+            </div>
+        `;
+        document.body.appendChild(rewardPanel);
+        this.rewardPanelEl = rewardPanel;
 
         // Create Ghost Preview
         const ghost = document.createElement('div');
@@ -203,6 +216,7 @@ export const BuilderMode = {
             // Ignore placement if clicking on UI palette, modal content, or the export overlay backdrop
             if (!this.active || 
                 e.target.closest('#builder-palette') || 
+                e.target.closest('#builder-reward-panel') || 
                 e.target.closest('.modal-content') || 
                 e.target.closest('#builder-export-modal')) return;
             
@@ -225,10 +239,12 @@ export const BuilderMode = {
         
         if (this.active) {
             this.paletteEl.classList.remove('hidden');
+            this.rewardPanelEl?.classList.remove('hidden');
             document.body.classList.add('builder-active');
             Overworld.isPaused = true;
         } else {
             this.paletteEl.classList.add('hidden');
+            this.rewardPanelEl?.classList.add('hidden');
             this.ghostEl.classList.add('hidden');
             document.body.classList.remove('builder-active');
             Overworld.isPaused = false;
