@@ -1485,7 +1485,8 @@ export const Overworld = {
                 if (meta.triggerShop) this.pendingShopMenu = true;
                 if (meta.triggerBioExtract) this.pendingBioExtractMenu = true;
 
-                const title = meta.triggerBioExtract ? "Bio-Extractor" : (meta.triggerShop ? "Vending Machine" : "Incubator Unit");
+                const templateDisplayName = meta.name;
+                const title = templateDisplayName || (meta.triggerBioExtract ? "Bio-Extractor" : (meta.triggerShop ? "Vending Machine" : "Incubator Unit"));
                 const text = meta.triggerBioExtract ?
                     ["BIO-EXTRACTOR: [BIO-EXTRACTION PROTOCOLS ACTIVE]", "Authorized biological materials detected.", "Initiate extraction sequence?"] :
                     (meta.triggerShop ?
@@ -1506,13 +1507,16 @@ export const Overworld = {
             }
 
             // Normal Lore Inspection
+            const templateName = meta?.name;
+            const displayName = templateName || obj.name || "Laboratory Asset";
+
             if (meta && meta.info) {
                 const infoLines = Array.isArray(meta.info) ? meta.info : [meta.info];
-                this.showDialogue(obj.name || "Laboratory Asset", infoLines);
+                this.showDialogue(displayName, infoLines);
             } else {
                 // Fallback for objects without metadata
-                this.showDialogue(obj.name || "Object", [
-                    `System initializing for: ${obj.name}...`,
+                this.showDialogue(displayName, [
+                    `System initializing for: ${displayName}...`,
                     `This biological entity is currently under observation.`,
                     `Please consult Director Capsain for further clearance.`
                 ]);

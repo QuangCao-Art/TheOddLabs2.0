@@ -25,8 +25,8 @@ export const oldLab = {
         { id: 'f37_ol1', x: 3, y: 3, type: 'prop', name: 'Empty Bowl' },
         { id: 'f37_ol2', x: 4, y: 3, type: 'prop', name: 'Empty Bowl' },
         { id: 'f36_ol1', x: 5, y: 3, type: 'prop', name: 'Fresh Noodles' },
-        { id: 'f30_ol1', x: 8, y: 3, type: 'prop', name: 'Director Desk', hiddenLogId: 'Log999' },
-        { id: 'f31_ol1', x: 9, y: 3, type: 'prop', name: 'Director Desk' },
+        { id: 'f30_ol1', x: 8, y: 3, type: 'prop', name: 'Director Table', hiddenLogId: 'Log999' },
+        { id: 'f31_ol1', x: 9, y: 3, type: 'prop', name: 'Director Table' },
         { id: 'f37_ol3', x: 6, y: 4, type: 'prop', name: 'Empty Bowl' },
         { id: 'f0_ol1', x: 9, y: 4, type: 'prop', name: 'Lab Chair' },
         { id: 'item_origin_nitrophil', x: 5, y: 4, type: 'cell', name: 'Origin Nitrophil', hiddenItemId: 'Quest04', customSprite: 'c3 orange-hue' },
@@ -49,3 +49,4 @@ export const oldLab = {
         { x: 0, y: 4, targetZone: 'specimenStorage', targetX: 18, targetY: 4 }
     ]
 };
+

@@ -510,8 +510,7 @@ export const BuilderMode = {
                 x: this.mouseGridX + (t.relX || 0),
                 y: this.mouseGridY + (t.relY || 0),
                 type: 'prop',
-                mirrored: this.isMirrored,
-                name: this.selectedTemplate.name
+                mirrored: this.isMirrored
             };
             if (reward) newObj.hiddenReward = reward;
             zone.objects.push(newObj);

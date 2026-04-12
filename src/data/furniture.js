@@ -6,188 +6,188 @@
 
 export const furnitureMetadata = {
     // --- TILESET 02 (f0-f63) ---
-    'f0': { hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
-    'f1': { hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
-    'f2': { hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
-    'f3': { hasCollision: true, info: "Stained with coffee, acid, and the tears of failed hypotheses. Mostly coffee." },
-    'f4': { hasCollision: true, info: "So sturdy it once survived a localized gravity collapse. The equipment on it didn't." },
-    'f5': { hasCollision: true, info: "So sturdy it once survived a localized gravity collapse. The equipment on it didn't." },
-    'f6': { hasCollision: true, info: "A poster showing the evolution of Cells. Sadly, the dev lacked resources to implement these." },
-    'f7': { hasCollision: true, info: "Whirrs loudly and smells faintly of burnt toast. Please don't check its browser history." },
-    'f8': { hasCollision: true, info: "Do not shake. Do not stir. In fact, just don't even look at it too hard." },
-    'f9': { hasCollision: true, info: "A protein sequencer that occasionally plays elevator music when it's bored." },
-    'f11': { hasCollision: true, material: 'wood', info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
-    'f12': { hasCollision: true, material: 'wood', info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
-    'f13': { hasCollision: false, material: 'glass', info: "This specimen has only one eye. The label says: DON'T LOOK AT ITS EYE." },
-    'f14': { hasCollision: true, material: ['glass', 'liquid'], info: "This specimen has only one eye. The label says: DON'T LOOK AT ITS EYE." },
-    'f15': { hasCollision: false, material: 'glass', info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
-    'f16': { hasCollision: true, material: ['glass', 'liquid'], info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
-    'f17': { hasCollision: true, info: "A poster showing three creature races. Or perhaps they aren't simply 'races'..." },
-    'f18': { hasCollision: false, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
-    'f19': { hasCollision: true, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
-    'f20': { hasCollision: false, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
-    'f21': { hasCollision: true, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
-    'f22': { hasCollision: false, material: 'glass', info: "The specimen here is slowly swimming; why are its surroundings turning yellow?" },
-    'f23': { hasCollision: true, material: ['glass', 'liquid'], info: "The specimen here is slowly swimming; why are its surroundings turning yellow?" },
-    'f24': { hasCollision: false, material: 'glass', info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
-    'f25': { hasCollision: true, material: ['glass', 'liquid'], info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
-    'f26': { hasCollision: true, material: 'wood', info: "Reserved for 'The Important People'. Includes a built-in panic button." },
-    'f27': { hasCollision: true, material: 'wood', info: "Reserved for 'The Important People'. Includes a built-in panic button." },
-    'f28': { hasCollision: true, material: 'wood', info: "Features a secret drawer for hiding snacks from the interns." },
-    'f29': { hasCollision: true, material: 'wood', info: "Features a secret drawer for hiding snacks from the interns." },
-    'f30': { hasCollision: true, material: 'glass', info: "Carved from obsidian glass. Legend says the Director actually sleeps under it." },
-    'f31': { hasCollision: true, material: 'glass', info: "Carved from obsidian glass. Legend says the Director actually sleeps under it." },
-    'f32': { hasCollision: true, info: "A medical pod. Warning: Set to 'Deep Sleep', not 'Quick Nap'. See you in three days." },
-    'f33': { hasCollision: true, info: "A medical pod. Warning: Set to 'Deep Sleep', not 'Quick Nap'. See you in three days." },
-    'f34': { hasCollision: false, material: ['bone', 'metal'], info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
-    'f35': { hasCollision: true, kickable: true, material: ['bone', 'metal'], info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
-    'f36': { hasCollision: true, info: "Instant noodles. The true fuel of all scientific breakthroughs and 3 AM crying sessions." },
-    'f37': { hasCollision: true, kickable: true, material: 'plastic', info: "An empty bowl. The salt levels within are high enough to preserve a whole lab tech." },
-    'f38': { hasCollision: false, triggerHeal: true, info: "Incubator Unit-01: [STATION READY]" },
-    'f39': { hasCollision: false, triggerHeal: true, info: "Incubator Unit-02: [STATION READY]" },
-    'f40': { hasCollision: true, triggerHeal: true, info: "Incubator Unit-03: [STATION READY]" },
-    'f41': { hasCollision: true, triggerHeal: true, info: "Incubator Unit-04: [STATION READY]" },
-    'f42': { hasCollision: false, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-    'f43': { hasCollision: false, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-    'f44': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-    'f45': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-    'f46': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-    'f47': { hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
-    'f48': { hasCollision: true, kickable: true, material: 'carton', info: "Labeled: 'DO NOT SHAKE'." },
-    'f49': { hasCollision: true, info: "Mostly contains encrypted logs, but some files are just high-score records for 'Snake'." },
-    'f50': { hasCollision: true, info: "A magnetic keycard. Smells like the Director's expensive cologne." },
-    'f51': { hasCollision: true, info: "Label: 'SUPERNOVA SAUCE'. Scoville rating: YES. Lab-certified to burn through metal." },
-    'f52': { hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-    'f53': { hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-    'f54': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-    'f55': { hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-    'f56': { hasCollision: false, info: '"Why do all the tables have to be this messy?" asked the janitor.' },
-    'f57': { hasCollision: true, info: '"Why do all the tables have to be this messy?" asked the janitor.' },
-    'f58': { hasCollision: true, info: "I can see the little cockroaches crawling out!" },
-    'f59': { hasCollision: true, kickable: true, material: 'plastic', info: "Looks like a normal plant... or is it?" },
-    'f60': { hasCollision: true, kickable: true, material: 'carton', info: "This box is heavier than it looks." },
-    'f61': { hasCollision: false, info: "Please don't fall on my head" },
-    'f62': { hasCollision: true, kickable: true, material: 'carton', info: "Please don't fall on my head" },
-    'f63': { hasCollision: true, info: "This is the best ultimate super rare card ever!" },
+    'f0': { name: 'Chair', hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
+    'f1': { name: 'Chair', hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
+    'f2': { name: 'Chair', hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
+    'f3': { name: 'Single Table', hasCollision: true, info: "Stained with coffee, acid, and the tears of failed hypotheses. Mostly coffee." },
+    'f4': { name: 'Working Table', hasCollision: true, info: "So sturdy it once survived a localized gravity collapse. The equipment on it didn't." },
+    'f5': { name: 'Working Table', hasCollision: true, info: "So sturdy it once survived a localized gravity collapse. The equipment on it didn't." },
+    'f6': { name: 'Evolution Poster', hasCollision: true, info: "A poster showing the evolution of Cells. Sadly, the dev lacked resources to implement these." },
+    'f7': { name: 'Compute Station', hasCollision: true, info: "Whirrs loudly and smells faintly of burnt toast. Please don't check its browser history." },
+    'f8': { name: 'Chemical Station', hasCollision: true, info: "Do not shake. Do not stir. In fact, just don't even look at it too hard." },
+    'f9': { name: 'Sequencer Station', hasCollision: true, info: "A protein sequencer that occasionally plays elevator music when it's bored." },
+    'f11': { name: 'Research Table', hasCollision: true, material: 'wood', info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
+    'f12': { name: 'Research Table', hasCollision: true, material: 'wood', info: "A table usually surrounded by people arguing about whose lunch is missing from the fridge." },
+    'f13': { name: 'Green Specimen Tank', hasCollision: false, material: 'glass', info: "This specimen has only one eye. The label says: DON'T LOOK AT ITS EYE." },
+    'f14': { name: 'Green Specimen Tank', hasCollision: true, material: ['glass', 'liquid'], info: "This specimen has only one eye. The label says: DON'T LOOK AT ITS EYE." },
+    'f15': { name: 'Blue Specimen Tank', hasCollision: false, material: 'glass', info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
+    'f16': { name: 'Blue Specimen Tank', hasCollision: true, material: ['glass', 'liquid'], info: ["Why did the cold specimen refuse to talk?", "Because it had Absolute Zero interest in you."] },
+    'f17': { name: 'Species Poster', hasCollision: true, info: "A poster showing three creature races. Or perhaps they aren't simply 'races'..." },
+    'f18': { name: 'Biolumin Plant', hasCollision: false, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
+    'f19': { name: 'Biolumin Plant', hasCollision: true, info: "Looks like a plant, smells like old gym socks. Science still isn't sure why." },
+    'f20': { name: 'Camitea Plant', hasCollision: false, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
+    'f21': { name: 'Camitea Plant', hasCollision: true, info: "Cambihil talks to this fern. Often, the fern whispers back. It's a mutual friendship." },
+    'f22': { name: 'Red Specimen Tank', hasCollision: false, material: 'glass', info: "The specimen here is slowly swimming; why are its surroundings turning yellow?" },
+    'f23': { name: 'Red Specimen Tank', hasCollision: true, material: ['glass', 'liquid'], info: "The specimen here is slowly swimming; why are its surroundings turning yellow?" },
+    'f24': { name: 'Igni Plant', hasCollision: false, material: 'glass', info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
+    'f25': { name: 'Igni Plant', hasCollision: true, material: ['glass', 'liquid'], info: "The leaves are glowing. It might be happy, or it might be preparing for ignition." },
+    'f26': { name: 'Analysis Table', hasCollision: true, material: 'wood', info: "Reserved for 'The Important People'. Includes a built-in panic button." },
+    'f27': { name: 'Analysis Table', hasCollision: true, material: 'wood', info: "Reserved for 'The Important People'. Includes a built-in panic button." },
+    'f28': { name: 'Leader Table', hasCollision: true, material: 'wood', info: "Features a secret drawer for hiding snacks from the interns." },
+    'f29': { name: 'Leader Table', hasCollision: true, material: 'wood', info: "Features a secret drawer for hiding snacks from the interns." },
+    'f30': { name: 'Director Table', hasCollision: true, material: 'glass', info: "Carved from obsidian glass. Legend says the Director actually sleeps under it." },
+    'f31': { name: 'Director Table', hasCollision: true, material: 'glass', info: "Carved from obsidian glass. Legend says the Director actually sleeps under it." },
+    'f32': { name: 'Medical Pod', hasCollision: true, info: "A medical pod. Warning: Set to 'Deep Sleep', not 'Quick Nap'. See you in three days." },
+    'f33': { name: 'Medical Pod', hasCollision: true, info: "A medical pod. Warning: Set to 'Deep Sleep', not 'Quick Nap'. See you in three days." },
+    'f34': { name: 'Anatomical Model', hasCollision: false, material: ['bone', 'metal'], info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
+    'f35': { name: 'Anatomical Model', hasCollision: true, kickable: true, material: ['bone', 'metal'], info: "A model skeleton named 'Steve'. Sometimes his jaw falls off when he's surprised." },
+    'f36': { name: 'Noodle Table', hasCollision: true, info: "Instant noodles. The true fuel of all scientific breakthroughs and 3 AM crying sessions." },
+    'f37': { name: 'Empty Noodle Bowl', hasCollision: true, kickable: true, material: 'plastic', info: "An empty bowl. The salt levels within are high enough to preserve a whole lab tech." },
+    'f38': { name: 'Healing Incubator', hasCollision: false, triggerHeal: true, info: "Incubator Unit-01: [STATION READY]" },
+    'f39': { name: 'Healing Incubator', hasCollision: false, triggerHeal: true, info: "Incubator Unit-02: [STATION READY]" },
+    'f40': { name: 'Healing Incubator', hasCollision: true, triggerHeal: true, info: "Incubator Unit-03: [STATION READY]" },
+    'f41': { name: 'Healing Incubator', hasCollision: true, triggerHeal: true, info: "Incubator Unit-04: [STATION READY]" },
+    'f42': { name: 'Bio-Extractor', hasCollision: false, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
+    'f43': { name: 'Bio-Extractor', hasCollision: false, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
+    'f44': { name: 'Bio-Extractor', hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
+    'f45': { name: 'Bio-Extractor', hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
+    'f46': { name: 'Bio-Extractor', hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
+    'f47': { name: 'Bio-Extractor', hasCollision: true, triggerBioExtract: true, info: "The 'Genesis Machine'. The first ever Cell was synthesized within this very chamber." },
+    'f48': { name: 'Large Box', hasCollision: true, kickable: true, material: 'carton', info: "Labeled: 'DO NOT SHAKE'." },
+    'f49': { name: 'Server Rack', hasCollision: true, info: "Mostly contains encrypted logs, but some files are just high-score records for 'Snake'." },
+    'f50': { name: 'Old Keycard', hasCollision: true, info: "A magnetic keycard. Smells like the Director's expensive cologne." },
+    'f51': { name: 'Inferno Sauce', hasCollision: true, info: "Label: 'SUPERNOVA SAUCE'. Scoville rating: YES. Lab-certified to burn through metal." },
+    'f52': { name: 'Large Cabinet', hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
+    'f53': { name: 'Large Cabinet', hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
+    'f54': { name: 'Large Cabinet', hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
+    'f55': { name: 'Large Cabinet', hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
+    'f56': { name: 'Senior Table', hasCollision: false, info: '"Why do all the tables have to be this messy?" asked the janitor.' },
+    'f57': { name: 'Senior Table', hasCollision: true, info: '"Why do all the tables have to be this messy?" asked the janitor.' },
+    'f58': { name: 'Supply Cabinet', hasCollision: true, info: "I can see the little cockroaches crawling out!" },
+    'f59': { name: 'Young Plant', hasCollision: true, kickable: true, material: 'plastic', info: "Looks like a normal plant... or is it?" },
+    'f60': { name: 'Carton Box', hasCollision: true, kickable: true, material: 'carton', info: "This box is heavier than it looks." },
+    'f61': { name: 'Box Pile', hasCollision: false, info: "Please don't fall on my head" },
+    'f62': { name: 'Box Pile', hasCollision: true, kickable: true, material: 'carton', info: "Please don't fall on my head" },
+    'f63': { name: 'Ultimate Rare Card', hasCollision: true, info: "This is the best ultimate super rare card ever!" },
 
     // --- TILESET 03 (f64+) ---
-    'f64': { hasCollision: true, info: "Ancient people used this to store data!" },
-    'f65': { hasCollision: true, info: "Whatever is lying here doesn't look exactly human; it'd better be!" },
-    'f66': { hasCollision: true, info: "Whatever is lying here doesn't look exactly human; it'd better be!" },
-    'f67': { hasCollision: false, triggerShop: true, info: "ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]" },
-    'f68': { hasCollision: false, triggerShop: true, info: "ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]" },
-    'f69': { hasCollision: true, triggerShop: true, info: "ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]" },
-    'f70': { hasCollision: true, triggerShop: true, info: "ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]" },
-    'f71': { hasCollision: true, info: "An official device for Cell battles, though researchers strangely prefer using their lunch tables instead." },
-    'f72': { hasCollision: true, info: "An official device for Cell battles, though researchers strangely prefer using their lunch tables instead." },
-    'f73': { hasCollision: true, info: "An official device for Cell battles, though researchers strangely prefer using their lunch tables instead." },
-    'f74': { hasCollision: true, info: "An official device for Cell battles, though researchers strangely prefer using their lunch tables instead." },
-    'f75': { hasCollision: true, info: "Just collect them all!" },
-    'f76': { hasCollision: false, info: "These books are surprisingly well preserved!" },
-    'f77': { hasCollision: false, info: "These books are surprisingly well preserved!" },
-    'f78': { hasCollision: true, info: "These books are surprisingly well preserved!" },
-    'f79': { hasCollision: true, info: "These books are surprisingly well preserved!" },
-    'f80': { hasCollision: false, info: "Stay cool—we'll be out in a century or two." },
-    'f81': { hasCollision: false, info: "Stay cool—we'll be out in a century or two." },
-    'f82': { hasCollision: true, info: "Stay cool—we'll be out in a century or two." },
-    'f83': { hasCollision: true, info: "Stay cool—we'll be out in a century or two." },
-    'f84': { hasCollision: true, info: "Whatever is kept inside is in a deep freeze state!" },
-    'f85': { hasCollision: true, info: "Whatever is kept inside is in a deep freeze state!" },
-    'f86': { hasCollision: false, info: "People are trying to bring this ancient plant back; sometimes it's a success!" },
-    'f87': { hasCollision: true, info: "People are trying to bring this ancient plant back; sometimes it's a success!" },
-    'f88': { hasCollision: false, info: "People are trying to bring this ancient plant back; sometimes it's a failure!" },
-    'f89': { hasCollision: true, info: "People are trying to bring this ancient plant back; sometimes it's a failure!" },
-    'f90': { hasCollision: true, info: "You are now a truly member of the pack!" },
-    'f91': { hasCollision: true, info: "A ceramic pot filled with special fertile soil. If you listen closely, you can hear the worms throwing a tiny rave in there." },
-    'f92': { hasCollision: false, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
-    'f93': { hasCollision: false, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
-    'f94': { hasCollision: false, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
-    'f95': { hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
-    'f96': { hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
-    'f97': { hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
-    'f98': { hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
-    'f99': { hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
-    'f100': { hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
-    'f101': { hasCollision: true, info: "Contains the complex genomic blueprint of a Cell. It's essentially the ultimate 'cheat sheet' for biological reconstruction." },
-    'f102': { hasCollision: true, info: "A container of stabilized raw biological material. It smells faintly of damp earth and limitless potential." },
-    'f103': { hasCollision: true, info: "An oversized cultivation dish designed for Cell. It's climate-controlled and remarkably soft—essentially a luxury suite for a Cell." },
-    'f104': { hasCollision: true, info: "An internal currency chip exclusive to Labs. What started as a corporate joke became the only way to pay for the 'premium' noodles." },
-    'f105': { hasCollision: true, kickable: true, material: 'plastic', info: "Nothing can stop me, even when the sign says so." },
-    'f106': { hasCollision: true, kickable: true, material: 'plastic', info: "Nothing can stop me; turning the sign sideways won't help." },
-    'f107': { hasCollision: false, kickable: true, material: 'bone', info: "This skeleton robot has an auto-assemble function; otherwise, it's a real mess." },
-    'f108': { hasCollision: true, kickable: true, material: 'bone', info: "This skeleton robot has an auto-assemble function; otherwise, it's a real mess." },
-    'f109': { hasCollision: false, info: "An oversized cultivation dish designed for Cells. It's the same model used in the main lab, but standing two stories tall." },
-    'f110': { hasCollision: true, info: "An oversized cultivation dish designed for Cells. It's the same model used in the main lab, but standing two stories tall." },
-    'f111': { hasCollision: false, info: "A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time!" },
-    'f112': { hasCollision: true, info: "A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time!" },
-    'f113': { hasCollision: false, info: "An empty specimen tank. Its occupants seem to have... moved on." },
-    'f114': { hasCollision: true, info: "An empty specimen tank. Its occupants seem to have... moved on." },
-    'f115': { hasCollision: false, breakable: true, material: 'glass', breaksInto: 'TANK_BROKEN', info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
-    'f116': { hasCollision: true, breakable: true, material: 'glass', breaksInto: 'TANK_BROKEN', info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
-    'f117': { hasCollision: false, breakable: true, material: 'glass', breaksInto: 'TANK_SHATTERED', info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
-    'f118': { hasCollision: true, breakable: true, material: 'glass', breaksInto: 'TANK_SHATTERED', info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
-    'f119': { hasCollision: true, info: "Jagged glass shards and a rusted frame. Leave it to the cleaning crew; your fingers will thank you." },
-    'f120': { hasCollision: true, kickable: true, material: 'glass', info: "Fragmented remains of a tank. Oddly lightweight for its size." },
-    'f121': { hasCollision: true, breakable: true, material: 'metal', breaksInto: 'LIDSTEMMY_DEBRIS', info: "A common tank lid. It doesn't seem to be sealed properly; someone might have left it untightened." },
-    'f122': { hasCollision: true, kickable: true, material: 'metal', info: "A tank lid with a small, unpowered Stemmy clinging to it. It seems to have found a cozy spot." },
-    'f123': { hasCollision: true, breakable: true, material: 'metal', breaksInto: 'LID_DEBRIS', info: "A heavily dented and cracked tank lid. One good stomp will likely finish it off." },
-    'f124': { hasCollision: true, kickable: true, material: 'metal', info: "A mangled piece of metal that used to be a tank lid. It's completely beyond repair." },
+    'f64': { name: 'Ancient Floppy', hasCollision: true, info: "Ancient people used this to store data!" },
+    'f65': { name: 'Stasis Pod', hasCollision: true, info: "Whatever is lying here doesn't look exactly human; it'd better be!" },
+    'f66': { name: 'Stasis Pod', hasCollision: true, info: "Whatever is lying here doesn't look exactly human; it'd better be!" },
+    'f67': { name: 'Vending Machine', hasCollision: false, triggerShop: true, info: "ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]" },
+    'f68': { name: 'Vending Machine', hasCollision: false, triggerShop: true, info: "ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]" },
+    'f69': { name: 'Vending Machine', hasCollision: true, triggerShop: true, info: "ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]" },
+    'f70': { name: 'Vending Machine', hasCollision: true, triggerShop: true, info: "ODD-VEND TERMINAL: [ACQUIRE/LIQUIDATE PROTOCOLS ACTIVE]" },
+    'f71': { name: 'Battle Table', hasCollision: true, info: "An official device for Cell battles, though researchers strangely prefer using their lunch tables instead." },
+    'f72': { name: 'Battle Table', hasCollision: true, info: "An official device for Cell battles, though researchers strangely prefer using their lunch tables instead." },
+    'f73': { name: 'Battle Table', hasCollision: true, info: "An official device for Cell battles, though researchers strangely prefer using their lunch tables instead." },
+    'f74': { name: 'Battle Table', hasCollision: true, info: "An official device for Cell battles, though researchers strangely prefer using their lunch tables instead." },
+    'f75': { name: 'Collectible Cards', hasCollision: true, info: "Just collect them all!" },
+    'f76': { name: 'Bookshelf', hasCollision: false, info: "These books are surprisingly well preserved!" },
+    'f77': { name: 'Bookshelf', hasCollision: false, info: "These books are surprisingly well preserved!" },
+    'f78': { name: 'Bookshelf', hasCollision: true, info: "These books are surprisingly well preserved!" },
+    'f79': { name: 'Bookshelf', hasCollision: true, info: "These books are surprisingly well preserved!" },
+    'f80': { name: 'Grand Cryo Pod', hasCollision: false, info: "Stay cool—we'll be out in a century or two." },
+    'f81': { name: 'Grand Cryo Pod', hasCollision: false, info: "Stay cool—we'll be out in a century or two." },
+    'f82': { name: 'Grand Cryo Pod', hasCollision: true, info: "Stay cool—we'll be out in a century or two." },
+    'f83': { name: 'Grand Cryo Pod', hasCollision: true, info: "Stay cool—we'll be out in a century or two." },
+    'f84': { name: 'Deep Freeze Pod', hasCollision: true, info: "Whatever is kept inside is in a deep freeze state!" },
+    'f85': { name: 'Deep Freeze Pod', hasCollision: true, info: "Whatever is kept inside is in a deep freeze state!" },
+    'f86': { name: 'Healthy Ancient Plant', hasCollision: false, info: "People are trying to bring this ancient plant back; sometimes it's a success!" },
+    'f87': { name: 'Healthy Ancient Plant', hasCollision: true, info: "People are trying to bring this ancient plant back; sometimes it's a success!" },
+    'f88': { name: 'Wither Ancient Plant', hasCollision: false, info: "People are trying to bring this ancient plant back; sometimes it's a failure!" },
+    'f89': { name: 'Wither Ancient Plant', hasCollision: true, info: "People are trying to bring this ancient plant back; sometimes it's a failure!" },
+    'f90': { name: 'Official Employee Card', hasCollision: true, info: "You are now a truly member of the pack!" },
+    'f91': { name: 'Empty Pot', hasCollision: true, info: "A ceramic pot filled with special fertile soil. If you listen closely, you can hear the worms throwing a tiny rave in there." },
+    'f92': { name: 'Cell Accelerator', hasCollision: false, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+    'f93': { name: 'Cell Accelerator', hasCollision: false, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+    'f94': { name: 'Cell Accelerator', hasCollision: false, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+    'f95': { name: 'Cell Accelerator', hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+    'f96': { name: 'Cell Accelerator', hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+    'f97': { name: 'Cell Accelerator', hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+    'f98': { name: 'Cell Accelerator', hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+    'f99': { name: 'Cell Accelerator', hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+    'f100': { name: 'Cell Accelerator', hasCollision: true, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
+    'f101': { name: 'Cell Blueprint', hasCollision: true, info: "Contains the complex genomic blueprint of a Cell. It's essentially the ultimate 'cheat sheet' for biological reconstruction." },
+    'f102': { name: 'Biomass Container', hasCollision: true, info: "A container of stabilized raw biological material. It smells faintly of damp earth and limitless potential." },
+    'f103': { name: 'Petry Dish', hasCollision: true, info: "An oversized cultivation dish designed for Cell. It's climate-controlled and remarkably soft—essentially a luxury suite for a Cell." },
+    'f104': { name: 'Lab Credits', hasCollision: true, info: "An internal currency chip exclusive to Labs. What started as a corporate joke became the only way to pay for the 'premium' noodles." },
+    'f105': { name: 'Warning Sign', hasCollision: true, kickable: true, material: 'plastic', info: "Nothing can stop me, even when the sign says so." },
+    'f106': { name: 'Warning Sign', hasCollision: true, kickable: true, material: 'plastic', info: "Nothing can stop me; turning the sign sideways won't help." },
+    'f107': { name: 'Mr-Slim', hasCollision: false, kickable: true, material: 'bone', info: "This skeleton robot has an auto-assemble function; otherwise, it's a real mess." },
+    'f108': { name: 'Mr-Slim', hasCollision: true, kickable: true, material: 'bone', info: "This skeleton robot has an auto-assemble function; otherwise, it's a real mess." },
+    'f109': { name: 'Huge Two-Story Petry Dish', hasCollision: false, info: "An oversized cultivation dish designed for Cells. It's the same model used in the main lab, but standing two stories tall." },
+    'f110': { name: 'Huge Two-Story Petry Dish', hasCollision: true, info: "An oversized cultivation dish designed for Cells. It's the same model used in the main lab, but standing two stories tall." },
+    'f111': { name: 'Mobile Monitor Cabinet', hasCollision: false, info: "A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time!" },
+    'f112': { name: 'Mobile Monitor Cabinet', hasCollision: true, info: "A mobile cabinet equipped with a monitor screen, for those who want to keep an eye on their stuff... all the time!" },
+    'f113': { name: 'Empty Specimen Tank', hasCollision: false, info: "An empty specimen tank. Its occupants seem to have... moved on." },
+    'f114': { name: 'Empty Specimen Tank', hasCollision: true, info: "An empty specimen tank. Its occupants seem to have... moved on." },
+    'f115': { name: 'Weathered Specimen Tank', hasCollision: false, breakable: true, material: 'glass', breaksInto: 'TANK_BROKEN', info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
+    'f116': { name: 'Weathered Specimen Tank', hasCollision: true, breakable: true, material: 'glass', breaksInto: 'TANK_BROKEN', info: "A weathered, antique tank. Its glass is thick and yellowed, hinting at a long history of questionable experiments." },
+    'f117': { name: 'Cracked Specimen Tank', hasCollision: false, breakable: true, material: 'glass', breaksInto: 'TANK_SHATTERED', info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
+    'f118': { name: 'Cracked Specimen Tank', hasCollision: true, breakable: true, material: 'glass', breaksInto: 'TANK_SHATTERED', info: "A fragile tank covered in fractures, even a sneeze can take it down!" },
+    'f119': { name: 'Shattered Tank Remains', hasCollision: true, info: "Jagged glass shards and a rusted frame. Leave it to the cleaning crew; your fingers will thank you." },
+    'f120': { name: 'Broken Tank Debris', hasCollision: true, kickable: true, material: 'glass', info: "Fragmented remains of a tank. Oddly lightweight for its size." },
+    'f121': { name: 'Loose Tank Lid', hasCollision: true, breakable: true, material: 'metal', breaksInto: 'LIDSTEMMY_DEBRIS', info: "A common tank lid. It doesn't seem to be sealed properly; someone might have left it untightened." },
+    'f122': { name: 'Stemmy Home Lid', hasCollision: true, kickable: true, material: 'metal', info: "A tank lid with a small, unpowered Stemmy clinging to it. It seems to have found a cozy spot." },
+    'f123': { name: 'Broken Tank Lid', hasCollision: true, breakable: true, material: 'metal', breaksInto: 'LID_DEBRIS', info: "A heavily dented and cracked tank lid. One good stomp will likely finish it off." },
+    'f124': { name: 'Mangled Tank Lid', hasCollision: true, kickable: true, material: 'metal', info: "A mangled piece of metal that used to be a tank lid. It's completely beyond repair." },
 
     // --- ENCOUNTER CELLS ---
-    'c0': { hasCollision: true, info: "A wild Stemmy is wandering." },
-    'c1': { hasCollision: true, info: "A wild Cambihil is looking for leaf." },
-    'c2': { hasCollision: true, info: "A wild Lydrosome is watching a lab tube." },
-    'c3': { hasCollision: true, info: "A wild Nitrophil is searching for food." },
+    'c0': { name: 'Stemmy', hasCollision: true, info: "A wild Stemmy is wandering." },
+    'c1': { name: 'Cambihil', hasCollision: true, info: "A wild Cambihil is looking for leaf." },
+    'c2': { name: 'Lydrosome', hasCollision: true, info: "A wild Lydrosome is watching a lab tube." },
+    'c3': { name: 'Nitrophil', hasCollision: true, info: "A wild Nitrophil is searching for food." },
 };
 
 export const FURNITURE_TEMPLATES = {
     // --- CHAIRS (1x1) ---
-    CHAIR_A_L: { name: 'Chair A (Left-Face)', tiles: [{ id: 'f0', relX: 0, relY: 0 }] },
-    CHAIR_A_R: { name: 'Chair A (Right-Face)', tiles: [{ id: 'f1', relX: 0, relY: 0 }] },
-    CHAIR_A_F: { name: 'Chair A (Front-Face)', tiles: [{ id: 'f2', relX: 0, relY: 0 }] },
+    CHAIR_A_L: { name: 'Chair', tiles: [{ id: 'f0', relX: 0, relY: 0 }] },
+    CHAIR_A_R: { name: 'Chair', tiles: [{ id: 'f1', relX: 0, relY: 0 }] },
+    CHAIR_A_F: { name: 'Chair', tiles: [{ id: 'f2', relX: 0, relY: 0 }] },
 
     // --- TABLES (1x1 and 2x1) ---
-    TABLE_A: { name: 'Coffee Table A', tiles: [{ id: 'f3', relX: 0, relY: 0 }] },
+    TABLE_A: { name: 'Single Table', tiles: [{ id: 'f3', relX: 0, relY: 0 }] },
     TABLE_B: {
-        name: 'Sturdy Table B',
+        name: 'Working Table',
         tiles: [
             { id: 'f4', relX: 0, relY: 0, name: 'Left' },
             { id: 'f5', relX: 1, relY: 0, name: 'Right' }
         ]
     },
-    TABLE_COMPUTER: { name: 'Compute Station A', tiles: [{ id: 'f7', relX: 0, relY: 0 }] },
-    TABLE_CYLINDERS: { name: 'Chemical Table A', tiles: [{ id: 'f8', relX: 0, relY: 0 }] },
-    TABLE_DEVICE: { name: 'Protein Sequencer A', tiles: [{ id: 'f9', relX: 0, relY: 0 }] },
+    TABLE_COMPUTER: { name: 'Compute Station', tiles: [{ id: 'f7', relX: 0, relY: 0 }] },
+    TABLE_CYLINDERS: { name: 'Chemical Station', tiles: [{ id: 'f8', relX: 0, relY: 0 }] },
+    TABLE_DEVICE: { name: 'Sequencer Station', tiles: [{ id: 'f9', relX: 0, relY: 0 }] },
     TABLE_C: {
-        name: 'Tall Table C',
+        name: 'Research Table',
         tiles: [
             { id: 'f12', relX: 0, relY: 0, name: 'Bottom' },
             { id: 'f11', relX: 0, relY: -1, name: 'Top' }
         ]
     },
     TABLE_D: {
-        name: 'Long Table D',
+        name: 'Analysis Table',
         tiles: [
             { id: 'f26', relX: 0, relY: 0, name: 'Left' },
             { id: 'f27', relX: 1, relY: 0, name: 'Right' }
         ]
     },
     TABLE_LEADER: {
-        name: 'Leader Desk',
+        name: 'Leader Table',
         tiles: [
             { id: 'f28', relX: 0, relY: 0, name: 'Left' },
             { id: 'f29', relX: 1, relY: 0, name: 'Right' }
         ]
     },
     TABLE_DIRECTOR: {
-        name: 'Director Desk',
+        name: 'Director Table',
         tiles: [
             { id: 'f30', relX: 0, relY: 0, name: 'Left' },
             { id: 'f31', relX: 1, relY: 0, name: 'Right' }
         ]
     },
     TABLE_LEADER_B: {
-        name: 'Leader Desk B (Vertical)',
+        name: 'Senior Table',
         tiles: [
             { id: 'f57', relX: 0, relY: 0, name: 'Bottom' },
             { id: 'f56', relX: 0, relY: -1, name: 'Top' }
@@ -196,35 +196,35 @@ export const FURNITURE_TEMPLATES = {
 
     // --- TANKS & SPECIMENS (1x2 Stacks) ---
     TANK_GREEN: {
-        name: 'Specimen Tank (Green)',
+        name: 'Green Specimen Tank',
         tiles: [
             { id: 'f14', relX: 0, relY: 0, name: 'Tank Base' },
             { id: 'f13', relX: 0, relY: -1, name: 'Tank Top' }
         ]
     },
     TANK_BLUE: {
-        name: 'Specimen Tank (Blue)',
+        name: 'Blue Specimen Tank',
         tiles: [
             { id: 'f16', relX: 0, relY: 0, name: 'Tank Base' },
             { id: 'f15', relX: 0, relY: -1, name: 'Tank Top' }
         ]
     },
     TANK_RED: {
-        name: 'Specimen Tank (Red)',
+        name: 'Red Specimen Tank',
         tiles: [
             { id: 'f23', relX: 0, relY: 0, name: 'Tank Base' },
             { id: 'f22', relX: 0, relY: -1, name: 'Tank Top' }
         ]
     },
     HEALTHY_PLANT: {
-        name: 'Ancient Plant (Healthy)',
+        name: 'Healthy Ancient Plant',
         tiles: [
             { id: 'f87', relX: 0, relY: 0, name: 'Plant Base' },
             { id: 'f86', relX: 0, relY: -1, name: 'Plant Top' }
         ]
     },
     DEAD_PLANT: {
-        name: 'Ancient Plant (Dead)',
+        name: 'Wither Ancient Plant',
         tiles: [
             { id: 'f89', relX: 0, relY: 0, name: 'Plant Base' },
             { id: 'f88', relX: 0, relY: -1, name: 'Plant Top' }
@@ -233,28 +233,28 @@ export const FURNITURE_TEMPLATES = {
 
     // --- PLANTS (1x2 Stacks) ---
     PLANT_A: {
-        name: 'Potted Plant A',
+        name: 'Biolumin Plant',
         tiles: [
             { id: 'f19', relX: 0, relY: 0, name: 'Pot' },
             { id: 'f18', relX: 0, relY: -1, name: 'Leaves' }
         ]
     },
     PLANT_B: {
-        name: 'Potted Plant B',
+        name: 'Camitea Plant',
         tiles: [
             { id: 'f21', relX: 0, relY: 0, name: 'Pot' },
             { id: 'f20', relX: 0, relY: -1, name: 'Leaves' }
         ]
     },
     PLANT_C: {
-        name: 'Potted Plant C',
+        name: 'Igni Plant',
         tiles: [
             { id: 'f25', relX: 0, relY: 0, name: 'Pot' },
             { id: 'f24', relX: 0, relY: -1, name: 'Leaves' }
         ]
     },
-    POT_PLANT_SMALL: { name: 'Small Potted Plant', tiles: [{ id: 'f59', relX: 0, relY: 0 }] },
-    EMPTY_POT: { name: 'Empty Potted Pot', tiles: [{ id: 'f91', relX: 0, relY: 0 }] },
+    POT_PLANT_SMALL: { name: 'Young Plant', tiles: [{ id: 'f59', relX: 0, relY: 0 }] },
+    EMPTY_POT: { name: 'Empty Pot', tiles: [{ id: 'f91', relX: 0, relY: 0 }] },
 
     // --- EQUIPMENT (Large Clusters) ---
     CABINET_BIG: {
@@ -267,7 +267,7 @@ export const FURNITURE_TEMPLATES = {
         ]
     },
     INCUBATOR: {
-        name: 'Incubation Unit',
+        name: 'Healing Incubator',
         tiles: [
             { id: 'f40', relX: 0, relY: 0, name: 'Bottom Left' },
             { id: 'f41', relX: 1, relY: 0, name: 'Bottom Right' },
@@ -276,7 +276,7 @@ export const FURNITURE_TEMPLATES = {
         ]
     },
     VENDING_MACHINE: {
-        name: 'Odd-Vend Machine',
+        name: 'Vending Machine',
         tiles: [
             { id: 'f69', relX: 0, relY: 0, name: 'Bottom Left' },
             { id: 'f70', relX: 1, relY: 0, name: 'Bottom Right' },
@@ -285,7 +285,7 @@ export const FURNITURE_TEMPLATES = {
         ]
     },
     BATTLE_MACHINE: {
-        name: 'Battle Station',
+        name: 'Battle Table',
         tiles: [
             { id: 'f73', relX: 0, relY: 0, name: 'Bottom Left' },
             { id: 'f74', relX: 1, relY: 0, name: 'Bottom Right' },
@@ -294,7 +294,7 @@ export const FURNITURE_TEMPLATES = {
         ]
     },
     BOOKSHELF_BIG: {
-        name: 'Grand Bookshelf',
+        name: 'Bookshelf',
         tiles: [
             { id: 'f78', relX: 0, relY: 0, name: 'Bottom Left' },
             { id: 'f79', relX: 1, relY: 0, name: 'Bottom Right' },
@@ -303,7 +303,7 @@ export const FURNITURE_TEMPLATES = {
         ]
     },
     CRYO_POD_BIG: {
-        name: 'Grand Cryo Pod (2x2)',
+        name: 'Grand Cryo Pod',
         tiles: [
             { id: 'f82', relX: 0, relY: 0, name: 'Bottom Left' },
             { id: 'f83', relX: 1, relY: 0, name: 'Bottom Right' },
@@ -312,21 +312,21 @@ export const FURNITURE_TEMPLATES = {
         ]
     },
     STORAGE_POD_FROZEN: {
-        name: 'Deep Freeze Storage Pod',
+        name: 'Deep Freeze Pod',
         tiles: [
             { id: 'f85', relX: 0, relY: 0, name: 'Bottom' },
             { id: 'f84', relX: 0, relY: -1, name: 'Top' }
         ]
     },
     BED_A: {
-        name: 'Medical Sleep Pod',
+        name: 'Medical Sleep Bed',
         tiles: [
             { id: 'f32', relX: 0, relY: 0, name: 'Left' },
             { id: 'f33', relX: 1, relY: 0, name: 'Right' }
         ]
     },
     BIO_EXTRACTOR: {
-        name: 'Bio Extractor Industrial',
+        name: 'Bio Extractor',
         tiles: [
             { id: 'f46', relX: 0, relY: 0, name: 'Bottom Left' },
             { id: 'f47', relX: 1, relY: 0, name: 'Bottom Right' },
@@ -337,7 +337,7 @@ export const FURNITURE_TEMPLATES = {
         ]
     },
     CELL_ACCELERATOR: {
-        name: 'Cell Accelerator Unit (3x3)',
+        name: 'Cell Accelerator',
         tiles: [
             { id: 'f98', relX: 0, relY: 0, name: 'BL' },
             { id: 'f99', relX: 1, relY: 0, name: 'BM' },
@@ -353,57 +353,57 @@ export const FURNITURE_TEMPLATES = {
 
     // --- DECOR & UTILITY (Stacks) ---
     BOX_PILE: {
-        name: 'Stacked Box Pile',
+        name: 'Stacked Carton Box',
         tiles: [
             { id: 'f62', relX: 0, relY: 0, name: 'Bottom' },
             { id: 'f61', relX: 0, relY: -1, name: 'Top' }
         ]
     },
     CRYO_POD: {
-        name: 'Cryo Maintenance Pod',
+        name: 'Storage Cryo Pod',
         tiles: [
             { id: 'f65', relX: 0, relY: 0, name: 'Left' },
             { id: 'f66', relX: 1, relY: 0, name: 'Right' }
         ]
     },
     SKELETON: {
-        name: 'Anatomical Skeleton',
+        name: 'Ms-Slim',
         tiles: [
             { id: 'f35', relX: 0, relY: 0, name: 'Bottom' },
             { id: 'f34', relX: 0, relY: -1, name: 'Top' }
         ]
     },
-    BOX_HAND: { name: 'Box Labeled Hand', tiles: [{ id: 'f48', relX: 0, relY: 0 }] },
-    SMALL_BOX: { name: 'Small Odd Carton Box', tiles: [{ id: 'f60', relX: 0, relY: 0 }] },
-    SMALL_CABINET: { name: 'Small Storage Cabinet', tiles: [{ id: 'f58', relX: 0, relY: 0 }] },
-    NOODLE_TABLE: { name: 'Researcher Noodle Table', tiles: [{ id: 'f36', relX: 0, relY: 0 }] },
+    BOX_HAND: { name: 'Hand Box', tiles: [{ id: 'f48', relX: 0, relY: 0 }] },
+    SMALL_BOX: { name: 'Carton Box', tiles: [{ id: 'f60', relX: 0, relY: 0 }] },
+    SMALL_CABINET: { name: 'Small Cabinet', tiles: [{ id: 'f58', relX: 0, relY: 0 }] },
+    NOODLE_TABLE: { name: 'Noodle Table', tiles: [{ id: 'f36', relX: 0, relY: 0 }] },
     NOODLE_BOWL: { name: 'Empty Noodle Bowl', tiles: [{ id: 'f37', relX: 0, relY: 0 }] },
-    WALL_HANGING_A: { name: 'Evolution Poster A', tiles: [{ id: 'f6', relX: 0, relY: 0 }] },
-    WALL_HANGING_B: { name: 'Evolution Poster B', tiles: [{ id: 'f17', relX: 0, relY: 0 }] },
-    WARNING_SIGN_FRONT: { name: 'Warning Sign (Front)', tiles: [{ id: 'f105', relX: 0, relY: 0 }] },
-    WARNING_SIGN_SIDE: { name: 'Warning Sign (Side)', tiles: [{ id: 'f106', relX: 0, relY: 0 }] },
-    HUGE_PETRI_DISH_SINGLE: { name: 'Petry Dish (Standalone)', tiles: [{ id: 'f103', relX: 0, relY: 0 }] },
+    WALL_HANGING_A: { name: 'Evolution Poster', tiles: [{ id: 'f6', relX: 0, relY: 0 }] },
+    WALL_HANGING_B: { name: 'Species Poster', tiles: [{ id: 'f17', relX: 0, relY: 0 }] },
+    WARNING_SIGN_FRONT: { name: 'Warning Sign', tiles: [{ id: 'f105', relX: 0, relY: 0 }] },
+    WARNING_SIGN_SIDE: { name: 'Warning Sign', tiles: [{ id: 'f106', relX: 0, relY: 0 }] },
+    HUGE_PETRI_DISH_SINGLE: { name: 'Huge Petry Dish', tiles: [{ id: 'f103', relX: 0, relY: 0 }] },
 
     // --- KEY ITEMS ---
-    ITEM_DATAPAD: { name: 'DATAPAD LOG', tiles: [{ id: 'f49', relX: 0, relY: 0 }] },
-    ITEM_ROOMKEY: { name: 'SECURE KEYCARD', tiles: [{ id: 'f50', relX: 0, relY: 0 }] },
-    ITEM_SAUCE: { name: 'INFERNO SAUCE', tiles: [{ id: 'f51', relX: 0, relY: 0 }] },
-    ITEM_COLLECTIBLE: { name: 'COLLECTIBLE CARD', tiles: [{ id: 'f75', relX: 0, relY: 0 }] },
-    ITEM_DATASTICK: { name: 'OLD DATA STICK', tiles: [{ id: 'f64', relX: 0, relY: 0 }] },
-    ITEM_EMPLOYEE_CARD: { name: 'OFFICIAL EMPLOYEE CARD', tiles: [{ id: 'f90', relX: 0, relY: 0 }] },
-    ITEM_SECRET: { name: 'ULTIMATE RARE CARD', tiles: [{ id: 'f63', relX: 0, relY: 0 }] },
-    ITEM_BLUEPRINT: { name: 'CELL GENOMIC BLUEPRINT', tiles: [{ id: 'f101', relX: 0, relY: 0 }] },
-    ITEM_BIOMASS: { name: 'RAW BIOMASS CONTAINER', tiles: [{ id: 'f102', relX: 0, relY: 0 }] },
-    ITEM_CREDIT: { name: 'LAB CREDIT CHIP', tiles: [{ id: 'f104', relX: 0, relY: 0 }] },
+    ITEM_DATAPAD: { name: 'Datapad', tiles: [{ id: 'f49', relX: 0, relY: 0 }] },
+    ITEM_ROOMKEY: { name: 'Old Keycard', tiles: [{ id: 'f50', relX: 0, relY: 0 }] },
+    ITEM_SAUCE: { name: 'Inferno Sauce Bottle', tiles: [{ id: 'f51', relX: 0, relY: 0 }] },
+    ITEM_COLLECTIBLE: { name: 'Collectible Cards', tiles: [{ id: 'f75', relX: 0, relY: 0 }] },
+    ITEM_DATASTICK: { name: 'Old Data Stick', tiles: [{ id: 'f64', relX: 0, relY: 0 }] },
+    ITEM_EMPLOYEE_CARD: { name: 'Official Employee Card', tiles: [{ id: 'f90', relX: 0, relY: 0 }] },
+    ITEM_SECRET: { name: 'Ultimate Rare Card', tiles: [{ id: 'f63', relX: 0, relY: 0 }] },
+    ITEM_BLUEPRINT: { name: 'Cell Blueprint', tiles: [{ id: 'f101', relX: 0, relY: 0 }] },
+    ITEM_BIOMASS: { name: 'Biomass Container', tiles: [{ id: 'f102', relX: 0, relY: 0 }] },
+    ITEM_CREDIT: { name: 'Lab Credit Chip', tiles: [{ id: 'f104', relX: 0, relY: 0 }] },
     MR_SLIM: {
-        name: 'Mr-Slim Robot',
+        name: 'Mr-Slim',
         tiles: [
             { id: 'f108', relX: 0, relY: 0, name: 'Bottom' },
             { id: 'f107', relX: 0, relY: -1, name: 'Top' }
         ]
     },
     HUGE_PETRY_DISH: {
-        name: 'Huge Petry Dish',
+        name: 'Huge Two-Story Petry Dish',
         tiles: [
             { id: 'f110', relX: 0, relY: 0, name: 'Bottom' },
             { id: 'f109', relX: 0, relY: -1, name: 'Top' }
@@ -417,21 +417,21 @@ export const FURNITURE_TEMPLATES = {
         ]
     },
     TANK_EMPTY: {
-        name: 'Specimen Tank (Empty)',
+        name: 'Empty Specimen Tank',
         tiles: [
             { id: 'f114', relX: 0, relY: 0, name: 'Tank Base' },
             { id: 'f113', relX: 0, relY: -1, name: 'Tank Top' }
         ]
     },
     TANK_OLD: {
-        name: 'Weathered Antique Tank',
+        name: 'Weathered Specimen Tank',
         tiles: [
             { id: 'f116', relX: 0, relY: 0, name: 'Tank Base' },
             { id: 'f115', relX: 0, relY: -1, name: 'Tank Top' }
         ]
     },
     TANK_CRACKED: {
-        name: 'Precarious Cracked Tank',
+        name: 'Cracked Specimen Tank',
         tiles: [
             { id: 'f118', relX: 0, relY: 0, name: 'Tank Base' },
             { id: 'f117', relX: 0, relY: -1, name: 'Tank Top' }
@@ -446,19 +446,19 @@ export const FURNITURE_TEMPLATES = {
         tiles: [{ id: 'f120', relX: 0, relY: 0 }]
     },
     TANK_LID_LOOSE: {
-        name: 'Tank Lid (Loose)',
+        name: 'Loose Tank Lid',
         tiles: [{ id: 'f121', relX: 0, relY: 0 }]
     },
     LIDSTEMMY_DEBRIS: {
-        name: 'Tank Lid w/ Stemmy',
+        name: 'Stemmy Home Lid',
         tiles: [{ id: 'f122', relX: 0, relY: 0 }]
     },
     TANK_LID_BROKEN: {
-        name: 'Tank Lid (Broken)',
+        name: 'Broken Tank Lid',
         tiles: [{ id: 'f123', relX: 0, relY: 0 }]
     },
     LID_DEBRIS: {
-        name: 'Tank Lid (Mangled)',
+        name: 'Mangled Tank Lid',
         tiles: [{ id: 'f124', relX: 0, relY: 0 }]
     }
 };

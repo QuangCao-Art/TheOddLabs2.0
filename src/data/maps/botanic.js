@@ -186,21 +186,21 @@ export const botanic = {
                 "It's called the 'Lysis State'—your cell's structural integrity is compromised."
             ]
         },
-        { id: "f59_mnmtn123nd5ee", x: 8, y: 14, type: "prop", name: "Small Potted Plant" },
-        { id: "f8_mnmtner8do7f2", x: 9, y: 14, type: "prop", name: "Chemical Table A" },
-        { id: "f8_mnmtnfga3rcun", x: 5, y: 14, type: "prop", name: "Chemical Table A" },
-        { id: "f59_mnmtnk8ke5cwo", x: 6, y: 14, type: "prop", name: "Small Potted Plant" },
-        { id: "f59_mnmtnljlokb5h", x: 1, y: 12, type: "prop", name: "Small Potted Plant" },
-        { id: "f59_mnmtno8lfpixh", x: 1, y: 14, type: "prop", name: "Small Potted Plant" },
-        { id: "f59_mnmtntf0rhqap", x: 13, y: 12, type: "prop", name: "Small Potted Plant" },
-        { id: "f91_mnmtojdiafxnx", x: 8, y: 10, type: "prop", name: "Empty Potted Pot" },
-        { id: "f91_mnmtontgn5jbj", x: 6, y: 7, type: "prop", name: "Empty Potted Pot" },
-        { id: "f91_mnmtopzkzzdo2", x: 2, y: 5, type: "prop", name: "Empty Potted Pot" },
-        { id: "f63_mnmtp7qbevzh6", x: 13, y: 6, type: "prop", name: "ULTIMATE RARE CARD" },
-        { id: "f60_mnmtpbr8orq76", x: 12, y: 6, type: "prop", name: "Small Odd Carton Box" },
-        { id: "f62_mnmtpw6ycutuy", x: 12, y: 7, type: "prop", name: "Stacked Box Pile" },
-        { id: "f61_mnmtpw6ycutuy", x: 12, y: 6, type: "prop", name: "Stacked Box Pile" },
-        { id: "f60_mnmtq2trm1vdv", x: 11, y: 7, type: "prop", name: "Small Odd Carton Box" }
+        { id: "f59_mnmtn123nd5ee", x: 8, y: 14, type: "prop", name: 'Young Plant' },
+        { id: "f8_mnmtner8do7f2", x: 9, y: 14, type: "prop", name: 'Chemical Station' },
+        { id: "f8_mnmtnfga3rcun", x: 5, y: 14, type: "prop", name: 'Chemical Station' },
+        { id: "f59_mnmtnk8ke5cwo", x: 6, y: 14, type: "prop", name: 'Young Plant' },
+        { id: "f59_mnmtnljlokb5h", x: 1, y: 12, type: "prop", name: 'Young Plant' },
+        { id: "f59_mnmtno8lfpixh", x: 1, y: 14, type: "prop", name: 'Young Plant' },
+        { id: "f59_mnmtntf0rhqap", x: 13, y: 12, type: "prop", name: 'Young Plant' },
+        { id: "f91_mnmtojdiafxnx", x: 8, y: 10, type: "prop", name: 'Empty Pot' },
+        { id: "f91_mnmtontgn5jbj", x: 6, y: 7, type: "prop", name: 'Empty Pot' },
+        { id: "f91_mnmtopzkzzdo2", x: 2, y: 5, type: "prop", name: 'Empty Pot' },
+        { id: "f63_mnmtp7qbevzh6", x: 13, y: 6, type: "prop", name: 'Ultimate Rare Card' },
+        { id: "f60_mnmtpbr8orq76", x: 12, y: 6, type: "prop", name: 'Carton Box' },
+        { id: "f62_mnmtpw6ycutuy", x: 12, y: 7, type: "prop", name: 'Stacked Carton Box' },
+        { id: "f61_mnmtpw6ycutuy", x: 12, y: 6, type: "prop", name: 'Stacked Carton Box' },
+        { id: "f60_mnmtq2trm1vdv", x: 11, y: 7, type: "prop", name: 'Carton Box' }
     ],
     doors: [
         { x: 14, y: 13, targetZone: "atrium", targetX: 1, targetY: 4 },
@@ -209,3 +209,5 @@ export const botanic = {
         { x: 0, y: 13, targetZone: "nursery", targetX: 13, targetY: 7 }
     ]
 };
+
+

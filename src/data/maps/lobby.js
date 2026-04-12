@@ -29,8 +29,8 @@ export const lobby = {
         { id: 'f59_lob_nw', x: 1, y: 3, type: 'prop', name: 'Decorative Bush' },
         { id: 'f1_lobby_wait1', x: 1, y: 4, type: 'prop', name: 'Lab Chair', hiddenReward: 'REWARD_CREDITS_250' },
         { id: 'f1_lobby_wait2', x: 1, y: 5, type: 'prop', name: 'Lab Chair' },
-        { id: 'f56_reception', x: 8, y: 5, type: 'prop', name: 'Leader Desk' },
-        { id: 'f57_reception', x: 8, y: 6, type: 'prop', name: 'Leader Desk' },
+        { id: 'f56_reception', x: 8, y: 5, type: 'prop', name: 'Leader Table' },
+        { id: 'f57_reception', x: 8, y: 6, type: 'prop', name: 'Leader Table' },
         { id: 'f0_reception_desk', x: 9, y: 5, type: 'prop', name: 'Lab Chair' },
         { id: 'f6_lob1', x: 4, y: 2, type: 'prop', name: 'Lab Protocol' },
         { id: 'f17_lob1', x: 6, y: 2, type: 'prop', name: 'Wall Protocol' },
@@ -44,3 +44,4 @@ export const lobby = {
         { x: 5, y: 2, targetZone: 'atrium', targetX: 9, targetY: 13, requiredFlag: 'jenziAtriumUnlocked' }
     ]
 };
+
