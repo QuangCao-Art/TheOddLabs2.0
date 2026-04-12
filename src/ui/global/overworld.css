@@ -360,6 +360,46 @@
     background-position: calc(-1792px / 4) calc(-1792px / 4);
 }
 
+.t-57 {
+    background-position: calc(-1792px / 4) calc(-0px / 4);
+}
+
+.t-58 {
+    background-position: calc(-1536px / 4) calc(-0px / 4);
+}
+
+.t-59 {
+    background-position: calc(-1280px / 4) calc(-0px / 4);
+}
+
+.t-60 {
+    background-position: calc(-1792px / 4) calc(-256px / 4);
+}
+
+.t-61 {
+    background-position: calc(-1792px / 4) calc(-512px / 4);
+}
+
+.t-62 {
+    background-position: calc(-1792px / 4) calc(-1024px / 4);
+}
+
+.t-63 {
+    background-position: calc(-1792px / 4) calc(-1280px / 4);
+}
+
+.t-64 {
+    background-position: calc(-0px / 4) calc(-1792px / 4);
+}
+
+.t-65 {
+    background-position: calc(-512px / 4) calc(-1792px / 4);
+}
+
+.t-66 {
+    background-position: calc(-256px / 4) calc(-1792px / 4);
+}
+
 .tile.interactable {
     cursor: pointer;
 }

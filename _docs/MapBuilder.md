@@ -71,6 +71,16 @@ This document serves as the official reference for building levels using the `La
 | **54** | Wall-Center-Top-Pipes | 1536 | 1792 |
 | **55** | Wall-Center-Top-Dirty | 1792 | 1536 |
 | **56** | Wall-Center-Top-Dirty | 1792 | 1792 |
+| **57** | Wall-Center-Top-Nitrophil | 1792 | 0 |
+| **58** | Wall-Center-Top-Lydrosome | 1536 | 0 |
+| **59** | Wall-Center-Bottom-Cambihil | 1280 | 0 |
+| **60** | Wall-Center-Top-ScifiDeco | 1792 | 256 |
+| **61** | Wall-Center-Bottom-ScifiDeco | 1792 | 512 |
+| **62** | Wall-Center-Top-HeavyDirty | 1792 | 1024 |
+| **63** | Wall-Center-Bottom-HeavyDirty | 1792 | 1280 |
+| **64** | Floor-WhiteDiamond | 0 | 1792 |
+| **65** | Floor-Basic-DirtyVary | 512 | 1792 |
+| **66** | Floor-Basic-Crack | 256 | 1792 |
 
 ---
 

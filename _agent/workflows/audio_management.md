@@ -21,10 +21,10 @@ Place your `.mp3` files in `assets/audio/` using the following exact names:
 | **Monsters** | `impact_monster.mp3` | Fleshy squish layer for **Wild Cells** (Auto-assigned). |
 | **Homerun** | `kick_homerun.mp3` | Explosive launch and woosh sound. |
 | **Shatter** | `shatter_tank.mp3` | The heavy crash for broken tanks. |
-| **LC Loot** | `resource_collect_lc.mp3` | Ticking sound for credit collection (loop). |
-| **BM Loot** | `resource_collect_bm.mp3` | Ticking sound for biomass collection (loop). |
-| **LC Transaction** | `resource_spend_lc.mp3` | One-time "Kaching" for purchases/sales. |
-| **BM Transaction** | `resource_spend_bm.mp3` | One-time sound for biomass spending. |
+| **LC Loot** | `resource_collect_lc.mp3` | Ticking sound for physical credit collection (loop). |
+| **BM Loot** | `resource_collect_bm.mp3` | Ticking sound for physical biomass collection (loop). |
+| **LC Discovery** | `resource_spend_lc.mp3` | One-time "Kaching" for purchases or **Hidden Loot discovery**. |
+| **BM Discovery** | `resource_spend_bm.mp3` | One-time sound for biomass spending or **Hidden Loot discovery**. |
 | **Footstep (Tile)** | `footstep_tile.mp3` | **(Default)** Soft click for polished lab floors. |
 | **Footstep (Metal)** | `footstep_metal.mp3` | Metallic clang for industrial/engine rooms. |
 | **Footstep (Water)** | `footstep_water.mp3` | Splash sound for flooded or aquatic zones. |
@@ -39,6 +39,7 @@ Background music loops automatically and cross-fades during screen transitions.
 | :--- | :--- | :--- |
 | **Main Menu** | `music_main_menu.mp3` | Played on the title screen. |
 | **Overworld** | `music_overworld.mp3` | Played while exploring the lab. |
+| **Pre-Battle** | `music_pre_battle.mp3` | Played during the pre-battle sequence. |
 | **Battle** | `music_battle.mp3` | Tactical battle theme. |
 
 ### 3. Implementation Rules

@@ -313,7 +313,7 @@ export const Overworld = {
                 msg = `Acquired ${reward.type.toUpperCase()}: ${reward.id}.`;
             } else if (reward.type === 'resource') {
                 if (window.changeResource) {
-                    window.changeResource(reward.id === 'credits' ? 'lc' : 'bm', reward.amount || 0, true);
+                    window.changeResource(reward.id === 'credits' ? 'lc' : 'bm', reward.amount || 0, true, true);
                 }
                 msg = `Acquired ${reward.amount} ${reward.id.toUpperCase()}.`;
             }
@@ -430,7 +430,7 @@ export const Overworld = {
 
                 const isClosedDoor = [20, 22, 24, 25, 28, 29, 30, 31, 39, 40, 41, 42].includes(tileID);
                 const isOpenDoor = [21, 23, 26, 27, 34, 35, 36, 37].includes(tileID);
-                const isGenericWall = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 32, 33, 43, 48, 49, 50, 51, 52, 53, 54, 55, 56].includes(tileID);
+                const isGenericWall = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 32, 33, 43, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63].includes(tileID);
 
                 if (isGenericWall || isClosedDoor) tile.classList.add('wall');
                 else tile.classList.add('floor');
@@ -1497,9 +1497,11 @@ export const Overworld = {
             }
 
             // CellAccelerator Interaction
-            if (obj.name === 'Cell-Accelerator') {
+            const baseID = obj.id.includes('_') ? obj.id.split('_')[0] : obj.id;
+            const acceleratorIds = ['f92', 'f93', 'f94', 'f95', 'f96', 'f97', 'f98', 'f99', 'f100'];
+            if (acceleratorIds.includes(baseID)) {
                 this.pendingSynthesisMenu = true;
-                this.showDialogue("Cell-Accelerator", ["CELL-ACC TERMINAL: [SYNTHESIS PROTOCOLS ACTIVE]", "Ensure biological requirements are met before initialization."]);
+                this.showDialogue("Cell Accelerator", ["CELL-ACC TERMINAL: [SYNTHESIS PROTOCOLS ACTIVE]", "Ensure biological requirements are met before initialization."]);
                 return;
             }
 
@@ -2425,7 +2427,7 @@ export const Overworld = {
         this.showDialogue(npc.name, lines, npc.id);
     },
 
-    collectItem(itemId, spotId = null) {
+    collectItem(itemId, spotId = null, isDiscovery = false) {
         console.log(`Collected Item: ${itemId} (Spot: ${spotId})`);
         this.updateQuestProgress('collect', itemId);
 
@@ -2446,7 +2448,7 @@ export const Overworld = {
             }
         } else if (itemType === 'resource') {
             if (window.changeResource) {
-                window.changeResource(itemInfo.resourceType === 'credits' ? 'lc' : 'bm', itemInfo.amount || 0, true);
+                window.changeResource(itemInfo.resourceType === 'credits' ? 'lc' : 'bm', itemInfo.amount || 0, true, isDiscovery);
             }
         } else if (itemType === 'card') {
             if (window.gameState) {
@@ -2665,7 +2667,7 @@ export const Overworld = {
             const spotId = this.pendingItemSpotId || null;
             this.pendingItemPickup = null;
             this.pendingItemSpotId = null;
-            this.collectItem(itemId, spotId);
+            this.collectItem(itemId, spotId, true); // Hidden items are ALWAYS discoveries
         }
 
         // Handle deferred item pickups (like boss rewards)

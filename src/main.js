@@ -5027,6 +5027,8 @@ function showScreen(screenId) {
         AudioManager.playBGM('music_main_menu', 0.4);
     } else if (screenId === 'screen-overworld') {
         AudioManager.playBGM('music_overworld', 0.35);
+    } else if (screenId === 'screen-pre-battle') {
+        AudioManager.playBGM('music_pre_battle', 0.4);
     } else if (screenId === 'screen-battle') {
         AudioManager.playBGM('music_battle', 0.45);
 
@@ -6953,7 +6955,7 @@ window.updateResourceHUD = function () {
 };
 
 // Universal Resource API
-window.changeResource = function (type, amount, isLoot = true) {
+window.changeResource = function (type, amount, isLoot = true, isDiscovery = false) {
     if (!type || amount === 0) return;
 
     const isLC = type.toLowerCase() === 'lc';
@@ -6967,15 +6969,16 @@ window.changeResource = function (type, amount, isLoot = true) {
         return; // Unsupported type for this specific feedback system
     }
 
-    // AUDIO: One-time spending/receiving sound if not loot
-    if (!isLoot && AudioManager && typeof AudioManager.play === 'function') {
+    // AUDIO: One-time spending/receiving sound if not loot OR if it's a hidden discovery
+    if ((!isLoot || isDiscovery) && AudioManager && typeof AudioManager.play === 'function') {
         const soundTag = isLC ? 'resource_spend_lc' : 'resource_spend_bm';
         AudioManager.play(soundTag, 0.4, 0.1);
     }
 
     // Trigger visual feedback
     window.spawnResourcePopup(isLC ? 'lc' : 'bm', amount);
-    window.animateResourceHUD(isLC ? 'lc' : 'bm', amount, isLoot);
+    // Suppress ticker sound if it's a discovery (which uses the one-time sound above)
+    window.animateResourceHUD(isLC ? 'lc' : 'bm', amount, isLoot && !isDiscovery);
 };
 
 window.spawnResourcePopup = function (type, amount) {

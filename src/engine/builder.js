@@ -297,7 +297,99 @@ export const BuilderMode = {
         else if (category === 'terrain') items = TERRAIN_PALETTE.map(t => [t.id, t]);
         else if (category === 'doors') items = Object.entries(DOOR_TEMPLATES);
 
-        items.forEach(([key, data]) => {
+        // Advanced Universal Sorting (Props, Terrain, etc.)
+        const getSortData = (item) => {
+            const data = item[1];
+            const name = data.name;
+            const positionalKeywords = ['Top', 'Bottom', 'Left', 'Right', 'TL', 'TR', 'BL', 'BR', 'Inner', 'Edge', 'Center', 'Front', 'Back', 'Side', 'Face'];
+            
+            // 1. Identify ID for chronological sorting
+            let numericId = 0;
+            if (category === 'furniture') {
+                const firstTile = data.tiles ? data.tiles[0].id : '';
+                numericId = parseInt(firstTile.replace('f', '')) || 0;
+            } else {
+                numericId = parseInt(data.id) || 0;
+            }
+
+            // 2. Identify Positional Suffix
+            let suffix = '';
+            const suffixMatch = name.match(/[\(\-]\s*(.*?)\s*\)?$/i);
+            if (suffixMatch) {
+                suffix = suffixMatch[1].trim();
+            }
+
+            // 3. Identify Group (Base Anchor)
+            const anchors = [
+                'Wall', 'Floor', 'Window', 'Corner', 'Door', 
+                'Tank', 'Plant', 'Table', 'Chair', 'Bed', 'Box', 'Cabinet',
+                'Nitrophil', 'Lydrosome', 'Cambihil', 'ScifiDeco', 'HeavyDirty',
+                'Noodle', 'Poster', 'Sign', 'Skeleton', 'Reward', 'Item', 'Petry', 'Petri'
+            ];
+            
+            let foundAnchor = '';
+            for (const anchor of anchors) {
+                if (name.toLowerCase().includes(anchor.toLowerCase())) {
+                    foundAnchor = anchor;
+                    break;
+                }
+            }
+            
+            let group = foundAnchor || name;
+            if (group === 'Wall') {
+                if (name.includes('Edge')) group = 'Wall Edge';
+                else if (name.includes('Center')) group = 'Wall Center';
+            } else if (group === 'Floor') {
+                if (name.includes('Stripe')) group = 'Floor Stripe';
+                else if (name.includes('Basic')) group = 'Floor Basic';
+            }
+
+            return { group, suffix, numericId, originalName: name };
+        };
+
+        // Pre-calculate minimum ID per group to ensure groups are ordered by ID
+        const groupMinIds = {};
+        const itemsWithData = items.map(item => {
+            const sortData = getSortData(item);
+            if (!groupMinIds[sortData.group] || sortData.numericId < groupMinIds[sortData.group]) {
+                groupMinIds[sortData.group] = sortData.numericId;
+            }
+            return { item, sortData };
+        });
+
+        const suffixPriority = {
+            'Top': 1, 'Bottom': 2, 'Left': 3, 'Right': 4,
+            'Top-Face': 1, 'Bottom-Face': 2, 'Left-Face': 3, 'Right-Face': 4,
+            'Front-Face': 5, 'Back-Face': 6, 'Small': 10
+        };
+
+        itemsWithData.sort((a, b) => {
+            const sA = a.sortData;
+            const sB = b.sortData;
+
+            // 1. Sort by Group's Minimum ID (Layer 1)
+            const minIdA = groupMinIds[sA.group];
+            const minIdB = groupMinIds[sB.group];
+            if (minIdA !== minIdB) return minIdA - minIdB;
+
+            // 2. Tie-break with Group Name alphabetically just in case
+            if (sA.group !== sB.group) return sA.group.localeCompare(sB.group);
+
+            // 3. Same group, priority by suffix (Layer 2)
+            if (sA.suffix === '' && sB.suffix !== '') return -1;
+            if (sA.suffix !== '' && sB.suffix === '') return 1;
+
+            const pA = suffixPriority[sA.suffix] || 100;
+            const pB = suffixPriority[sB.suffix] || 100;
+
+            if (pA !== pB) return pA - pB;
+
+            // 4. Final tie-break by ID
+            return sA.numericId - sB.numericId;
+        });
+
+        itemsWithData.forEach(({item, sortData}) => {
+            const data = item[1];
             const btn = document.createElement('div');
             btn.className = 'palette-item';
             btn.innerHTML = `<span>${data.name}</span>`;

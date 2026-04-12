@@ -505,7 +505,17 @@ export const TERRAIN_PALETTE = [
     { id: 53, name: 'Wall (Pipes-Top)' },
     { id: 54, name: 'Wall (Pipes-Bottom)' },
     { id: 55, name: 'Wall (Dirty-Top)' },
-    { id: 56, name: 'Wall (Dirty-Bottom)' }
+    { id: 56, name: 'Wall (Dirty-Bottom)' },
+    { id: 57, name: 'Wall Center (Top-Nitrophil)' },
+    { id: 58, name: 'Wall Center (Top-Lydrosome)' },
+    { id: 59, name: 'Wall Center (Bottom-Cambihil)' },
+    { id: 60, name: 'Wall Center (Top-ScifiDeco)' },
+    { id: 61, name: 'Wall Center (Bottom-ScifiDeco)' },
+    { id: 62, name: 'Wall Center (Top-HeavyDirty)' },
+    { id: 63, name: 'Wall Center (Bottom-HeavyDirty)' },
+    { id: 64, name: 'Floor (WhiteDiamond)' },
+    { id: 65, name: 'Floor (Basic-DirtyVary)' },
+    { id: 66, name: 'Floor (Basic-Crack)' }
 ];
 
 export const DOOR_TEMPLATES = {
