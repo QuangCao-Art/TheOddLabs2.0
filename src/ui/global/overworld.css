@@ -461,6 +461,7 @@
 }
 
 #overworld-map .world-object.prop,
+#builder-ghost .world-object.prop,
 #overworld-map .world-object.trigger,
 #overworld-map .world-object.sign,
 #overworld-map .world-object.cell {
@@ -1275,4 +1276,8 @@
 .world-object.prop.Item-LabCredit,
 .world-object.prop.f104 {
     background-position: calc(-256px / 4) calc(-768px / 4);
+}
+
+.world-object.mirrored-object {
+    transform: translateY(-10px) translateZ(0) scaleX(-1) !important;
 }

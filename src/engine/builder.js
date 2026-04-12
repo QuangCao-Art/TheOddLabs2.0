@@ -11,6 +11,7 @@ export const BuilderMode = {
     mouseGridX: 0,
     mouseGridY: 0,
     currentZoneId: null,
+    isMirrored: false,
     
     // UI Elements
     paletteEl: null,
@@ -42,6 +43,7 @@ export const BuilderMode = {
             <div class="palette-footer">
                 <div class="builder-debug-group">
                     <button id="builder-toggle-hidden" class="builder-debug-btn">SHOW HIDDEN: OFF</button>
+                    <button id="builder-toggle-mirror" class="builder-debug-btn">MIRROR: OFF</button>
                 </div>
                 <button id="builder-export">EXPORT CODE</button>
             </div>
@@ -151,6 +153,9 @@ export const BuilderMode = {
             if (e.key.toLowerCase() === 'b' && !Overworld.isDialogueActive && !overworldHidden) {
                 this.toggle();
             }
+            if (this.active && e.key.toLowerCase() === 'm') {
+                this.toggleMirror();
+            }
         });
 
         // Palette Tab Switching
@@ -180,6 +185,13 @@ export const BuilderMode = {
                 toggleHiddenBtn.textContent = `SHOW HIDDEN: ${window.gameState.showAllHiddenStuff ? 'ON' : 'OFF'}`;
                 toggleHiddenBtn.classList.toggle('active', window.gameState.showAllHiddenStuff);
                 Overworld.renderMap(Overworld.currentZone);
+            });
+        }
+
+        const toggleMirrorBtn = document.getElementById('builder-toggle-mirror');
+        if (toggleMirrorBtn) {
+            toggleMirrorBtn.addEventListener('click', () => {
+                this.toggleMirror();
             });
         }
 
@@ -249,6 +261,30 @@ export const BuilderMode = {
             document.body.classList.remove('builder-active');
             Overworld.isPaused = false;
         }
+    },
+
+    getTransformedTiles(template, isMirrored) {
+        const tiles = template.tiles || [{ id: template.id, relX: 0, relY: 0 }];
+        if (!isMirrored) return tiles;
+
+        // Calculate Bounding Box for In-Place Mirror
+        const minX = Math.min(...tiles.map(t => t.relX || 0));
+        const maxX = Math.max(...tiles.map(t => t.relX || 0));
+
+        return tiles.map(t => ({
+            ...t,
+            relX: maxX - ((t.relX || 0) - minX)
+        }));
+    },
+
+    toggleMirror() {
+        this.isMirrored = !this.isMirrored;
+        const btn = document.getElementById('builder-toggle-mirror');
+        if (btn) {
+            btn.textContent = `MIRROR: ${this.isMirrored ? 'ON' : 'OFF'}`;
+            btn.classList.toggle('active', this.isMirrored);
+        }
+        if (this.selectedTemplate) this.updateGhost();
     },
 
     switchTab(category) {
@@ -323,7 +359,7 @@ export const BuilderMode = {
         this.ghostEl.style.width = `${Overworld.tileSize}px`;
         this.ghostEl.style.height = `${Overworld.tileSize}px`;
 
-        const tiles = this.selectedTemplate.tiles || [{ id: this.selectedTemplate.id, relX: 0, relY: 0 }];
+        const tiles = this.getTransformedTiles(this.selectedTemplate, this.isMirrored);
         
         tiles.forEach(t => {
             const tile = document.createElement('div');
@@ -331,6 +367,7 @@ export const BuilderMode = {
             // Set base class based on selection type
             if (this.selectedType === 'furniture') {
                 tile.className = `world-object prop ${t.id}`;
+                if (this.isMirrored) tile.classList.add('mirrored-object');
                 // Auto-detect Tileset 03 based on ID (f64+)
                 const numericId = parseInt(t.id.substring(1));
                 if (numericId >= 64) {
@@ -341,13 +378,17 @@ export const BuilderMode = {
             }
 
             tile.style.position = 'absolute';
-            tile.style.left = `${t.relX * Overworld.tileSize}px`;
-            tile.style.top = `${t.relY * Overworld.tileSize}px`;
+            tile.style.left = `${(t.relX || 0) * Overworld.tileSize}px`;
+            tile.style.top = `${(t.relY || 0) * Overworld.tileSize}px`;
             tile.style.width = '100%';
             tile.style.height = '100%';
             tile.style.opacity = '0.5';
+            tile.style.pointerEvents = 'none';
             this.ghostEl.appendChild(tile);
         });
+
+        // Ensure ghost is visible if we have a selection
+        this.ghostEl.classList.remove('hidden');
     },
 
     handlePlacement() {
@@ -369,12 +410,15 @@ export const BuilderMode = {
         const tid = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
         const reward = document.getElementById('builder-reward-id')?.value.trim();
         
-        this.selectedTemplate.tiles.forEach(t => {
+        const tiles = this.getTransformedTiles(this.selectedTemplate, this.isMirrored);
+
+        tiles.forEach(t => {
             const newObj = {
                 id: `${t.id}_${tid}`,
-                x: this.mouseGridX + t.relX,
-                y: this.mouseGridY + t.relY,
+                x: this.mouseGridX + (t.relX || 0),
+                y: this.mouseGridY + (t.relY || 0),
                 type: 'prop',
+                mirrored: this.isMirrored,
                 name: this.selectedTemplate.name
             };
             if (reward) newObj.hiddenReward = reward;
@@ -443,18 +487,19 @@ export const BuilderMode = {
                 // Look for templates that contain this fID
                 for (const key in FURNITURE_TEMPLATES) {
                     const template = FURNITURE_TEMPLATES[key];
-                    const part = template.tiles.find(t => t.id === baseId);
+                    const transformedTiles = this.getTransformedTiles(template, target.mirrored);
+                    const part = transformedTiles.find(t => t.id === baseId);
                     
                     if (part) {
                         // We found a template match! Find the "Root/Origin" of this instance
-                        const rootX = target.x - part.relX;
-                        const rootY = target.y - part.relY;
+                        const rootX = target.x - (part.relX || 0);
+                        const rootY = target.y - (part.relY || 0);
 
                         // Check every other part of THIS template relative to that root
-                        template.tiles.forEach(t => {
+                        transformedTiles.forEach(t => {
                             const partnerIdx = zone.objects.findIndex(obj => 
-                                obj.x === (rootX + t.relX) && 
-                                obj.y === (rootY + t.relY) &&
+                                obj.x === (rootX + (t.relX || 0)) && 
+                                obj.y === (rootY + (t.relY || 0)) &&
                                 obj.id.startsWith(t.id)
                             );
                             if (partnerIdx !== -1) {

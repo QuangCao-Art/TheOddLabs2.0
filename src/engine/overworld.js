@@ -244,6 +244,20 @@ export const Overworld = {
     },
     furnitureMetadata,
 
+    getTransformedTiles(template, isMirrored) {
+        const tiles = template.tiles || [{ id: template.id, relX: 0, relY: 0 }];
+        if (!isMirrored) return tiles;
+
+        const relXs = tiles.map(t => t.relX || 0);
+        const minX = Math.min(...relXs);
+        const maxX = Math.max(...relXs);
+
+        return tiles.map(t => ({
+            ...t,
+            relX: maxX - ((t.relX || 0) - minX)
+        }));
+    },
+
     getFurnitureMeta(objId, customSprite) {
         if (!objId) return null;
         // customSprite takes priority over the generic id-prefix lookup
@@ -527,6 +541,7 @@ export const Overworld = {
                 if (cls) el.classList.add(cls);
             });
         }
+        if (obj.mirrored) el.classList.add('mirrored-object');
 
         // --- NEW: Debris Pop Juice ---
         if (obj.isNewDebris) {
@@ -3027,36 +3042,41 @@ export const Overworld = {
         }
 
         if (template && obj.type === 'prop') {
-            const rootX = obj.x - myRelX;
-            const rootY = obj.y - myRelY;
+            const transformedTiles = this.getTransformedTiles(template, obj.mirrored);
+            const part = transformedTiles.find(t => t.id === prefix);
+            
+            if (part) {
+                const rootX = obj.x - (part.relX || 0);
+                const rootY = obj.y - (part.relY || 0);
 
-            template.tiles.forEach(tile => {
-                // Skip self
-                if (tile.id === prefix && (tile.relX || 0) === myRelX && (tile.relY || 0) === myRelY) return;
+                transformedTiles.forEach(tile => {
+                    // Skip self
+                    if (tile.id === prefix && (tile.relX || 0) === (part.relX || 0) && (tile.relY || 0) === (part.relY || 0)) return;
 
-                // Look for a neighbor at exactly the target relative coordinate
-                const tx = rootX + (tile.relX || 0);
-                const ty = rootY + (tile.relY || 0);
+                    // Look for a neighbor at exactly the target transformed relative coordinate
+                    const tx = rootX + (tile.relX || 0);
+                    const ty = rootY + (tile.relY || 0);
 
-                const partner = zone.objects.find(o => {
-                    const oPrefix = o.id.split('_')[0];
-                    const oSuffixMatch = o.id.match(/_([a-zA-Z0-9]+)$/);
-                    const oSuffix = oSuffixMatch ? oSuffixMatch[1] : null;
+                    const partner = zone.objects.find(o => {
+                        const oPrefix = o.id.split('_')[0];
+                        const oSuffixMatch = o.id.match(/_([a-zA-Z0-9]+)$/);
+                        const oSuffix = oSuffixMatch ? oSuffixMatch[1] : null;
 
-                    if (o.x === tx && o.y === ty && oPrefix === tile.id) {
-                        // Isolation Rule: If both have suffixes, they MUST match
-                        if (suffix && oSuffix) return suffix === oSuffix;
-                        // Fallback (for legacy maps): Position and Prefix match is enough
-                        return true;
+                        if (o.x === tx && o.y === ty && oPrefix === tile.id) {
+                            // Isolation Rule: If both have suffixes, they MUST match
+                            if (suffix && oSuffix) return suffix === oSuffix;
+                            // Fallback (for legacy maps): Position and Prefix match is enough
+                            return true;
+                        }
+                        return false;
+                    });
+
+                    if (partner) {
+                        partner.isKicking = true;
+                        parts.push(partner);
                     }
-                    return false;
                 });
-
-                if (partner) {
-                    partner.isKicking = true;
-                    parts.push(partner);
-                }
-            });
+            }
         }
 
         // 0. ABORT CURRENT MOVEMENT
@@ -3290,13 +3310,17 @@ export const Overworld = {
         // 3. Instantiate & Render New Furniture (Surgically)
         const mapEl = document.getElementById('overworld-map');
         const suffix = `_${Math.random().toString(36).substr(2, 9)}`;
-        template.tiles.forEach(tile => {
+        const isMirrored = oldParts.some(p => p.mirrored);
+        const transformedTiles = this.getTransformedTiles(template, isMirrored);
+
+        transformedTiles.forEach(tile => {
             const newObj = {
                 id: tile.id + suffix,
                 x: basePart.x + (tile.relX || 0),
                 y: basePart.y + (tile.relY || 0),
                 type: 'prop',
                 customSprite: tile.id,
+                mirrored: isMirrored,
                 isNewDebris: true, // Trigger the bounce animation
                 name: template.name + (tile.name ? ` (${tile.name})` : '')
             };
