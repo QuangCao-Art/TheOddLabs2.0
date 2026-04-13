@@ -547,7 +547,7 @@ export const Overworld = {
                 if (cls) el.classList.add(cls);
             });
         }
-        if (obj.mirrored) el.classList.add('mirrored-object');
+
 
         // --- NEW: Debris Pop Juice ---
         if (obj.isNewDebris) {
@@ -572,11 +572,15 @@ export const Overworld = {
         el.style.top = `${obj.y * this.tileSize + (obj.offsetY || 0)}px`;
         el.style.zIndex = obj.y + (obj.height || 1) + 10;
 
+
+
         const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
         if (meta && meta.hasCollision === false) el.classList.add('render-top');
 
         // --- NEW: Symmetrical Animation Origin ---
         // We calculate a shared machine pivot so that 2x2 and 3x3 objects squash as a single unit.
+        if (obj.mirrored) el.classList.add('mirrored-object');
+
         const prefix = obj.id.split('_')[0];
         let template = null;
         let foundTile = null;
@@ -607,9 +611,9 @@ export const Overworld = {
             const centerY = maxY;
 
             // Offset relative to the current tile (100% = 1 tile width/height)
-            // If mirrored, we must flip the horizontal relative coordinate to keep the pivot centered.
-            const visualRelX = obj.mirrored ? (maxX - (rx - minX)) : rx;
-            const ox = (centerX - visualRelX + 0.5) * 100;
+            // Fix: We do NOT re-flip visualRelX here because the map data 'rx' is already correctly positioned.
+            // Using 'rx' directly ensures the origin points to the assembly center regardless of mirroring.
+            const ox = (centerX - rx + 0.5) * 100;
             const oy = (centerY - ry + 1.0) * 100;
             el.style.transformOrigin = `${ox}% ${oy}%`;
         }

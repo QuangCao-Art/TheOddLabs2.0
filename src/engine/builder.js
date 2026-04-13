@@ -1,4 +1,4 @@
-import { FURNITURE_TEMPLATES, TERRAIN_PALETTE, DOOR_TEMPLATES } from '../data/furniture.js';
+import { FURNITURE_TEMPLATES, TERRAIN_PALETTE, DOOR_TEMPLATES, furnitureMetadata } from '../data/furniture.js';
 
 /**
  * Furniture Builder Mode for Odd Labs 2.0
@@ -502,7 +502,9 @@ export const BuilderMode = {
         const tid = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
         const reward = document.getElementById('builder-reward-id')?.value.trim();
         
-        const tiles = this.getTransformedTiles(this.selectedTemplate, this.isMirrored);
+        const mirroredToSave = this.isMirrored;
+
+        const tiles = this.getTransformedTiles(this.selectedTemplate, mirroredToSave);
 
         const templateKey = Object.keys(FURNITURE_TEMPLATES).find(key => FURNITURE_TEMPLATES[key] === this.selectedTemplate);
 
@@ -513,7 +515,7 @@ export const BuilderMode = {
                 x: this.mouseGridX + (t.relX || 0),
                 y: this.mouseGridY + (t.relY || 0),
                 type: 'prop',
-                mirrored: this.isMirrored,
+                mirrored: mirroredToSave,
                 name: this.selectedTemplate.name
             };
             if (reward) newObj.hiddenReward = reward;
