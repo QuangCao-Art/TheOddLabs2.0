@@ -250,33 +250,42 @@ export const Overworld = {
     },
     furnitureMetadata,
 
+    getFurnitureMeta(objId, customSprite) {
+        if (!objId) return null;
+        if (customSprite && this.furnitureMetadata[customSprite]) return this.furnitureMetadata[customSprite];
+
+        const prefix = objId.split('_')[0];
+        return this.furnitureMetadata[prefix] || null;
+    },
+
     getTransformedTiles(template, isMirrored) {
         const tiles = template.tiles || [{ id: template.id, relX: 0, relY: 0 }];
-        if (!isMirrored) return tiles;
-
-        const relXs = tiles.map(t => t.relX || 0);
-        const minX = Math.min(...relXs);
-        const maxX = Math.max(...relXs);
-
+        // Systematic: Engine logic now uses Blueprint coordinates directly.
+        // We return them as-is, tagged with the mirrored state.
         return tiles.map(t => ({
             ...t,
-            relX: maxX - ((t.relX || 0) - minX)
+            mirrored: isMirrored
         }));
     },
 
-    getFurnitureMeta(objId, customSprite) {
-        if (!objId) return null;
-        // customSprite takes priority over the generic id-prefix lookup
-        if (customSprite) {
-            const classes = customSprite.split(' ');
-            for (const cls of classes) {
-                if (this.furnitureMetadata[cls]) {
-                    return this.furnitureMetadata[cls];
-                }
+    getVisualX(obj) {
+        if (!obj.mirrored) return obj.x;
+        const prefix = obj.id.split('_')[0];
+        // Optimization: Standard 1x1 objects are their own root
+        if (!prefix.startsWith('f')) return obj.x; 
+
+        for (const tKey in window.FURNITURE_TEMPLATES) {
+            const t = window.FURNITURE_TEMPLATES[tKey];
+            const candidate = t.tiles.find(tile => tile.id === prefix);
+            if (candidate) {
+                const minX = Math.min(...t.tiles.map(tile => tile.relX || 0));
+                const maxX = Math.max(...t.tiles.map(tile => tile.relX || 0));
+                const relX = candidate.relX || 0;
+                // Calculate where this tile is rendered visually based on assembly center flip
+                return (obj.x - relX) + (maxX - relX + minX);
             }
         }
-        const prefix = objId.split('_')[0];
-        return this.furnitureMetadata[prefix] || null;
+        return obj.x;
     },
 
     updateQuestProgress(type, id, objectType = null) {
@@ -613,9 +622,11 @@ export const Overworld = {
             // Offset relative to the current tile (100% = 1 tile width/height)
             // Fix: We do NOT re-flip visualRelX here because the map data 'rx' is already correctly positioned.
             // Using 'rx' directly ensures the origin points to the assembly center regardless of mirroring.
-            const ox = (centerX - rx + 0.5) * 100;
-            const oy = (centerY - ry + 1.0) * 100;
-            el.style.transformOrigin = `${ox}% ${oy}%`;
+            // Systematic Assembly-Center Mirror (Pixel-Precise):
+            // Using px instead of % prevents sub-pixel rounded-off 'drifting'.
+            const ox_px = (centerX - rx + 0.5) * this.tileSize;
+            const oy_px = (centerY - ry + 1.0) * this.tileSize;
+            el.style.transformOrigin = `${ox_px}px ${oy_px}px`;
         }
 
         // Add Level Badge for Bio-Extraction Grid Cells
@@ -978,9 +989,10 @@ export const Overworld = {
 
         // Object Collision Check (Priority: Kickable > Colliding > Hidden)
         const allCandidates = zone.objects.filter(obj => {
+            const vx = this.getVisualX(obj);
             const w = obj.width || 1;
             const h = obj.height || 1;
-            return nextX >= obj.x && nextX < obj.x + w && nextY >= obj.y && nextY < obj.y + h;
+            return nextX >= vx && nextX < vx + w && nextY >= obj.y && nextY < obj.y + h;
         });
 
         // For interactions (kicking/breaking), we only target non-moving objects.
@@ -1436,7 +1448,12 @@ export const Overworld = {
         if (this.player.direction === 'down') interactY++;
         if (this.player.direction === 'left') interactX--;
         if (this.player.direction === 'right') interactX++;
-        const targetObstacle = zone && zone.objects.find(o => interactX >= o.x && interactX < o.x + (o.width || 1) && interactY >= o.y && interactY < o.y + (o.height || 1));
+        const targetObstacle = zone && zone.objects.find(o => {
+            const vx = this.getVisualX(o);
+            const w = o.width || 1;
+            const h = o.height || 1;
+            return interactX >= vx && interactX < vx + w && interactY >= o.y && interactY < o.y + h;
+        });
         if (targetObstacle && targetObstacle.isKicking) return;
 
         this.lastInteractTime = now;
@@ -1489,9 +1506,14 @@ export const Overworld = {
         }
 
         // 2. Check for Furniture / Props (Discovery vs. Lore)
-        const obj = zone.objects.find(o => (['prop', 'cell', 'sign', 'atrium_statue'].includes(o.type) || o.id === 'incubator') &&
-            targetX >= o.x && targetX < o.x + (o.width || 1) &&
-            targetY >= o.y && targetY < o.y + (o.height || 1));
+        const obj = zone.objects.find(o => {
+            const vx = this.getVisualX(o);
+            const w = o.width || 1;
+            const h = o.height || 1;
+            return (['prop', 'cell', 'sign', 'atrium_statue'].includes(o.type) || o.id === 'incubator') &&
+                targetX >= vx && targetX < vx + w &&
+                targetY >= o.y && targetY < o.y + h;
+        });
 
         if (obj) {
             const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
@@ -3135,7 +3157,7 @@ export const Overworld = {
         }
 
         if (template && obj.type === 'prop') {
-            const transformedTiles = this.getTransformedTiles(template, obj.mirrored);
+            const transformedTiles = template.tiles;
             const part = transformedTiles.find(t => t.id === prefix);
             
             if (part) {

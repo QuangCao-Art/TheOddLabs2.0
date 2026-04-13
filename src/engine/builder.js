@@ -265,15 +265,11 @@ export const BuilderMode = {
 
     getTransformedTiles(template, isMirrored) {
         const tiles = template.tiles || [{ id: template.id, relX: 0, relY: 0 }];
-        if (!isMirrored) return tiles;
-
-        // Calculate Bounding Box for In-Place Mirror
-        const minX = Math.min(...tiles.map(t => t.relX || 0));
-        const maxX = Math.max(...tiles.map(t => t.relX || 0));
-
+        // Systematic Change: We no longer swap relX in the data.
+        // The Engine handles the mirror-swap visually around the machine's shared center.
         return tiles.map(t => ({
             ...t,
-            relX: maxX - ((t.relX || 0) - minX)
+            mirrored: isMirrored // Tag tiles so other systems know their visual state
         }));
     },
 
@@ -453,13 +449,33 @@ export const BuilderMode = {
 
         const tiles = this.getTransformedTiles(this.selectedTemplate, this.isMirrored);
         
+        // Calculate Bounding Box for Assembly-Center Origin
+        const minX = Math.min(...tiles.map(t => t.relX || 0));
+        const maxX = Math.max(...tiles.map(t => t.relX || 0));
+        const centerX = (minX + maxX) / 2;
+
+        const maxY = Math.max(...tiles.map(t => t.relY || 0));
+        const centerY = maxY; // Pivot at the base (y-bottom)
+        
         tiles.forEach(t => {
             const tile = document.createElement('div');
-            
+            const rx = t.relX || 0;
+            const ry = t.relY || 0;
+
             // Set base class based on selection type
             if (this.selectedType === 'furniture') {
                 tile.className = `world-object prop ${t.id}`;
-                if (this.isMirrored) tile.classList.add('mirrored-object');
+                if (this.isMirrored) {
+                    tile.classList.add('mirrored-object');
+                    
+                    // Systematic Visual Mirror (Pixel-Precise):
+                    // Using px instead of % prevents sub-pixel rounding errors on the grid.
+                    const ox_px = (centerX - rx + 0.5) * Overworld.tileSize;
+                    const oy_px = (centerY - ry + 1.0) * Overworld.tileSize;
+                    tile.style.transformOrigin = `${ox_px}px ${oy_px}px`;
+                    tile.style.transform = 'translateZ(0)'; // Force GPU layer for crisp mirroring
+                }
+                
                 // Auto-detect Tileset 03 based on ID (f64+)
                 const numericId = parseInt(t.id.substring(1));
                 if (numericId >= 64) {
@@ -467,11 +483,12 @@ export const BuilderMode = {
                 }
             } else if (this.selectedType === 'terrain' || this.selectedType === 'doors') {
                 tile.className = `tile t-${t.id}`;
+                if (this.isMirrored) tile.classList.add('mirrored-object');
             }
 
             tile.style.position = 'absolute';
-            tile.style.left = `${(t.relX || 0) * Overworld.tileSize}px`;
-            tile.style.top = `${(t.relY || 0) * Overworld.tileSize}px`;
+            tile.style.left = `${rx * Overworld.tileSize}px`;
+            tile.style.top = `${ry * Overworld.tileSize}px`;
             tile.style.width = '100%';
             tile.style.height = '100%';
             tile.style.opacity = '0.5';
