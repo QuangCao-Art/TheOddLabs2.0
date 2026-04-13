@@ -6936,13 +6936,20 @@ body {
     opacity: 0.3;
 }
 
-.builder-active .world-object {
+.builder-active .world-object:not(.npc):not(.cell):not(.wild-cell) {
     pointer-events: auto !important;
 }
 
-.builder-active .world-object:hover {
+.builder-active .world-object:not(.npc):not(.cell):not(.wild-cell):hover {
     outline: 2px solid red;
     cursor: crosshair;
+}
+
+.builder-active .npc,
+.builder-active .cell,
+.builder-active .wild-cell {
+    opacity: 0.3;
+    pointer-events: none !important;
 }
 
 .palette-item .item-preview-wrapper {

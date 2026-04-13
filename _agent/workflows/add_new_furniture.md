@@ -20,6 +20,9 @@ description: Add a New Asset to the Game & Builder Tool
 - Note the Top-Left pixel coordinates (X, Y) of the sprite.
 - Assign the next available ID (e.g., `f105`).
 
+> [!CAUTION]
+> **NAMING CONVENTION**: Avoid using multiple underscores in Furniture IDs (e.g., use `crate01` or `f105`, NOT `large_metal_crate`). The overworld engine uses the first underscore to separate the base ID from interaction suffixes. Using multiple underscores will break the pivot/wobble animation for that object.
+
 ### 2. Update Documentation
 Add the entry to [MapBuilder.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/MapBuilder.md).
 - **Section**: Furniture Registry.

@@ -581,7 +581,8 @@ export const BuilderMode = {
         
         // Find if there's an object at this location
         const targetIdx = zone.objects.findIndex(obj => 
-            obj.x === this.mouseGridX && obj.y === this.mouseGridY
+            obj.x === this.mouseGridX && obj.y === this.mouseGridY &&
+            obj.type !== 'npc' && obj.type !== 'cell'
         );
 
         if (targetIdx !== -1) {

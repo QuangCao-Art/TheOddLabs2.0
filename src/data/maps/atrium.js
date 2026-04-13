@@ -1,6 +1,5 @@
 export const atrium = {
     name: 'MAIN ATRIUM',
-    footstepTag: 'tile',
     width: 19,
     height: 15,
     spawn: { x: 9, y: 12 },

@@ -124,6 +124,8 @@ export const cellPlayGround = {
     disableBattle: true,
     disableWildDespawn: true,
     spawnPool: { stemmy: 25, nitrophil: 25, cambihil: 25, lydrosome: 25 },
+    spawnDelayMin: 3000,
+    spawnDelayMax: 7000,
     doors: [
         { "x": 16, "y": 7, "targetZone": "entertainment", "targetX": 1, "targetY": 6 },
         { "x": 8, "y": 2, "targetZone": "oldMachine", "targetX": 10, "targetY": 24 }

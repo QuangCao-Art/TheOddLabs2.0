@@ -11,8 +11,8 @@ This workflow guides you through the process of adding a new Side Quest to the g
 [Quest ID]: (e.g., quest_my_new_quest)
 [Quest Title]: (e.g., The Great Hunt)
 [Quest Description]: (A short summary for the Quest Tab - MANDATORY)
-[Quest Type]: (defeat | synthesis | collect | duel | show_monster | kick)
-[Target ID]: (monster_id, item_id, or npc_id)
+[Quest Type]: (defeat | synthesis | collect | duel | show_monster | kick | break)
+[Target ID]: (monster_id, item_id, npc_id, or FURNITURE_TEMPLATE)
 [Amount]: (Number required)
 [Time Limit]: (Optional - In seconds. e.g., 30. Triggers Timed Quest Logic)
 [Min Efficiency]: (Required for 'show_monster' type, e.g., 1)
@@ -62,6 +62,12 @@ Add the new quest definition to the `QUESTS` object in [quests.js](file:///d:/An
       ]
   }
   ```
+
+### 💡 Interaction Logic (Kick vs Break)
+- **kick**: Triggers when an object (Cell or Furniture) is displaced but NOT destroyed. 
+  - *Valid Targets*: `any`, `stemmy_wild`, `nitrophil_wild`, or a furniture template like `STOOL_A`.
+- **break**: Triggers only when a `breakable` object is destroyed.
+  - *Valid Targets*: `any`, or a specific template like `STASIS_TANK`, `DIRTY_BOX`.
 
 ### 2. Centralized Metadata Registration
 If you are creating a NEW NPC for this quest, or if the NPC doesn't have a unique visual yet, you MUST update [main.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/main.js):

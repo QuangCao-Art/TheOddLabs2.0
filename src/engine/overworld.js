@@ -32,7 +32,8 @@ import { oldMachine } from '../data/maps/oldMachine.js';
 
 // Mapping of Tile IDs to specific material tags for audio/vfx
 const TILE_MATERIAL_MAP = {
-    38: 'metal' // Floor-SideDeco
+    13: 'tile',  // Standard Lab Floor
+    38: 'metal'  // Floor-SideDeco / Machine Base
 };
 
 
@@ -270,20 +271,43 @@ export const Overworld = {
 
     getVisualX(obj) {
         if (!obj.mirrored) return obj.x;
-        const prefix = obj.id.split('_')[0];
-        // Optimization: Standard 1x1 objects are their own root
-        if (!prefix.startsWith('f')) return obj.x; 
 
-        for (const tKey in window.FURNITURE_TEMPLATES) {
-            const t = window.FURNITURE_TEMPLATES[tKey];
-            const candidate = t.tiles.find(tile => tile.id === prefix);
-            if (candidate) {
-                const minX = Math.min(...t.tiles.map(tile => tile.relX || 0));
-                const maxX = Math.max(...t.tiles.map(tile => tile.relX || 0));
-                const relX = candidate.relX || 0;
-                // Calculate where this tile is rendered visually based on assembly center flip
-                return (obj.x - relX) + (maxX - relX + minX);
+        const prefix = obj.id.split('_')[0];
+        let template = null;
+        let candidate = null;
+
+        // Priority 1: Use specific template name from map data
+        if (obj.templateName && window.FURNITURE_TEMPLATES[obj.templateName]) {
+            template = window.FURNITURE_TEMPLATES[obj.templateName];
+            candidate = template.tiles.find(tile => tile.id === prefix);
+        }
+
+        // Priority 2: Registry Search (find most specific machine)
+        if (!candidate) {
+            let bestTemplate = null;
+            let bestCandidate = null;
+            let maxTiles = -1;
+
+            for (const tKey in window.FURNITURE_TEMPLATES) {
+                const t = window.FURNITURE_TEMPLATES[tKey];
+                const found = t.tiles.find(tile => tile.id === prefix);
+                if (found && t.tiles.length > maxTiles) {
+                    maxTiles = t.tiles.length;
+                    bestTemplate = t;
+                    bestCandidate = found;
+                }
             }
+            template = bestTemplate;
+            candidate = bestCandidate;
+        }
+
+        if (template && candidate) {
+            const minX = Math.min(...template.tiles.map(tile => tile.relX || 0));
+            const maxX = Math.max(...template.tiles.map(tile => tile.relX || 0));
+            const relX = (obj.relX !== undefined) ? obj.relX : (candidate.relX || 0);
+
+            // Calculate where this tile is rendered visually based on assembly center flip
+            return (obj.x - relX) + (maxX - relX + minX);
         }
         return obj.x;
     },
@@ -594,14 +618,34 @@ export const Overworld = {
         let template = null;
         let foundTile = null;
 
-        // Search for the template registry entry that matches this tile ID
-        for (const tKey in window.FURNITURE_TEMPLATES) {
-            const t = window.FURNITURE_TEMPLATES[tKey];
-            const candidate = t.tiles.find(tile => tile.id === prefix);
-            if (candidate) {
-                template = t;
-                foundTile = candidate;
-                break;
+        // Priority 1: Explicit Template Name
+        if (obj.templateName && window.FURNITURE_TEMPLATES[obj.templateName]) {
+            template = window.FURNITURE_TEMPLATES[obj.templateName];
+            foundTile = template.tiles.find(tile => tile.id === prefix);
+        }
+
+        // Priority 2: Best Fit Search (prevent 1x1 orphan drift)
+        if (!foundTile) {
+            let bestTemplate = null;
+            let bestCandidate = null;
+            let maxTiles = -1;
+
+            for (const tKey in window.FURNITURE_TEMPLATES) {
+                const t = window.FURNITURE_TEMPLATES[tKey];
+                const candidate = t.tiles.find(tile => tile.id === prefix);
+                if (candidate && t.tiles.length > maxTiles) {
+                    maxTiles = t.tiles.length;
+                    bestTemplate = t;
+                    bestCandidate = candidate;
+                }
+            }
+            template = bestTemplate;
+            foundTile = bestCandidate;
+            
+            // AUTO-SYNC: If we found a template via search, lock it to the object 
+            // to ensure its partners share the same origin next frame.
+            if (template && !obj.templateName) {
+                obj.templateName = Object.keys(window.FURNITURE_TEMPLATES).find(k => window.FURNITURE_TEMPLATES[k] === template);
             }
         }
 
@@ -609,21 +653,15 @@ export const Overworld = {
             const rx = (obj.relX !== undefined) ? obj.relX : (foundTile.relX || 0);
             const ry = (obj.relY !== undefined) ? obj.relY : (foundTile.relY || 0);
 
-            const xs = template.tiles.map(t => t.relX || 0);
-            const ys = template.tiles.map(t => t.relY || 0);
-            const minX = Math.min(...xs);
-            const maxX = Math.max(...xs);
-            const maxY = Math.max(...ys);
+            const minX = Math.min(...template.tiles.map(t => t.relX || 0));
+            const maxX = Math.max(...template.tiles.map(t => t.relX || 0));
+            const maxY = Math.max(...template.tiles.map(t => t.relY || 0));
 
             // Math: Center between horizontal bounds, and at the machine's base.
             const centerX = (minX + maxX) / 2;
             const centerY = maxY;
 
-            // Offset relative to the current tile (100% = 1 tile width/height)
-            // Fix: We do NOT re-flip visualRelX here because the map data 'rx' is already correctly positioned.
-            // Using 'rx' directly ensures the origin points to the assembly center regardless of mirroring.
-            // Systematic Assembly-Center Mirror (Pixel-Precise):
-            // Using px instead of % prevents sub-pixel rounded-off 'drifting'.
+            // PIXEL-PERFECTION: Pivot exactly at the assembly's shared center point
             const ox_px = (centerX - rx + 0.5) * this.tileSize;
             const oy_px = (centerY - ry + 1.0) * this.tileSize;
             el.style.transformOrigin = `${ox_px}px ${oy_px}px`;
@@ -2905,8 +2943,9 @@ export const Overworld = {
             if (this.spawnTimer) return;
             const zone = Overworld.zones[Overworld.currentZone];
             const maxSpawns = (zone && zone.maxWildSpawns) || 1;
-            // Immediate spawn for playgrounds/high-capacity rooms
-            this.startCooldown(maxSpawns > 1 ? 200 : null);
+            // Immediate spawn for playgrounds/high-capacity rooms, or use custom initial delay
+            const initialDelay = zone.initialSpawnDelay !== undefined ? zone.initialSpawnDelay : (maxSpawns > 1 ? 200 : null);
+            this.startCooldown(initialDelay);
         },
 
         stop() {
@@ -2936,8 +2975,10 @@ export const Overworld = {
 
         startCooldown(customDelay = null) {
             if (this.spawnTimer) clearTimeout(this.spawnTimer);
-            // Default 5-15s delay, or custom if provided
-            const delay = customDelay !== null ? customDelay : 5000 + (Math.random() * 10000);
+            const zone = Overworld.zones[Overworld.currentZone];
+            const min = zone?.spawnDelayMin ?? 5000;
+            const range = zone?.spawnDelayMax ?? 10000;
+            const delay = customDelay !== null ? customDelay : min + (Math.random() * range);
             this.spawnTimer = setTimeout(() => this.spawnWildMonster(), delay);
         },
 
@@ -3066,12 +3107,15 @@ export const Overworld = {
 
             // Set individual despawn timer for this specific monster (unless disabled)
             if (!zone.disableWildDespawn) {
-                monsterRecord.despawnTimer = setTimeout(() => this.despawnMonster(monsterId), 15000 + Math.random() * 10000);
+                const lMin = zone.despawnTimeMin ?? 15000;
+                const lRange = zone.despawnTimeMax ?? 10000;
+                monsterRecord.despawnTimer = setTimeout(() => this.despawnMonster(monsterId), lMin + Math.random() * lRange);
             }
 
-            // If we still have room for more, trigger next spawn sooner (1.0s)
+            // If we still have room for more, trigger next spawn sooner (1.0s by default)
+            const cDelay = zone.consecutiveSpawnDelay ?? 1000;
             if (currentWildCount + 1 < maxSpawns) {
-                this.startCooldown(1000);
+                this.startCooldown(cDelay);
             } else {
                 this.startCooldown();
             }
@@ -3296,6 +3340,12 @@ export const Overworld = {
                 if (screen) screen.classList.remove(shakeClass);
                 this.transformBreakable(parts, meta.breaksInto);
                 this.dropLoot(obj, isHomeRun, directionKey);
+
+                // --- NEW: Granular Tracking (Break) ---
+                // Resolve template name for precise quest targeting
+                const cleanId = obj.templateName || (meta && meta.template) || obj.id.split('_')[0] || obj.id;
+                this.updateQuestProgress('break', cleanId, obj.type);
+
                 return;
             }
 
@@ -3314,6 +3364,48 @@ export const Overworld = {
             if (this.spawner && this.spawner.activeMonsters) {
                 this.spawner.activeMonsters = this.spawner.activeMonsters.filter(m => !partIds.includes(m.id));
             }
+
+            // 2. Identify and animate ALL linked tiles (the assembly)
+            const suffixMatch = obj.id.match(/_([a-zA-Z0-9]+)$/);
+            const suffix = suffixMatch ? suffixMatch[1] : null;
+            const partners = suffix ? zone.objects.filter(o => o.id.endsWith(`_${suffix}`)) : [obj];
+            
+            const tKey = obj.templateName || Object.keys(window.FURNITURE_TEMPLATES).find(k => window.FURNITURE_TEMPLATES[k] === template);
+
+            partners.forEach(p => {
+                const pEl = document.getElementById(`npc-${p.id}`);
+                if (pEl) {
+                    // Lock the templateName to partners so they share the exact same pivot origin
+                    if (!p.templateName && tKey) {
+                        p.templateName = tKey;
+                        
+                        // Update Origin logic (replacing redundant renderObject call that caused ghosts)
+                        const pMeta = this.getFurnitureMeta(p.id, p.customSprite);
+                        const pTemplate = window.FURNITURE_TEMPLATES[p.templateName || (pMeta && pMeta.template)];
+                        if (pTemplate) {
+                            const transformed = this.getTransformedTiles(pTemplate, p.mirrored);
+                            const prefix = p.id.split('_')[0];
+                            const foundTile = transformed.find(tt => tt.id === prefix);
+                            if (foundTile) {
+                                const centerX = pTemplate.width / 2;
+                                const centerY = pTemplate.height;
+                                const rx = (foundTile.relX || 0);
+                                const ry = (foundTile.relY || 0);
+                                const ox_px = (centerX - rx + 0.5) * this.tileSize;
+                                const oy_px = (centerY - ry + 1.0) * this.tileSize;
+                                pEl.style.transformOrigin = `${ox_px}px ${oy_px}px`;
+                            }
+                        }
+                    }
+                    
+                    pEl.classList.remove('anim-monster-kick');
+                    void pEl.offsetWidth; // Trigger reflow
+                    pEl.classList.add('anim-monster-kick');
+                    
+                    // Clear animation after it finishes to allow subsequent kicks
+                    setTimeout(() => { if (pEl) pEl.classList.remove('anim-monster-kick'); }, 300);
+                }
+            });
 
             parts.forEach((p) => {
                 const pEl = document.getElementById(`npc-${p.id}`);
@@ -3341,8 +3433,17 @@ export const Overworld = {
                 setTimeout(() => { if (pEl.parentNode) pEl.parentNode.removeChild(pEl); }, 2000);
             });
 
-            // Update Quest Progress with type gating (differentiates between Cells and furniture)
-            this.updateQuestProgress('kick', obj.monsterId ? (obj.monsterId + '_wild') : (obj.id || obj.type), obj.type);
+            // --- NEW: Precise Interaction Tracking (Kick) ---
+            let cleanId = obj.id || obj.type;
+            if (obj.monsterId) {
+                // For Cells, we use the base monster ID + suffix (e.g., 'stemmy_wild')
+                cleanId = obj.monsterId + '_wild';
+            } else if (obj.type === 'prop') {
+                // For Furniture, we resolve the Template Name for type-specific quests
+                const pMeta = this.getFurnitureMeta(obj.id, obj.customSprite);
+                cleanId = obj.templateName || (pMeta && pMeta.template) || obj.id.split('_')[0] || obj.id;
+            }
+            this.updateQuestProgress('kick', cleanId, obj.type);
 
             if (obj.type === 'npc' && obj.monsterId) {
                 if (this.spawner) this.spawner.startCooldown(zone.maxWildSpawns > 1 ? 500 : null);
