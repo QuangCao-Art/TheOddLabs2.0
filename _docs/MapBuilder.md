@@ -221,6 +221,44 @@ Used for advanced lab equipment and specialized props. Texture asset: `Lab_TileS
 | **f122** | OldTankTopLidiwitStemmy | 1536px | 1792px | Yes | A tank lid with a small, unpowered Stemmy clinging to it. It seems to have found a cozy spot. |
 | **f123** | BrokenTankTopLid | 768px | 1792px | Yes | A heavily dented and cracked tank lid. One good stomp will likely finish it off. |
 | **f124** | BrokenDamagedTankTopLid | 1792px | 1792px | Yes | A mangled piece of metal that used to be a tank lid. It's completely beyond repair. |
+| **f125** | Poster-Troublemakers | 0px | 1024px | Yes | Top 3 Lab troublemakers. Who's going to be a star this month? |
+| **f126** | Poster-SilentEmployee | 256px | 1024px | Yes | Nominated for Best Employee as a dedicated silent worker—someone who repairs things no one asked and asks no one. |
+| **f127** | WallOfStickers | 512px | 1024px | Yes | Either someone has a short memory, or they just wanted to decorate the boring Lab walls. |
+
+---
+
+## Furniture Tileset (Lab_TileSet_04)
+Interactive machinery and experimental equipment. Texture asset: `Lab_TileSet_04.png`.
+
+| Furniture ID | Description | X Position | Y Position | Have Collision | Info |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **f128** | OldCellAccelerator-TopLeft | 0px | 0px | No | The first edition of the Cell Accelerator, since replaced by a higher-powered model. |
+| **f129** | OldCellAccelerator-TopMid | 256px | 0px | No | The first edition of the Cell Accelerator, since replaced by a higher-powered model. |
+| **f130** | OldCellAccelerator-TopRight | 512px | 0px | No | The first edition of the Cell Accelerator, since replaced by a higher-powered model. |
+| **f131** | OldCellAccelerator-MidLeft | 0px | 256px | Yes | The first edition of the Cell Accelerator, since replaced by a higher-powered model. |
+| **f132** | OldCellAccelerator-MidMid | 256px | 256px | Yes | The first edition of the Cell Accelerator, since replaced by a higher-powered model. |
+| **f133** | OldCellAccelerator-MidRight | 512px | 256px | Yes | The first edition of the Cell Accelerator, since replaced by a higher-powered model. |
+| **f134** | OldCellAccelerator-BottomLeft | 0px | 512px | Yes | The first edition of the Cell Accelerator, since replaced by a higher-powered model. |
+| **f135** | OldCellAccelerator-BottomMid | 256px | 512px | Yes | The first edition of the Cell Accelerator, since replaced by a higher-powered model. |
+| **f136** | OldCellAccelerator-BottomRight | 512px | 512px | Yes | The first edition of the Cell Accelerator, since replaced by a higher-powered model. |
+| **f137** | DamagedCellAccelerator-TopLeft | 768px | 0px | No | It looks like it could collapse at any time... but what's that strange noise coming from inside? |
+| **f138** | DamagedCellAccelerator-TopMid | 1024px | 0px | No | It looks like it could collapse at any time... but what's that strange noise coming from inside? |
+| **f139** | DamagedCellAccelerator-TopRight | 1280px | 0px | No | It looks like it could collapse at any time... but what's that strange noise coming from inside? |
+| **f140** | DamagedCellAccelerator-MidLeft | 768px | 256px | Yes | It looks like it could collapse at any time... but what's that strange noise coming from inside? |
+| **f141** | DamagedCellAccelerator-MidMid | 1024px | 256px | Yes | It looks like it could collapse at any time... but what's that strange noise coming from inside? |
+| **f142** | DamagedCellAccelerator-MidRight | 1280px | 256px | Yes | It looks like it could collapse at any time... but what's that strange noise coming from inside? |
+| **f143** | DamagedCellAccelerator-BottomLeft | 768px | 512px | Yes | It looks like it could collapse at any time... but what's that strange noise coming from inside? |
+| **f144** | DamagedCellAccelerator-BottomMid | 1024px | 512px | Yes | It looks like it could collapse at any time... but what's that strange noise coming from inside? |
+| **f145** | DamagedCellAccelerator-BottomRight | 1280px | 512px | Yes | It looks like it could collapse at any time... but what's that strange noise coming from inside? |
+| **f146** | BrokenCellAccelerator-TopLeft | 0px | 768px | No | The Playground's mystery has been solved by the sheer power of the sprint-kick. |
+| **f147** | BrokenCellAccelerator-TopMid | 256px | 768px | No | The Playground's mystery has been solved by the sheer power of the sprint-kick. |
+| **f148** | BrokenCellAccelerator-TopRight | 512px | 768px | No | The Playground's mystery has been solved by the sheer power of the sprint-kick. |
+| **f149** | BrokenCellAccelerator-MidLeft | 0px | 1024px | Yes | The Playground's mystery has been solved by the sheer power of the sprint-kick. |
+| **f150** | BrokenCellAccelerator-MidMid | 256px | 1024px | Yes | The Playground's mystery has been solved by the sheer power of the sprint-kick. |
+| **f151** | BrokenCellAccelerator-MidRight | 512px | 1024px | Yes | The Playground's mystery has been solved by the sheer power of the sprint-kick. |
+| **f152** | BrokenCellAccelerator-BottomLeft | 0px | 1280px | Yes | The Playground's mystery has been solved by the sheer power of the sprint-kick. |
+| **f153** | BrokenCellAccelerator-BottomMid | 256px | 1280px | Yes | The Playground's mystery has been solved by the sheer power of the sprint-kick. |
+| **f154** | BrokenCellAccelerator-BottomRight | 512px | 1280px | Yes | The Playground's mystery has been solved by the sheer power of the sprint-kick. |
 
 ---
 

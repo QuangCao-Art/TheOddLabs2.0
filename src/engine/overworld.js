@@ -30,6 +30,12 @@ import { medicalExperienceRoom } from '../data/maps/medicalExperienceRoom.js';
 import { secretCryoChamber } from '../data/maps/secretCryoChamber.js';
 import { oldMachine } from '../data/maps/oldMachine.js';
 
+// Mapping of Tile IDs to specific material tags for audio/vfx
+const TILE_MATERIAL_MAP = {
+    38: 'metal' // Floor-SideDeco
+};
+
+
 export const Overworld = {
     randomPools: {
         lobby: [
@@ -569,6 +575,45 @@ export const Overworld = {
         const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
         if (meta && meta.hasCollision === false) el.classList.add('render-top');
 
+        // --- NEW: Symmetrical Animation Origin ---
+        // We calculate a shared machine pivot so that 2x2 and 3x3 objects squash as a single unit.
+        const prefix = obj.id.split('_')[0];
+        let template = null;
+        let foundTile = null;
+
+        // Search for the template registry entry that matches this tile ID
+        for (const tKey in window.FURNITURE_TEMPLATES) {
+            const t = window.FURNITURE_TEMPLATES[tKey];
+            const candidate = t.tiles.find(tile => tile.id === prefix);
+            if (candidate) {
+                template = t;
+                foundTile = candidate;
+                break;
+            }
+        }
+
+        if (template && foundTile) {
+            const rx = (obj.relX !== undefined) ? obj.relX : (foundTile.relX || 0);
+            const ry = (obj.relY !== undefined) ? obj.relY : (foundTile.relY || 0);
+
+            const xs = template.tiles.map(t => t.relX || 0);
+            const ys = template.tiles.map(t => t.relY || 0);
+            const minX = Math.min(...xs);
+            const maxX = Math.max(...xs);
+            const maxY = Math.max(...ys);
+
+            // Math: Center between horizontal bounds, and at the machine's base.
+            const centerX = (minX + maxX) / 2;
+            const centerY = maxY;
+
+            // Offset relative to the current tile (100% = 1 tile width/height)
+            // If mirrored, we must flip the horizontal relative coordinate to keep the pivot centered.
+            const visualRelX = obj.mirrored ? (maxX - (rx - minX)) : rx;
+            const ox = (centerX - visualRelX + 0.5) * 100;
+            const oy = (centerY - ry + 1.0) * 100;
+            el.style.transformOrigin = `${ox}% ${oy}%`;
+        }
+
         // Add Level Badge for Bio-Extraction Grid Cells
         if (obj.type === 'cell' && obj.efficiency) {
             const badge = document.createElement('div');
@@ -1001,7 +1046,8 @@ export const Overworld = {
         this.updatePlayerPosition();
 
         // Spawn Footstep VFX & Audio
-        const tag = zone?.footstepTag || 'tile';
+        const tileAtPos = zone.layout[nextY][nextX];
+        const tag = TILE_MATERIAL_MAP[tileAtPos] || zone?.footstepTag || 'tile';
         this.spawnFootstep(this.player.x - dx, this.player.y - dy, this.player.isSprinting, tag);
         AudioManager.playFootstep(tag);
     },
@@ -2826,7 +2872,7 @@ export const Overworld = {
     spawner: {
         activeMonsters: [], // Array of { id, despawnTimer }
         spawnTimer: null,
-        allowedZones: ['atrium', 'botanic', 'human', 'executive', 'specimenStorage', 'kitchen', 'storage', 'entertainment', 'ancientBotany', 'preservationRoom', 'library', 'cellPlayGround'],
+        allowedZones: ['atrium', 'botanic', 'human', 'executive', 'specimenStorage', 'kitchen', 'storage', 'entertainment', 'ancientBotany', 'preservationRoom', 'library', 'cellPlayGround', 'oldMachine'],
 
         start() {
             if (!this.allowedZones.includes(Overworld.currentZone)) return;
@@ -2888,16 +2934,53 @@ export const Overworld = {
                 return;
             }
 
-            const floorTiles = [];
+            // --- NEW: Maximum Isolation Logic ---
+            const avoidancePoints = [{ x: Overworld.player.x, y: Overworld.player.y }];
+            (zone.objects || []).forEach(obj => {
+                if (obj.id && obj.id.includes('_wild_')) {
+                    avoidancePoints.push({ x: obj.x, y: obj.y });
+                }
+            });
+
+            const targetDist = 3 * (currentWildCount + 1);
+            let candidates = [];
+
+            const isClosedDoor = [20, 22, 24, 25, 28, 29, 30, 31, 39, 40, 41, 42];
+            const isOpenDoor = [21, 23, 26, 27, 34, 35, 36, 37];
+            const isGenericWall = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 32, 33, 43, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63];
+
+            // 1. Map all floor tiles and calculate their isolation scores
             for (let y = 0; y < zone.height; y++) {
                 for (let x = 0; x < zone.width; x++) {
-                    if (zone.layout[y][x] === 13) {
+                    const tileID = zone.layout[y][x];
+                    const isFloor = !isGenericWall.includes(tileID) && !isClosedDoor.includes(tileID) && !isOpenDoor.includes(tileID);
+
+                    if (isFloor) {
                         const occupied = zone.objects.some(obj => obj.x === x && obj.y === y);
-                        const playerNear = Math.abs(Overworld.player.x - x) < 3 && Math.abs(Overworld.player.y - y) < 3;
-                        if (!occupied && !playerNear) floorTiles.push({ x, y });
+                        if (!occupied) {
+                            // Find distance to the NEAREST point we want to avoid
+                            let minDist = Infinity;
+                            avoidancePoints.forEach(p => {
+                                const d = Math.max(Math.abs(p.x - x), Math.abs(p.y - y));
+                                if (d < minDist) minDist = d;
+                            });
+                            candidates.push({ x, y, score: minDist });
+                        }
                     }
                 }
             }
+
+            // 2. Select the Best floor tiles
+            let bestTiles = candidates.filter(c => c.score >= targetDist);
+
+            // Fallback: If no tiles satisfy the ideal target, pick the most isolated spots available
+            if (bestTiles.length === 0 && candidates.length > 0) {
+                const maxScore = Math.max(...candidates.map(c => c.score));
+                // Allow a small buffer for randomness among top-tier spots
+                bestTiles = candidates.filter(c => c.score >= maxScore - 1);
+            }
+            
+            const floorTiles = bestTiles; // Compatibility with legacy variable name below
 
             if (floorTiles.length === 0) {
                 this.startCooldown();
@@ -3291,9 +3374,43 @@ export const Overworld = {
         const template = window.FURNITURE_TEMPLATES && window.FURNITURE_TEMPLATES[templateName];
         if (!zone || !template) return;
 
-        // 1. Identify Base Position & VFX Center
-        // We find the part with the highest Y (lowest in the 1x2 set) to place the debris.
-        const basePart = oldParts.reduce((prev, curr) => (curr.y > prev.y ? curr : prev), oldParts[0]);
+        // --- NEW: Logical Origin Discovery ---
+        // We calculate the machine's "Absolute 0,0" by checking how the old parts were mapped in their template.
+        let originX = 0, originY = 0;
+        let foundPivot = false;
+
+        // Try to identify the core template first
+        const samplePart = oldParts.find(p => p.templateName) || oldParts[0];
+        const sourceTemplateName = templateName || samplePart.templateName;
+
+        for (const p of oldParts) {
+            const prefix = p.id.split('_')[0];
+            const tKeySearch = p.templateName || sourceTemplateName;
+            
+            // Search specifically for the parts of this template (or its predecessor)
+            for (const tKey in window.FURNITURE_TEMPLATES) {
+                if (tKeySearch && tKey !== tKeySearch) continue; // Optimization: Skip irrelevant templates
+
+                const t = window.FURNITURE_TEMPLATES[tKey];
+                const transformed = this.getTransformedTiles(t, p.mirrored);
+                const tTile = transformed.find(tt => tt.id === prefix);
+                if (tTile) {
+                    originX = p.x - (tTile.relX || 0);
+                    originY = p.y - (tTile.relY || 0);
+                    foundPivot = true;
+                    break;
+                }
+            }
+            if (foundPivot) break;
+        }
+
+        // Fallback to legacy "bottom-most" logic if template discovery fails
+        if (!foundPivot) {
+            const basePart = oldParts.reduce((prev, curr) => (curr.y > prev.y ? curr : prev), oldParts[0]);
+            originX = basePart.x;
+            originY = basePart.y;
+        }
+
         const centerX = (oldParts.reduce((sum, p) => sum + p.x, 0) / oldParts.length) * this.tileSize + (this.tileSize / 2);
         const centerY = (oldParts.reduce((sum, p) => sum + p.y, 0) / oldParts.length) * this.tileSize + (this.tileSize / 2);
 
@@ -3322,8 +3439,11 @@ export const Overworld = {
         transformedTiles.forEach(tile => {
             const newObj = {
                 id: tile.id + suffix,
-                x: basePart.x + (tile.relX || 0),
-                y: basePart.y + (tile.relY || 0),
+                templateName: templateName, // Preserve name for next stage
+                x: originX + (tile.relX || 0),
+                y: originY + (tile.relY || 0),
+                relX: tile.relX || 0,
+                relY: tile.relY || 0,
                 type: 'prop',
                 customSprite: tile.id,
                 mirrored: isMirrored,

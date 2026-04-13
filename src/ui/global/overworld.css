@@ -1019,8 +1019,46 @@
 .world-object.prop.f117,
 .world-object.prop.f118,
 .world-object.prop.f119,
-.world-object.prop.f120 {
+.world-object.prop.f120,
+.world-object.prop.f121,
+.world-object.prop.f122,
+.world-object.prop.f123,
+.world-object.prop.f124,
+.world-object.prop.f125,
+.world-object.prop.f126,
+.world-object.prop.f127 {
     background-image: url('../../../assets/images/Lab_TileSet_03.png') !important;
+    background-size: 512px 512px !important;
+}
+
+.world-object.prop.f128,
+.world-object.prop.f129,
+.world-object.prop.f130,
+.world-object.prop.f131,
+.world-object.prop.f132,
+.world-object.prop.f133,
+.world-object.prop.f134,
+.world-object.prop.f135,
+.world-object.prop.f136,
+.world-object.prop.f137,
+.world-object.prop.f138,
+.world-object.prop.f139,
+.world-object.prop.f140,
+.world-object.prop.f141,
+.world-object.prop.f142,
+.world-object.prop.f143,
+.world-object.prop.f144,
+.world-object.prop.f145,
+.world-object.prop.f146,
+.world-object.prop.f147,
+.world-object.prop.f148,
+.world-object.prop.f149,
+.world-object.prop.f150,
+.world-object.prop.f151,
+.world-object.prop.f152,
+.world-object.prop.f153,
+.world-object.prop.f154 {
+    background-image: url('../../../assets/images/Lab_TileSet_04.png') !important;
     background-size: 512px 512px !important;
 }
 
@@ -1191,28 +1229,66 @@
 }
 
 .world-object.prop.f121 {
-    background-image: url('../../../assets/images/Lab_TileSet_03.png') !important;
-    background-size: 512px 512px !important;
     background-position: calc(-768px / 4) calc(-1024px / 4);
 }
 
 .world-object.prop.f122 {
-    background-image: url('../../../assets/images/Lab_TileSet_03.png') !important;
-    background-size: 512px 512px !important;
     background-position: calc(-1536px / 4) calc(-1792px / 4);
 }
 
 .world-object.prop.f123 {
-    background-image: url('../../../assets/images/Lab_TileSet_03.png') !important;
-    background-size: 512px 512px !important;
     background-position: calc(-768px / 4) calc(-1792px / 4);
 }
 
 .world-object.prop.f124 {
-    background-image: url('../../../assets/images/Lab_TileSet_03.png') !important;
-    background-size: 512px 512px !important;
     background-position: calc(-1792px / 4) calc(-1792px / 4);
 }
+
+.world-object.prop.f125 {
+    background-position: calc(-0px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.f126 {
+    background-position: calc(-256px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.f127 {
+    background-position: calc(-512px / 4) calc(-1024px / 4);
+}
+
+/* --- Lab_TileSet_04 Furniture (f128-f154) --- */
+/* Old Accelerator (Pristine) */
+.world-object.prop.f128 { background-position: calc(-0px / 4) calc(-0px / 4); }
+.world-object.prop.f129 { background-position: calc(-256px / 4) calc(-0px / 4); }
+.world-object.prop.f130 { background-position: calc(-512px / 4) calc(-0px / 4); }
+.world-object.prop.f131 { background-position: calc(-0px / 4) calc(-256px / 4); }
+.world-object.prop.f132 { background-position: calc(-256px / 4) calc(-256px / 4); }
+.world-object.prop.f133 { background-position: calc(-512px / 4) calc(-256px / 4); }
+.world-object.prop.f134 { background-position: calc(-0px / 4) calc(-512px / 4); }
+.world-object.prop.f135 { background-position: calc(-256px / 4) calc(-512px / 4); }
+.world-object.prop.f136 { background-position: calc(-512px / 4) calc(-512px / 4); }
+
+/* Damaged Accelerator */
+.world-object.prop.f137 { background-position: calc(-768px / 4) calc(-0px / 4); }
+.world-object.prop.f138 { background-position: calc(-1024px / 4) calc(-0px / 4); }
+.world-object.prop.f139 { background-position: calc(-1280px / 4) calc(-0px / 4); }
+.world-object.prop.f140 { background-position: calc(-768px / 4) calc(-256px / 4); }
+.world-object.prop.f141 { background-position: calc(-1024px / 4) calc(-256px / 4); }
+.world-object.prop.f142 { background-position: calc(-1280px / 4) calc(-256px / 4); }
+.world-object.prop.f143 { background-position: calc(-768px / 4) calc(-512px / 4); }
+.world-object.prop.f144 { background-position: calc(-1024px / 4) calc(-512px / 4); }
+.world-object.prop.f145 { background-position: calc(-1280px / 4) calc(-512px / 4); }
+
+/* Broken Accelerator */
+.world-object.prop.f146 { background-position: calc(-0px / 4) calc(-768px / 4); }
+.world-object.prop.f147 { background-position: calc(-256px / 4) calc(-768px / 4); }
+.world-object.prop.f148 { background-position: calc(-512px / 4) calc(-768px / 4); }
+.world-object.prop.f149 { background-position: calc(-0px / 4) calc(-1024px / 4); }
+.world-object.prop.f150 { background-position: calc(-256px / 4) calc(-1024px / 4); }
+.world-object.prop.f151 { background-position: calc(-512px / 4) calc(-1024px / 4); }
+.world-object.prop.f152 { background-position: calc(-0px / 4) calc(-1280px / 4); }
+.world-object.prop.f153 { background-position: calc(-256px / 4) calc(-1280px / 4); }
+.world-object.prop.f154 { background-position: calc(-512px / 4) calc(-1280px / 4); }
 
 .world-object.prop.StoragePod-Top,
 .world-object.prop.f84 {

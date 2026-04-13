@@ -359,6 +359,7 @@ export const oldMachine = {
         {"id":"f124_mnv3awhs4pkpz","x":10,"y":24,"type":"prop"},
         {"id":"f106_mnv3b17z8yzoa","x":10,"y":23,"type":"prop"}
     ],
+    maxWildSpawns: 3,
     spawnPool: { stemmy: 30, nitrophil: 30, cambihil: 20, lydrosome: 20 },
     doors: [
         {"x":20,"y":4,"targetZone":"library","targetX":1,"targetY":12},

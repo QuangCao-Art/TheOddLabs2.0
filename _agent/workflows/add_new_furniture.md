@@ -47,9 +47,9 @@ Update [furniture.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/fur
     ```
 
 ### 5. Finalize Metadata
-Update [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/overworld.js).
+Update [furniture.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/furniture.js).
 1.  Locate `furnitureMetadata`.
-2.  Add the ID with its collision status, description text, and breakable settings.
+2.  Add the ID with its mandatory `name`, collision status, description text, and breakable settings.
 
 > [!TIP]
 > **Understanding "Breaks Into"**:
@@ -59,6 +59,7 @@ Update [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/o
 
     ```javascript
     'f105': { 
+        name: 'Standardized Name', // MANDATORY: Display name for Play Mode
         hasCollision: true, 
         info: "A mysterious new lab device.",
         breakable: true,          // Set to true for destructible objects
@@ -79,6 +80,9 @@ Update [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/o
 If you need to place the new furniture immediately:
 1.  Identify the target zone file in [src/data/maps/](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/maps/).
 2.  Add it to the `objects` array following the [modify_map_layout](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/_agent/workflows/modify_map_layout.md) workflow.
+
+> [!CAUTION]
+> **CLEAN MAP POLICY**: When manually adding to a map file, do **NOT** include the `name` property in the object JSON. The name is automatically resolved from the metadata registry.
 
 ---
 

@@ -30,6 +30,7 @@ This protocol MUST be strictly followed for all map modifications:
     - Upon interaction (if unlocked), they reveal the **Secret Passage** visuals (IDs **34–37**).
     - Ensure a corresponding entry exists in the `doors` array for the transition to work.
 - **9. NPC_INTEGRITY_PROTOCOL**: Unless explicitly requested by the USER to move or remove them, all `type: "npc"` objects in the target zone MUST be preserved in their original coordinates when applying new furniture layouts.
+- **10. CLEAN_MAP_STANDARD**: When adding or modifying furniture in the `objects` array, do **NOT** include a `name` property. The interaction engine resolves names dynamically from the registry.
 
 ### 1. Identify the Target Zone File
 Map data is now modularized into individual files.
@@ -65,4 +66,4 @@ Ensure the Furniture ID is correctly mapped to the tileset.
 - [ ] **Collision Path**: Is there a 1-tile wide walkable path (floor tile 13) for the player to reach important objects?
 - [ ] **ID Truth**: Does the ID in the modular map file match the reference in [MapBuilder.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/MapBuilder.md)?
 - [ ] **Connected Zones**: Did you update the `targetX/targetY` for every door leading *into* this zone from other map files?
-- [ ] **Z-Index**: Do 'Top' parts (F13, F61, F88) have `hasCollision: false` in `overworld.js` metadata?
+- [ ] **Z-Index**: Do 'Top' parts (F13, F61, F88) have `hasCollision: false` in `src/data/furniture.js` metadata?

@@ -504,13 +504,17 @@ export const BuilderMode = {
         
         const tiles = this.getTransformedTiles(this.selectedTemplate, this.isMirrored);
 
+        const templateKey = Object.keys(FURNITURE_TEMPLATES).find(key => FURNITURE_TEMPLATES[key] === this.selectedTemplate);
+
         tiles.forEach(t => {
             const newObj = {
                 id: `${t.id}_${tid}`,
+                templateName: templateKey,
                 x: this.mouseGridX + (t.relX || 0),
                 y: this.mouseGridY + (t.relY || 0),
                 type: 'prop',
-                mirrored: this.isMirrored
+                mirrored: this.isMirrored,
+                name: this.selectedTemplate.name
             };
             if (reward) newObj.hiddenReward = reward;
             zone.objects.push(newObj);

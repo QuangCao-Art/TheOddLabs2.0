@@ -132,6 +132,43 @@ export const furnitureMetadata = {
     'f122': { name: 'Stemmy Home Lid', hasCollision: true, kickable: true, material: 'metal', info: "A tank lid with a small, unpowered Stemmy clinging to it. It seems to have found a cozy spot." },
     'f123': { name: 'Broken Tank Lid', hasCollision: true, breakable: true, material: 'metal', breaksInto: 'LID_DEBRIS', info: "A heavily dented and cracked tank lid. One good stomp will likely finish it off." },
     'f124': { name: 'Mangled Tank Lid', hasCollision: true, kickable: true, material: 'metal', info: "A mangled piece of metal that used to be a tank lid. It's completely beyond repair." },
+    'f125': { name: 'Troublemaker Poster', hasCollision: true, info: "Top 3 Lab troublemakers. Who's going to be a star this month?" },
+    'f126': { name: 'Silent Employee Poster', hasCollision: true, info: "Nominated for Best Employee as a dedicated silent worker—someone who repairs things no one asked and asks no one." },
+    'f127': { name: 'Wall Of Stickers', hasCollision: true, info: "Either someone has a short memory, or they just wanted to decorate the boring Lab walls." },
+
+    // --- OLD CELL ACCELERATOR (3-Stage Breakable Chain) ---
+    // Stage 1: Pristine
+    'f128': { name: 'Old Accelerator', hasCollision: false, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_DAMAGED', info: "The first edition of the Cell Accelerator, since replaced by a higher-powered model." },
+    'f129': { name: 'Old Accelerator', hasCollision: false, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_DAMAGED', info: "The first edition of the Cell Accelerator, since replaced by a higher-powered model." },
+    'f130': { name: 'Old Accelerator', hasCollision: false, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_DAMAGED', info: "The first edition of the Cell Accelerator, since replaced by a higher-powered model." },
+    'f131': { name: 'Old Accelerator', hasCollision: true, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_DAMAGED', info: "The first edition of the Cell Accelerator, since replaced by a higher-powered model." },
+    'f132': { name: 'Old Accelerator', hasCollision: true, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_DAMAGED', info: "The first edition of the Cell Accelerator, since replaced by a higher-powered model." },
+    'f133': { name: 'Old Accelerator', hasCollision: true, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_DAMAGED', info: "The first edition of the Cell Accelerator, since replaced by a higher-powered model." },
+    'f134': { name: 'Old Accelerator', hasCollision: true, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_DAMAGED', info: "The first edition of the Cell Accelerator, since replaced by a higher-powered model." },
+    'f135': { name: 'Old Accelerator', hasCollision: true, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_DAMAGED', info: "The first edition of the Cell Accelerator, since replaced by a higher-powered model." },
+    'f136': { name: 'Old Accelerator', hasCollision: true, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_DAMAGED', info: "The first edition of the Cell Accelerator, since replaced by a higher-powered model." },
+
+    // Stage 2: Damaged
+    'f137': { name: 'Damaged Accelerator', hasCollision: false, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_BROKEN', info: "It looks like it could collapse at any time... but what's that strange noise coming from inside?" },
+    'f138': { name: 'Damaged Accelerator', hasCollision: false, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_BROKEN', info: "It looks like it could collapse at any time... but what's that strange noise coming from inside?" },
+    'f139': { name: 'Damaged Accelerator', hasCollision: false, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_BROKEN', info: "It looks like it could collapse at any time... but what's that strange noise coming from inside?" },
+    'f140': { name: 'Damaged Accelerator', hasCollision: true, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_BROKEN', info: "It looks like it could collapse at any time... but what's that strange noise coming from inside?" },
+    'f141': { name: 'Damaged Accelerator', hasCollision: true, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_BROKEN', info: "It looks like it could collapse at any time... but what's that strange noise coming from inside?" },
+    'f142': { name: 'Damaged Accelerator', hasCollision: true, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_BROKEN', info: "It looks like it could collapse at any time... but what's that strange noise coming from inside?" },
+    'f143': { name: 'Damaged Accelerator', hasCollision: true, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_BROKEN', info: "It looks like it could collapse at any time... but what's that strange noise coming from inside?" },
+    'f144': { name: 'Damaged Accelerator', hasCollision: true, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_BROKEN', info: "It looks like it could collapse at any time... but what's that strange noise coming from inside?" },
+    'f145': { name: 'Damaged Accelerator', hasCollision: true, breakable: true, material: ['metal', 'plastic', 'glass'], breaksInto: 'CELL_ACCELERATOR_BROKEN', info: "It looks like it could collapse at any time... but what's that strange noise coming from inside?" },
+
+    // Stage 3: Broken
+    'f146': { name: 'Broken Accelerator', hasCollision: false, material: ['metal', 'plastic', 'glass'], info: "The Playground's mystery has been solved by the sheer power of the sprint-kick." },
+    'f147': { name: 'Broken Accelerator', hasCollision: false, material: ['metal', 'plastic', 'glass'], info: "The Playground's mystery has been solved by the sheer power of the sprint-kick." },
+    'f148': { name: 'Broken Accelerator', hasCollision: false, material: ['metal', 'plastic', 'glass'], info: "The Playground's mystery has been solved by the sheer power of the sprint-kick." },
+    'f149': { name: 'Broken Accelerator', hasCollision: true, material: ['metal', 'plastic', 'glass'], info: "The Playground's mystery has been solved by the sheer power of the sprint-kick." },
+    'f150': { name: 'Broken Accelerator', hasCollision: true, material: ['metal', 'plastic', 'glass'], info: "The Playground's mystery has been solved by the sheer power of the sprint-kick." },
+    'f151': { name: 'Broken Accelerator', hasCollision: true, material: ['metal', 'plastic', 'glass'], info: "The Playground's mystery has been solved by the sheer power of the sprint-kick." },
+    'f152': { name: 'Broken Accelerator', hasCollision: true, material: ['metal', 'plastic', 'glass'], info: "The Playground's mystery has been solved by the sheer power of the sprint-kick." },
+    'f153': { name: 'Broken Accelerator', hasCollision: true, material: ['metal', 'plastic', 'glass'], info: "The Playground's mystery has been solved by the sheer power of the sprint-kick." },
+    'f154': { name: 'Broken Accelerator', hasCollision: true, material: ['metal', 'plastic', 'glass'], info: "The Playground's mystery has been solved by the sheer power of the sprint-kick." },
 
     // --- ENCOUNTER CELLS ---
     'c0': { name: 'Stemmy', hasCollision: true, info: "A wild Stemmy is wandering." },
@@ -460,6 +497,35 @@ export const FURNITURE_TEMPLATES = {
     LID_DEBRIS: {
         name: 'Mangled Tank Lid',
         tiles: [{ id: 'f124', relX: 0, relY: 0 }]
+    },
+    POSTER_TROUBLEMAKERS: { name: 'Troublemaker Poster', tiles: [{ id: 'f125', relX: 0, relY: 0 }] },
+    POSTER_SILENT_EMPLOYEE: { name: 'Silent Employee Poster', tiles: [{ id: 'f126', relX: 0, relY: 0 }] },
+    WALL_OF_STICKERS: { name: 'Wall Of Stickers', tiles: [{ id: 'f127', relX: 0, relY: 0 }] },
+
+    // --- ACCELERATOR TEMPLATES (3x3 Grid) ---
+    CELL_ACCELERATOR_OLD: {
+        name: 'Old Cell Accelerator',
+        tiles: [
+            { id: 'f128', relX: -1, relY: -2 }, { id: 'f129', relX: 0, relY: -2 }, { id: 'f130', relX: 1, relY: -2 },
+            { id: 'f131', relX: -1, relY: -1 }, { id: 'f132', relX: 0, relY: -1 }, { id: 'f133', relX: 1, relY: -1 },
+            { id: 'f134', relX: -1, relY: 0 },  { id: 'f135', relX: 0, relY: 0 },  { id: 'f136', relX: 1, relY: 0 }
+        ]
+    },
+    CELL_ACCELERATOR_DAMAGED: {
+        name: 'Damaged Cell Accelerator',
+        tiles: [
+            { id: 'f137', relX: -1, relY: -2 }, { id: 'f138', relX: 0, relY: -2 }, { id: 'f139', relX: 1, relY: -2 },
+            { id: 'f140', relX: -1, relY: -1 }, { id: 'f141', relX: 0, relY: -1 }, { id: 'f142', relX: 1, relY: -1 },
+            { id: 'f143', relX: -1, relY: 0 },  { id: 'f144', relX: 0, relY: 0 },  { id: 'f145', relX: 1, relY: 0 }
+        ]
+    },
+    CELL_ACCELERATOR_BROKEN: {
+        name: 'Broken Cell Accelerator',
+        tiles: [
+            { id: 'f146', relX: -1, relY: -2 }, { id: 'f147', relX: 0, relY: -2 }, { id: 'f148', relX: 1, relY: -2 },
+            { id: 'f149', relX: -1, relY: -1 }, { id: 'f150', relX: 0, relY: -1 }, { id: 'f151', relX: 1, relY: -1 },
+            { id: 'f152', relX: -1, relY: 0 },  { id: 'f153', relX: 0, relY: 0 },  { id: 'f154', relX: 1, relY: 0 }
+        ]
     }
 };
 
