@@ -23,7 +23,14 @@ export const botanic = {
         [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3]
     ],
     objects: [
-        { id: "lana", x: 7, y: 3, type: "npc", name: "Lana" },
+        { id: "lana", x: 7, y: 3, type: "npc", name: "Lana", quests: ["quest_lana_cleanup"], forbiddenFlag: "lanaCleanedUp" },
+        { id: "lana_moved", x: 10, y: 14, type: "npc", name: "Lana", quests: ["quest_collect_key", "quest_main_lana_key"], requiredFlag: "lanaCleanedUp" },
+        // Debris to clear
+        { id: "debris_1", x: 6, y: 3, type: "prop", name: "Broken Pot", forbiddenFlag: "lanaCleanedUp" },
+        { id: "debris_2", x: 8, y: 3, type: "prop", name: "Broken Pot", forbiddenFlag: "lanaCleanedUp" },
+        { id: "debris_3", x: 7, y: 4, type: "prop", name: "Broken Pot", forbiddenFlag: "lanaCleanedUp" },
+        { id: "debris_4", x: 6, y: 2, type: "prop", name: "Broken Pot", forbiddenFlag: "lanaCleanedUp" },
+        { id: "debris_5", x: 8, y: 2, type: "prop", name: "Broken Pot", forbiddenFlag: "lanaCleanedUp" },
         { id: "f52_bot1", x: 1, y: 2, type: "prop", name: "Storage Unit" },
         { id: "f53_bot1", x: 2, y: 2, type: "prop", name: "Storage Unit" },
         { id: "f13_lanaTank1B", x: 3, y: 2, type: "prop", name: "Green Specimen Tank" },

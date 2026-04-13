@@ -1258,37 +1258,115 @@
 
 /* --- Lab_TileSet_04 Furniture (f128-f154) --- */
 /* Old Accelerator (Pristine) */
-.world-object.prop.f128 { background-position: calc(-0px / 4) calc(-0px / 4); }
-.world-object.prop.f129 { background-position: calc(-256px / 4) calc(-0px / 4); }
-.world-object.prop.f130 { background-position: calc(-512px / 4) calc(-0px / 4); }
-.world-object.prop.f131 { background-position: calc(-0px / 4) calc(-256px / 4); }
-.world-object.prop.f132 { background-position: calc(-256px / 4) calc(-256px / 4); }
-.world-object.prop.f133 { background-position: calc(-512px / 4) calc(-256px / 4); }
-.world-object.prop.f134 { background-position: calc(-0px / 4) calc(-512px / 4); }
-.world-object.prop.f135 { background-position: calc(-256px / 4) calc(-512px / 4); }
-.world-object.prop.f136 { background-position: calc(-512px / 4) calc(-512px / 4); }
+.world-object.prop.f128 {
+    background-position: calc(-0px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.f129 {
+    background-position: calc(-256px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.f130 {
+    background-position: calc(-512px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.f131 {
+    background-position: calc(-0px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.f132 {
+    background-position: calc(-256px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.f133 {
+    background-position: calc(-512px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.f134 {
+    background-position: calc(-0px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.f135 {
+    background-position: calc(-256px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.f136 {
+    background-position: calc(-512px / 4) calc(-512px / 4);
+}
 
 /* Damaged Accelerator */
-.world-object.prop.f137 { background-position: calc(-768px / 4) calc(-0px / 4); }
-.world-object.prop.f138 { background-position: calc(-1024px / 4) calc(-0px / 4); }
-.world-object.prop.f139 { background-position: calc(-1280px / 4) calc(-0px / 4); }
-.world-object.prop.f140 { background-position: calc(-768px / 4) calc(-256px / 4); }
-.world-object.prop.f141 { background-position: calc(-1024px / 4) calc(-256px / 4); }
-.world-object.prop.f142 { background-position: calc(-1280px / 4) calc(-256px / 4); }
-.world-object.prop.f143 { background-position: calc(-768px / 4) calc(-512px / 4); }
-.world-object.prop.f144 { background-position: calc(-1024px / 4) calc(-512px / 4); }
-.world-object.prop.f145 { background-position: calc(-1280px / 4) calc(-512px / 4); }
+.world-object.prop.f137 {
+    background-position: calc(-768px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.f138 {
+    background-position: calc(-1024px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.f139 {
+    background-position: calc(-1280px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.f140 {
+    background-position: calc(-768px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.f141 {
+    background-position: calc(-1024px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.f142 {
+    background-position: calc(-1280px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.f143 {
+    background-position: calc(-768px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.f144 {
+    background-position: calc(-1024px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.f145 {
+    background-position: calc(-1280px / 4) calc(-512px / 4);
+}
 
 /* Broken Accelerator */
-.world-object.prop.f146 { background-position: calc(-0px / 4) calc(-768px / 4); }
-.world-object.prop.f147 { background-position: calc(-256px / 4) calc(-768px / 4); }
-.world-object.prop.f148 { background-position: calc(-512px / 4) calc(-768px / 4); }
-.world-object.prop.f149 { background-position: calc(-0px / 4) calc(-1024px / 4); }
-.world-object.prop.f150 { background-position: calc(-256px / 4) calc(-1024px / 4); }
-.world-object.prop.f151 { background-position: calc(-512px / 4) calc(-1024px / 4); }
-.world-object.prop.f152 { background-position: calc(-0px / 4) calc(-1280px / 4); }
-.world-object.prop.f153 { background-position: calc(-256px / 4) calc(-1280px / 4); }
-.world-object.prop.f154 { background-position: calc(-512px / 4) calc(-1280px / 4); }
+.world-object.prop.f146 {
+    background-position: calc(-0px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.f147 {
+    background-position: calc(-256px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.f148 {
+    background-position: calc(-512px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.f149 {
+    background-position: calc(-0px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.f150 {
+    background-position: calc(-256px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.f151 {
+    background-position: calc(-512px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.f152 {
+    background-position: calc(-0px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f153 {
+    background-position: calc(-256px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f154 {
+    background-position: calc(-512px / 4) calc(-1280px / 4);
+}
 
 .world-object.prop.StoragePod-Top,
 .world-object.prop.f84 {
@@ -1396,4 +1474,129 @@
 
 .world-object.mirrored-object {
     transform: translateY(-10px) translateZ(0) scaleX(-1) !important;
+}
+
+/* --- QUEST COMPLETE MODAL --- */
+.quest-complete-panel {
+    width: 600px;
+    background: linear-gradient(135deg, rgba(20, 20, 30, 0.95), rgba(10, 10, 15, 0.98));
+    border: 2px solid var(--neon-cyan);
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.2), inset 0 0 20px rgba(255, 0, 77, 0.1);
+    transform: translate(-50%, -50%) scale(1);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    padding: 0;
+    overflow: hidden;
+    animation: modal-slam 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+    transform-origin: center center;
+    z-index: 1000;
+}
+
+/* Ensure modal shrinks inward when parent overlay is hidden */
+#quest-complete-modal.hidden .quest-complete-panel {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+}
+
+@keyframes modal-slam {
+    0% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+        filter: blur(10px);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+.quest-complete-banner {
+    width: 100%;
+    height: 380px;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 2px solid var(--neon-cyan);
+    background: #000;
+}
+
+.quest-complete-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(1.1) contrast(1.1);
+}
+
+.quest-info-wrap {
+    padding: 20px 20px 10px 20px;
+}
+
+.quest-label {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--neon-cyan);
+    letter-spacing: 5px;
+    font-size: 0.85rem;
+    margin-bottom: 0;
+    opacity: 0.8;
+}
+
+.quest-title {
+    font-family: 'Orbitron', sans-serif;
+    color: #fff;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 15px var(--neon-cyan);
+}
+
+.quest-reward-container {
+    background: rgba(0, 243, 255, 0.05);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    padding: 12px 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    min-width: 200px;
+}
+
+#quest-complete-rewards {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    color: var(--neon-magenta);
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+}
+
+.reward-sparkle {
+    font-size: 1.4rem;
+    animation: pulse-glow 1.5s infinite alternate;
+}
+
+@keyframes pulse-glow {
+    from {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+.quest-continue-btn {
+    width: 80% !important;
+    margin: 0 auto 10px auto !important;
+}
+
+.quest-complete-panel .pickup-hint {
+    margin-bottom: 20px;
+    opacity: 0.5;
 }

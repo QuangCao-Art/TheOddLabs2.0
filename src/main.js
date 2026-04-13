@@ -504,6 +504,66 @@ window.showItemPickupModal = (itemId, onClose) => {
     window.addEventListener('keydown', keyHandler);
 };
 
+window.showQuestCompleteModal = (questId, onClose) => {
+    const modal = document.getElementById('quest-complete-modal');
+    const questData = QUESTS[questId];
+    if (!questData) return;
+
+    if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
+
+    // Set Quest Title
+    document.getElementById('quest-complete-title').textContent = (questData.title || "Unknown Mission").toUpperCase();
+    
+    // Dynamic Reward Summary
+    let rewardsText = "";
+    if (questData.reward) {
+        if (questData.reward.type === 'resource_multi' && Array.isArray(questData.reward.rewards)) {
+            rewardsText = questData.reward.rewards.map(r => {
+                const type = (r.id === 'credits' || r.id === 'lc') ? 'Credits' : 
+                            (r.id === 'biomass' || r.id === 'bm') ? 'Biomass' : r.id.toUpperCase();
+                return `${r.amount} ${type}`;
+            }).join(", ");
+        } else {
+            const r = questData.reward;
+            if (r.type === 'resource') {
+                const type = (r.id === 'credits' || r.id === 'lc') ? 'Credits' : 
+                            (r.id === 'biomass' || r.id === 'bm') ? 'Biomass' : r.id.toUpperCase();
+                rewardsText = `${r.amount} ${type}`;
+            } else if (r.type === 'log') {
+                rewardsText = `Data Log: ${r.id}`;
+            } else if (r.type === 'item') {
+                rewardsText = `Item: ${r.id}`;
+            }
+        }
+    }
+    document.getElementById('quest-complete-rewards').textContent = rewardsText || "COMMENDATION RECEIVED";
+
+    modal.classList.remove('hidden');
+
+    let inputReady = false;
+    setTimeout(() => { inputReady = true; }, 600); // Anti-Spam F feature
+
+    function close() {
+        window.hideWithFade(modal);
+        window.removeEventListener('keydown', keyHandler);
+        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
+        if (onClose) onClose();
+    }
+
+    function keyHandler(e) {
+        if (!inputReady) return;
+        if (e.key === 'f' || e.key === 'F' || e.key === 'Enter') {
+            e.preventDefault(); e.stopPropagation(); 
+            close();
+        }
+    }
+
+    // Interactive confirmation
+    const btn = document.getElementById('btn-quest-complete-continue');
+    if (btn) btn.onclick = close;
+    window.addEventListener('keydown', keyHandler);
+};
+
 /**
  * Custom Game-Themed Confirmation Modal
  * @param {string} title - Header text (e.g. WARNING)
@@ -1607,19 +1667,7 @@ function setupEventListeners() {
 
                 Overworld.startLoop();
 
-                // --- STORY HOOK: Jenzi post-battle dialogue ---
-                if ((window.gameState.storyFlags.jenziFirstBattleDone || opponentId === 'jenzi_tutorial') && !window.gameState.logs.includes('Log001')) {
-                    // Hide Log #001 in the Red Specimen Tank instead of spawning on floor
-                    const lobbyZone = Overworld.zones['lobby'];
-
-                    // DEFENSIVE: Ensure the old floor-log object is removed if it persisted from a previous render
-                    lobbyZone.objects = lobbyZone.objects.filter(obj => obj.id !== 'log_001');
-
-                    const redTank = lobbyZone.objects.find(o => o.id === 'f23_lob_br');
-                    if (redTank && !redTank.hiddenLogId) {
-                        redTank.hiddenLogId = 'Log001';
-                    }
-                }
+                // --- STORY HOOK: Jenzi post-battle logic handled by Overworld.applyMapPatches ---
             }
         });
     });
@@ -2488,7 +2536,7 @@ function setupEventListeners() {
         });
 
         addLog(`[DEBUG] Player synchronized to RG-${rg} with ${style.toUpperCase()} focus.`);
-        saveGameState(); // Persist for Continue logic
+        if (gameState.settings?.autoSave) saveGameState(); // Persist for Continue logic
 
         // Extensive UI Refresh
         if (window.updateResourceHUD) window.updateResourceHUD();

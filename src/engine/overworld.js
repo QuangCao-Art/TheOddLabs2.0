@@ -365,6 +365,34 @@ export const Overworld = {
         } else {
             processReward(reward);
         }
+
+        // --- NEW: Visual confirmation modal ---
+        if (window.showQuestCompleteModal) {
+            window.showQuestCompleteModal(questId);
+        }
+    },
+
+    /**
+     * Applies dynamic world state changes to map data AFTER it has been cloned
+     * but BEFORE it is rendered. This ensures persistence across loads.
+     */
+    applyMapPatches(zoneId, zone) {
+        // --- PATCH: Log #001 (Tutorial Datapad) ---
+        if (zoneId === 'lobby') {
+            const hasLog = window.gameState.logs.includes('Log001') || window.gameState.items.includes('Log001');
+            if (window.gameState.storyFlags.jenziFirstBattleDone && !hasLog) {
+                const redTank = zone.objects.find(o => o.id === 'f23_lob_br');
+                if (redTank && !redTank.hiddenLogId) {
+                    redTank.hiddenLogId = 'Log001';
+                    console.log("[Patch] Applied Log001 to Red Tank in Lobby.");
+                }
+            }
+
+            // DEFENSIVE: Ensure the old floor-log object is removed if it persisted in data
+            if (hasLog) {
+                zone.objects = zone.objects.filter(obj => obj.id !== 'log_001');
+            }
+        }
     },
 
     init() {
@@ -410,6 +438,9 @@ export const Overworld = {
         }
 
         const zone = this.zones[id];
+        
+        // --- NEW: Apply dynamic map patches based on gameState ---
+        this.applyMapPatches(id, zone);
 
         // Update Bio-Extract visuals if we are entering or rendering the extraction room
         if (id === 'bioExtraction') {
@@ -511,6 +542,15 @@ export const Overworld = {
 
         zone.objects.forEach(obj => {
             if (obj.isKicked) return;
+
+            // --- NEW: Visibility Guards (RPG World States) ---
+            if (obj.requiredFlag && window.gameState && window.gameState.storyFlags) {
+                if (!window.gameState.storyFlags[obj.requiredFlag]) return; // Required flag is missing
+            }
+            if (obj.forbiddenFlag && window.gameState && window.gameState.storyFlags) {
+                if (window.gameState.storyFlags[obj.forbiddenFlag]) return; // Forbidden flag is active
+            }
+
             this.renderObject(obj, mapEl);
         });
 
@@ -1198,7 +1238,7 @@ export const Overworld = {
             x: this.player.x,
             y: this.player.y
         };
-        saveGameState();
+        if (gameState.settings?.autoSave) saveGameState();
 
         try {
             // 2. Quick Fade Transition & Map Reset
@@ -1258,7 +1298,7 @@ export const Overworld = {
             // --- NEW: Post-Countdown Synchronization ---
             // 1. Reset start time to NOW (so countdown doesn't consume quest time)
             qProgress.startTime = Date.now();
-            saveGameState();
+            if (gameState.settings?.autoSave) saveGameState();
 
             // 2. Trigger immediate spawner restart
             this.spawner.start();
@@ -1346,7 +1386,7 @@ export const Overworld = {
 
         // 1. Mark State
         qProgress.status = 'timed_out';
-        saveGameState();
+        if (gameState.settings?.autoSave) saveGameState();
 
         // 2. Fade to black and Teleport Back
         if (window.triggerQuickTransition) {
@@ -1747,7 +1787,6 @@ export const Overworld = {
             this.player.direction = dy > 0 ? 'down' : 'up';
         }
         this.updatePlayerPosition(); // Visual sync
-
         npc.direction = oppDirections[this.player.direction] || 'down';
 
         const npcEl = document.getElementById(`npc-${npc.id}`);
@@ -1758,122 +1797,129 @@ export const Overworld = {
 
         const logs = this.logsCollected.length;
         let lines = ["..."];
-        this.pendingBattleEncounter = null; // Clean slate
+        this.pendingBattleEncounter = null; 
 
-        // --- NEW: SIDE QUEST BRANCHING ---
-        if (npc.sideQuestId && window.gameState && window.gameState.quests) {
-            const qId = npc.sideQuestId;
-            const qData = QUESTS[qId];
+        // --- PHASE 1: SYSTEMATIC QUEST RESOLVER ---
+        if (window.gameState && window.gameState.quests) {
+            const questQueue = npc.quests || (npc.sideQuestId ? [npc.sideQuestId] : []);
+            let activeQuestId = null;
+            let activeQuestData = null;
+            let activeQuestProgress = null;
 
-            if (qData) {
+            // 1.1 Priority: Check for Turn-Ins
+            for (const qId of questQueue) {
+                const qData = QUESTS[qId];
                 const qProgress = window.gameState.quests[qId];
+                if (qData && qProgress && qProgress.status === 'completed') {
+                    activeQuestId = qId;
+                    activeQuestData = qData;
+                    activeQuestProgress = qProgress;
+                    break;
+                }
+            }
 
-                // Case 0: First Time Interaction - ALWAYS show Offer
+            // 1.2 Priority: Check for New Offers or Ongoing
+            if (!activeQuestId) {
+                for (const qId of questQueue) {
+                    const qData = QUESTS[qId];
+                    if (!qData) continue;
+                    const qProgress = window.gameState.quests[qId];
+                    
+                    if (qData.requiredFlag && !window.gameState.storyFlags[qData.requiredFlag]) continue;
+                    if (qData.requiredItem && !window.gameState.items.includes(qData.requiredItem)) continue;
+                    if (qData.requiredRG && (window.gameState.profiles.player.level || 0) < qData.requiredRG) continue;
+                    if (qProgress && qProgress.status === 'finished') continue;
+
+                    activeQuestId = qId;
+                    activeQuestData = qData;
+                    activeQuestProgress = qProgress;
+                    break;
+                }
+            }
+
+            // 1.3 Execution Logic
+            if (activeQuestId && activeQuestData) {
+                const qId = activeQuestId;
+                const qData = activeQuestData;
+                const qProgress = activeQuestProgress;
+
+                // Case A: New Offer
                 if (!qProgress) {
                     window.gameState.quests[qId] = { status: 'started', progress: 0, offerSeen: true };
-                    saveGameState();
+                    if (gameState.settings?.autoSave) saveGameState();
                     this.showDialogue(npc.name, qData.dialogue.offer, npc.id);
-
-                    // Check if this is a timed quest - if so, prepare to start it after dialogue
                     if (qData.timeLimit) {
-                        this.onDialogueComplete = () => {
-                            this.startTimedQuest(qId, npc);
-                        };
-                        this.isStartingQuest = true; // Lock interactions immediately
+                        this.onDialogueComplete = () => this.startTimedQuest(qId, npc);
+                        this.isStartingQuest = true;
                     }
                     return;
                 }
 
-                // Case: Quest was FAILED or TIMED OUT (Branching for retry)
+                // Case B: Retry Failed
                 if (qProgress.status === 'failed' || qProgress.status === 'timed_out') {
-                    const retryLines = qData.dialogue.retry || ["Ready to try that challenge again?"];
+                    const retryLines = qData.dialogue.retry || ["Diagnostic failed. Ready to sync again?"];
                     this.showDialogue(npc.name, retryLines, npc.id);
-                    this.onDialogueComplete = () => {
-                        this.startTimedQuest(qId, npc);
-                    };
-                    this.isStartingQuest = true; // Lock interactions immediately
+                    this.onDialogueComplete = () => this.startTimedQuest(qId, npc);
+                    this.isStartingQuest = true;
                     return;
                 }
 
-                // Case 1: Quest is ready to be turned in (Sequential priority)
+                // Case C: Turn-In
                 if (qProgress.status === 'completed') {
-                    // Item Consumption Logic
                     if (qData.consume && qData.type === 'collect') {
                         const idx = window.gameState.items.indexOf(qData.target);
                         if (idx > -1) window.gameState.items.splice(idx, 1);
                     }
-
-                    // Defer reward and status update until dialogue ends
                     this.onDialogueComplete = () => {
                         this.giveQuestReward(qId);
                         qProgress.status = 'finished';
-                        qProgress.progress = qData.amount; // Ensure progress shows as full (e.g., 1/1)
-                        saveGameState();
+                        if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
+                        if (gameState.settings?.autoSave) saveGameState();
+                        this.renderMap();
                     };
                     this.showDialogue(npc.name, qData.dialogue.complete, npc.id);
                     return;
                 }
 
-                // Case 2: Quest is ongoing
+                // Case D: Ongoing/Progress
                 if (qProgress.status === 'started') {
-                    // --- NEW: Instant Completion Check ---
-                    let canCompleteNow = false;
-
-                    // A: show_monster check
+                    let readyNow = false;
                     if (qData.type === 'show_monster') {
-                        canCompleteNow = gameState.profiles.player.party.some(m =>
-                            m && m.id === qData.target && (m.extractEfficiency || 0) >= (qData.minEfficiency || 0)
-                        );
-                    }
-                    // B: collect check (if item already in inventory)
-                    else if (qData.type === 'collect') {
-                        canCompleteNow = window.gameState.items.includes(qData.target);
+                        readyNow = gameState.profiles.player.party.some(m => m && m.id === qData.target && (m.extractEfficiency || 0) >= (qData.minEfficiency || 0));
+                    } else if (qData.type === 'collect') {
+                        readyNow = window.gameState.items.includes(qData.target);
                     }
 
-                    if (canCompleteNow) {
-                        // Turn in immediately!
+                    if (readyNow) {
                         if (qData.consume && qData.type === 'collect') {
                             const idx = window.gameState.items.indexOf(qData.target);
                             if (idx > -1) window.gameState.items.splice(idx, 1);
                         }
-
                         this.onDialogueComplete = () => {
                             this.giveQuestReward(qId);
                             qProgress.status = 'finished';
-                            qProgress.progress = qData.amount; // Ensure progress shows as full (e.g., 1/1)
-                            saveGameState();
+                            if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
+                            if (gameState.settings?.autoSave) saveGameState();
+                            this.renderMap();
                         };
                         this.showDialogue(npc.name, qData.dialogue.complete, npc.id);
                         return;
                     }
 
-                    // Otherwise show standard progress lines
-                    let linesToUse = qData.dialogue.progress;
-
-                    // --- NEW: Timed Quest Retry Flow ---
-                    // If status is started but timer isn't running, show retry instead of progress
-                    if (qData.timeLimit > 0 && this.activeTimedQuestId !== qId) {
-                        linesToUse = qData.dialogue.retry || qData.dialogue.offer;
-                        this.onDialogueComplete = () => {
-                            this.startTimedQuest(qId, npc);
-                        };
-                        this.isStartingQuest = true; // Lock interactions immediately
+                    let pLines = qData.dialogue.progress || ["Keep working on that objective!"];
+                    if (Array.isArray(pLines)) {
+                        pLines = pLines.map(l => l.replace('{progress}', qProgress.progress).replace('{amount}', qData.amount));
                     }
+                    this.showDialogue(npc.name, pLines, npc.id);
 
-                    let progressLines = linesToUse.map(line =>
-                        line.replace('{progress}', qProgress.progress).replace('{amount}', qData.amount - qProgress.progress)
-                    );
-                    this.showDialogue(npc.name, progressLines, npc.id);
-
-                    // If the quest target is this specific NPC, don't return so the battle can trigger
                     if (qData.type === 'defeat' && qData.target === (npc.battleEncounterId || npc.id)) {
-                        // Continue to battle logic
+                        // Falls through
                     } else {
                         return;
                     }
                 }
 
-                // Case 3: Quest is finished - allow story dialogue to resume
+                // Case E: Finished
                 if (qProgress.status === 'finished') {
                     if (qData.dialogue.finished && qData.dialogue.finished.length > 0) {
                         lines = qData.dialogue.finished;
@@ -1882,37 +1928,47 @@ export const Overworld = {
             }
         }
 
-        // --- NEW: ONE-TIME BATTLE CHECK ---
+        // --- PHASE 2: BATTLE CHECK ---
         const encounterId = npc.battleEncounterId || npc.id;
         const isBattleDone = window.gameState && window.gameState.storyFlags && window.gameState.storyFlags[`battleDone_${encounterId}`];
 
-        // --- NEW: UNIVERSAL POST-BATTLE DIALOGUE ---
+        // --- PHASE 3: POST-BATTLE ---
         if (isPostBattle || isBattleDone) {
-            // Determine who won:
-            // 1. If isPostBattle (returning from battle right now), bossWon is the source of truth.
-            // 2. If !isPostBattle (talking later), check storyFlags.
-            //    Note: bossWon (NPC won) corresponds to battleLost_ (player lost).
             const isNpcVictory = isPostBattle ? bossWon : window.gameState.storyFlags[`battleLost_${encounterId}`];
-
             if (isNpcVictory) {
-                // NPC WON (Player lost)
                 if (npc.npcWinDialogue) {
                     this.showDialogue(npc.name, npc.npcWinDialogue, npc.id);
                     return;
                 }
             } else {
-                // NPC LOST (Player won)
                 if (npc.npcLossDialogue) {
                     this.showDialogue(npc.name, npc.npcLossDialogue, npc.id);
                     return;
                 }
             }
-            // Fallthrough to regular lines if no specialized dialogue found
         }
 
+        // --- PHASE 4: JENZI SCRIPT ---
         if (npc.id === 'jenzi' && (lines.length === 1 && lines[0] === "...")) {
-            if (!window.gameState.storyFlags.starterChosen) {
-                // Starter selection flow
+            if (isPostBattle && !window.gameState.storyFlags.jenziFirstBattleDone) {
+                window.gameState.storyFlags.jenziFirstBattleDone = true;
+                lines = [
+                    "Ayo, not bad for a first-timer! You've got that 'pioneer spirit' everyone talks about.",
+                    "Win or lose, you're the only one brave enough to test that Cell today. Respect.",
+                    "Wait, did you see that? Something just flashed over by the specimen tanks.",
+                    "Go check if someone dropped something in there.",
+                    "I swear, these scientists have the attention span of a goldfish once they leave their desks."
+                ];
+                // Manually initialize the first quest since we're bridging the state
+                if (window.gameState && !window.gameState.quests['quest_main_datapad']) {
+                    window.gameState.quests['quest_main_datapad'] = { status: 'started', progress: 0, offerSeen: true };
+                }
+                if (gameState.settings?.autoSave) saveGameState();
+                
+                // --- NEW: Trigger immediate Map Patching ---
+                // This ensures the Datapad appears in the Red Tank without needing a reload/room change.
+                this.renderMap();
+            } else if (!window.gameState.storyFlags.starterChosen) {
                 lines = [
                     "Welcome to the trenches, Intern! I'm Jenzi, your guide through this corporate fever dream.",
                     "We're supposedly 'healing the world,' but mostly we're just trying not to get fired by Lab Director Capsain.",
@@ -1930,7 +1986,6 @@ export const Overworld = {
                     "But everyone who works here must have at least one Companion Cell.",
                     "So just pick one that vibe with you the most."
                 ];
-                // Trigger the modal after dialogue closes.
                 this.pendingBattleEncounter = 'starter_selection';
             } else if (!window.gameState.storyFlags.jenziFirstBattleDone && !isPostBattle) {
                 if (!this.checkActiveSquad()) {
@@ -1942,27 +1997,13 @@ export const Overworld = {
                     ];
                     this.pendingBattleEncounter = 'jenzi_tutorial';
                 }
-            } else if (!this.logsCollected.includes('Log001')) {
-                lines = [
-                    "Ayo, not bad for a first-timer! You've got that 'pioneer spirit' everyone talks about.",
-                    "Win or lose, you're the only one brave enough to test that Cell today. Respect.",
-                    "Wait, did you see that? Something just flashed over by the specimen tanks.",
-                    "Go check if someone dropped something in there.",
-                    "I swear, these scientists have the attention span of a goldfish once they leave their desks."
-                ];
-            } else if (!window.gameState.storyFlags.jenziAtriumUnlocked) {
-                lines = [
-                    "Aha! A lost Datapad. People here would forget their own heads if they weren't attached.",
-                    "Collect 'em and bring 'em to me, okay? I'll 'officially' return them to the owners.",
-                    "Door to the Atrium is open now. Go explore, but don't get lost in the sauce."
-                ];
-                window.gameState.storyFlags.jenziAtriumUnlocked = true;
-                this.renderMap();
-            } else if (logs < 5) {
+            } else if (logs < 5 && window.gameState.storyFlags.jenziAtriumUnlocked) {
                 lines = [
                     "Yo, Intern! Keep looking for Datapads.",
                     "The doors are locked until you prove you can do basic research."
                 ];
+            } else if (window.gameState.storyFlags.jenziFirstBattleDone && !window.gameState.items.includes('Log001')) {
+                lines = ["Aha! Still looking for that flash? // Go check if someone dropped a datapad over near the specimen tanks."];
             } else if (logs >= 5 && !window.gameState.storyFlags.jenziAtriumBattleDone && !isPostBattle) {
                 lines = [
                     "You've been busy! 5 Datapads already?",
@@ -2026,18 +2067,6 @@ export const Overworld = {
                     "Now, either help with the nutrient sensors or get out of my light!"
                 ];
                 window.gameState.storyFlags.lanaMet = true;
-            } else if (window.gameState.storyFlags.lanaBattleDone && !window.gameState.storyFlags.lanaDefeatedSeen) {
-                lines = [
-                    "Fine! You win! *[Mutters]* Just like the Director during the Leak... always so stubborn.",
-                    "Here, take this Old Lab Room Key. It's for some old storage room.",
-                    "Just... don't believe everything you read in the logs.",
-                    "And tell Jenzi to stop spreading rumors about my lab hygiene! Hmph!"
-                ];
-                // Reward after this dialogue if not already collected
-                if (!window.gameState.items.includes('Quest01')) {
-                    this.deferredItemPickup = 'Quest01';
-                }
-                this.deferredStoryFlag = 'lanaDefeatedSeen';
             } else if (window.gameState.storyFlags.lanaBattleDone || logs < 10) {
                 const flavor = [
                     "What are you staring at? // I was merely performing a hydration assessment on your partner Cell. // It is a critical laboratory asset, unlike... some uncalibrated interns! Hmph!",
@@ -2048,14 +2077,6 @@ export const Overworld = {
                     "Watch your step! // Be careful not to disturb the Cambihil spores. // They're far more sensitive than your heavy boots suggest!"
                 ];
                 lines = [flavor[Math.floor(Math.random() * flavor.length)]];
-            } else if (!isPostBattle) {
-                lines = [
-                    "Wait. You've been poking around the botanical archives, haven't you?",
-                    "Look, I love these cells, but the Director says we have to keep the research classified.",
-                    "If you want that Old Lab Key, you'll have to prove you can handle the truth in a duel!",
-                    "Prepare for a lesson in botanical efficiency!"
-                ];
-                this.pendingBattleEncounter = 'lana';
             }
         } else if (npc.id === 'dyzes' && (lines.length === 1 && lines[0] === "...")) {
             if (bossWon) {
@@ -2070,19 +2091,6 @@ export const Overworld = {
                     "Watch your step, the osmotic mist is fresh today."
                 ];
                 window.gameState.storyFlags.dyzesMet = true;
-            } else if (window.gameState.storyFlags.dyzesBattleDone && !window.gameState.storyFlags.dyzesDefeatedSeen) {
-                lines = [
-                    "Woah, okay. Your tactical flow is elite. I can't really hide the truth if you're this good.",
-                    "The Old Lab exists, man. It's not on the main maps.",
-                    "Wait, let me give you this old data stick I found in the archives.",
-                    "It contains a floor plan that reveals the hidden lab location.",
-                    "Go talk to Jenzi. She'll level with you about how to get in.",
-                    "Capsain is just... he's protective, you know? Good luck."
-                ];
-                if (!window.gameState.items.includes('Quest03')) {
-                    this.deferredItemPickup = 'Quest03';
-                }
-                this.deferredStoryFlag = 'dyzesDefeatedSeen';
             } else if (window.gameState.storyFlags.dyzesBattleDone || logs < 15) {
                 const flavors = [
                     "Lydrosome is a marvel of tactical evolution. Its osmotic pressure allows for surgical precision—dissolving a single harmful enzyme without touching the surrounding tissue. It's the ultimate biological sniper.",
@@ -2093,14 +2101,6 @@ export const Overworld = {
                     "Chill out. Stress increases cortisol, and cortisol ruins the data. If you're going to work here, you've gotta learn to go with the flow."
                 ];
                 lines = [flavors[Math.floor(Math.random() * flavors.length)]];
-            } else if (!isPostBattle) {
-                lines = [
-                    "I've seen your log activity. You're piecing together 'The Incident', aren't you?",
-                    "Capsain is a good man, just... proud.",
-                    "I can't let you expose him without a proper test of your tactical skill.",
-                    "Prepare yourself!"
-                ];
-                this.pendingBattleEncounter = 'dyzes_boss';
             }
         } else if (npc.id === 'capsain' && (lines.length === 1 && lines[0] === "...")) {
             if (bossWon) {
@@ -2142,18 +2142,6 @@ export const Overworld = {
                     "And ignore that smell—it's industrial-grade experimental ozone."
                 ];
                 window.gameState.storyFlags.capsainMet = true;
-            } else if (window.gameState.storyFlags.capsainMet && window.gameState.storyFlags.capsainBattleDone && !window.gameState.storyFlags.capsainDefeatedSeen) {
-                lines = [
-                    "I... I failed? To an intern? *[Sighs deeply]*",
-                    "You've seen the logs. You have the sauce. You've basically already found out.",
-                    "Here, take this Rare Inferno Sauce... it's just a research sample! Nothing more!",
-                    "Now go away, I have... important papers to write.",
-                    "The labs are yours now. Just... keep the gossip to a minimum."
-                ];
-                if (!window.gameState.items.includes('Quest02')) {
-                    this.deferredItemPickup = 'Quest02';
-                }
-                this.deferredStoryFlag = 'capsainDefeatedSeen';
             } else if (window.gameState.storyFlags.capsainBattleDone || logs < 20) {
                 const flavors = [
                     "What are you doing here? These labs aren't for sightseeing! Get back to your station or I'll have you filing paperwork for a month. And ignore that smell, it's... experimental ozone.",
@@ -2164,13 +2152,6 @@ export const Overworld = {
                     "Stop asking about the '27 logs. The archives were purged for security reasons. Unless you have a level 5 clearance, it's none of your business."
                 ];
                 lines = [flavors[Math.floor(Math.random() * flavors.length)]];
-            } else if (!isPostBattle) {
-                lines = [
-                    "You found the Noodle Review. You found the '27 security gap.",
-                    "But you're still just an intern. I won't have my legacy tarnished by some spicy gossip!",
-                    "Prepare to be archived!"
-                ];
-                this.pendingBattleEncounter = 'capsain';
             }
         } else if (npc.id === 'deartis') {
             const flavors = [

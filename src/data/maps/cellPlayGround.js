@@ -117,7 +117,7 @@ export const cellPlayGround = {
         { "id": "f110_mnspjyx3df6qi", "x": 15, "y": 4, "type": "prop" },
         { "id": "f109_mnspjyx3df6qi", "x": 15, "y": 3, "type": "prop" },
         { "id": "f103_mnspk7s29ouji", "x": 6, "y": 12, "type": "prop", "hiddenReward": "REWARD_BIOMASS_20" },
-        { id: 'pessi', x: 7, y: 11, type: 'npc', name: 'Pessi', sideQuestId: 'quest_pessi_playground' },
+        { id: 'pessi', x: 7, y: 11, type: 'npc', name: 'Pessi', quests: ['quest_pessi_playground'] },
         { id: 'kolla', x: 9, y: 11, type: 'npc', name: 'Kolla' }
     ],
     maxWildSpawns: 5,

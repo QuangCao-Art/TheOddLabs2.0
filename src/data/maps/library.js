@@ -23,7 +23,7 @@ export const library = {
         [2, 9, 9, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 9, 9, 3]
     ],
     objects: [
-        { "id": "elara", "x": 9, "y": 3, "type": "npc", "name": "Elara", "direction": "down", "customSprite": "T_Char_Sprite_Elara_01", "portrait": "Character_FullArt_Elara", "proximityTrigger": true, "triggerRadius": 3, "triggerY": 1, "sideQuestId": "quest_elara_ghost" },
+        { "id": "elara", "x": 9, "y": 3, "type": "npc", "name": "Elara", "direction": "down", "customSprite": "T_Char_Sprite_Elara_01", "portrait": "Character_FullArt_Elara", "proximityTrigger": true, "triggerRadius": 3, "triggerY": 1, "quests": ["quest_elara_ghost"] },
         { "id": "f76_lib5", "x": 7, "y": 6, "type": "prop", "customSprite": "tileset-03" },
         { "id": "f77_lib5", "x": 8, "y": 6, "type": "prop", "customSprite": "tileset-03" },
         { "id": "f76_lib6", "x": 10, "y": 6, "type": "prop", "customSprite": "tileset-03" },

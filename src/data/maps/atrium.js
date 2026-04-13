@@ -21,7 +21,7 @@ export const atrium = {
         [2,9,9,9,20,9,9,9,9,20,9,9,9,29,29,9,9,9,3]
     ],
     objects: [
-        { "id": "zibrya", "x": 8, "y": 4, "type": "npc", "name": "Assistant Zibrya", "sideQuestId": "quest_zibrya_firstcollection" },
+        { "id": "zibrya", "x": 8, "y": 4, "type": "npc", "name": "Assistant Zibrya", "quests": ["quest_zibrya_firstcollection"] },
         { "id": "mamozet", "x": 7, "y": 10, "type": "npc", "name": "Researcher Mamozet" },
         {
             "id": "sapstan", "x": 4, "y": 6, "type": "npc", "name": "Biologist Sapstan",
