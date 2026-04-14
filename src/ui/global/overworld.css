@@ -507,7 +507,7 @@
 #overworld-map .world-object.cell {
     background-image: url('../../../assets/images/Lab_TileSet_02.png');
     background-size: 512px 512px;
-    transform: translateY(-10px) translateZ(0);
+    transform: translateY(-10px) translateZ(0) scaleX(var(--scale-x, 1));
     backface-visibility: hidden;
 }
 
@@ -1563,7 +1563,8 @@
 }
 
 .world-object.mirrored-object {
-    transform: translateY(-10px) translateZ(0) scaleX(-1) !important;
+    /* Logic is unified via --scale-x variable and breathing animations */
+    transform: translateY(-10px) translateZ(0) scaleX(var(--scale-x, -1));
 }
 
 /* --- QUEST COMPLETE MODAL --- */

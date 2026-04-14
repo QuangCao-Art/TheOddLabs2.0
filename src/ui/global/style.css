@@ -6528,6 +6528,26 @@ body {
     transform-origin: center bottom;
 }
 
+/* Generic Breathing Animation (Variable Driven) */
+@keyframes generic-breathing {
+    0% {
+        transform: scaleX(var(--scale-x, 1)) scaleY(1) translateY(-10px) translateZ(0);
+    }
+
+    50% {
+        transform: scaleX(calc(var(--scale-x, 1) * var(--breathing-scale, 1.15))) scaleY(var(--breathing-scale, 1.15)) translateY(-10px) translateZ(0);
+    }
+
+    100% {
+        transform: scaleX(var(--scale-x, 1)) scaleY(1) translateY(-10px) translateZ(0);
+    }
+}
+
+.anim-breathing {
+    animation: generic-breathing var(--breathing-speed, 1s) ease-in-out infinite !important;
+    transform-origin: center bottom;
+}
+
 /* --- BUILDER MODE UI --- */
 #builder-palette {
     position: fixed;

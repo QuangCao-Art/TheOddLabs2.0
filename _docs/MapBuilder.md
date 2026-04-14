@@ -259,15 +259,23 @@ Interactive machinery and experimental equipment. Texture asset: `Lab_TileSet_04
 | **f152** | BrokenCellAccelerator-BottomLeft | 0px | 1280px | Yes | The Playground's mystery has been solved by the sheer power of the sprint-kick. |
 | **f153** | BrokenCellAccelerator-BottomMid | 256px | 1280px | Yes | The Playground's mystery has been solved by the sheer power of the sprint-kick. |
 | **f154** | BrokenCellAccelerator-BottomRight | 512px | 1280px | Yes | The Playground's mystery has been solved by the sheer power of the sprint-kick. |
-| **f155** | Musstrep-Seedling | 1280px | 768px | Yes | An ancient Musstrep seedling. These mischievous younglings scurry everywhere, snapping at anything they see. |
-| **f156** | MusstrepPlant-TopLeft | 1536px | 0px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
-| **f157** | MusstrepPlant-TopRight | 1792px | 0px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
-| **f158** | MusstrepPlant-MidTopLeft | 1536px | 256px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
-| **f159** | MusstrepPlant-MidTopRight | 1792px | 256px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
-| **f160** | MusstrepPlant-MidBottomLeft | 1536px | 512px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
-| **f161** | MusstrepPlant-MidBottomRight | 1792px | 512px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
-| **f162** | MusstrepPlant-BottomLeft | 1536px | 768px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
-| **f163** | MusstrepPlant-BottomRight | 1792px | 768px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f155** | Musstrep-Seedling | 1x1 | 0px | 1536px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f156** | MusstrepPlant-TopLeft | 1x1 | 1536px | 0px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f157** | MusstrepPlant-TopRight | 1x1 | 1792px | 0px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f158** | MusstrepPlant-NearTopLeft | 1x1 | 1536px | 256px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f159** | MusstrepPlant-NearTopRight | 1x1 | 1792px | 256px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f160** | MusstrepPlant-NearUpperMidLeft | 1x1 | 1536px | 512px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f161** | MusstrepPlant-NearUpperMidRight | 1x1 | 1792px | 512px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f162** | MusstrepPlant-UpperMidLeft | 1x1 | 1536px | 768px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f163** | MusstrepPlant-UpperMidRight | 1x1 | 1792px | 768px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f164** | MusstrepPlant-LoweMidLeft | 1x1 | 1536px | 1024px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f165** | MusstrepPlant-LowerMidRight | 1x1 | 1792px | 1024px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f166** | MusstrepPlant-NearLoweMidLeft | 1x1 | 1536px | 1280px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f167** | MusstrepPlant-NearLowerMidRight | 1x1 | 1792px | 1280px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f168** | MusstrepPlant-NearBottomLeft | 1x1 | 1536px | 1536px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f169** | MusstrepPlant-NearBottomRight | 1x1 | 1792px | 1536px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f170** | MusstrepPlant-BottomLeft | 1x1 | 1536px | 1792px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f171** | MusstrepPlant-BottomRight | 1x1 | 1792px | 1792px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
 
 ---
 
@@ -279,23 +287,6 @@ Used for wild cell encounters. Props follow the class convention `.world-object.
 | **C0** | Stemmy | 1x1 | 0px | 0px | Yes | A wild Stemmy is wandering. |
 | **C1** | Cambihil | 1x1 | 0px | 256px | Yes | A wild Cambihil is looking for leaf. |
 | **C2** | Lydrosome | 1x1 | 0px | 512px | Yes | A wild Lydrosome is watching a lab tube. |
-| **f155** | Musstrep-Seedling | 1x1 | 0px | 1536px | Yes | An ancient Musstrep seedling. These mischievous younglings scurry everywhere, snapping at anything they see. |
-| **f156** | MusstrepPlant-TopLeft | 1x1 | 1536px | 0px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f157** | MusstrepPlant-TopRight | 1x1 | 1792px | 0px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f158** | MusstrepPlant-NearTopLeft | 1x1 | 1536px | 256px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f159** | MusstrepPlant-NearTopRight | 1x1 | 1792px | 256px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f160** | MusstrepPlant-NearUpperMidLeft | 1x1 | 1536px | 512px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f161** | MusstrepPlant-NearUpperMidRight | 1x1 | 1792px | 512px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f162** | MusstrepPlant-UpperMidLeft | 1x1 | 1536px | 768px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f163** | MusstrepPlant-UpperMidRight | 1x1 | 1792px | 768px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f164** | MusstrepPlant-LoweMidLeft | 1x1 | 1536px | 1024px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f165** | MusstrepPlant-LowerMidRight | 1x1 | 1792px | 1024px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f166** | MusstrepPlant-NearLoweMidLeft | 1x1 | 1536px | 1280px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f167** | MusstrepPlant-NearLowerMidRight | 1x1 | 1792px | 1280px | No | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f168** | MusstrepPlant-NearBottomLeft | 1x1 | 1536px | 1536px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f169** | MusstrepPlant-NearBottomRight | 1x1 | 1792px | 1536px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f170** | MusstrepPlant-BottomLeft | 1x1 | 1536px | 1792px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
-| **f171** | MusstrepPlant-BottomRight | 1x1 | 1792px | 1792px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. |
 | **C3** | Nitrophil | 1x1 | 0px | 768px | Yes | A wild Nitrophil is searching for food. |
 
 ---

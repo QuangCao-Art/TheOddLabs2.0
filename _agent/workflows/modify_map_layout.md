@@ -32,6 +32,12 @@ This protocol MUST be strictly followed for all map modifications:
 - **9. NPC_INTEGRITY_PROTOCOL**: Unless explicitly requested by the USER to move or remove them, all `type: "npc"` objects in the target zone MUST be preserved in their original coordinates when applying new furniture layouts.
 - **10. CLEAN_MAP_STANDARD**: When adding or modifying furniture in the `objects` array, do **NOT** include a `name` property. The interaction engine resolves names dynamically from the registry.
 - **11. ID_NAMING_INTEGRITY**: Do NOT use IDs with multiple underscores (e.g., `lab_prop_01`). Stick to single-segment numbers (f105) or single-word keys (crate). Multiple underscores break the pivot-synchronization logic in `overworld.js`.
+- **12. BIOLOGICAL_BREATHING_ANIMATION**: Organic or biological furniture (e.g., Musstrep plants) can be animated via the global repository `src/data/furniture.js`.
+    - **Properties**:
+        - `breathing: true` (MUST be explicitly set to enable; default is OFF).
+        - `breathingSpeed: "Xs"` (Optional, e.g., "1.5s").
+        - `breathingScale: "X.X"` (Optional, e.g., "1.1").
+    - **Opt-in Rule**: Breathing properties should ONLY be added to the registry upon explicit USER request. Do NOT add them by default to new assets.
 
 ### 1. Identify the Target Zone File
 Map data is now modularized into individual files.

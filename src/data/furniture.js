@@ -177,23 +177,23 @@ export const furnitureMetadata = {
     'c3': { name: 'Nitrophil', hasCollision: true, info: "A wild Nitrophil is searching for food." },
 
     // --- TILESET 04 (f155-f171) ---
-    'f155': { name: 'Musstrep Seedling', hasCollision: true, kickable: true, material: ['liquid', 'monster'], info: "An ancient Musstrep seedling. These mischievous younglings scurry everywhere, snapping at anything they see." },
-    'f156': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f157': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f158': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f159': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f160': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f161': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f162': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f163': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f164': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f165': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f166': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f167': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f168': { name: 'Ancient Musstrep Plant', hasCollision: true, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f169': { name: 'Ancient Musstrep Plant', hasCollision: true, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f170': { name: 'Ancient Musstrep Plant', hasCollision: true, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
-    'f171': { name: 'Ancient Musstrep Plant', hasCollision: true, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f155': { name: 'Musstrep Seedling', hasCollision: true, kickable: true, material: ['liquid', 'monster'], breathing: true, breathingSpeed: '0.8s', breathingScale: '1.05', info: "An ancient Musstrep seedling. These mischievous younglings scurry everywhere, snapping at anything they see." },
+    'f156': { name: 'Ancient Musstrep Plant', hasCollision: false, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f157': { name: 'Ancient Musstrep Plant', hasCollision: false, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f158': { name: 'Ancient Musstrep Plant', hasCollision: false, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f159': { name: 'Ancient Musstrep Plant', hasCollision: false, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f160': { name: 'Ancient Musstrep Plant', hasCollision: false, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f161': { name: 'Ancient Musstrep Plant', hasCollision: false, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f162': { name: 'Ancient Musstrep Plant', hasCollision: false, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f163': { name: 'Ancient Musstrep Plant', hasCollision: false, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f164': { name: 'Ancient Musstrep Plant', hasCollision: false, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f165': { name: 'Ancient Musstrep Plant', hasCollision: false, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f166': { name: 'Ancient Musstrep Plant', hasCollision: false, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f167': { name: 'Ancient Musstrep Plant', hasCollision: false, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f168': { name: 'Ancient Musstrep Plant', hasCollision: true, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f169': { name: 'Ancient Musstrep Plant', hasCollision: true, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f170': { name: 'Ancient Musstrep Plant', hasCollision: true, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f171': { name: 'Ancient Musstrep Plant', hasCollision: true, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
 };
 
 export const FURNITURE_TEMPLATES = {
@@ -527,7 +527,7 @@ export const FURNITURE_TEMPLATES = {
         tiles: [
             { id: 'f128', relX: -1, relY: -2 }, { id: 'f129', relX: 0, relY: -2 }, { id: 'f130', relX: 1, relY: -2 },
             { id: 'f131', relX: -1, relY: -1 }, { id: 'f132', relX: 0, relY: -1 }, { id: 'f133', relX: 1, relY: -1 },
-            { id: 'f134', relX: -1, relY: 0 },  { id: 'f135', relX: 0, relY: 0 },  { id: 'f136', relX: 1, relY: 0 }
+            { id: 'f134', relX: -1, relY: 0 }, { id: 'f135', relX: 0, relY: 0 }, { id: 'f136', relX: 1, relY: 0 }
         ]
     },
     CELL_ACCELERATOR_DAMAGED: {
@@ -535,7 +535,7 @@ export const FURNITURE_TEMPLATES = {
         tiles: [
             { id: 'f137', relX: -1, relY: -2 }, { id: 'f138', relX: 0, relY: -2 }, { id: 'f139', relX: 1, relY: -2 },
             { id: 'f140', relX: -1, relY: -1 }, { id: 'f141', relX: 0, relY: -1 }, { id: 'f142', relX: 1, relY: -1 },
-            { id: 'f143', relX: -1, relY: 0 },  { id: 'f144', relX: 0, relY: 0 },  { id: 'f145', relX: 1, relY: 0 }
+            { id: 'f143', relX: -1, relY: 0 }, { id: 'f144', relX: 0, relY: 0 }, { id: 'f145', relX: 1, relY: 0 }
         ]
     },
     CELL_ACCELERATOR_BROKEN: {
@@ -543,7 +543,7 @@ export const FURNITURE_TEMPLATES = {
         tiles: [
             { id: 'f146', relX: -1, relY: -2 }, { id: 'f147', relX: 0, relY: -2 }, { id: 'f148', relX: 1, relY: -2 },
             { id: 'f149', relX: -1, relY: -1 }, { id: 'f150', relX: 0, relY: -1 }, { id: 'f151', relX: 1, relY: -1 },
-            { id: 'f152', relX: -1, relY: 0 },  { id: 'f153', relX: 0, relY: 0 },  { id: 'f154', relX: 1, relY: 0 }
+            { id: 'f152', relX: -1, relY: 0 }, { id: 'f153', relX: 0, relY: 0 }, { id: 'f154', relX: 1, relY: 0 }
         ]
     },
 

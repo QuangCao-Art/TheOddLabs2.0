@@ -728,9 +728,21 @@ export const Overworld = {
         const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
         if (meta && meta.hasCollision === false) el.classList.add('render-top');
 
+        // --- NEW: Systematic Breathing Animation ---
+        if (meta && meta.breathing) {
+            el.classList.add('anim-breathing');
+            if (meta.breathingSpeed) el.style.setProperty('--breathing-speed', meta.breathingSpeed);
+            if (meta.breathingScale) el.style.setProperty('--breathing-scale', meta.breathingScale);
+        }
+
         // --- NEW: Symmetrical Animation Origin ---
         // We calculate a shared machine pivot so that 2x2 and 3x3 objects squash as a single unit.
-        if (obj.mirrored) el.classList.add('mirrored-object');
+        if (obj.mirrored) {
+            el.classList.add('mirrored-object');
+            el.style.setProperty('--scale-x', '-1');
+        } else {
+            el.style.setProperty('--scale-x', '1');
+        }
 
         const prefix = obj.id.split('_')[0];
         let template = null;
@@ -2682,7 +2694,7 @@ export const Overworld = {
             // Visual Cleanup
             const el = document.getElementById(`npc-${monsterId}`);
             if (el) {
-                el.classList.remove('anim-monster-breathing', 'anim-monster-pop');
+                el.classList.remove('anim-monster-breathing', 'anim-breathing', 'anim-monster-pop');
                 el.classList.add('anim-recall-exit');
                 setTimeout(() => {
                     if (el.parentNode) el.remove();
@@ -2859,7 +2871,7 @@ export const Overworld = {
         parts.forEach(p => {
             const pEl = document.getElementById(`npc-${p.id}`);
             if (pEl) {
-                pEl.classList.remove('anim-monster-breathing', 'anim-monster-pop', 'anim-monster-shake');
+                pEl.classList.remove('anim-monster-breathing', 'anim-breathing', 'anim-monster-pop', 'anim-monster-shake');
                 void pEl.offsetWidth;
 
                 // --- Wait to sync Z-Index (Top + Bottom) until the launch phase ---
