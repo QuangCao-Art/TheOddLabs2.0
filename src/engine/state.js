@@ -76,6 +76,7 @@ export const gameState = {
     bioExtractGrid: new Array(9).fill(null), // 3x3 grid for bio extraction [monster, biomassStored, lastTick]
     quests: {}, // Track active and completed quests
     lootedSpots: [], // Track unique coordinate-based hiding spots that have been emptied (zone_x_y)
+    npcRelocations: {}, // Persistent NPC coordinate overrides { npcId: { x, y, zoneId, direction } }
     
     // Persistent Session Tracking
     lastOverworldPos: {
@@ -181,6 +182,7 @@ export function saveGameState() {
         quests: gameState.quests,
         lootedSpots: gameState.lootedSpots || [],
         bioExtractGrid: gameState.bioExtractGrid,
+        npcRelocations: gameState.npcRelocations || {},
         lastOverworldPos: gameState.lastOverworldPos
         // Note: settings are now handled by saveSystemSettings()
     };
@@ -244,6 +246,7 @@ export function loadGameState() {
         if (saved.quests) gameState.quests = { ...saved.quests };
         if (saved.lootedSpots) gameState.lootedSpots = [...saved.lootedSpots];
         if (saved.bioExtractGrid) gameState.bioExtractGrid = [...saved.bioExtractGrid];
+        if (saved.npcRelocations) gameState.npcRelocations = { ...saved.npcRelocations };
         if (saved.lastOverworldPos) gameState.lastOverworldPos = { ...saved.lastOverworldPos };
         
         console.log("Game Progress Loaded Successfully.");
@@ -317,6 +320,7 @@ export function fullResetGameState() {
     gameState.quests = {};
     gameState.lootedSpots = [];
     gameState.bioExtractGrid = new Array(9).fill(null);
+    gameState.npcRelocations = {};
     
     gameState.lastOverworldPos = {
         zone: null,

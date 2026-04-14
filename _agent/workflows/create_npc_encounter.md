@@ -4,6 +4,11 @@ description: Create a new NPC battle encounter
 
 This workflow guides you through the process of adding a new, one-time NPC battle encounter to the game, ensuring all data, logic, and visual mappings are correctly implemented.
 
+> [!NOTE]
+> **Related Workflows**:
+> - If this battle is a **Quest Objective**, see [create_quest.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/_agent/workflows/create_quest.md).
+> - If this is for a **Unique Story NPC** with complex dialogue logic, see [create_unique_story_npc.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/_agent/workflows/create_unique_story_npc.md).
+
 ### ✍️ Writing Quality & Grammar
 > [!IMPORTANT]
 > For any new dialogue (VS sequence, before/after battle), the assistant MUST perform a comprehensive grammar check and polish the language for professional, high-quality narrative writing before implementation.
@@ -49,7 +54,7 @@ Add the NPC object to the `objects` array in the relevant **Modular Map** file.
 - **What to add**:
   - `id`: Use the unified lore name (e.g., `'maya'`).
   - `battleEncounterId`: Must match the key used in `NPC_ENCOUNTERS`.
-  - `dialogue`: Initial lines (if any). If omitted, falls back to `randomPools`.
+  - `dialogue`: Initial lines (if any). **Note**: For complex battle-able NPCs (with state-aware Before/After dialogues), use the [Narrative Engine registry](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/npc_dialogues.js) instead of this field.
 
 ### 3. Map Sprite (OVERWORLD)
 Ensure the engine knows which sprite class (male/female) to use for the ID.
@@ -64,6 +69,11 @@ Ensure the character art/quote is mapped for the pre-battle VS sequence.
 - **Target**: `PRE_BATTLE_DATA`
 - **What to add**: Add the ID with its `art` and `dialogue`.
 
+### 5. Systematic Narrative Logic (NEW)
+Any NPC that requires specific dialogue logic (before battle, after winning, after losing) must be registered in the **Narrative Engine**.
+- **File**: [npc_dialogues.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/npc_dialogues.js)
+- **What to add**: A new `getScript` entry for the NPC ID. This script should handle the `isPostBattle` and `bossWon` parameters.
+
 ---
 
 ### ⚠️ Post-Mortem Bug Checklist (DO NOT SKIP)
@@ -72,4 +82,4 @@ Ensure the character art/quote is mapped for the pre-battle VS sequence.
 - [ ] **Grammar & Polish**: Have the battle lines been checked and polished for high-quality writing?
 - [ ] **ID Consistency**: Does the ID in `NPC_ENCOUNTERS` EXACTLY match the ID in the modular map?
 - [ ] **Zone Dialogue Accuracy**: If the NPC is a floor resident, does the Overworld dialogue match `story_lore_progression.md`?
-- [ ] **Dialogue Branching**: Ensure specialized narrative dialogues are added to `overworld.js:startNPCInteraction`.
+- [ ] **Dialogue Branching**: Ensure specialized narrative dialogues are added to **`src/data/npc_dialogues.js`**.

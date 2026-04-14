@@ -4,6 +4,11 @@ description: Create a Specific NPC (Named Character)
 
 This workflow guides you through the creation of a named character in the lab—from **Peaceful Researchers** (Lore & Quest givers) to **Elite Bosses** (Lana, Dyzes, etc.). All NPCs created here use the **Lore-Unified ID System** and are managed through **Modular Map Files**.
 
+> [!NOTE]
+> **Related Workflows**:
+> - If this NPC is a **Quest Giver**, see [create_quest.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/_agent/workflows/create_quest.md).
+> - If this NPC has a **Battle Encounter**, see [create_npc_encounter.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/_agent/workflows/create_npc_encounter.md).
+
 ### 🧪 Peaceful by Default Rule
 > [!IMPORTANT]
 > **Always ask the user if the NPC is peaceful.** If the user does not specify an interaction type, **PEACEFUL** is the default state. You MUST NOT add battle logic or quests unless explicitly requested.
@@ -52,21 +57,22 @@ Register the NPC visuals in [main.js](file:///d:/AntiGravityWorkSpace/TheOddLabs
 - **Overworld Sprite**: Map the ID to a base sprite in `window.OVERWORLD_NPC_SPRITES` (e.g., `mimi: 'npc_f_01'`).
 - **Battle Visuals**: If the type is **Boss/Battleable**, add the ID with its `art` and `dialogue` to `PRE_BATTLE_DATA`.
 
-### 3. Implement Interaction Logic
-Unique narrative responses are defined in the engagement handler:
-- **File**: [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/overworld.js)
-- **Step**: Add an `else if (npc.id === 'mimi')` block to `startNPCInteraction`.
+### 3. Implement Interaction Logic (Systematic)
+Unique narrative responses and branching states are now defined in the **Narrative Engine**:
+- **File**: [npc_dialogues.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/npc_dialogues.js)
+- **Step**: Add a new entry to the `NPC_SCRIPTS` object.
 - **Logic**:
-  - For **Peaceful/Quest** NPCs, define their `lines` and handle quest states.
-  - For **Battleable** NPCs, set `this.pendingBattleEncounter` and handle win/loss lines via `isPostBattle`.
+  - Implement a `getScript(gameState, overworld, params)` function. 
+  - Use `params` like `isPostBattle`, `bossWon`, and `logs` to determine the dialogue flow.
+  - Return an object with `{ lines: [], triggers: [], pendingBattleEncounter: null }`.
 
 ---
 
 ### ⚠️ NPC Integrity Checklist
 - [ ] **Type Check**: Is the NPC **Peaceful**? (If yes, ensure no `battleEncounterId` exists)
-- [ ] **Lore ID Consistency**: Does the ID in the map file match `main.js` and `overworld.js`?
+- [ ] **Lore ID Consistency**: Does the ID in the map file match `main.js` and `npc_dialogues.js`?
 - [ ] **Metadata Mapping**: Is the NPC registered in `OVERWORLD_NPC_SPRITES`?
-- [ ] **Dialogue Type**: Are all lines defined in `overworld.js` arrays?
+- [ ] **Dialogue Type**: Is the logic registered in **`src/data/npc_dialogues.js`**?
 - [ ] **Zone Dialogue Accuracy**: Does the dialogue match the official lines in `story_lore_progression.md`?
 - [ ] **Grammar & Polish**: Have the lines been checked and polished for high-quality writing?
 - [ ] **Lore Check**: Has the new character been added to the Profiles in `story_lore_progression.md`?

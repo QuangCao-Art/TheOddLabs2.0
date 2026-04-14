@@ -12,6 +12,7 @@ A modular, phased system for assigning tasks to NPCs with dynamic dialogue and r
 | **Duel** | Win a Battle with Giver | Initiates a direct battle with the NPC after dialogue. |
 | **Synthesis** | Unit Creation | Tracks unit ID creation at the Cell-Accelerator. |
 | **Collect** | Item Finding | Monitors `inventory` for specific item or log IDs. |
+| **Relocate** | NPC Movement | (Reward only) Moves an NPC to a new $(x, y)$ coordinate or zone. |
 
 ### Technical Features
 - **Assignment-Ready**: Quests are not tethered to specific NPCs. Assign by adding `sideQuestId: 'quest_id'` to any NPC in `overworld.js`.
@@ -93,19 +94,16 @@ Use this format for planning new Boss encounters.
 - **Credits (LC)**: [High: 350+]
 
 #### 🛠️ Implementation Steps
-1.  **Overworld Setup** (`overworld.js`):
-    - Implement a manual `if (npc.id === 'boss_id')` branch in `startNPCInteraction`.
-    - Gate the battle trigger behind log counts and story flags.
-    - Set `this.pendingBattleEncounter = 'boss_id';`.
+1.  **Narrative Setup** (`src/data/npc_dialogues.js`):
+    - Register the Boss ID in the `NPC_SCRIPTS` object.
+    - Implement branching logic based on `gameState.storyFlags` and `params.logs`.
+    - Return `pendingBattleEncounter = 'boss_id'` to trigger the fight.
 2.  **Battle Engine Initialization** (`main.js`):
-    - Add a branch in the `start-npc-encounter` listener.
-    - Initialize `gameState.profiles['boss_id_boss']` with stats and monsters.
-    - Call `syncCardsToLevel` and `executeQuickEquip`.
+    - Add a branch in the `start-npc-encounter` listener for team/stat setup.
 3.  **Reward & Flag Logic** (`main.js`):
-    - Add the ID to the "Sector Boss" block in `showGameOver`.
-    - Set the specific story flag: `gameState.storyFlags.bossIdBattleDone = true`.
-4.  **Victory Dialogue & Rewards** (`overworld.js`):
-    - Update the `if (npc.id === 'boss_id')` branch to handle the `isBattleDone && !isDefeatedSeen` state.
+    - Add the ID to the "Sector Boss" block in `showGameOver` to set `battleDone`.
+4.  **Post-Victory State** (`npc_dialogues.js`):
+    - Update the script to handle the `isPostBattle` state with a "Defeated" dialogue branch.
 
 ---
 
@@ -140,8 +138,31 @@ Use this format when defining a new NPC encounter (like Julia).
 
 #### 🛠️ Implementation Steps
 1.  **Define Encounter** (`src/data/cards.js` -> `NPC_ENCOUNTERS`):
-    - Set `rg`, `team`, `style`, and `reward` using the format above.
-2.  **Setup NPC Object** (`src/engine/overworld.js`):
-    - Add `battleEncounterId` (matches the key in step 1).
-    - Add `dialogue`, `npcWinDialogue`, and `npcLossDialogue` arrays.
-3.  **Result Persistence**: The system automatically handles flags (`battleDone`, `battleWon`, `battleLost`) to ensure the encounter is one-time and outcome-accurate.
+    - Set `rg`, `team`, `style`, and `reward`.
+2.  **Setup NPC Narrative** (`src/data/npc_dialogues.js`):
+    - Register the NPC ID and define `Before Battle` and `Post Battle` responses.
+    - Point to the `battleEncounterId` from Step 1.
+3.  **Result Persistence**: The system automatically handles flags (`battleDone`, `battleWon`, `battleLost`) via the core engine.
+
+---
+
+## 5. Systematic Narrative Engine
+A data-driven registry that decouples dialogue logic from the simulation engine.
+
+### Core Mechanics
+- **Registry**: [npc_dialogues.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/npc_dialogues.js) maintains all unique NPC scripts.
+- **Hook System**: Supports `triggers` (story flags), `pendingBattleEncounter`, and dynamic `lines`.
+- **Logic Parameters**: Scripts receive `gameState`, `overworld` engine, and `params` (isPostBattle, bossWon, totalLogs) to allow for complex branching without hardcoding.
+
+---
+
+## 6. Persistent Relocation System
+Allows NPCs to move dynamically between coordinates or zones while maintaining state across sessions.
+
+### Mechanics
+- **Relocate Command**: `overworld.relocateNPC(npcId, x, y, zoneId, direction, useFade)`.
+- **Persistence**: Final positions are saved in `gameState.npcRelocations` and override base map data during [applyMapPatches](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/overworld.js).
+- **Triggers**:
+    - **Quest Reward**: Add a reward of type `{ type: 'relocate' }` to any quest.
+    - **Script Trigger**: Call directly from an NPC script in the Narrative Engine.
+- **Visuals**: Uses `triggerQuickTransition` for a seamless fade-to-black effect during movement.
