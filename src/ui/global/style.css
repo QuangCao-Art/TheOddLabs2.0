@@ -57,18 +57,26 @@
     --neon-cyan: #00f3ff;
 
     /* --- UNIFIED TYPOGRAPHY SYSTEM (Laboratory OS 2.0) --- */
-    --fs-hero:    2.5rem;  /* Main Titles / Huge Displays */
-    --fs-h1:      2.0rem;  /* Primary Panel Headers */
-    --fs-h2:      1.5rem;  /* Section Headers / Sub-headers */
-    --fs-body-lg: 1.2rem;  /* Primary Reading / Dialogue */
-    --fs-body:    1.0rem;  /* Standard Reading / Metadata */
-    --fs-btn:     0.9rem;  /* Interactive text / Buttons */
-    --fs-label:   0.75rem; /* Static Labels / Technical Info */
-    --fs-tiny:    0.65rem; /* Micro-details / Footers */
+    --fs-hero: 2.5rem;
+    /* Main Titles / Huge Displays */
+    --fs-h1: 2.0rem;
+    /* Primary Panel Headers */
+    --fs-h2: 1.5rem;
+    /* Section Headers / Sub-headers */
+    --fs-body-lg: 1.2rem;
+    /* Primary Reading / Dialogue */
+    --fs-body: 1.0rem;
+    /* Standard Reading / Metadata */
+    --fs-btn: 0.9rem;
+    /* Interactive text / Buttons */
+    --fs-label: 0.75rem;
+    /* Static Labels / Technical Info */
+    --fs-tiny: 0.65rem;
+    /* Micro-details / Footers */
 
     --font-tactical: 'Orbitron', sans-serif;
-    --font-main:     'Rajdhani', sans-serif;
-    --font-data:     'Space Mono', monospace;
+    --font-main: 'Rajdhani', sans-serif;
+    --font-data: 'Space Mono', monospace;
 }
 
 .white-text {
@@ -1144,26 +1152,33 @@ body {
 
 .quest-main {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 2px;
 }
 
-.quest-title {
+.quest-item .quest-title {
     font-family: var(--font-tactical);
     font-weight: 700;
-    font-size: var(--fs-body);
+    font-size: var(--fs-btn);
     color: #fff;
+    line-height: 1;
+    flex: none;
 }
 
 .quest-progress {
-    font-family: var(--font-main);
+    font-family: var(--font-tactical);
     font-weight: 700;
-    font-size: var(--fs-btn);
+    font-size: 0.7rem;
     color: var(--neon-cyan);
     background: rgba(0, 243, 255, 0.1);
-    padding: 2px 8px;
+    padding: 3px 6px;
     border-radius: 4px;
+    line-height: 1;
+    flex: none;
+    text-transform: uppercase;
+    transform: translateY(-1px);
 }
 
 .quest-desc {
@@ -3088,11 +3103,13 @@ body {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    display: none !important; /* Keep display none for stability, we will handle fade in JS */
+    display: none !important;
+    /* Keep display none for stability, we will handle fade in JS */
 }
 
 .overlay.modal-closing {
-    display: flex !important; /* Force display during fade out */
+    display: flex !important;
+    /* Force display during fade out */
     opacity: 0 !important;
     transition: opacity 0.3s ease-out !important;
     pointer-events: none !important;
@@ -3103,7 +3120,8 @@ body {
 .overlay.modal-closing .starter-modal,
 .modal-overlay.modal-closing .glass-panel,
 .modal-overlay.modal-closing .modal-content {
-    transform: scale(0.85); /* Shrink toward center */
+    transform: scale(0.85);
+    /* Shrink toward center */
     transition: transform 0.3s ease-out !important;
 }
 
@@ -5351,7 +5369,8 @@ body {
     width: 100vw;
     height: 100vh;
     background: #000;
-    z-index: 100001; /* Must stay above modals (99999) */
+    z-index: 100001;
+    /* Must stay above modals (99999) */
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
     pointer-events: none;
@@ -5534,7 +5553,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-radius: 40px; /* Upgraded to pill shape to match pause */
+    border-radius: 40px;
+    /* Upgraded to pill shape to match pause */
     box-shadow: 0 0 50px rgba(0, 243, 255, 0.1);
 }
 
@@ -5558,7 +5578,8 @@ body {
 
 .confirm-buttons {
     display: flex;
-    flex-direction: column; /* Match Pause Menu vertical stack for high fidelity */
+    flex-direction: column;
+    /* Match Pause Menu vertical stack for high fidelity */
     gap: 15px;
     width: 100%;
     margin: 30px 0;
@@ -5570,7 +5591,8 @@ body {
     padding: 12px 35px;
     font-size: var(--fs-btn);
     letter-spacing: 2px;
-    border-radius: 40px; /* Upgraded to pill shape */
+    border-radius: 40px;
+    /* Upgraded to pill shape */
     transition: all 0.2s ease-out;
 }
 
