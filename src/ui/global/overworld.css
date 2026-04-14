@@ -1495,9 +1495,10 @@
     z-index: 1000;
 }
 
-/* Ensure modal shrinks inward when parent overlay is hidden */
-#quest-complete-modal.hidden .quest-complete-panel {
-    transform: translate(-50%, -50%) scale(0.8);
+/* Ensure modal shrinks inward when parent overlay is hidden or closing */
+#quest-complete-modal.hidden .quest-complete-panel,
+#quest-complete-modal.modal-closing .quest-complete-panel {
+    transform: translate(-50%, -50%) scale(0.85) !important;
     opacity: 0;
 }
 

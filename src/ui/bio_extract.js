@@ -455,7 +455,7 @@ export const BioExtract = {
 
         const amount = Math.floor(slot.biomassStored);
         if (window.changeResource) {
-            window.changeResource('bm', amount, true);
+            window.changeResource('bm', amount, false);
         } else {
             window.gameState.biomass += amount;
             if (window.updateResourceHUD) window.updateResourceHUD();

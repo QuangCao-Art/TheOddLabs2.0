@@ -352,23 +352,28 @@ export const Overworld = {
                 msg = `Acquired ${reward.type.toUpperCase()}: ${reward.id}.`;
             } else if (reward.type === 'resource') {
                 if (window.changeResource) {
-                    window.changeResource(reward.id === 'credits' ? 'lc' : 'bm', reward.amount || 0, true, true);
+                    window.changeResource(reward.id === 'credits' ? 'lc' : 'bm', reward.amount || 0, false, true);
                 }
                 msg = `Acquired ${reward.amount} ${reward.id.toUpperCase()}.`;
             }
             console.log(`Quest Reward given: ${msg}`);
         };
 
-        const reward = questData.reward;
-        if (reward.type === 'resource_multi' && Array.isArray(reward.rewards)) {
-            reward.rewards.forEach(r => processReward(r));
-        } else {
-            processReward(reward);
-        }
+        const handleRewards = () => {
+            const reward = questData.reward;
+            if (reward.type === 'resource_multi' && Array.isArray(reward.rewards)) {
+                reward.rewards.forEach(r => processReward(r));
+            } else {
+                processReward(reward);
+            }
+        };
 
-        // --- NEW: Visual confirmation modal ---
+        // --- Visual confirmation modal ---
+        // Pass handleRewards as callback so items/logs are collected AFTER dismissal
         if (window.showQuestCompleteModal) {
-            window.showQuestCompleteModal(questId);
+            window.showQuestCompleteModal(questId, handleRewards);
+        } else {
+            handleRewards();
         }
     },
 
@@ -2543,7 +2548,7 @@ export const Overworld = {
             }
         } else if (itemType === 'resource') {
             if (window.changeResource) {
-                window.changeResource(itemInfo.resourceType === 'credits' ? 'lc' : 'bm', itemInfo.amount || 0, true, isDiscovery);
+                window.changeResource(itemInfo.resourceType === 'credits' ? 'lc' : 'bm', itemInfo.amount || 0, false, isDiscovery);
             }
         } else if (itemType === 'card') {
             if (window.gameState) {

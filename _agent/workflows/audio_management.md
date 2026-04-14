@@ -31,6 +31,12 @@ Place your `.mp3` files in `assets/audio/` using the following exact names:
 | **Footstep (Grass)** | `footstep_grass.mp3` | Rustling sound for the Botanic Sector. |
 | **Footstep (Bone)** | `footstep_bone.mp3` | Clicking sound for skeletal zones. |
 | **Footstep (Plastic)** | `footstep_plastic.mp3` | Soft thud for plastic-covered floors. |
+| **Modal Open** | `modal_open.mp3` | **(UI)** Generic opening sound for menus (Shop, Synthesis, etc). |
+| **Modal Close** | `modal_close.mp3` | **(UI)** Generic closing sound for all modals. |
+| **Acquisition** | `modal_pickup.mp3` | **(UI)** Special fanfare for Item/Cell/Log acquisition. |
+| **Quest Clear** | `modal_quest_clear.mp3` | **(UI)** Mission Success summary sound. |
+| **Major Win** | `modal_battle_win.mp3` | **(UI)** "EXPERIMENT SUCCESSFUL" battle result. |
+| **Major Loss** | `modal_battle_lose.mp3` | **(UI)** "EXPERIMENT FAILED" battle result. |
 
 ### 2. Music (BGM) Convention
 Background music loops automatically and cross-fades during screen transitions.

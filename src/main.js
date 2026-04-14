@@ -481,6 +481,7 @@ window.showItemPickupModal = (itemId, onClose) => {
     }
 
     modal.classList.remove('hidden');
+    if (AudioManager) AudioManager.play('modal_pickup', 0.6);
 
     let inputReady = false;
     setTimeout(() => { inputReady = true; }, 600); // Increased buffer to prevent accidental skipping
@@ -539,6 +540,7 @@ window.showQuestCompleteModal = (questId, onClose) => {
     document.getElementById('quest-complete-rewards').textContent = rewardsText || "COMMENDATION RECEIVED";
 
     modal.classList.remove('hidden');
+    if (AudioManager) AudioManager.play('modal_quest_clear', 0.6);
 
     let inputReady = false;
     setTimeout(() => { inputReady = true; }, 600); // Anti-Spam F feature
@@ -575,6 +577,7 @@ window.hideWithFade = (elementOrId) => {
     const el = typeof elementOrId === 'string' ? document.getElementById(elementOrId) : elementOrId;
     if (!el) return;
     el.classList.add('modal-closing');
+    if (AudioManager) AudioManager.play('modal_close', 0.5);
     setTimeout(() => {
         el.classList.add('hidden');
         el.classList.remove('modal-closing');
@@ -591,6 +594,7 @@ window.togglePauseMenu = (show) => {
 
     if (show) {
         screen.classList.remove('hidden');
+        if (AudioManager) AudioManager.play('modal_open', 0.5);
         if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
         pauseInputReady = false;
         pauseNavIndex = 0;
@@ -667,8 +671,8 @@ window.showConfirmModal = (title, message, onConfirm, manualCleanup = false, hid
         else if (title?.toLowerCase().includes('save')) subEl.innerText = "COMMITTING DATA TO THE VOID";
         else subEl.innerText = "SYSTEM ALERT AUTHENTICATING";
     }
-
     screen.classList.remove('hidden');
+    if (AudioManager) AudioManager.play('modal_open', 0.5);
 
     const updateConfirmSelection = () => {
         btnYes.classList.toggle('nav-selected', confirmNavIndex === 0);
@@ -1074,6 +1078,7 @@ function setupEventListeners() {
         document.getElementById('toggle-skip-tutorial').checked = SKIP_TUTORIAL;
         document.getElementById('toggle-full-cell-debug').checked = FULL_CELL_DEBUG;
         updateAudioSettingsUI(); // Ensure sliders match actual volume
+        if (AudioManager) AudioManager.play('modal_open', 0.5);
         showScreen('screen-settings');
     });
 
@@ -1678,8 +1683,14 @@ function setupEventListeners() {
         document.getElementById('pre-battle-portrait')?.classList.remove('active');
         showScreen('screen-main-menu'); // Always back to menu for now
     });
-    document.getElementById('btn-battle-rulebook')?.addEventListener('click', () => showScreen('screen-rulebook'));
-    document.getElementById('btn-open-rulebook')?.addEventListener('click', () => showScreen('screen-rulebook'));
+    document.getElementById('btn-battle-rulebook')?.addEventListener('click', () => {
+        if (AudioManager) AudioManager.play('modal_open', 0.5);
+        showScreen('screen-rulebook');
+    });
+    document.getElementById('btn-open-rulebook')?.addEventListener('click', () => {
+        if (AudioManager) AudioManager.play('modal_open', 0.5);
+        showScreen('screen-rulebook');
+    });
     document.getElementById('btn-rulebook-back')?.addEventListener('click', () => {
         // If coming back from rules during battle, go to battle, not pre-battle
         if (previousScreen === 'screen-pre-battle') {
@@ -1702,6 +1713,7 @@ function setupEventListeners() {
         invNav.tabIndex = 0; // Default to first tab (Quests) per user request
         invNav.itemIndex = 0;
         updateInvNav(true);
+        if (AudioManager) AudioManager.play('modal_open', 0.5);
         showScreen('screen-inventory');
     });
 
@@ -4720,6 +4732,7 @@ function showGameOver(isFailure, forceOverlay = false) {
     if (overlay && title && msg) {
         if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
         if (isFailure && !isTutorialLoss) {
+            if (AudioManager) AudioManager.play('modal_battle_lose', 0.6);
             title.innerHTML = `THE EXPERIMENT HAS <span class="neon-text" style="color: #ff3333; text-shadow: 0 0 10px #ff3333;">FAILED!</span>`;
 
             const quirkyMessages = [
@@ -4748,6 +4761,7 @@ function showGameOver(isFailure, forceOverlay = false) {
                 if (isTutorialLoss) {
                     title.innerHTML = `TEST <span class="neon-text" style="color: #ffcc00; text-shadow: 0 0 10px #ffcc00;">CONCLUDED</span>`;
                 } else {
+                    if (AudioManager) AudioManager.play('modal_battle_win', 0.6);
                     title.innerHTML = `EXPERIMENT <span class="neon-text">SUCCESSFUL</span>`;
                 }
             } else {
@@ -4839,8 +4853,8 @@ function showGameOver(isFailure, forceOverlay = false) {
         const initialPercent = Math.max(0, Math.min((initialExpRelative / expNeededForLevel) * 100, 100));
 
         if (window.changeResource) {
-            if (creditsEarned > 0) window.changeResource('lc', creditsEarned, true);
-            if (biomassEarned > 0) window.changeResource('bm', biomassEarned, true);
+            if (creditsEarned > 0) window.changeResource('lc', creditsEarned, false);
+            if (biomassEarned > 0) window.changeResource('bm', biomassEarned, false);
         } else {
             gameState.credits += creditsEarned;
             gameState.biomass += biomassEarned;
@@ -7112,6 +7126,7 @@ window.openShopMenu = function () {
     if (!shopScreen) return;
 
     shopScreen.classList.remove('hidden');
+    if (AudioManager) AudioManager.play('modal_open', 0.5);
     Overworld.isPaused = true;
     shopState.activeTab = 'buy';
     shopState.selectedItemId = null;
@@ -7130,6 +7145,7 @@ window.openSynthesisMenu = function () {
     if (!synthesisScreen) return;
 
     synthesisScreen.classList.remove('hidden');
+    if (AudioManager) AudioManager.play('modal_open', 0.5);
 
     // Update Biomass balance
     const bmBalance = document.getElementById('synthesis-bm-balance');
@@ -7574,6 +7590,7 @@ function openQuantityModal(item, mode) {
 
     updateQuantityTotal();
     modal.classList.remove('hidden');
+    if (AudioManager) AudioManager.play('modal_open', 0.5);
 }
 
 function closeQuantityModal() {
