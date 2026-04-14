@@ -51,10 +51,6 @@ export const gameState = {
         humanWardUnlocked: SKIP_TUTORIAL,
         executiveSuiteUnlocked: SKIP_TUTORIAL,
         oldLabUnlocked: SKIP_TUTORIAL,
-        // Character Meetings
-        lanaMet: SKIP_TUTORIAL,
-        dyzesMet: SKIP_TUTORIAL,
-        capsainMet: SKIP_TUTORIAL,
         // Quest Bosses
         lanaBattleDone: SKIP_TUTORIAL,
         dyzesBattleDone: SKIP_TUTORIAL,

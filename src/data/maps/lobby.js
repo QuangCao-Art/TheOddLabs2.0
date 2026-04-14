@@ -24,7 +24,7 @@ export const lobby = {
         { id: 'f23_lob_br', x: 8, y: 3, type: 'prop', name: 'Red Specimen Tank' },
         { id: 'f13_lob_tr', x: 9, y: 2, type: 'prop', name: 'Green Specimen Tank' },
         { id: 'f14_lob_tr', x: 9, y: 3, type: 'prop', name: 'Green Specimen Tank' },
-        { id: 'jenzi', x: 4, y: 4, type: 'npc', name: 'Jenzi', quests: ['quest_main_datapad'] },
+        { id: 'jenzi', x: 4, y: 4, type: 'npc', name: 'Jenzi', quests: ['quest_main_datapad', 'quest_main_atrium_proof', 'quest_main_origin_secret'] },
         { id: 'f59_lob_nw', x: 1, y: 3, type: 'prop', name: 'Decorative Bush' },
         { id: 'f1_lobby_wait1', x: 1, y: 4, type: 'prop', name: 'Lab Chair', hiddenReward: 'REWARD_CREDITS_250' },
         { id: 'f1_lobby_wait2', x: 1, y: 5, type: 'prop', name: 'Lab Chair' },

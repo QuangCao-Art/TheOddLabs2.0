@@ -144,54 +144,15 @@ export const botanic = {
         { id: "corel", x: 2, y: 9, type: "npc", name: "Researcher Corel" },
         {
             id: "shopia", x: 1, y: 5, type: "npc", name: "Scientist Shopia",
-            battleEncounterId: "shopia",
-            dialogue: [
-                "The Botanic Sector is a delicate ecosystem. You can't just barge in without a plan!",
-                "Have you analyzed the elemental spectrum? Every organism here has a specific nature that can be countered.",
-                "If you don't know your types, this will be a very short lesson."
-            ],
-            npcWinDialogue: [
-                "Efficiency is the cornerstone of research. To succeed, one must master elemental counters: Thermal melts Botanic, Botanic absorbs Osmotic, and Osmotic cools Thermal.",
-                "Always analyze the nature of your target before initiating a sync."
-            ],
-            npcLossDialogue: [
-                "Incredible! Identifying the elemental nature of your opponent is the first step toward mastery.",
-                "Each type has a counter: Thermal melts Botanic, Botanic absorbs Osmotic, and Osmotic cools Thermal. These 1.5x multipliers are the only way to survive the deeper wards."
-            ]
+            battleEncounterId: "shopia"
         },
         {
             id: "clips", x: 13, y: 9, type: "npc", name: "Tech Clips",
-            battleEncounterId: "clips",
-            dialogue: [
-                "New intern, right? You're entering a sector where one Basic skill just isn't enough to manage the tactical load.",
-                "Have you heard of the 'Second Brain'? It's a special card that unlocks an additional skill slot just by being in your squad's Catalyst Hub.",
-                "Let's see if you're ready for that kind of growth!"
-            ],
-            npcWinDialogue: [
-                "Lagging behind? If a Second Brain isn't enough to save you, maybe you should start looking for a third!"
-            ],
-            npcLossDialogue: [
-                "Solid processing speed! Remember, the Second Brain card's presence alone grants you that extra Pellicle slot.",
-                "It allows you to equip a second active skill, giving you much more control over your Pellicle Points (PP) in battle."
-            ]
+            battleEncounterId: "clips"
         },
         {
             id: "lustra", x: 9, y: 11, type: "npc", name: "Researcher Lustra",
-            battleEncounterId: "lustra",
-            dialogue: [
-                "Be careful—if you push your Cell too hard, it'll literally fall apart.",
-                "Most interns think Negative PP is just a number, but it's a structural failure waiting to happen.",
-                "Want to see what 'Lysis' looks like up close?"
-            ],
-            npcWinDialogue: [
-                "See that extra damage? That's the Lysis Penalty.",
-                "For every point of Negative PP, you take 10% more damage from every hit. It's like fighting without a skin!"
-            ],
-            npcLossDialogue: [
-                "Risky, but effective! You managed to 'vent' your PP just before your membrane collapsed.",
-                "Remember: every point below zero increases incoming damage by 10%. If you hit your debt limit (your negative Max PP), you're taking DOUBLE damage!",
-                "It's called the 'Lysis State'—your cell's structural integrity is compromised."
-            ]
+            battleEncounterId: "lustra"
         },
         { id: "f59_mnmtn123nd5ee", x: 8, y: 14, type: "prop", name: 'Young Plant' },
         { id: "f8_mnmtner8do7f2", x: 9, y: 14, type: "prop", name: 'Chemical Station' },

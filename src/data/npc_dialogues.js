@@ -27,21 +27,9 @@ export const NPC_SCRIPTS = {
                 }
             } else if (!gameState.storyFlags.starterChosen) {
                 lines = [
-                    "Welcome to the trenches, Intern! I'm Jenzi, your guide through this corporate fever dream.",
-                    "We're supposedly 'healing the world,' but mostly we're just trying not to get fired by Lab Director Capsain.",
-                    "This floor is only a tiny slice of the National Lab mega-structure, though.",
-                    "We handle a few departments here—Botanic, Human Research, and the Executive Suite.",
-                    "Since you're the new main character, you need a Companion Cell.",
-                    "It's like a smart pet, but way more... liquid.",
-                    "We use them for everything—from heavy lifting to high-end research...",
-                    "...though most researchers just end up teaching them tricks during lunch.",
-                    "Their origins are a whole rabbit hole of lab theories, but basically everyone loves them.",
-                    "Well, except for... actually, don't worry about that yet.",
-                    "Just know they're the ultimate lab partners.",
-                    "I've got three in the incubator.",
-                    "It's a lab tradition—who knows when or why it started...",
-                    "But everyone who works here must have at least one Companion Cell.",
-                    "So just pick one that vibe with you the most."
+                    "Welcome to the trenches, Intern! I'm Jenzi, your guide through this corporate fever dream. We're supposedly 'healing the world,' but mostly we're just trying not to get fired by Lab Director Capsain. This floor is only a tiny slice of the National Lab mega-structure, though. We just handle a few departments here—Botanic, Human Research, and the Executive Suite.",
+                    "Since you're the new main character, you need a Companion Cell. It's like a smart pet, but way more... liquid. We use them for everything—from heavy lifting to high-end research, though most researchers just end up teaching them tricks during lunch. Their origins are a whole rabbit hole of lab theories, but basically everyone loves them. Well, except for... actually, don't worry about that yet. Just know they're the ultimate lab partners.",
+                    "I've got three in the incubator. It's a lab tradition—who knows when or why it started, but everyone who works here must have at least one Companion Cell. So just pick one that vibe with you the most."
                 ];
                 pendingBattleEncounter = 'starter_selection';
             } else if (!gameState.storyFlags.jenziFirstBattleDone && !isPostBattle) {
@@ -49,58 +37,34 @@ export const NPC_SCRIPTS = {
                     lines = ["You need an active squad to battle! Check the Incubator or your Inventory to deploy your Cells."];
                 } else {
                     lines = [
-                        "Sheesh, nice pick! Let's see if you can actually use it though.",
-                        "Bet you can't even touch me in a battle. Pelli-it up!"
+                        "Sheesh, nice pick! Let's see if you can actually use it though. Bet you can't even touch me in a battle. Pelli-it up!"
                     ];
                     pendingBattleEncounter = 'jenzi_tutorial';
                 }
-            } else if (logs < 5 && gameState.storyFlags.jenziAtriumUnlocked) {
-                lines = [
-                    "Yo, Intern! Keep looking for Datapads.",
-                    "The doors are locked until you prove you can do basic research."
-                ];
-            } else if (gameState.storyFlags.jenziFirstBattleDone && !gameState.items.includes('Log001')) {
+            } else if (!gameState.items.includes('Log001')) {
                 lines = ["Aha! Still looking for that flash? // Go check if someone dropped a datapad over near the specimen tanks."];
-            } else if (logs >= 5 && !gameState.storyFlags.jenziAtriumBattleDone && !isPostBattle) {
+            } else if (!gameState.storyFlags.botanicSectorUnlocked) {
                 lines = [
-                    "You've been busy! 5 Datapads already?",
-                    "Lowkey impressive.",
-                    "Then you must smell something fishy about the Incident.",
-                    "But before I tell you about the 'smell', let's see if you're actually worth it.",
-                    "My Stemmy is ready to rumble. Pelli-it up!"
+                    "Wait. You've been busy! 5 Datapads already? Lowkey impressive. // Then you must smell something fishy about the Incident. // But before I tell you about the 'smell', let's see if you're actually worth it.",
+                    "The Atrium door to the Botanic sector is open now. Go explore, but don't get lost in the sauce."
                 ];
-                pendingBattleEncounter = 'jenzi_atrium';
-            } else if (gameState.storyFlags.jenziAtriumBattleDone && !gameState.storyFlags.botanicSectorUnlocked) {
+            } else if (!gameState.storyFlags.humanWardUnlocked) {
                 lines = [
-                    "Okay, okay, you got me! You're actually decent.",
-                    "Since you won, here's the tea about 'The Incident'.",
-                    "Director Capsain says it was an 'Ionization Leak'.",
-                    "Something about that story just isn't right...",
-                    "Well beat me, what do I know.",
-                    "If you want the real story, go ask Lana in the Botanic wing.",
-                    "She's the main character of that floor anyway.",
-                    "I've unlocked the door for you. Keep collecting those logs!"
+                    "Okay, okay, you got me! You're actually decent. // Since you won, here's the tea about 'The Incident'. Director Capsain says it was an 'Ionization Leak'. // Something about that story just isn't right... Well beat me, what do I know. // If you want the real story, go ask Lana in the Botanic wing.",
+                    "She's the main character of that floor anyway. I've unlocked the door for you. Keep collecting those logs!"
                 ];
-                triggers.push('botanicSectorUnlocked');
-            } else if (gameState.storyFlags.lanaBattleDone && !gameState.storyFlags.humanWardUnlocked) {
+            } else if (!gameState.storyFlags.executiveSuiteUnlocked) {
                 lines = [
-                    "Wait, Lana gave you a key? And she was acting sus?",
-                    "Sus-picious!",
-                    "That's weird af. Maybe things aren't as simple as 'spicy ozone'.",
-                    "You should totally go bother Dyzes in Human Research.",
-                    "He's chill, but he definitely knows things he's not saying."
+                    "Wait, Lana gave you a key? And she was acting sus? Sus-picious! That's weird af. // Maybe things aren't as simple as 'spicy ozone'. // You should totally go bother Dyzes in Human Research. He's chill, but he definitely knows things he's not saying."
                 ];
-                triggers.push('humanWardUnlocked');
-            } else if (gameState.storyFlags.dyzesBattleDone && !gameState.storyFlags.executiveSuiteUnlocked) {
+            } else if (!gameState.storyFlags.capsainBattleDone) {
                 lines = [
-                    "Dyzes gave you info on an 'Old Lab'? Okay, now this is getting serious.",
-                    "No more jokes. You need to confront the final boss himself.",
-                    "Director Capsain. His room is open.",
-                    "Go get the truth, Intern."
+                    "Dyzes gave you an 'Old Data Stick'? Okay, now this is getting serious. No more jokes. // You need to confront the final boss himself. Director Capsain. His room is open. Go get the truth, Intern."
                 ];
-                triggers.push('executiveSuiteUnlocked');
             } else {
-                lines = ["Main Character energy! Keep collecting those logs, Intern."];
+                lines = [
+                    "You beat the Director and got the Inferno Sauce? Main Character energy! // You have all the clues now. Find that Old Lab Room. That's where the final secret is hidden."
+                ];
             }
 
             return { lines, pendingBattleEncounter, triggers };
@@ -113,34 +77,23 @@ export const NPC_SCRIPTS = {
             let lines = ["..."];
             let triggers = [];
 
-            if (bossWon) {
-                lines = [
-                    "Hmph. Just as I suspected. // Your tactical calibration is completely non-existent!",
-                    "You're lucky my Cambihil was in a 'passive' mode, // or you'd be more than just extracted.",
-                    "Go back to the entrance and... // and don't come back until you've read at least three field guides! Honestly!"
+            if (gameState.storyFlags.lanaBattleDone) {
+                const flavors = [
+                    "Hmph. Your tactical signature was... informative. Don't waste my time with more questions.",
+                    "Efficiency is the cornerstone of the Botanic Sector. If you are going to be non-productive, do it elsewhere!",
+                    "I have no intention of providing remedial guidance. I simply don't want an incompetent intern lowering this sector's safety rating!"
                 ];
-            } else if (!gameState.storyFlags.lanaMet) {
-                lines = [
-                    "Hmph. So YOU'RE the new intern Jenzi was giggling about?",
-                    "I'm Lana, Senior Scientist of the Botanic Sector.",
-                    "Don't think for a second that I have time to babysit you!",
-                    "My work on Cambihil is far more complex than anything you've seen...",
-                    "So keep your clumsy fingers off my equipment!",
-                    "And... and whatever Jenzi told you about... things?",
-                    "It's all lies! She just thrives on office gossip!",
-                    "Now, either help with the nutrient sensors or get out of my light!"
-                ];
-                triggers.push('lanaMet');
-            } else if (gameState.storyFlags.lanaBattleDone || logs < 10) {
-                const flavor = [
+                lines = [flavors[Math.floor(Math.random() * flavors.length)]];
+            } else {
+                const flavors = [
                     "What are you staring at? // I was merely performing a hydration assessment on your partner Cell. // It is a critical laboratory asset, unlike... some uncalibrated interns! Hmph!",
-                    "Why are you obstructing the walkway? // Efficiency is the cornerstone of the Botanic Sector. // If you are going to be non-productive, do it elsewhere!",
-                    "Do not simply stand there! // It is... it is scientifically distracting! // If you are here for research, take a clipboard.",
-                    "I have no intention of providing remedial guidance. // I simply don't want an incompetent intern lowering this sector's safety rating on their first day!",
-                    "Your tactical signature is completely unoptimized. // Did Jenzi provide zero fundamental training, or were you intentionally ignoring protocol?",
-                    "Watch your step! // Be careful not to disturb the Cambihil spores. // They're far more sensitive than your heavy boots suggest!"
+                    "Why are you obstructing the walkway? // Efficiency is the cornerstone of the Botanic Sector. // If you are going to be non-productive, do it elsewhere! ...But, I suppose you can observe the nutrient cycles from over there. Just don't touch anything!",
+                    "Do not simply stand there! // It is... it is scientifically distracting! // If you are here for research, take a clipboard. If you are here to gawk at the flora, do it silently. Honestly, the lack of focus in new recruits these days...",
+                    "I have no intention of providing remedial guidance. // I simply don't want an incompetent intern lowering this sector's safety rating on their first day! It would be a stain on my professional record, that's all! Don't get the wrong idea!",
+                    "Your tactical signature is completely unoptimized. // Did Jenzi provide zero fundamental training, or were you intentionally ignoring protocol? Honestly... hand me your device. I am only recalibrating it because its current state is an affront to efficiency, understood?",
+                    "Watch your step! // Be careful not to disturb the Cambihil spores. // They're far more sensitive than your heavy boots suggest! ...Are your boots properly sealed? I mean—the spores! Worry about the spores!"
                 ];
-                lines = [flavor[Math.floor(Math.random() * flavor.length)]];
+                lines = [flavors[Math.floor(Math.random() * flavors.length)]];
             }
             return { lines, triggers };
         }
@@ -152,26 +105,21 @@ export const NPC_SCRIPTS = {
             let lines = ["..."];
             let triggers = [];
 
-            if (bossWon) {
-                lines = [
-                    "Woah, man. You're a bit out of sync. Take a breather, hydrate, and maybe try focusing on the flow next time. No rush."
+            if (gameState.storyFlags.dyzesBattleDone) {
+                const flavors = [
+                    "Woah, nice data-cycle, man. The Old Lab is the heart of the facility. Good luck finding the 'vibes' down there.",
+                    "The Lydrosomes are in a good mood today. One of them actually waved at me. Or it was just a pressure vent. I'm choosing to believe it waved.",
+                    "You ever wonder if we're just big cells in a giant lab called 'Earth'? Deep stuff, Intern. Real deep."
                 ];
-            } else if (!gameState.storyFlags.dyzesMet) {
-                lines = [
-                    "Hey. I'm Dyzes. Welcome to the chillest wing of the lab.",
-                    "We study the Lydrosome here—it's all about that cellular harmony, you know?",
-                    "Jenzi probably made me sound like a relic, but I prefer 'seasoned professional'.",
-                    "Watch your step, the osmotic mist is fresh today."
-                ];
-                triggers.push('dyzesMet');
-            } else if (gameState.storyFlags.dyzesBattleDone || logs < 15) {
+                lines = [flavors[Math.floor(Math.random() * flavors.length)]];
+            } else {
                 const flavors = [
                     "Lydrosome is a marvel of tactical evolution. Its osmotic pressure allows for surgical precision—dissolving a single harmful enzyme without touching the surrounding tissue. It's the ultimate biological sniper.",
                     "Hey. Breathe in that osmotic mist... feels like a fresh ocean breeze, right? Or maybe just distilled enzymes. Same thing, really.",
                     "The Lydrosomes are in a good mood today. One of them actually waved at me. Or it was just a pressure vent. I'm choosing to believe it waved.",
                     "Don't mind the hum. That's just the sound of cellular harmony. Or my fan. Honestly, I stopped checking which was which long ago.",
                     "You ever wonder if we're just big cells in a giant lab called 'Earth'? Deep stuff, Intern. Real deep. Think about it next time you're filing data.",
-                    "Chill out. Stress increases cortisol, and cortisol ruins the data. If you're going to work here, you've gotta learn to go with the flow."
+                    "Chill out. Stress increases cortisol, and cortisol ruins the data. If you've gotta learn to go with the flow."
                 ];
                 lines = [flavors[Math.floor(Math.random() * flavors.length)]];
             }
@@ -215,15 +163,14 @@ export const NPC_SCRIPTS = {
                     "Now, let's go tell the staff that 'Noodle Tuesdays' are officially a lab holiday."
                 ];
                 triggers.push('climaxTriggered');
-            } else if (!gameState.storyFlags.capsainMet) {
-                lines = [
-                    "Do you have an appointment? No? Then you're trespassing on executive time.",
-                    "I am Director Capsain. I don't have time for 'meaningful introductions'.",
-                    "If you're looking for gossip, go back to Jenzi.",
-                    "And ignore that smell—it's industrial-grade experimental ozone."
+            } else if (gameState.storyFlags.capsainBattleDone) {
+                const flavors = [
+                    "Dismissed. I have important papers to write. The Sauce? It's just a sample! Nothing more!",
+                    "Lana's greenhouse is taking up too much power. If it weren't for the board's interest in 'green tech', I'd have paved that wing for more reactor space.",
+                    "The smell? It’s industrial ionization. If you can’t handle a little stinging in the nostrils, you shouldn’t be in a lab."
                 ];
-                triggers.push('capsainMet');
-            } else if (gameState.storyFlags.capsainBattleDone || logs < 20) {
+                lines = [flavors[Math.floor(Math.random() * flavors.length)]];
+            } else {
                 const flavors = [
                     "What are you doing here? These labs aren't for sightseeing! Get back to your station or I'll have you filing paperwork for a month. And ignore that smell, it's... experimental ozone.",
                     "I don't pay you to wander the atrium. I pay you to contribute to a failing project. Wait, I don't pay interns at all. Even better—get back to work.",

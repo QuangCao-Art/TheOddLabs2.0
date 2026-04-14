@@ -25,59 +25,15 @@ export const atrium = {
         { "id": "mamozet", "x": 7, "y": 10, "type": "npc", "name": "Researcher Mamozet" },
         {
             "id": "sapstan", "x": 4, "y": 6, "type": "npc", "name": "Biologist Sapstan",
-            "battleEncounterId": "sapstan",
-            "dialogue": [
-                "Hey there. Have you noticed how the Pellicle Point system works?",
-                "Most focus on attacks, but PP management is where you see real results.",
-                "Spar with me? I'll show you the 'Positive Shield' effect. Ready?"
-            ],
-            "npcWinDialogue": [
-                "Don't sweat it. The Pellicle Point system is all about balance.",
-                "You'll eventually turn your Pellicle Points into an advantage, but avoid that nasty 25% HP Overload discharge for now.",
-                "Take a breather and we'll try again later."
-            ],
-            "npcLossDialogue": [
-                "Nice job! You've got a good handle on the tactical flow.",
-                "Tip: positive PP creates a kinetic shield, softening incoming hits.",
-                "Just don't hit Max PP—that'll cause a Pellicle Discharge, dealing 25% of your Max HP in damage!",
-                "Later, you'll unlock skills to 'vent' those Pellicle Points for massive damage. Keep it up!"
-            ]
+            "battleEncounterId": "sapstan"
         },
         {
             "id": "blundur", "x": 14, "y": 8, "type": "npc", "name": "Researcher Blundur",
-            "battleEncounterId": "blundur",
-            "dialogue": [
-                "Salutations! I'm Researcher Blundur. Have you heard of the C-Chip system?",
-                "They're bio-synthetic boosters that significantly enhance your Cell's stats and unlock powerful new skills and effects.",
-                "Slotting them into your Catalyst Hub is essential for maximizing your tactical advantage in battle.",
-                "Ready to see how much of a difference a good build makes?"
-            ],
-            "npcWinDialogue": [
-                "Predictable. You won't win without using a calibrated Catalyst Hub to boost your stats.",
-                "You lacked the tactical effects needed to penetrate my defense.",
-                "Access your Inventory to slot new cards and see the results in your next battle. It's the best part of the job!"
-            ],
-            "npcLossDialogue": [
-                "Inquiry! How did you bypass my dermal bio-ceramics? A high-frequency sync? Fascinating.",
-                "Pro-tip: Check your Catalyst Hub in the Inventory menu to slot your rewards and boost your stats.",
-                "Increasing your Research Grade will unlock even more slots for skills and passive effects. Truly revolutionary!"
-            ]
+            "battleEncounterId": "blundur"
         },
         {
             "id": "maya", "x": 11, "y": 11, "type": "npc", "name": "Scientist Maya",
-            "battleEncounterId": "maya",
-            "dialogue": [
-                "Excuse me, Intern! Have you mastered the Matching Attack Placement (MAP) system yet?",
-                "It's the core of our tactical research.",
-                "If you can prove your proficiency, I'll share some insights on the finer points of MAP."
-            ],
-            "npcWinDialogue": ["Don't be discouraged! Sometimes a bit of luck helps with the final sync, but skill is the foundation!", "Just keep practicing your placement."],
-            "npcLossDialogue": [
-                "Incredible! Your placement was precise.",
-                "That's the secret to the MAP system—it's not just about power, it's about the proximity of your attack nodes.",
-                "Think of it like a puzzle: the closer you are to the target, the more damage you deal and the more Pellicle Points (PP) you gain.",
-                "It's all about finding that sweet spot!"
-            ]
+            "battleEncounterId": "maya"
         },
         {"id":"f15_at_n1","x":4,"y":2,"type":"prop"},
         {"id":"f52_at1","x":5,"y":2,"type":"prop"},

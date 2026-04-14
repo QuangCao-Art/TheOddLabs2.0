@@ -12,12 +12,12 @@ export const MAIN_QUEST_DATA = {
         amount: 1,
         reward: { type: 'resource', id: 'credits', amount: 500 },
         requiredFlag: 'jenziFirstBattleDone',
-        onCompleteFlag: 'jenziAtriumUnlocked', // Triggers the door unlock automatically
-        consume: false, // Player keeps the log record
+        onCompleteFlag: 'jenziAtriumUnlocked', 
+        consume: false,
         dialogue: {
             offer: [
                 "Ayo, not bad for a first-timer! You've got that 'pioneer spirit' everyone talks about.",
-                "Win or lose, you're the only one brave enough to test that Cell today. Respect.",
+                "Win or lose, you've been brave enough to test that Cell today. Respect.",
                 "Wait, did you see that? Something just flashed over by the specimen tanks.",
                 "Go check if someone dropped something in there.",
                 "I swear, these scientists have the attention span of a goldfish once they leave their desks."
@@ -31,14 +31,44 @@ export const MAIN_QUEST_DATA = {
             finished: ["The Atrium holds a lot more secrets than just logs. Be careful out there."]
         }
     },
+    'quest_main_atrium_proof': {
+        id: 'quest_main_atrium_proof',
+        title: 'The Atrium Proof',
+        description: "Collect 5 DataLogs total and defeat Jenzi to prove you can handle the Botanic Sector.",
+        type: 'defeat',
+        target: 'jenzi_atrium',
+        amount: 1,
+        requiredLogs: 5,
+        requiredFlag: 'jenziAtriumUnlocked',
+        onCompleteFlag: 'botanicSectorUnlocked',
+        reward: { type: 'resource', id: 'credits', amount: 1000 },
+        dialogue: {
+            offer: [
+                "You've been busy! 5 Datapads already? Lowkey impressive.",
+                "Then you must smell something fishy about the Incident.",
+                "But before I tell you about the 'smell', let's see if you're actually worth it.",
+                "My Stemmy is ready to rumble. Pelli-it up!"
+            ],
+            progress: ["Pelli-it up, Intern! Let's see what you've got."],
+            complete: [
+                "Okay, okay, you got me! You're actually decent.",
+                "Since you won, here's the tea about 'The Incident'. Director Capsain says it was an 'Ionization Leak'.",
+                "Something about that story just isn't right... Well beat me, what do I know.",
+                "If you want the real story, go ask Lana in the Botanic wing. She's the main character of that floor anyway.",
+                "I've unlocked the door for you. Keep collecting those logs!"
+            ],
+            finished: ["Lana is a bit of a mood, but she knows the truth about the reactor logs."]
+        }
+    },
     'quest_main_lana_key': {
         id: 'quest_main_lana_key',
         title: 'Botanical Security',
-        description: "Prove your tactical skill to Lana to secure the Old Lab Key.",
+        description: "Prove your tactical skill to Lana (10 Logs required) to secure the Old Lab Key.",
         type: 'defeat',
         target: 'lana',
         amount: 1,
-        requiredFlag: 'lanaCleanedUp',
+        requiredLogs: 10,
+        requiredFlag: 'botanicSectorUnlocked',
         onCompleteFlag: 'lanaBattleDone',
         reward: { type: 'item', id: 'Quest01' },
         dialogue: {
@@ -48,12 +78,11 @@ export const MAIN_QUEST_DATA = {
                 "If you want that Old Lab Key, you'll have to prove you can handle the truth in a duel!",
                 "Prepare for a lesson in botanical efficiency!"
             ],
-            progress: ["I have no intention of providing remedial guidance. // If you want the key, show me your tactical signature in a fight!"],
+            progress: ["Hmph. Just as I suspected. // Your tactical calibration is completely non-existent! // Go back to the entrance and... and don't come back until you've read at least three field guides! Honestly!"],
             complete: [
                 "Fine! You win! *[Mutters]* Just like the Director during the Leak... always so stubborn.",
                 "Here, take this Old Lab Room Key. It's for some old storage room.",
-                "Just... don't believe everything you read in the logs.",
-                "And tell Jenzi to stop spreading rumors about my lab hygiene! Hmph!"
+                "Just... don't believe everything you read in the logs."
             ],
             finished: ["Your tactical signature is... informative. Don't waste my time with more questions."]
         }
@@ -61,10 +90,11 @@ export const MAIN_QUEST_DATA = {
     'quest_main_dyzes_data': {
         id: 'quest_main_dyzes_data',
         title: 'Osmotic Revelations',
-        description: "Defeat Dyzes to retrieve the Old Data Stick and reveal the hidden lab location.",
+        description: "Defeat Dyzes (15 Logs required) to retrieve the Old Data Stick.",
         type: 'defeat',
         target: 'dyzes_boss',
         amount: 1,
+        requiredLogs: 15,
         requiredFlag: 'lanaBattleDone',
         onCompleteFlag: 'dyzesBattleDone',
         reward: { type: 'item', id: 'Quest03' },
@@ -73,9 +103,10 @@ export const MAIN_QUEST_DATA = {
                 "I've seen your log activity. You're piecing together 'The Incident', aren't you?",
                 "Capsain is a good man, just... proud.",
                 "I can't let you expose him without a proper test of your tactical skill.",
-                "Prepare yourself!"
+                "Prepare yourself!",
+                "Let's see if your tactical vibe is strong enough."
             ],
-            progress: ["Chill out. Stress increases cortisol, and cortisol ruins the data. // Ready for your test?"],
+            progress: ["Woah, man. You're a bit out of sync. Take a breather, hydrate, and maybe try focusing on the flow next time. No rush."],
             complete: [
                 "Woah, okay. Your tactical flow is elite. I can't really hide the truth if you're this good.",
                 "The Old Lab exists, man. It's not on the main maps.",
@@ -90,28 +121,54 @@ export const MAIN_QUEST_DATA = {
     'quest_main_capsain_final': {
         id: 'quest_main_capsain_final',
         title: 'The Origin Theory',
-        description: "Confront Director Capsain to reveal the truth about the 'Cell Project'.",
+        description: "Confront Director Capsain (20 Logs required) to reveal the truth.",
         type: 'defeat',
         target: 'capsain',
         amount: 1,
+        requiredLogs: 20,
         requiredFlag: 'dyzesBattleDone',
         onCompleteFlag: 'capsainBattleDone',
         reward: { type: 'item', id: 'Quest02' },
         dialogue: {
             offer: [
-                "You found the Noodle Review. You found the '27 security gap.",
-                "But you're still just an intern. I won't have my legacy tarnished by some spicy gossip!",
+                "So. You found the Noodle Review. You found the '27 security gap.",
+                "You think a little chili sauce is enough to topple this Director?",
+                "Fine. If you want the 'Origin', you'll have to go through me and my strongest Nitrophil first!",
+                "I won't have my legacy tarnished by some spicy gossip!",
                 "Prepare to be archived!"
             ],
-            progress: ["Do you have an appointment? No? Then get out of my sight until you're ready to admit defeat."],
+            progress: ["Dismissed. If you can't even handle a basic engagement, you have no business poking around the archives. // Go back to filing paperwork, Intern."],
             complete: [
                 "I... I failed? To an intern? *[Sighs deeply]*",
                 "You've seen the logs. You have the sauce. You've basically already found out.",
                 "Here, take this Rare Inferno Sauce... it's just a research sample! Nothing more!",
-                "Now go away, I have... important papers to write.",
-                "The labs are yours now. Just... keep the gossip to a minimum."
+                "Now go away, I have... important papers to write."
             ],
             finished: ["I tried to tell them it was radiation. I told the board we were pioneers..."]
+        }
+    },
+    'quest_main_origin_secret': {
+        id: 'quest_main_origin_secret',
+        title: 'The Origin Secret',
+        description: "Find the Old Lab Room and the Origin Nitrophil to complete the mystery.",
+        type: 'collect',
+        target: 'Quest04',
+        amount: 1,
+        requiredFlag: 'capsainBattleDone',
+        onCompleteFlag: 'gameEndTriggered',
+        reward: { type: 'resource', id: 'credits', amount: 5000 },
+        dialogue: {
+            offer: [
+                "You have all the clues now. Find that Old Lab Room. That's where the final secret is hidden.",
+                "Find the Old Lab Room -> Read Final Datalog -> Take Origin Nitrophil to Director -> Game End."
+            ],
+            progress: ["Still searching for the hidden room? It's not on the main maps."],
+            complete: [
+                "You found it. The Origin Nitrophil. It's... it's orange.",
+                "The spicy miracle that started it all.",
+                "Congratulations, Specialist. You've uncovered the true heart of Odd Labs."
+            ],
+            finished: ["The Lab is finally at peace. The truth is out."]
         }
     }
 };

@@ -1895,6 +1895,7 @@ export const Overworld = {
                     if (qData.requiredFlag && !window.gameState.storyFlags[qData.requiredFlag]) continue;
                     if (qData.requiredItem && !window.gameState.items.includes(qData.requiredItem)) continue;
                     if (qData.requiredRG && (window.gameState.profiles.player.level || 0) < qData.requiredRG) continue;
+                    if (qData.requiredLogs && (this.logsCollected.length || 0) < qData.requiredLogs) continue;
                     if (qProgress && qProgress.status === 'finished') continue;
 
                     activeQuestId = qId;
@@ -2045,12 +2046,30 @@ export const Overworld = {
                         this.renderMap();
                     }
                 }
+
+                // If a unique narrative script is found, we SKIP the universal battle-able check
+                // to avoid overwriting or double-triggering.
+                this.showDialogue(npc.name, lines, npc.id);
+                return;
+            }
+        }
+
+        // --- PHASE 5: UNIVERSAL FALLBACK DIALOGUE ---
+        // If an NPC still has no lines after Quests, Battles, and Unique Scripts, 
+        // we pull from the appropriate random pool to bring the world to life.
+        if (lines.length === 1 && lines[0] === "...") {
+            const fallbackType = (this.currentZone === 'cellPlayGround') ? 'playground_randomizer' : 'generic_staff';
+            const fallbackScript = NPC_SCRIPTS[fallbackType];
+            if (fallbackScript) {
+                const fallbackResult = fallbackScript.getScript(window.gameState, this, {});
+                if (fallbackResult && fallbackResult.lines) {
+                    lines = fallbackResult.lines;
+                }
             }
         }
 
         // --- NEW: UNIVERSAL BATTLE-ABLE SYSTEM ---
-        // If an NPC has a specific battleEncounterId, it will trigger that encounter
-        // regardless of story progress. This allows for generic "battle-able" NPCs.
+        // Fallback for simple NPCs defined in map files but NOT in NPC_SCRIPTS.
         if (npc.battleEncounterId && !isBattleDone && !isPostBattle) {
             if (this.checkActiveSquad()) {
                 this.pendingBattleEncounter = npc.battleEncounterId;
