@@ -175,6 +175,25 @@ export const furnitureMetadata = {
     'c1': { name: 'Cambihil', hasCollision: true, info: "A wild Cambihil is looking for leaf." },
     'c2': { name: 'Lydrosome', hasCollision: true, info: "A wild Lydrosome is watching a lab tube." },
     'c3': { name: 'Nitrophil', hasCollision: true, info: "A wild Nitrophil is searching for food." },
+
+    // --- TILESET 04 (f155-f171) ---
+    'f155': { name: 'Musstrep Seedling', hasCollision: true, kickable: true, material: ['liquid', 'monster'], info: "An ancient Musstrep seedling. These mischievous younglings scurry everywhere, snapping at anything they see." },
+    'f156': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f157': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f158': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f159': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f160': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f161': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f162': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f163': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f164': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f165': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f166': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f167': { name: 'Ancient Musstrep Plant', hasCollision: false, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f168': { name: 'Ancient Musstrep Plant', hasCollision: true, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f169': { name: 'Ancient Musstrep Plant', hasCollision: true, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f170': { name: 'Ancient Musstrep Plant', hasCollision: true, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
+    'f171': { name: 'Ancient Musstrep Plant', hasCollision: true, info: "A giant ancient plant, originally a dead tree revived by scientists, hence the room's name." },
 };
 
 export const FURNITURE_TEMPLATES = {
@@ -525,6 +544,30 @@ export const FURNITURE_TEMPLATES = {
             { id: 'f146', relX: -1, relY: -2 }, { id: 'f147', relX: 0, relY: -2 }, { id: 'f148', relX: 1, relY: -2 },
             { id: 'f149', relX: -1, relY: -1 }, { id: 'f150', relX: 0, relY: -1 }, { id: 'f151', relX: 1, relY: -1 },
             { id: 'f152', relX: -1, relY: 0 },  { id: 'f153', relX: 0, relY: 0 },  { id: 'f154', relX: 1, relY: 0 }
+        ]
+    },
+
+    // --- MUSSTREP SERIES (New) ---
+    MUSSTREP_SEEDLING: { name: 'Musstrep Seedling', tiles: [{ id: 'f155', relX: 0, relY: 0 }] },
+    MUSSTREP_PLANT: {
+        name: 'Ancient Musstrep Plant',
+        tiles: [
+            { id: 'f170', relX: 0, relY: 0, name: 'Bottom Left' },
+            { id: 'f171', relX: 1, relY: 0, name: 'Bottom Right' },
+            { id: 'f168', relX: 0, relY: -1, name: 'Near Bottom Left' },
+            { id: 'f169', relX: 1, relY: -1, name: 'Near Bottom Right' },
+            { id: 'f166', relX: 0, relY: -2, name: 'Near Lower Mid Left' },
+            { id: 'f167', relX: 1, relY: -2, name: 'Near Lower Mid Right' },
+            { id: 'f164', relX: 0, relY: -3, name: 'Lower Mid Left' },
+            { id: 'f165', relX: 1, relY: -3, name: 'Lower Mid Right' },
+            { id: 'f162', relX: 0, relY: -4, name: 'Upper Mid Left' },
+            { id: 'f163', relX: 1, relY: -4, name: 'Upper Mid Right' },
+            { id: 'f160', relX: 0, relY: -5, name: 'Near Upper Mid Left' },
+            { id: 'f161', relX: 1, relY: -5, name: 'Near Upper Mid Right' },
+            { id: 'f158', relX: 0, relY: -6, name: 'Near Top Left' },
+            { id: 'f159', relX: 1, relY: -6, name: 'Near Top Right' },
+            { id: 'f156', relX: 0, relY: -7, name: 'Top Left' },
+            { id: 'f157', relX: 1, relY: -7, name: 'Top Right' }
         ]
     }
 };

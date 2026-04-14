@@ -30,6 +30,7 @@ import { nursery } from '../data/maps/nursery.js';
 import { medicalExperienceRoom } from '../data/maps/medicalExperienceRoom.js';
 import { secretCryoChamber } from '../data/maps/secretCryoChamber.js';
 import { oldMachine } from '../data/maps/oldMachine.js';
+import { witheredTree } from '../data/maps/witheredTree.js';
 
 // Mapping of Tile IDs to specific material tags for audio/vfx
 const TILE_MATERIAL_MAP = {
@@ -248,7 +249,8 @@ export const Overworld = {
         nursery,
         medicalExperienceRoom,
         secretCryoChamber,
-        oldMachine
+        oldMachine,
+        witheredTree
     },
     furnitureMetadata,
 
@@ -496,7 +498,11 @@ export const Overworld = {
      * @param {number} targetY - Optional specific Y coordinate.
      */
     renderMap(zoneId, forceSpawn = false, targetX = null, targetY = null) {
-        const id = zoneId || this.currentZone || 'lobby';
+        let id = zoneId || this.currentZone || 'lobby';
+        
+        // Migration support for renamed zones
+        if (id === 'theTree') id = 'witheredTree';
+
         const isNewZone = id !== this.currentZone || forceSpawn;
 
         // --- NEW: Implement "Reset on Entry" via Clone ---
@@ -505,6 +511,11 @@ export const Overworld = {
         }
 
         const zone = this.zones[id];
+
+        if (!zone) {
+            console.error(`Zone ID "${id}" not found in Overworld.zones. Falling back to lobby.`);
+            return this.renderMap('lobby', true);
+        }
         
         // --- NEW: Apply dynamic map patches based on gameState ---
         this.applyMapPatches(id, zone);

@@ -525,6 +525,11 @@
     background-size: 512px 512px !important;
 }
 
+.world-object.tileset-04 {
+    background-image: url('../../../assets/images/Lab_TileSet_04.png') !important;
+    background-size: 512px 512px !important;
+}
+
 #overworld-map .world-object.render-top {
     z-index: 110 !important;
 }
@@ -1057,7 +1062,24 @@
 .world-object.prop.f151,
 .world-object.prop.f152,
 .world-object.prop.f153,
-.world-object.prop.f154 {
+.world-object.prop.f154,
+.world-object.prop.f155,
+.world-object.prop.f156,
+.world-object.prop.f157,
+.world-object.prop.f158,
+.world-object.prop.f159,
+.world-object.prop.f160,
+.world-object.prop.f161,
+.world-object.prop.f162,
+.world-object.prop.f163,
+.world-object.prop.f164,
+.world-object.prop.f165,
+.world-object.prop.f166,
+.world-object.prop.f167,
+.world-object.prop.f168,
+.world-object.prop.f169,
+.world-object.prop.f170,
+.world-object.prop.f171 {
     background-image: url('../../../assets/images/Lab_TileSet_04.png') !important;
     background-size: 512px 512px !important;
 }
@@ -1366,6 +1388,74 @@
 
 .world-object.prop.f154 {
     background-position: calc(-512px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f155 {
+    background-position: calc(-0px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f156 {
+    background-position: calc(-1536px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.f157 {
+    background-position: calc(-1792px / 4) calc(-0px / 4);
+}
+
+.world-object.prop.f158 {
+    background-position: calc(-1536px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.f159 {
+    background-position: calc(-1792px / 4) calc(-256px / 4);
+}
+
+.world-object.prop.f160 {
+    background-position: calc(-1536px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.f161 {
+    background-position: calc(-1792px / 4) calc(-512px / 4);
+}
+
+.world-object.prop.f162 {
+    background-position: calc(-1536px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.f163 {
+    background-position: calc(-1792px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.f164 {
+    background-position: calc(-1536px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.f165 {
+    background-position: calc(-1792px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.f166 {
+    background-position: calc(-1536px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f167 {
+    background-position: calc(-1792px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.f168 {
+    background-position: calc(-1536px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f169 {
+    background-position: calc(-1792px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f170 {
+    background-position: calc(-1536px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f171 {
+    background-position: calc(-1792px / 4) calc(-1792px / 4);
 }
 
 .world-object.prop.StoragePod-Top,

@@ -317,6 +317,7 @@ export const BuilderMode = {
 
             // 3. Identify Group (Base Anchor)
             const anchors = [
+                'Musstrep',
                 'Wall', 'Floor', 'Window', 'Corner', 'Door', 
                 'Tank', 'Plant', 'Table', 'Chair', 'Bed', 'Box', 'Cabinet',
                 'Nitrophil', 'Lydrosome', 'Cambihil', 'ScifiDeco', 'HeavyDirty',
@@ -332,13 +333,6 @@ export const BuilderMode = {
             }
             
             let group = foundAnchor || name;
-            if (group === 'Wall') {
-                if (name.includes('Edge')) group = 'Wall Edge';
-                else if (name.includes('Center')) group = 'Wall Center';
-            } else if (group === 'Floor') {
-                if (name.includes('Stripe')) group = 'Floor Stripe';
-                else if (name.includes('Basic')) group = 'Floor Basic';
-            }
 
             return { group, suffix, numericId, originalName: name };
         };
@@ -399,9 +393,11 @@ export const BuilderMode = {
             
             if (category === 'furniture') {
                 icon.className = `item-preview world-object prop ${tid}`;
-                // Auto-detect Tileset 03 based on ID (f64+)
+                // Auto-detect Tileset based on ID
                 const numericId = parseInt(tid.substring(1));
-                if (numericId >= 64) {
+                if (numericId >= 128) {
+                    icon.classList.add('tileset-04');
+                } else if (numericId >= 64) {
                     icon.classList.add('tileset-03');
                 }
             } else if (category === 'terrain') {
@@ -476,9 +472,11 @@ export const BuilderMode = {
                     tile.style.transform = 'translateZ(0)'; // Force GPU layer for crisp mirroring
                 }
                 
-                // Auto-detect Tileset 03 based on ID (f64+)
+                // Auto-detect Tileset based on ID
                 const numericId = parseInt(t.id.substring(1));
-                if (numericId >= 64) {
+                if (numericId >= 128) {
+                    tile.classList.add('tileset-04');
+                } else if (numericId >= 64) {
                     tile.classList.add('tileset-03');
                 }
             } else if (this.selectedType === 'terrain' || this.selectedType === 'doors') {
