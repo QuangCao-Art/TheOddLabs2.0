@@ -87,7 +87,6 @@ export const NPC_SCRIPTS = {
             } else if (gameState.storyFlags.lanaCleanedUp) {
                 const postCleanupFlavors = [
                     "Dealing with those seedlings is undeniably exhausting... // Yet, seeing the tree at peace brings a certain stillness to my own thoughts. Don't mention I said that, Intern.",
-                    "The air here is much more efficient now. // Don't think this means I have time to babysit you, Intern! Get back to your observations.",
                     "That was quite entertaining, wasn't it? // Though they will inevitably return. // Perhaps I should assign you a daily seedling culling? *(She giggles softly)* I'm almost serious.",
                     "Jenzi mentioned she drafted you for some minor orientation task. // If you've finished my culling, you should probably focus on that! // Efficiency requires prioritization, after all."
                 ];

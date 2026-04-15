@@ -620,15 +620,7 @@ export const Overworld = {
 
         zone.objects.forEach(obj => {
             if (obj.isKicked) return;
-
-            // --- NEW: Visibility Guards (RPG World States) ---
-            if (obj.requiredFlag && window.gameState && window.gameState.storyFlags) {
-                if (!window.gameState.storyFlags[obj.requiredFlag]) return; // Required flag is missing
-            }
-            if (obj.forbiddenFlag && window.gameState && window.gameState.storyFlags) {
-                if (window.gameState.storyFlags[obj.forbiddenFlag]) return; // Forbidden flag is active
-            }
-
+            if (!this.isObjectVisible(obj)) return;
             this.renderObject(obj, mapEl);
         });
 
@@ -1157,6 +1149,7 @@ export const Overworld = {
 
         // Object Collision Check (Priority: Kickable > Colliding > Hidden)
         const allCandidates = zone.objects.filter(obj => {
+            if (!this.isObjectVisible(obj)) return false;
             const vx = this.getVisualX(obj);
             const w = obj.width || 1;
             const h = obj.height || 1;
@@ -1645,7 +1638,11 @@ export const Overworld = {
         if (this.player.direction === 'right') targetX++;
 
         // 1. Check for NPCs and Wild Monsters
-        const npc = zone.objects.find(obj => obj.type === 'npc' && obj.x === targetX && obj.y === targetY);
+        const npc = zone.objects.find(obj => {
+            if (!this.isObjectVisible(obj)) return false;
+            return obj.type === 'npc' && obj.x === targetX && obj.y === targetY;
+        });
+
         if (npc) {
             if (npc.id.includes('_wild_')) {
                 const mName = npc.monsterId.charAt(0).toUpperCase() + npc.monsterId.slice(1);
@@ -1675,6 +1672,7 @@ export const Overworld = {
 
         // 2. Check for Furniture / Props (Discovery vs. Lore)
         const obj = zone.objects.find(o => {
+            if (!this.isObjectVisible(o)) return false;
             const vx = this.getVisualX(o);
             const w = o.width || 1;
             const h = o.height || 1;
@@ -2459,6 +2457,20 @@ export const Overworld = {
         if (!this.pendingWildEncounter && !this.pendingBattleEncounter) {
             this.spawner.start();
         }
+    },
+
+    // --- NEW: Visibility Helper (Systematic RPG State) ---
+    isObjectVisible(obj) {
+        if (!obj) return false;
+        if (!window.gameState || !window.gameState.storyFlags) return true;
+
+        if (obj.requiredFlag && !window.gameState.storyFlags[obj.requiredFlag]) {
+            return false;
+        }
+        if (obj.forbiddenFlag && window.gameState.storyFlags[obj.forbiddenFlag]) {
+            return false;
+        }
+        return true;
     },
 
     updateBioExtractVisuals() {

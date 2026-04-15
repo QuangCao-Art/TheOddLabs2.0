@@ -160,6 +160,8 @@ export const SIDE_QUEST_DATA = {
             complete: [
                 "Incredible! Look at those data spikes!"
             ],
+            failed: ["Oops!", "Time's up!"],
+            retry: ["Ready to try again? Or have you reached your limit. Intern?"],
             finished: ["Thanks again! My research on 'High-Velocity Affection' is going to be a department head-turner."]
         }
     },
@@ -178,11 +180,11 @@ export const SIDE_QUEST_DATA = {
         dialogue: {
             offer: [
                 "*[Mumbling...]* Hmph. No one sees how much effort goes into this work... // They just see the results and walk away. // Tired... so tired of being the only one who respects the workload here...",
-                "Wait! You! What are you doing in the Withered Tree wing? // I'm Lana, Senior Scientist. Don't mind what you heard, I was just... talking to myself. // You're the new intern, aren't you? First time seeing the great tree? // This is the 'Musstrep'—a giant ancient tree my team and I revived from a dead husk. // It used to be a lifeless, shriveled husk, just like... anyway...",
+                "Wait! You! What are you doing in the Withered Tree wing? // I'm Lana, Senior Scientist. Don't mind what you heard, I was just... talking to myself. // You're the new intern, aren't you? First time seeing the great tree? // This is the 'Musstrep'— a giant ancient tree my team and I revived from a dead husk. // It used to be a lifeless, shriveled husk, withered, tired... anyway...",
                 "It’s remarkably healthy now. In fact, it’s spawning mischievous seedlings at an alarming rate. // They love hiding beside the furniture and snapping at ankles.",
-                "So, it's your first day and no one has assigned you a task yet? // Fine, I'll give you one. Consider this an honor: your first task ever, given by me. // Kick 15 of these younglings in under 60 seconds. // Don't worry about them getting hurt; those seedlings have a shell harder than stone. Ready?"
+                "So, it's your first day and no one has assigned you a task yet? // Fine, I'll give you one. Consider this an honor: your first task ever, given by me. // Kick 15 of these younglings in under 30 seconds. // Don't worry about them getting hurt; those seedlings have a shell harder than stone. Ready?"
             ],
-            progress: ["Don't stop now! {amount} more seedlings need a calibration kick! Move it!"],
+            progress: ["Don't stop now!"],
             complete: [
                 "Hmph. I suppose you have strong legs and keen eyes after all.",
                 "Don't get too comfortable though; they'll be back eventually. They always do.",
