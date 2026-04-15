@@ -29,12 +29,22 @@ This workflow guides you through the process of adding a new Quest to the game u
 - **Offer**: ["Line 1", "Line 2"]
 - **Progress**: ["Line 1 with {progress}"]
 - **Complete**: ["Line 1", "Line 2"]
+- **Failed**: ["Line 1", "Line 2"] (Auto-triggered on failure/timeout)
+- **Retry**: ["Line 1", "Line 2"] (Shown when talking again after failure)
 - **Finished**: ["Flavor text after completion"]
 ```
 
-### ✍️ Writing Quality & Grammar
+### ✍️ Writing Quality & Grammar (Dialogue Polishing Protocol)
 > [!IMPORTANT]
-> Always perform a comprehensive grammar check. Check for "Gen-Z" slang consistency for Jenzi, or "Impatient Scientific" tone for Lana. Use `//` for mid-line panel breaks.
+> To ensure systematic and scalable updates, always follow the **Dialogue Polishing Protocol**:
+>
+> | Step | Rule | Description |
+> | :--- | :--- | :--- |
+> | **1** | **Preserve Intent** | Do not change core meaning, lore beats, or specific character actions (e.g., mumbling, private thoughts). |
+> | **2** | **Grammar Check** | Correct subject-verb agreement, tense consistency, and punctuation while maintaining the "spoken" feel. |
+> | **3** | **Visual Rhythm** | Use `//` for mid-line panel breaks to ensure text doesn't overflow the UI and flows naturally. |
+> | **4** | **Tone Balancing** | Ensure character voice consistency (e.g., Jenzi's slang vs. Lana's scientific ego). |
+> | **5** | **Minimum Viable Edit** | Stick as close to original wording as possible. Only alter for clarity and grammar. |
 
 ### 1. Register Quest in Data Files
 Add the quest definition to the appropriate registry in `src/data/quests/`:
@@ -47,9 +57,11 @@ Add the quest definition to the appropriate registry in `src/data/quests/`:
     id: 'quest_id',
     title: 'Title',
     description: 'Diary entry...',
-    type: 'collect',
-    target: 'item_id',
+    type: 'collect', // defeat | synthesis | collect | duel | show_monster | kick | break
+    target: 'item_id', // Can be Monster ID, Item ID, or FURNITURE_TEMPLATE name
+    targetType: 'prop', // Optional: 'npc' | 'prop' (Required for kick/break quests)
     amount: 1,
+    timeLimit: 60,     // Optional: Triggers Timed Quest Logic
     requiredFlag: 'prerequisite_flag', // Must be true in gameState.storyFlags
     onCompleteFlag: 'result_flag',     // Set to true automatically on completion
     reward: { type: 'resource', amount: 500 },
@@ -59,6 +71,8 @@ Add the quest definition to the appropriate registry in `src/data/quests/`:
         offer: ["..."],
         progress: ["..."],
         complete: ["..."],
+        failed: ["..."],  // Auto-triggered on failure/timeout
+        retry: ["..."],   // Shown when talking again after failure
         finished: ["..."]
     }
 }
@@ -84,15 +98,22 @@ Assign the quest to the NPC in their respective map file (e.g., `atrium.js`, `bo
 If a `timeLimit` is provided:
 1. **Countdown**: A 3-2-1 sequence starts after the `offer` dialogue ends.
 2. **Input Locks**: 'R' (Menu) and 'F' (Interact) are locked.
-3. **Failure**: On timeout, player teleports back to the NPC and can retry.
+3. **Failure**: On timeout, the `failed` dialogue triggers automatically. The player then teleports back to the NPC and can retry via the `retry` dialogue.
 
 ---
 
-### 🎭 Narrative Engine Integration
-For NPCs with complex branching logic or major story roles (Jenzi, Lana, etc.), their core interaction logic is stored in [npc_dialogues.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/npc_dialogues.js).
-- **Quest Priority**: If an NPC has an active quest, the **Quest Dialogue** defined here takes priority.
-- **Post-Quest**: Once a quest is finished, the NPC will fall back to their script in `npc_dialogues.js`.
-- **Story Flags**: Use the `onCompleteFlag` to trigger new dialogue branches in the Narrative Engine.
+### 🎭 Narrative Engine Handover
+For NPCs with complex roles (Jenzi, Lana, etc.), their core interaction logic is split between the Quest Engine (tasks) and the Narrative Engine (character personality).
+
+| System | Activity State | Source of Dialogue |
+| :--- | :--- | :--- |
+| **Quest Engine** | Quest is Active, Completed, or Failed | Registry files in `src/data/quests/` |
+| **Narrative Engine** | No Quest / Between Quests / Post-Quest | Script Registry in `src/data/npc_dialogues.js` |
+
+**The Bridge (Systematic Handover):**
+1. **Completion**: Use the `onCompleteFlag` in your quest definition.
+2. **Recognition**: In `npc_dialogues.js`, add an `else if` check for that flag **immediately**.
+3. **Outcome**: The NPC will seamlessly transition from "Task-focused" dialogue to acknowledging your accomplishment in their general flavors.
 
 ---
 

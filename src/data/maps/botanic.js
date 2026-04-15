@@ -23,8 +23,7 @@ export const botanic = {
         [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3]
     ],
     objects: [
-        { id: 'lana', x: 7, y: 3, type: 'npc', name: 'Lana', quests: ['quest_lana_cleanup'], forbiddenFlag: 'lanaCleanedUp' },
-        { id: 'lana_moved', x: 10, y: 14, type: 'npc', name: 'Lana', quests: ['quest_main_lana_key'], requiredFlag: 'lanaCleanedUp' },
+        { id: 'lana_moved', x: 7, y: 3, type: 'npc', name: 'Lana', quests: ['quest_main_lana_key'], requiredFlag: 'lanaCleanedUp' },
         { id: 'corel', x: 2, y: 9, type: 'npc', name: 'Researcher Corel' },
         { id: 'shopia', x: 1, y: 5, type: 'npc', name: 'Scientist Shopia', battleEncounterId: 'shopia' },
         { id: 'clips', x: 13, y: 9, type: 'npc', name: 'Tech Clips', battleEncounterId: 'clips' },

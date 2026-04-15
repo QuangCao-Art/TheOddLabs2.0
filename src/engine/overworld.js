@@ -315,13 +315,13 @@ export const Overworld = {
         return obj.x;
     },
 
-    updateQuestProgress(type, id, objectType = null) {
+    updateQuestProgress(type, id, objectType = null, templateName = null) {
         let changed = false;
         Object.keys(gameState.quests).forEach(questId => {
             const progressObj = gameState.quests[questId];
             const questData = QUESTS[questId];
 
-            if (progressObj.status === 'started' && questData.type === type && (questData.target === id || questData.target === 'any')) {
+            if (progressObj.status === 'started' && questData.type === type && (questData.target === id || questData.target === templateName || questData.target === 'any')) {
                 // If the quest specifies a targetType (e.g., 'npc'), verify the kicked object matches
                 if (questData.targetType && objectType && questData.targetType !== objectType) {
                     return; // Skip if types don't match
@@ -1344,7 +1344,7 @@ export const Overworld = {
                     this.questNPCAttached = npc;
 
                     // Re-render to show locked door visuals while the screen is black
-                    this.renderMap(this.currentZone, false, this.player.x, this.player.y);
+                    this.renderMap(this.currentZone, true, this.player.x, this.player.y);
                 });
             } else {
                 this.spawner.stop();
@@ -1355,7 +1355,7 @@ export const Overworld = {
                 this.questNPCAttached = npc;
 
                 // Re-render to show locked door visuals during the transition
-                this.renderMap(this.currentZone, false, this.player.x, this.player.y);
+                this.renderMap(this.currentZone, true, this.player.x, this.player.y);
             }
 
             // 3. Start 3-2-1 Countdown
@@ -1506,7 +1506,7 @@ export const Overworld = {
 
         // 3. Auto-trigger Dialogue
         if (npc) {
-            const timeoutDialogue = qData.dialogue.timeout || ["You ran out of time! Come back when you're faster."];
+            const timeoutDialogue = qData.dialogue.failed || qData.dialogue.timeout || ["You ran out of time! Come back when you're faster."];
             this.showDialogue(npc.name, timeoutDialogue, npc.id);
         }
     },
@@ -2234,6 +2234,12 @@ export const Overworld = {
 
             // 1. Try Direct Match from the map first
             let artFile = portraitMap[npcId];
+
+            // 1.1 Support prefix-based matching for variants (e.g. lana_withered -> lana)
+            if (!artFile && npcId) {
+                const prefix = npcId.split('_')[0];
+                if (portraitMap[prefix]) artFile = portraitMap[prefix];
+            }
 
             // 2. If no direct match, resolve gender-based fallback from Sprites registry
             if (!artFile && npcId) {
@@ -3010,7 +3016,7 @@ export const Overworld = {
                 const pMeta = this.getFurnitureMeta(obj.id, obj.customSprite);
                 cleanId = obj.templateName || (pMeta && pMeta.template) || obj.id.split('_')[0] || obj.id;
             }
-            this.updateQuestProgress('kick', cleanId, obj.type);
+            this.updateQuestProgress('kick', cleanId, obj.type, obj.templateName || (this.getFurnitureMeta(obj.id, obj.customSprite)?.template));
 
             if (obj.type === 'npc' && obj.monsterId) {
                 if (this.spawner) this.spawner.startCooldown(zone.maxWildSpawns > 1 ? 500 : null);

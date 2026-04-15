@@ -165,25 +165,32 @@ export const SIDE_QUEST_DATA = {
     },
     'quest_lana_cleanup': {
         id: 'quest_lana_cleanup',
-        title: 'Botanical Debris',
-        description: "Lana is stressed about the debris in the wing. Kick 5 pieces of broken furniture to help her out.",
-        type: 'break',
-        target: 'any',
-        amount: 5,
+        title: 'The Seedling Surge',
+        description: "Lana is stressed by the 'over-revived' Musstrep tree spawning seedlings. Kick 15 seedlings in under 60 seconds.",
+        type: 'kick',
+        targetType: 'prop',
+        uiLabel: 'SEEDLING COUNT',
+        target: 'MUSSTREP_SEEDLING',
+        amount: 15,
+        timeLimit: 30,
         onCompleteFlag: 'lanaCleanedUp',
         reward: { type: 'resource', id: 'credits', amount: 400 },
         dialogue: {
             offer: [
-                "Hmph. Look at this mess! The cleanup droids are completely non-functional.",
-                "If you want to be useful, clear out 5 pieces of debris for me.",
-                "Precision kicks only! Don't damage the specimens!"
+                "*[Mumbling...]* Hmph. No one sees how much effort goes into this work... // They just see the results and walk away. // Tired... so tired of being the only one who respects the workload here...",
+                "Wait! You! What are you doing in the Withered Tree wing? // I'm Lana, Senior Scientist. Don't mind what you heard, I was just... talking to myself. // You're the new intern, aren't you? First time seeing the great tree? // This is the 'Musstrep'—a giant ancient tree my team and I revived from a dead husk. // It used to be a lifeless, shriveled husk, just like... anyway...",
+                "It’s remarkably healthy now. In fact, it’s spawning mischievous seedlings at an alarming rate. // They love hiding beside the furniture and snapping at ankles.",
+                "So, it's your first day and no one has assigned you a task yet? // Fine, I'll give you one. Consider this an honor: your first task ever, given by me. // Kick 15 of these younglings in under 60 seconds. // Don't worry about them getting hurt; those seedlings have a shell harder than stone. Ready?"
             ],
-            progress: ["Why are you still talking to me? The debris isn't going to clear itself! {progress}/5 cleared."],
+            progress: ["Don't stop now! {amount} more seedlings need a calibration kick! Move it!"],
             complete: [
-                "Fine. It's... acceptable. I suppose you aren't completely incompetent.",
-                "I'm going back to my private study area now. Don't follow me!"
+                "Hmph. I suppose you have strong legs and keen eyes after all.",
+                "Don't get too comfortable though; they'll be back eventually. They always do.",
+                "I’m going back to my room now. // ...By the way, it was nice to meet you. Welcome to the Lab; you have much to learn here."
             ],
-            finished: ["The air is much cleaner now. Efficiency is everything."]
+            failed: ["Hehe, did you see how their roots flared when they were running? // Ehem... I mean, you weren't quick enough. // Maybe you should scout where they’re hiding and plan a path first?"],
+            retry: ["Ready to try again? Or have you reached your limit. Intern?"],
+            finished: ["Oh, you cleaned all of them? What a show that was! // The seedlings were a bit slow today, weren't they?"]
         }
     }
 };

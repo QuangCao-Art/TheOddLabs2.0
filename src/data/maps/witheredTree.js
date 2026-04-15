@@ -133,7 +133,17 @@ export const witheredTree = {
         { "id": "f155_mnypfxroepsh3", "templateName": "MUSSTREP_SEEDLING", "x": 8, "y": 7, "type": "prop", "mirrored": false },
         { "id": "f155_mnyphert3v2x1", "templateName": "MUSSTREP_SEEDLING", "x": 8, "y": 11, "type": "prop", "mirrored": true },
         { "id": "f155_mnyq7arbiomh5", "templateName": "MUSSTREP_SEEDLING", "x": 9, "y": 3, "type": "prop", "mirrored": false },
-        { "id": "f105_mnyq7f30uq3ag", "templateName": "WARNING_SIGN_FRONT", "x": 9, "y": 4, "type": "prop", "mirrored": false }
+        { "id": "f105_mnyq7f30uq3ag", "templateName": "WARNING_SIGN_FRONT", "x": 9, "y": 4, "type": "prop", "mirrored": false },
+        { 
+            "id": "lana_withered", 
+            "templateName": "LANA", 
+            "x": 7, "y": 14, 
+            "direction": "left",
+            "type": "npc", 
+            "name": "Scientist Lana", 
+            "quests": ["quest_lana_cleanup"],
+            "forbiddenFlag": "lanaCleanedUp"
+        }
     ],
     doors: [
         { "x": 8, "y": 2, "targetZone": "ancientBotany", "targetX": 21, "targetY": 7 },

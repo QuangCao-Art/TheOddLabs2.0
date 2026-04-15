@@ -84,6 +84,14 @@ export const NPC_SCRIPTS = {
                     "I have no intention of providing remedial guidance. I simply don't want an incompetent intern lowering this sector's safety rating!"
                 ];
                 lines = [flavors[Math.floor(Math.random() * flavors.length)]];
+            } else if (gameState.storyFlags.lanaCleanedUp) {
+                const postCleanupFlavors = [
+                    "Dealing with those seedlings is undeniably exhausting... // Yet, seeing the tree at peace brings a certain stillness to my own thoughts. Don't mention I said that, Intern.",
+                    "The air here is much more efficient now. // Don't think this means I have time to babysit you, Intern! Get back to your observations.",
+                    "That was quite entertaining, wasn't it? // Though they will inevitably return. // Perhaps I should assign you a daily seedling culling? *(She giggles softly)* I'm almost serious.",
+                    "Jenzi mentioned she drafted you for some minor orientation task. // If you've finished my culling, you should probably focus on that! // Efficiency requires prioritization, after all."
+                ];
+                lines = [postCleanupFlavors[Math.floor(Math.random() * postCleanupFlavors.length)]];
             } else {
                 const flavors = [
                     "What are you staring at? // I was merely performing a hydration assessment on your partner Cell. // It is a critical laboratory asset, unlike... some uncalibrated interns! Hmph!",
@@ -97,6 +105,14 @@ export const NPC_SCRIPTS = {
             }
             return { lines, triggers };
         }
+    },
+    'lana_withered': {
+        name: "Lana",
+        getScript: (gameState, overworld, params) => NPC_SCRIPTS['lana'].getScript(gameState, overworld, params)
+    },
+    'lana_moved': {
+        name: "Lana",
+        getScript: (gameState, overworld, params) => NPC_SCRIPTS['lana'].getScript(gameState, overworld, params)
     },
     'dyzes': {
         name: "Dyzes",
