@@ -179,8 +179,8 @@ export const SIDE_QUEST_DATA = {
         reward: { type: 'resource', id: 'credits', amount: 400 },
         dialogue: {
             offer: [
-                "*[Mumbling...]* Hmph. No one sees how much effort goes into this work... // They just see the results and walk away. // Tired... so tired of being the only one who respects the workload here...",
-                "Wait! You! What are you doing in the Withered Tree wing? // I'm Lana, Senior Scientist. Don't mind what you heard, I was just... talking to myself. // You're the new intern, aren't you? First time seeing the great tree? // This is the 'Musstrep'— a giant ancient tree my team and I revived from a dead husk. // It used to be a lifeless, shriveled husk, withered, tired... anyway...",
+                "*[Mumbling...]* Hmph. No one sees how much effort goes into this work... // *[Sighs]* They just wanna see the results and walk away... // *[Mumbling...]* Tired... so tired, might need a day off...",
+                "Wait! You! What are you doing in the Withered Tree wing? // I'm Lana, Lead Scientist in Botanic Sector. Don't mind what you heard, I was just... talking to myself. // You're the new intern, aren't you? First time seeing the great tree? // This is the 'Musstrep'— a giant ancient tree my team and I revived from a dead husk. // It used to be a lifeless, shriveled husk, withered, tired... anyway...",
                 "It’s remarkably healthy now. In fact, it’s spawning mischievous seedlings at an alarming rate. // They love hiding beside the furniture and snapping at ankles.",
                 "So, it's your first day and no one has assigned you a task yet? // Fine, I'll give you one. Consider this an honor: your first task ever, given by me. // Kick 15 of these younglings in under 30 seconds. // Don't worry about them getting hurt; those seedlings have a shell harder than stone. Ready?"
             ],
