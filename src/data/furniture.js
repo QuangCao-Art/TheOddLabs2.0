@@ -93,10 +93,10 @@ export const furnitureMetadata = {
     'f83': { name: 'Grand Cryo Pod', hasCollision: true, info: "Stay cool—we'll be out in a century or two." },
     'f84': { name: 'Deep Freeze Pod', hasCollision: true, info: "Whatever is kept inside is in a deep freeze state!" },
     'f85': { name: 'Deep Freeze Pod', hasCollision: true, info: "Whatever is kept inside is in a deep freeze state!" },
-    'f86': { name: 'Healthy Ancient Plant', hasCollision: false, breathing: true, breathingSpeed: '5s', breathingScale: '1.05', info: "People are trying to bring this ancient plant back; sometimes it's a success!" },
-    'f87': { name: 'Healthy Ancient Plant', hasCollision: true, breathing: true, breathingSpeed: '5s', breathingScale: '1.05', info: "People are trying to bring this ancient plant back; sometimes it's a success!" },
-    'f88': { name: 'Wither Ancient Plant', hasCollision: false, info: "People are trying to bring this ancient plant back; sometimes it's a failure!" },
-    'f89': { name: 'Wither Ancient Plant', hasCollision: true, info: "People are trying to bring this ancient plant back; sometimes it's a failure!" },
+    'f86': { name: 'Healthy Ancient Nepthees Plant', hasCollision: false, breathing: true, breathingSpeed: '5s', breathingScale: '1.05', info: "People are trying to bring this ancient plant back; sometimes it's a success!" },
+    'f87': { name: 'Healthy Ancient Nepthees Plant', hasCollision: true, breathing: true, breathingSpeed: '5s', breathingScale: '1.05', info: "People are trying to bring this ancient plant back; sometimes it's a success!" },
+    'f88': { name: 'Wither Ancient Nepthees Plant', hasCollision: false, info: "People are trying to bring this ancient plant back; sometimes it's a failure!" },
+    'f89': { name: 'Wither Ancient Nepthees Plant', hasCollision: true, info: "People are trying to bring this ancient plant back; sometimes it's a failure!" },
     'f90': { name: 'Official Employee Card', hasCollision: true, info: "You are now a truly member of the pack!" },
     'f91': { name: 'Empty Pot', hasCollision: true, info: "A ceramic pot filled with special fertile soil. If you listen closely, you can hear the worms throwing a tiny rave in there." },
     'f92': { name: 'Cell Accelerator', hasCollision: false, info: "They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven." },
@@ -194,6 +194,26 @@ export const furnitureMetadata = {
     'f169': { name: 'Ancient Musstrep Plant', hasCollision: true, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
     'f170': { name: 'Ancient Musstrep Plant', hasCollision: true, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
     'f171': { name: 'Ancient Musstrep Plant', hasCollision: true, breathing: true, breathingSpeed: '7s', breathingScale: '1.02', info: ["A giant ancient plant, originally a dead tree revived by scientists, hence the room's name.", "It is now strong and healthy... perhaps a little bit too healthy."] },
+    'f172': { name: 'Nepthees Seedling', hasCollision: true, kickable: true, material: ['liquid', 'monster'], breathing: true, breathingSpeed: '0.8s', breathingScale: '1.05', info: "An ancient Nepthees seedling. Where do these little guys even come from?" },
+    'f173': { name: 'Mega Multi Material Printer', hasCollision: false, breathing: true, breathingSpeed: '0.5s', breathingScale: '1.01', info: "A massive industrial multi-material 3D printer responsible for the fabrication of all Laboratory equipment. // It utilizes raw liquid material to materialize complex structures." },
+    'f174': { name: 'Mega Multi Material Printer', hasCollision: false, breathing: true, breathingSpeed: '0.5s', breathingScale: '1.01', info: "A massive industrial multi-material 3D printer responsible for the fabrication of all Laboratory equipment. // It utilizes raw liquid material to materialize complex structures." },
+    'f175': { name: 'Mega Multi Material Printer', hasCollision: false, breathing: true, breathingSpeed: '0.5s', breathingScale: '1.01', info: "A massive industrial multi-material 3D printer responsible for the fabrication of all Laboratory equipment. // It utilizes raw liquid material to materialize complex structures." },
+    'f176': { name: 'Mega Multi Material Printer', hasCollision: false, breathing: true, breathingSpeed: '0.5s', breathingScale: '1.01', info: "A massive industrial multi-material 3D printer responsible for the fabrication of all Laboratory equipment. // It utilizes raw liquid material to materialize complex structures." },
+    'f177': { name: 'Mega Multi Material Printer', hasCollision: false, breathing: true, breathingSpeed: '0.5s', breathingScale: '1.01', info: "A massive industrial multi-material 3D printer responsible for the fabrication of all Laboratory equipment. // It utilizes raw liquid material to materialize complex structures." },
+    'f178': { name: 'Mega Multi Material Printer', hasCollision: true, breathing: true, breathingSpeed: '0.5s', breathingScale: '1.01', info: "A massive industrial multi-material 3D printer responsible for the fabrication of all Laboratory equipment. // It utilizes raw liquid material to materialize complex structures." },
+    'f179': { name: 'Mega Multi Material Printer', hasCollision: true, breathing: true, breathingSpeed: '0.5s', breathingScale: '1.01', info: "A massive industrial multi-material 3D printer responsible for the fabrication of all Laboratory equipment. // It utilizes raw liquid material to materialize complex structures." },
+    'f180': { name: 'Mega Multi Material Printer', hasCollision: true, breathing: true, breathingSpeed: '0.5s', breathingScale: '1.01', info: "A massive industrial multi-material 3D printer responsible for the fabrication of all Laboratory equipment. // It utilizes raw liquid material to materialize complex structures." },
+    'f181': { name: 'Mega Multi Material Printer', hasCollision: true, breathing: true, breathingSpeed: '0.5s', breathingScale: '1.01', info: "A massive industrial multi-material 3D printer responsible for the fabrication of all Laboratory equipment. // It utilizes raw liquid material to materialize complex structures." },
+    'f182': { name: 'Mega Multi Material Printer', hasCollision: true, breathing: true, breathingSpeed: '0.5s', breathingScale: '1.01', info: "A massive industrial multi-material 3D printer responsible for the fabrication of all Laboratory equipment. // It utilizes raw liquid material to materialize complex structures." },
+    'f183': { name: 'Mega Multi Material Printer', hasCollision: true, breathing: true, breathingSpeed: '0.5s', breathingScale: '1.01', info: "A massive industrial multi-material 3D printer responsible for the fabrication of all Laboratory equipment. // It utilizes raw liquid material to materialize complex structures." },
+    'f184': { name: 'Mega Multi Material Printer', hasCollision: true, breathing: true, breathingSpeed: '0.5s', breathingScale: '1.01', info: "A massive industrial multi-material 3D printer responsible for the fabrication of all Laboratory equipment. // It utilizes raw liquid material to materialize complex structures." },
+    'f185': { name: 'Liquid Material', hasCollision: true, kickable: true, material: 'metal', info: "Raw liquified material used for the printer. // Simply plug the container into the machine; it is remarkably lightweight and efficient." },
+    'f186': { name: 'Liquid Material', hasCollision: true, kickable: true, material: 'metal', info: "Raw liquified material used for the printer. // Simply plug the container into the machine; it is remarkably lightweight and efficient." },
+    'f187': { name: 'Liquid Material', hasCollision: true, kickable: true, material: 'metal', info: "Raw liquified material used for the printer. // Simply plug the container into the machine; it is remarkably lightweight and efficient." },
+    'f188': { name: 'Stacked Liquid Material', hasCollision: false, kickable: false, material: 'metal', info: "A stack of raw liquified material used for the printer. // One container is easy to carry, but three are surprisingly heavy." },
+    'f189': { name: 'Stacked Liquid Material', hasCollision: true, kickable: false, material: 'metal', info: "A stack of raw liquified material used for the printer. // One container is easy to carry, but three are surprisingly heavy." },
+    'f190': { name: 'Piled Liquid Material', hasCollision: true, kickable: false, material: 'metal', info: "A messy pile of raw liquified material used for the printer. // Someone really should have organized this area." },
+    'f191': { name: 'Piled Liquid Material', hasCollision: true, kickable: false, material: 'metal', info: "A messy pile of raw liquified material used for the printer. // Someone really should have organized this area." },
 };
 
 export const FURNITURE_TEMPLATES = {
@@ -272,15 +292,15 @@ export const FURNITURE_TEMPLATES = {
             { id: 'f22', relX: 0, relY: -1, name: 'Tank Top' }
         ]
     },
-    HEALTHY_PLANT: {
-        name: 'Healthy Ancient Plant',
+    HEALTHY_NEPTHEES_PLANT: {
+        name: 'Healthy Ancient Nepthees Plant',
         tiles: [
             { id: 'f87', relX: 0, relY: 0, name: 'Plant Base' },
             { id: 'f86', relX: 0, relY: -1, name: 'Plant Top' }
         ]
     },
-    DEAD_PLANT: {
-        name: 'Wither Ancient Plant',
+    WITHER_NEPTHEES_PLANT: {
+        name: 'Wither Ancient Nepthees Plant',
         tiles: [
             { id: 'f89', relX: 0, relY: 0, name: 'Plant Base' },
             { id: 'f88', relX: 0, relY: -1, name: 'Plant Top' }
@@ -568,6 +588,41 @@ export const FURNITURE_TEMPLATES = {
             { id: 'f159', relX: 1, relY: -6, name: 'Near Top Right' },
             { id: 'f156', relX: 0, relY: -7, name: 'Top Left' },
             { id: 'f157', relX: 1, relY: -7, name: 'Top Right' }
+        ]
+    },
+    NEPTHEES_SEEDLING: { name: 'Nepthees Seedling', tiles: [{ id: 'f172', relX: 0, relY: 0 }] },
+    MEGA_PRINTER: {
+        name: 'Mega Multi Material Printer',
+        tiles: [
+            { id: 'f182', relX: 0, relY: 0, name: 'Bottom Left' },
+            { id: 'f183', relX: 1, relY: 0, name: 'Bottom Mid' },
+            { id: 'f184', relX: 2, relY: 0, name: 'Bottom Right' },
+            { id: 'f179', relX: 0, relY: -1, name: 'Bottom Mid Left' },
+            { id: 'f180', relX: 1, relY: -1, name: 'Bottom Mid Mid' },
+            { id: 'f181', relX: 2, relY: -1, name: 'Bottom Mid Right' },
+            { id: 'f176', relX: 0, relY: -2, name: 'Top Mid Left' },
+            { id: 'f177', relX: 1, relY: -2, name: 'Top Mid Mid' },
+            { id: 'f178', relX: 2, relY: -2, name: 'Top Mid Right' },
+            { id: 'f173', relX: 0, relY: -3, name: 'Top Left' },
+            { id: 'f174', relX: 1, relY: -3, name: 'Top Mid' },
+            { id: 'f175', relX: 2, relY: -3, name: 'Top Right' }
+        ]
+    },
+    LIQUID_RED: { name: 'Liquid Material (Red)', tiles: [{ id: 'f185', relX: 0, relY: 0 }] },
+    LIQUID_YELLOW: { name: 'Liquid Material (Yellow)', tiles: [{ id: 'f186', relX: 0, relY: 0 }] },
+    LIQUID_BLUE: { name: 'Liquid Material (Blue)', tiles: [{ id: 'f187', relX: 0, relY: 0 }] },
+    LIQUID_STACK: {
+        name: 'Liquid Material Stack',
+        tiles: [
+            { id: 'f189', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f188', relX: 0, relY: -1, name: 'Top' }
+        ]
+    },
+    LIQUID_PILE: {
+        name: 'Liquid Material Pile',
+        tiles: [
+            { id: 'f190', relX: 0, relY: 0, name: 'Left' },
+            { id: 'f191', relX: 1, relY: 0, name: 'Right' }
         ]
     }
 };

@@ -182,10 +182,10 @@ Used for advanced lab equipment and specialized props. Texture asset: `Lab_TileS
 | **f83** | CryoPodBig-BottomRight | 1792px | 512px | Yes | Stay cool—we'll be out in a century or two. |
 | **f84** | StoragePod-Top | 1792px | 768px | Yes | Whatever is kept inside is in a deep freeze state! |
 | **f85** | StoragePod-Bottom | 1792px | 1024px | Yes | Whatever is kept inside is in a deep freeze state! |
-| **f86** | HealthyAncientPlant-Top | 1536px | 768px | No | People are trying to bring this ancient plant back; sometimes it's a success! |
-| **f87** | HealthyAncientPlant-Bottom | 1536px | 1024px | Yes | People are trying to bring this ancient plant back; sometimes it's a success! |
-| **f88** | DeadAncientPlant-Top | 1280px | 768px | No | People are trying to bring this ancient plant back; sometimes it's a failure! |
-| **f89** | DeadAncientPlant-Bottom | 1280px | 1024px | Yes | People are trying to bring this ancient plant back; sometimes it's a failure! |
+| **f86** | HealthyAncientNeptheesPlant-Top | 1536px | 768px | No | People are trying to bring this ancient plant back; sometimes it's a success! |
+| **f87** | HealthyAncientNeptheesPlant-Bottom | 1536px | 1024px | Yes | People are trying to bring this ancient plant back; sometimes it's a success! |
+| **f88** | WitherAncientNeptheesPlant-Top | 1280px | 768px | No | People are trying to bring this ancient plant back; sometimes it's a failure! |
+| **f89** | WitherAncientNeptheesPlant-Bottom | 1280px | 1024px | Yes | People are trying to bring this ancient plant back; sometimes it's a failure! |
 | **f90** | KeyItem-Official Employee Card | 1024px | 0px | Yes | You are now a truly member of the pack! |
 | **f91** | Empty Pot | 1280px | 0px | Yes | Empty ceramic pot. |
 | **f92** | CellAccelerator-TopLeft | 0px | 1280px | No | They say this is where all cells begin. It’s a mouthful of a name for what is essentially a high-speed evolution oven. |
@@ -276,6 +276,26 @@ Interactive machinery and experimental equipment. Texture asset: `Lab_TileSet_04
 | **f169** | MusstrepPlant-NearBottomRight | 1x1 | 1792px | 1536px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
 | **f170** | MusstrepPlant-BottomLeft | 1x1 | 1536px | 1792px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
 | **f171** | MusstrepPlant-BottomRight | 1x1 | 1792px | 1792px | Yes | A giant ancient plant, originally a dead tree revived by scientists, hence the room's name. It is now strong and healthy... perhaps a little bit too healthy. |
+| **f172** | Nepthees-Seedling | 1x1 | 256px | 1536px | Yes | An ancient Nepthees seedling. Where do these little guys even come from? |
+| **f173** | Mega Multi Material Printer-TopLeft | 1x1 | 768px | 768px | No | A massive industrial multi-material 3D printer responsible for the fabrication of all Laboratory equipment. // It utilizes raw liquid material to materialize complex structures. |
+| **f174** | Mega Multi Material Printer-TopMid | 1x1 | 1024px | 768px | No | (Same as above). |
+| **f175** | Mega Multi Material Printer-TopRight | 1x1 | 1280px | 768px | No | (Same as above). |
+| **f176** | Mega Multi Material Printer-TopMidLeft | 1x1 | 768px | 1024px | No | (Same as above). |
+| **f177** | Mega Multi Material Printer-TopMidMid | 1x1 | 1024px | 1024px | No | (Same as above). |
+| **f178** | Mega Multi Material Printer-TopMidRight | 1x1 | 1280px | 1024px | Yes | (Same as above). |
+| **f179** | Mega Multi Material Printer-BottomMidLeft | 1x1 | 768px | 1280px | Yes | (Same as above). |
+| **f180** | Mega Multi Material Printer-BottomMidMid | 1x1 | 1024px | 1280px | Yes | (Same as above). |
+| **f181** | Mega Multi Material Printer-BottomMidRight | 1x1 | 1280px | 1280px | Yes | (Same as above). |
+| **f182** | Mega Multi Material Printer-BottomLeft | 1x1 | 768px | 1536px | Yes | (Same as above). |
+| **f183** | Mega Multi Material Printer-BottomMid | 1x1 | 1024px | 1536px | Yes | (Same as above). |
+| **f184** | Mega Multi Material Printer-BottomRight | 1x1 | 1280px | 1536px | Yes | (Same as above). |
+| **f185** | LiquidMaterial-Red | 1x1 | 0px | 1792px | Yes | Raw liquified material used for the printer. // Simply plug the container into the machine; it is remarkably lightweight and efficient. |
+| **f186** | LiquidMaterial-Yellow | 1x1 | 256px | 1792px | Yes | Raw liquified material used for the printer. // Simply plug the container into the machine; it is remarkably lightweight and efficient. |
+| **f187** | LiquidMaterial-Blue | 1x1 | 768px | 1792px | Yes | Raw liquified material used for the printer. // Simply plug the container into the machine; it is remarkably lightweight and efficient. |
+| **f188** | StackedLiquidMaterial-Top | 1x1 | 512px | 1536px | No | A stack of raw liquified material used for the printer. // One container is easy to carry, but three are surprisingly heavy. |
+| **f189** | StackedLiquidMaterial-Bottom | 1x1 | 512px | 1792px | Yes | A stack of raw liquified material used for the printer. // One container is easy to carry, but three are surprisingly heavy. |
+| **f190** | PiledLiquidMaterial-Left | 1x1 | 1024px | 1792px | Yes | A messy pile of raw liquified material used for the printer. // Someone really should have organized this area. |
+| **f191** | PiledLiquidMaterial-Right | 1x1 | 1280px | 1792px | Yes | A messy pile of raw liquified material used for the printer. // Someone really should have organized this area. |
 
 ---
 

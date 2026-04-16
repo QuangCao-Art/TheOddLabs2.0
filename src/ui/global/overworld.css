@@ -1079,7 +1079,27 @@
 .world-object.prop.f168,
 .world-object.prop.f169,
 .world-object.prop.f170,
-.world-object.prop.f171 {
+.world-object.prop.f171,
+.world-object.prop.f172,
+.world-object.prop.f173,
+.world-object.prop.f174,
+.world-object.prop.f175,
+.world-object.prop.f176,
+.world-object.prop.f177,
+.world-object.prop.f178,
+.world-object.prop.f179,
+.world-object.prop.f180,
+.world-object.prop.f181,
+.world-object.prop.f182,
+.world-object.prop.f183,
+.world-object.prop.f184,
+.world-object.prop.f185,
+.world-object.prop.f186,
+.world-object.prop.f187,
+.world-object.prop.f188,
+.world-object.prop.f189,
+.world-object.prop.f190,
+.world-object.prop.f191 {
     background-image: url('../../../assets/images/Lab_TileSet_04.png') !important;
     background-size: 512px 512px !important;
 }
@@ -1456,6 +1476,98 @@
 
 .world-object.prop.f171 {
     background-position: calc(-1792px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f172 {
+    background-position: calc(-256px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.MegaMultiMaterialPrinter-TopLeft,
+.world-object.prop.f173 {
+    background-position: calc(-768px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.MegaMultiMaterialPrinter-TopMid,
+.world-object.prop.f174 {
+    background-position: calc(-1024px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.MegaMultiMaterialPrinter-TopRight,
+.world-object.prop.f175 {
+    background-position: calc(-1280px / 4) calc(-768px / 4);
+}
+
+.world-object.prop.MegaMultiMaterialPrinter-TopMidLeft,
+.world-object.prop.f176 {
+    background-position: calc(-768px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.MegaMultiMaterialPrinter-TopMidMid,
+.world-object.prop.f177 {
+    background-position: calc(-1024px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.MegaMultiMaterialPrinter-TopMidRight,
+.world-object.prop.f178 {
+    background-position: calc(-1280px / 4) calc(-1024px / 4);
+}
+
+.world-object.prop.MegaMultiMaterialPrinter-BottomMidLeft,
+.world-object.prop.f179 {
+    background-position: calc(-768px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.MegaMultiMaterialPrinter-BottomMidMid,
+.world-object.prop.f180 {
+    background-position: calc(-1024px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.MegaMultiMaterialPrinter-BottomMidRight,
+.world-object.prop.f181 {
+    background-position: calc(-1280px / 4) calc(-1280px / 4);
+}
+
+.world-object.prop.MegaMultiMaterialPrinter-BottomLeft,
+.world-object.prop.f182 {
+    background-position: calc(-768px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.MegaMultiMaterialPrinter-BottomMid,
+.world-object.prop.f183 {
+    background-position: calc(-1024px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.MegaMultiMaterialPrinter-BottomRight,
+.world-object.prop.f184 {
+    background-position: calc(-1280px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f185 {
+    background-position: calc(-0px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f186 {
+    background-position: calc(-256px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f187 {
+    background-position: calc(-768px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f188 {
+    background-position: calc(-512px / 4) calc(-1536px / 4);
+}
+
+.world-object.prop.f189 {
+    background-position: calc(-512px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f190 {
+    background-position: calc(-1024px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f191 {
+    background-position: calc(-1280px / 4) calc(-1792px / 4);
 }
 
 .world-object.prop.StoragePod-Top,

@@ -16,27 +16,25 @@ description: Add a New Asset to the Game & Builder Tool
 ```
 
 ### 1. Identify the Sprite
-- Open `Lab_TileSet_02.png` or `Lab_TileSet_03.png`.
+- Open the relevant tileset (e.g., `Lab_TileSet_04.png`).
 - Note the Top-Left pixel coordinates (X, Y) of the sprite.
-- Assign the next available ID (e.g., `f105`).
+- Assign the next available IDs (e.g., `f185`).
 
 > [!CAUTION]
 > **NAMING CONVENTION**: Avoid using multiple underscores in Furniture IDs (e.g., use `crate01` or `f105`, NOT `large_metal_crate`). The overworld engine uses the first underscore to separate the base ID from interaction suffixes. Using multiple underscores will break the pivot/wobble animation for that object.
 
 ### 2. Update Documentation
-Add the entry to [MapBuilder.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/MapBuilder.md).
-- **Section**: Furniture Registry.
-- **Entry**: `fID: Name (Tileset X, Y)`.
+Add the entry to [_docs/MapBuilder.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/_docs/MapBuilder.md).
+- **Section**: Furniture Tileset (choose the correct section).
+- **Entry**: `| **fID** | Name | Dimension | Xpx | Ypx | Collision | Info |`
 
 ### 3. Implement CSS Rendering
-Update [style.css](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/style.css).
-1.  Ensure the ID is included in the tileset URL block (e.g., `.world-object.prop.f105`).
-2.  Add the specific coordinate mapping:
-    ```css
-    .world-object.prop.f105 {
-        background-position: calc(-[X]px / 4) calc(-[Y]px / 4);
-    }
-    ```
+Update [src/ui/global/overworld.css](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/ui/global/overworld.css).
+
+> [!IMPORTANT]
+> **CSS DUAL-ENTRY POLICY**: Most IDs appear in TWO places. Ensure both are updated:
+> 1.  **Selector Block**: Group the ID under the correct `background-image: url(...)` rule.
+> 2.  **Position Entry**: Add the `background-position: calc(-Xpx / 4) calc(-Ypx / 4);` entry.
 
 ### 4. Add to Builder Palette
 Update [furniture.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/furniture.js).
@@ -50,9 +48,44 @@ Update [furniture.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/fur
     ```
 
 ### 5. Finalize Metadata
-Update [furniture.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/furniture.js).
+Update [src/data/furniture.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/furniture.js).
+
+> [!TIP]
+> **LABORATORY OS NARRATIVE STANDARDS**:
+> - Use professional, technical vocabulary (e.g., *utilizes*, *fabrication*, *structural integrity*).
+> - Treat the `info` text as an official "Laboratory Entry".
+> - Proofread for "is/are" agreement and technical typos.
+
 1.  Locate `furnitureMetadata`.
-2.  Add the ID with its mandatory `name`, collision status, description text, and breakable settings.
+2.  Add the ID with its mandatory properties.
+
+```javascript
+'f105': { 
+    name: 'Standardized Name',
+    hasCollision: true,
+    info: "Technical description here.",
+    material: 'metal',        // Audio: wood | glass | metal | liquid | monster | bone | plastic | carton
+    // --- OPTIONAL ANIMATION ---
+    breathing: true,          // Enables scaling animation
+    breathingSpeed: '0.5s',   // Speed of cycle
+    breathingScale: '1.01',   // Max scale factor (1.01 = 1% growth)
+    // --- OPTIONAL DESTRUCTION ---
+    breakable: true,          
+    breaksInto: 'DEBRIS_ID'   // Template ID from FURNITURE_TEMPLATES
+}
+```
+
+### ✍️ Writing Quality & Grammar (Dialogue Polishing Protocol)
+> [!IMPORTANT]
+> To ensure systematic and scalable updates, always follow the **Dialogue Polishing Protocol**:
+>
+> | Step | Rule | Description |
+> | :--- | :--- | :--- |
+> | **1** | **Preserve Intent** | Do not change core meaning, lore beats, or specific character actions (e.g., mumbling, private thoughts). |
+> | **2** | **Grammar Check** | Correct subject-verb agreement, tense consistency, and punctuation while maintaining the "spoken" feel. |
+> | **3** | **Visual Rhythm** | Use `//` for mid-line panel breaks to ensure text doesn't overflow the UI and flows naturally. |
+> | **4** | **Tone Balancing** | Ensure character voice consistency (e.g., Jenzi's slang vs. Lana's scientific ego). |
+> | **5** | **Minimum Viable Edit** | Stick as close to original wording as possible. Only alter for clarity and grammar. |
 
 > [!TIP]
 > **Understanding "Breaks Into"**:
