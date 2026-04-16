@@ -117,9 +117,15 @@ For NPCs with complex roles (Jenzi, Lana, etc.), their core interaction logic is
 
 ---
 
+### 🤺 NPC Duel (Defeat Quest) Special Logic
+When the `Quest Type` is `defeat` and the `Target ID` is the NPC themselves (a Duel):
+1. **Focus on Offer & Complete**: For the Quest Registry, the most critical dialogues are `offer` (to accept the challenge) and `complete` (the turn-in for the reward after winning).
+2. **Engagement Handover**: Once the quest is started, the NPC will typically use their Narrative Script lines (`beforeBattle`) to trigger the fight, rather than the quest `progress` lines.
+
 ### ⚠️ Quest Integrity Checklist
 - [ ] **Priority Check**: Is the highest priority quest listed FIRST in the NPC's `quests` array?
 - [ ] **Flag Safety**: Does the `requiredFlag` exist in `gameState.storyFlags` (or is it planned)?
 - [ ] **Dialogue Type**: Are all dialogue fields **Arrays of Strings**?
+- [ ] **Duel Specifics**: For NPC Duels, are the `offer` and `complete` dialogues the primary focus?
 - [ ] **Diary Entry**: Is the `description` written in the first-person "Intern's Log" style?
 - [ ] **Post-Quest Text**: Is there a meaningful `finished` dialogue for after the quest is done?
