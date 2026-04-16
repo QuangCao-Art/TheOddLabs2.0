@@ -148,5 +148,11 @@ export const witheredTree = {
     doors: [
         { "x": 8, "y": 2, "targetZone": "ancientBotany", "targetX": 21, "targetY": 7 },
         { "x": 8, "y": 24, "targetZone": "nursery", "targetX": 7, "targetY": 3 }
-    ]
+    ],
+    maxWildSpawns: 3,
+    spawnPool: { cambihil: 30, stemmy: 30, nitrophil: 20, lydrosome: 20 },
+    spawnDelayMin: 2000,
+    spawnDelayMax: 3000,
+    despawnTimeMin: 10000,
+    despawnTimeMax: 5000
 };

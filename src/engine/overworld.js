@@ -31,6 +31,7 @@ import { medicalExperienceRoom } from '../data/maps/medicalExperienceRoom.js';
 import { secretCryoChamber } from '../data/maps/secretCryoChamber.js';
 import { oldMachine } from '../data/maps/oldMachine.js';
 import { witheredTree } from '../data/maps/witheredTree.js';
+import { fabricatingLab } from '../data/maps/fabricatingLab.js';
 
 // Mapping of Tile IDs to specific material tags for audio/vfx
 const TILE_MATERIAL_MAP = {
@@ -250,7 +251,8 @@ export const Overworld = {
         medicalExperienceRoom,
         secretCryoChamber,
         oldMachine,
-        witheredTree
+        witheredTree,
+        fabricatingLab
     },
     furnitureMetadata,
 
@@ -2521,7 +2523,7 @@ export const Overworld = {
     spawner: {
         activeMonsters: [], // Array of { id, despawnTimer }
         spawnTimer: null,
-        allowedZones: ['atrium', 'botanic', 'human', 'executive', 'specimenStorage', 'kitchen', 'storage', 'entertainment', 'ancientBotany', 'preservationRoom', 'library', 'cellPlayGround', 'oldMachine'],
+        allowedZones: ['atrium', 'botanic', 'human', 'executive', 'specimenStorage', 'kitchen', 'storage', 'entertainment', 'ancientBotany', 'preservationRoom', 'library', 'cellPlayGround', 'oldMachine', 'fabricatingLab', 'witheredTree'],
 
         start() {
             if (!this.allowedZones.includes(Overworld.currentZone)) return;

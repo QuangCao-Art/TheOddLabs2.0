@@ -176,7 +176,7 @@ export const SIDE_QUEST_DATA = {
         amount: 15,
         timeLimit: 30,
         onCompleteFlag: 'lanaCleanedUp',
-        reward: { type: 'resource', id: 'credits', amount: 400 },
+        reward: { type: 'resource', id: 'credits', amount: 200 },
         dialogue: {
             offer: [
                 "*[Mumbling...]* Hmph. No one sees how much effort goes into this work... // *[Sighs]* They just wanna see the results and walk away... // *[Mumbling...]* Tired... so tired, might need a day off...",

@@ -6,7 +6,7 @@ export const medicalExperienceRoom = {
     layout: [
         [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
         [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
-        [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 11],
+        [10, 15, 15, 15, 15, 15, 15, 22, 15, 15, 15, 15, 15, 15, 11],
         [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
         [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
         [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
@@ -123,7 +123,8 @@ export const medicalExperienceRoom = {
         { "id": "f34_mnq2mjhw3czep", "x": 2, "y": 4, "type": "prop", "hiddenReward": "REWARD_CREDITS_10" }
     ],
     doors: [
-        { "x": 0, "y": 7, "targetZone": "human", "targetX": 13, "targetY": 13 }
+        { "x": 0, "y": 7, "targetZone": "human", "targetX": 13, "targetY": 13 },
+        { "x": 7, "y": 2, "targetZone": "fabricatingLab", "targetX": 9, "targetY": 13 }
     ]
 
 
