@@ -1700,7 +1700,9 @@
 
 /* Ensure modal shrinks inward when parent overlay is hidden or closing */
 #quest-complete-modal.hidden .quest-complete-panel,
-#quest-complete-modal.modal-closing .quest-complete-panel {
+#quest-complete-modal.modal-closing .quest-complete-panel,
+#game-over-overlay.hidden .quest-complete-panel,
+#game-over-overlay.modal-closing .quest-complete-panel {
     transform: translate(-50%, -50%) scale(0.85) !important;
     opacity: 0;
 }
@@ -1800,7 +1802,218 @@
     margin: 0 auto 10px auto !important;
 }
 
+/* --- SHARED MODAL EXP BAR SYSTEM --- */
+.modal-exp-section {
+    margin-top: 5px;
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 243, 255, 0.1);
+    position: relative;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+}
+
+.modal-exp-section:not(.hidden) {
+    animation: modalSectionFade 0.6s ease-out forwards;
+}
+
+@keyframes modalSectionFade {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.reward-chip-line {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px var(--neon-cyan);
+    font-weight: bold;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+/* Battle Outcome Specifics */
+.battle-outcome-panel[data-outcome="failed"] .quest-reward-container {
+    display: none;
+}
+
+.quest-exp-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+
+.quest-exp-labels .exp-label {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--neon-cyan);
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+}
+
+.quest-exp-labels .exp-value {
+    font-family: 'Rajdhani', sans-serif;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.quest-modal-bar {
+    height: 12px !important;
+    background: rgba(0, 243, 255, 0.05) !important;
+    border: 1px solid rgba(0, 243, 255, 0.2) !important;
+    border-radius: 4px !important;
+    overflow: hidden;
+}
+
+.quest-modal-bar .exp-bar-fill {
+    border: none !important;
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.3) !important;
+}
+
+/* FLOATING EXP ANIMATION (Refined Battle Style) */
+.floating-exp-node {
+    position: absolute;
+    left: 50%;
+    top: -10px;
+    transform: translateX(-50%);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1.8rem;
+    color: #fff;
+    /* Heavy battle-style text shadow */
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan);
+    pointer-events: none;
+    z-index: 100;
+    animation: float-exp-slow 2s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+}
+
+@keyframes float-exp-slow {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 20px) scale(0.6);
+    }
+
+    15% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1.2);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -60px) scale(1.3);
+    }
+}
+
+/* LEVEL UP PULSE EFFECT */
+.exp-bar-pulse {
+    animation: exp-pulse-glow 0.5s ease-out 1;
+}
+
+@keyframes exp-pulse-glow {
+    0% {
+        box-shadow: 0 0 0px var(--neon-cyan);
+        filter: brightness(0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 30px var(--neon-cyan), 0 0 60px var(--neon-cyan);
+        transform: scale(1.01);
+        filter: brightness(1.2);
+    }
+
+    100% {
+        box-shadow: 0 0 0px var(--neon-cyan);
+        filter: brightness(1);
+    }
+}
+
 .quest-complete-panel .pickup-hint {
     margin-bottom: 20px;
     opacity: 0.5;
+}
+
+/* --- LEVEL UP NOTIFICATION --- */
+.level-up-notification {
+    position: fixed;
+    top: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999999;
+    pointer-events: none;
+    animation: level-up-slide-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.level-up-content {
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.1), rgba(0, 243, 255, 0.9), rgba(0, 243, 255, 0.1));
+    border-top: 2px solid var(--neon-cyan);
+    border-bottom: 2px solid var(--neon-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 10px 90px;
+    box-shadow: 0 0 50px rgba(0, 243, 255, 0.4);
+    backdrop-filter: blur(5px);
+}
+
+.level-up-icon {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 15px #fff;
+}
+
+.level-up-text {
+    text-align: center;
+}
+
+.level-up-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 5px;
+    color: #000;
+    font-weight: 900;
+    margin-bottom: 5px;
+}
+
+.level-up-value {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 4px;
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+.level-up-notification.fading {
+    animation: level-up-fade-out 1s ease-in forwards;
+}
+
+@keyframes level-up-slide-in {
+    0% {
+        transform: translate(-50%, -100px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes level-up-fade-out {
+    0% {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50px);
+        opacity: 0;
+        filter: blur(10px);
+    }
 }

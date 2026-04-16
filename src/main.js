@@ -505,6 +505,97 @@ window.showItemPickupModal = (itemId, onClose) => {
     window.addEventListener('keydown', keyHandler);
 };
 
+// --- SHARED UI ANIMATION HELPERS ---
+window.runExpAnimationSequence = (config) => {
+    const { 
+        expSection, expFill, expVal, rgLabel, 
+        initialExp, initialLevel, expGained, 
+        onComplete, btnAction
+    } = config;
+
+    if (!expSection || !expFill || !expVal || !rgLabel) return;
+
+    if (btnAction) {
+        btnAction.classList.add('disabled');
+        btnAction.style.opacity = "0.5";
+    }
+    expSection.classList.remove('hidden');
+
+    const expFloor = getExpReqForLevel(initialLevel);
+    const expCap = getExpReqForLevel(initialLevel + 1);
+    const startPercent = Math.max(0, Math.min(100, ((initialExp - expFloor) / (expCap - expFloor)) * 100));
+    
+    expFill.style.transition = 'none';
+    expFill.style.width = startPercent + '%';
+    expVal.textContent = `${initialExp - expFloor} / ${expCap - expFloor}`;
+    rgLabel.textContent = `RESEARCH GRADE ${initialLevel}`;
+
+    const animateStep = (currExp, currLevel, remaining) => {
+        const floor = getExpReqForLevel(currLevel);
+        const cap = getExpReqForLevel(currLevel + 1);
+        const distToCap = cap - currExp;
+
+        if (remaining >= distToCap && remaining > 0) {
+            // Level Up case
+            expFill.style.transition = 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+            expFill.style.width = '100%';
+            expVal.textContent = `${cap - floor} / ${cap - floor}`;
+
+            setTimeout(() => {
+                expSection.classList.add('exp-bar-pulse');
+                if (typeof showLevelUpNotification === 'function') {
+                    showLevelUpNotification(currLevel + 1);
+                }
+                if (AudioManager) AudioManager.play('ui_tick', 0.5);
+
+                rgLabel.textContent = `RESEARCH GRADE ${currLevel + 1}`;
+                rgLabel.style.color = 'var(--neon-cyan)';
+                rgLabel.style.textShadow = '0 0 15px var(--neon-cyan)';
+
+                setTimeout(() => {
+                    expSection.classList.remove('exp-bar-pulse');
+                    expFill.style.transition = 'none';
+                    expFill.style.width = '0%';
+                    const nextFloor = getExpReqForLevel(currLevel + 1);
+                    const nextCap = getExpReqForLevel(currLevel + 2);
+                    expVal.textContent = `0 / ${nextCap - nextFloor}`;
+                    animateStep(cap, currLevel + 1, remaining - distToCap);
+                }, 1000);
+            }, 850);
+        } else {
+            // Final Fill case
+            const finalExp = currExp + remaining;
+            const endPercent = Math.max(0, Math.min(100, ((finalExp - floor) / (cap - floor)) * 100));
+            
+            expFill.style.transition = remaining > 0 ? 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' : 'none';
+            expFill.style.width = endPercent + '%';
+            expVal.textContent = `${finalExp - floor} / ${cap - floor}`;
+            
+            setTimeout(() => {
+                if (btnAction) {
+                    btnAction.classList.remove('disabled');
+                    btnAction.style.opacity = "1";
+                }
+                if (onComplete) onComplete();
+            }, remaining > 0 ? 1200 : 100);
+        }
+    };
+
+    // Delay animation start slightly
+    setTimeout(() => {
+        if (expGained > 0) {
+            const floatNode = document.createElement('div');
+            floatNode.className = 'floating-exp-node';
+            floatNode.textContent = `+${expGained} EXP`;
+            expSection.appendChild(floatNode);
+            setTimeout(() => floatNode.remove(), 2500);
+            animateStep(initialExp, initialLevel, expGained);
+        } else {
+            animateStep(initialExp, initialLevel, 0);
+        }
+    }, 600);
+};
+
 window.showQuestCompleteModal = (questId, onClose) => {
     const modal = document.getElementById('quest-complete-modal');
     const questData = QUESTS[questId];
@@ -515,37 +606,81 @@ window.showQuestCompleteModal = (questId, onClose) => {
     // Set Quest Title
     document.getElementById('quest-complete-title').textContent = (questData.title || "Unknown Mission").toUpperCase();
     
-    // Dynamic Reward Summary
+    // Dynamic Reward Summary & EXP Logic
     let rewardsText = "";
-    if (questData.reward) {
-        if (questData.reward.type === 'resource_multi' && Array.isArray(questData.reward.rewards)) {
-            rewardsText = questData.reward.rewards.map(r => {
-                const type = (r.id === 'credits' || r.id === 'lc') ? 'Credits' : 
-                            (r.id === 'biomass' || r.id === 'bm') ? 'Biomass' : r.id.toUpperCase();
-                return `${r.amount} ${type}`;
-            }).join(", ");
-        } else {
-            const r = questData.reward;
-            if (r.type === 'resource') {
-                const type = (r.id === 'credits' || r.id === 'lc') ? 'Credits' : 
-                            (r.id === 'biomass' || r.id === 'bm') ? 'Biomass' : r.id.toUpperCase();
-                rewardsText = `${r.amount} ${type}`;
-            } else if (r.type === 'log') {
-                rewardsText = `Data Log: ${r.id}`;
-            } else if (r.type === 'item') {
-                rewardsText = `Item: ${r.id}`;
-            }
+    let questExpGained = 0;
+    let creditsGained = 0;
+    let biomassGained = 0;
+
+    const parseRewards = (r) => {
+        if (!r) return "";
+        if (r.type === 'resource_multi' && Array.isArray(r.rewards)) {
+            return r.rewards.map(subR => parseRewards(subR)).filter(t => t).join(", ");
+        }
+        
+        let type = (r.id === 'credits' || r.id === 'lc') ? 'Credits' : 
+                   (r.id === 'biomass' || r.id === 'bm') ? 'Biomass' : 
+                   (r.type === 'exp') ? 'EXP' : r.id?.toUpperCase() || "";
+        
+        if (r.type === 'exp') questExpGained += (r.amount || 0);
+        if (r.id === 'credits' || r.id === 'lc') creditsGained += (r.amount || 0);
+        if (r.id === 'biomass' || r.id === 'bm') biomassGained += (r.amount || 0);
+        
+        return `${r.amount} ${type}`;
+    };
+
+    rewardsText = parseRewards(questData.reward);
+    
+    // Detect potential Level Up chips to display as additional rewards
+    let potentialLevel = gameState.profiles.player.level;
+    let potentialExp = gameState.exp + questExpGained;
+    let gainedChips = [];
+
+    while (potentialLevel < 20 && potentialExp >= getExpReqForLevel(potentialLevel + 1)) {
+        potentialLevel++;
+        const rewards = LEVEL_REWARDS[potentialLevel];
+        if (rewards && Array.isArray(rewards)) {
+            rewards.forEach(chipId => {
+                const chipData = CHIPS[chipId];
+                if (chipData) gainedChips.push(chipData.name);
+            });
         }
     }
-    document.getElementById('quest-complete-rewards').textContent = rewardsText || "COMMENDATION RECEIVED";
+
+    if (gainedChips.length > 0) {
+        const chipString = gainedChips.map(name => `<div class="reward-chip-line">[ ${name} ]</div>`).join("");
+        rewardsText += (rewardsText ? "<br>" : "") + chipString;
+    }
+
+    document.getElementById('quest-complete-rewards').innerHTML = rewardsText || "COMMENDATION RECEIVED";
 
     modal.classList.remove('hidden');
     if (AudioManager) AudioManager.play('modal_quest_clear', 0.6);
 
     let inputReady = false;
-    setTimeout(() => { inputReady = true; }, 600); // Anti-Spam F feature
+    const btn = document.getElementById('btn-quest-complete-continue');
+
+    // EXP Bar Initialization & Recursive Animation using unified helper
+    window.runExpAnimationSequence({
+        expSection: document.getElementById('quest-complete-exp-section'),
+        expFill: document.getElementById('quest-exp-fill'),
+        expVal: document.getElementById('quest-exp-value'),
+        rgLabel: document.getElementById('quest-rg-label'),
+        initialExp: gameState.exp,
+        initialLevel: gameState.profiles.player.level,
+        expGained: questExpGained,
+        btnAction: btn,
+        onComplete: () => { inputReady = true; }
+    });
 
     function close() {
+        if (!inputReady) return;
+
+        // Grant Rewards officially
+        window.grantExperience(questExpGained, true);
+        window.changeResource('lc', creditsGained);
+        window.changeResource('bm', biomassGained);
+
         window.hideWithFade(modal);
         window.removeEventListener('keydown', keyHandler);
         if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
@@ -561,7 +696,6 @@ window.showQuestCompleteModal = (questId, onClose) => {
     }
 
     // Interactive confirmation
-    const btn = document.getElementById('btn-quest-complete-continue');
     if (btn) btn.onclick = close;
     window.addEventListener('keydown', keyHandler);
 };
@@ -4633,6 +4767,95 @@ const EXP_THRESHOLDS = {
     20: 19100
 };
 
+/**
+ * --- CENTRALIZED RESEARCH GRADE (EXP) MANAGER ---
+ * Handles experience points, multi-level calculations, and UI notifications.
+ */
+window.grantExperience = (amount, silent = false, skipBanner = false) => {
+    const currentMaxLevel = 20;
+    const currentLevel = gameState?.profiles?.player?.level || 0;
+    const fallback = { didLevelUp: false, newLevel: currentLevel, amount: 0 };
+
+    if (!amount || amount <= 0) {
+        if (typeof updateOverworldEXPBar === 'function') updateOverworldEXPBar();
+        if (typeof updateResourceHUD === 'function') updateResourceHUD();
+        return fallback;
+    }
+    if (!gameState || !gameState.profiles || !gameState.profiles.player) return fallback;
+
+    gameState.exp += amount;
+
+    // Check for Level Up! (Support multi-level jumps)
+    let targetLevel = currentLevel;
+    let didLevelUp = false;
+
+    while (targetLevel < 20 && gameState.exp >= getExpReqForLevel(targetLevel + 1)) {
+        targetLevel++;
+        didLevelUp = true;
+    }
+
+    if (didLevelUp) {
+        gameState.profiles.player.level = targetLevel;
+        gameState.playerLevel = targetLevel;
+        
+        // Sync new chips and move slots
+        if (typeof syncChipsToLevel === 'function') {
+            syncChipsToLevel('player', targetLevel);
+        }
+
+        // Visual Feedback - Premium Banner
+        if (typeof showLevelUpNotification === 'function' && !skipBanner) {
+            showLevelUpNotification(targetLevel);
+        }
+
+        if (!silent) {
+            if (typeof AudioManager !== 'undefined') {
+                AudioManager.play('level_up', 0.6, 0.1);
+            }
+        }
+    }
+
+    if (typeof updateOverworldEXPBar === 'function') updateOverworldEXPBar();
+    if (typeof updateResourceHUD === 'function') updateResourceHUD();
+
+    if (gameState.settings?.autoSave) {
+        if (typeof saveGameState === 'function') saveGameState();
+    }
+
+    return {
+        didLevelUp,
+        newLevel: targetLevel,
+        amount: amount
+    };
+};
+
+/**
+ * Modern notification banner for Overworld Level Ups
+ */
+function showLevelUpNotification(level) {
+    const container = document.getElementById('game-container');
+    if (!container) return;
+
+    const banner = document.createElement('div');
+    banner.className = 'level-up-notification';
+    banner.innerHTML = `
+        <div class="level-up-content">
+            <div class="level-up-text">
+                <div class="level-up-label">RESEARCH GRADE INCREASE</div>
+                <div class="level-up-value">RG-${level}</div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(banner);
+
+    // Auto-cleanup
+    setTimeout(() => {
+        banner.classList.add('fading');
+        setTimeout(() => banner.remove(), 1000);
+    }, 4000);
+}
+
 const getExpReqForLevel = (level) => {
     if (EXP_THRESHOLDS[level] !== undefined) return EXP_THRESHOLDS[level];
     return EXP_THRESHOLDS[20] + (level - 20) * 3000;
@@ -4640,6 +4863,9 @@ const getExpReqForLevel = (level) => {
 
 function updateOverworldEXPBar() {
     const currentRg = gameState.profiles.player.level || 0;
+    // Safeguard: Recover from NaN corruption if it occurred in previous turns
+    if (isNaN(gameState.exp)) gameState.exp = 0;
+
     const currentTotalExp = gameState.exp || 0;
 
     let expFloor = getExpReqForLevel(currentRg);
@@ -4717,67 +4943,47 @@ function showGameOver(isFailure, forceOverlay = false) {
 
     resetPositions(); // Clear state immediately when battle ends
     const overlay = document.getElementById('game-over-overlay');
+    const panel = overlay?.querySelector('.battle-outcome-panel');
+    const bannerImg = document.getElementById('battle-outcome-banner');
+    const labelTitle = document.getElementById('battle-outcome-label');
     const title = document.getElementById('game-over-title');
-    const msg = document.getElementById('game-over-message');
-    const btnRestart = document.getElementById('btn-restart');
-    const btnMainMenu = document.getElementById('btn-return-menu');
-    const btnContinue = document.getElementById('btn-continue-overworld');
-    const expContainer = document.getElementById('battle-result-exp-container');
-    const expText = document.getElementById('battle-result-exp-text');
-    const expFill = document.getElementById('battle-result-exp-fill');
-    const hint = document.getElementById('game-over-hint');
+    const rewardsList = document.getElementById('battle-result-rewards');
+    const btnProceed = document.getElementById('btn-battle-outcome-proceed');
 
     const isTutorialLoss = isFailure && opponentId === 'jenzi_tutorial';
 
-    if (overlay && title && msg) {
+    if (overlay && title) {
         if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
+        
+        // Reset appearance based on outcome
+        if (panel) panel.dataset.outcome = isFailure && !isTutorialLoss ? "failed" : "success";
+
+        // Reset button state
+        if (btnProceed) {
+            btnProceed.classList.add('disabled');
+            btnProceed.style.opacity = "0.5";
+            btnProceed.textContent = isFailure ? "RECOVER" : "PROCEED";
+        }
+
         if (isFailure && !isTutorialLoss) {
             if (AudioManager) AudioManager.play('modal_battle_lose', 0.6);
-            title.innerHTML = `THE EXPERIMENT HAS <span class="neon-text" style="color: #ff3333; text-shadow: 0 0 10px #ff3333;">FAILED!</span>`;
-
-            const quirkyMessages = [
-                "Your cells need more love... and maybe some specialized vitamins.",
-                "Tactical extraction initiated. Your monster looks like it needs a long nap and a hug.",
-                "Experiment paused. Critical affection levels detected. Returning to base for snacks.",
-                "Self-care protocol activated. Even bio-engineered cells need a break sometimes.",
-                "Neural link stabilized. Let's get you back to the lab for some TLC and re-calibration."
-            ];
-            const randomMsg = quirkyMessages[Math.floor(Math.random() * quirkyMessages.length)];
-            msg.innerText = randomMsg;
-
-            if (btnRestart) btnRestart.classList.add('hidden'); // HIDDEN as per user request (use RECOVER instead)
-            if (btnMainMenu) btnMainMenu.classList.remove('hidden');
-            if (btnContinue) {
-                btnContinue.classList.remove('hidden');
-                btnContinue.innerText = "RECOVER AT LOBBY";
-            }
+            if (bannerImg) bannerImg.src = "./assets/images/Battle_Lose.png";
+            title.innerHTML = `EXPERIMENT <span class="neon-text" style="color: #ff3333; text-shadow: 0 0 10px #ff3333;">FAILED!</span>`;
         } else {
+            if (AudioManager) AudioManager.play('modal_battle_win', 0.6);
+            if (bannerImg) bannerImg.src = "./assets/images/Battle_Win.png";
+            title.innerHTML = `EXPERIMENT <span class="neon-text">SUCCEED!</span>`;
+            
             if (isTutorialLoss || (opponentId === 'jenzi_tutorial' && !isFailure)) {
                 gameState.storyFlags.jenziFirstBattleDone = true;
-
-                // Tutorial recovery: Always full heal after first battle (win or loss)
                 applyBonuses(gameState.profiles.player.party, gameState.profiles.player.level, true);
-
-                if (isTutorialLoss) {
-                    title.innerHTML = `TEST <span class="neon-text" style="color: #ffcc00; text-shadow: 0 0 10px #ffcc00;">CONCLUDED</span>`;
-                } else {
-                    if (AudioManager) AudioManager.play('modal_battle_win', 0.6);
-                    title.innerHTML = `EXPERIMENT <span class="neon-text">SUCCESSFUL</span>`;
-                }
-            } else {
-                title.innerHTML = `EXPERIMENT <span class="neon-text">SUCCESSFUL</span>`;
             }
-
-            if (btnRestart) btnRestart.classList.add('hidden');
-            if (btnMainMenu) btnMainMenu.classList.add('hidden');
-            if (btnContinue) btnContinue.classList.remove('hidden');
         }
 
         // --- GRINDING & PROGRESSION REWARD LOGIC (Now Universal) ---
         let expEarned = 0;
         let creditsEarned = 0;
         let biomassEarned = 0;
-        const currentRg = gameState.profiles.player.level || 0;
         const playerRG = gameState.profiles.player.level || 0;
         const rgScaling = 1 + (playerRG * 0.05);
 
@@ -4786,166 +4992,126 @@ function showGameOver(isFailure, forceOverlay = false) {
             Overworld.updateQuestProgress('defeat', opponentId);
         }
 
+        // --- CLEANUP WILD SPAWNER (Unified) ---
+        if (opponentId && opponentId.endsWith('_wild')) {
+            if (typeof Overworld !== 'undefined' && Overworld.spawner) {
+                // IMPORTANT: Use overworldId (barcode) for cleanup, not the archetype ID
+                const targetId = catalystState.overworldId || opponentId;
+                const sourceZone = Overworld.battleSourceZone || Overworld.currentZone;
+                Overworld.spawner.despawnMonster(targetId, sourceZone);
+            }
+        }
+
         // Only calculate typical rewards if not a generic failure
         if (!isFailure || isTutorialLoss) {
             if (opponentId === 'jenzi_tutorial') {
-                if (isFailure) {
-                    expEarned = 12; // Balanced to half of tutorial win (25)
-                    creditsEarned = 20;
-                    biomassEarned = 2;
-                } else {
-                    expEarned = 25;
-                    creditsEarned = 50;
-                    biomassEarned = 5;
-                }
+                expEarned = isFailure ? 12 : 25;
+                creditsEarned = isFailure ? 20 : 50;
+                biomassEarned = isFailure ? 2 : 5;
             } else if (opponentId && opponentId.endsWith('_wild')) {
-                // Wild Encounter: 10-25 LC, 1-5 Biomass
-                const baseLC = 10 + Math.floor(Math.random() * 16);
-                const baseBM = 1 + Math.floor(Math.random() * 5);
-
-                creditsEarned = Math.round(baseLC * rgScaling);
-                biomassEarned = Math.round(baseBM * rgScaling);
+                creditsEarned = Math.round((10 + Math.floor(Math.random() * 16)) * rgScaling);
+                biomassEarned = Math.round((1 + Math.floor(Math.random() * 5)) * rgScaling);
                 expEarned = Math.round(25 * rgScaling);
-            } else if (opponentId === 'jenzi_atrium') {
-                // Keep story flag but allow reward to fall through to NPC_ENCOUNTERS logic
-                gameState.storyFlags.jenziAtriumBattleDone = true;
             } else if (typeof NPC_ENCOUNTERS !== 'undefined' && NPC_ENCOUNTERS[opponentId]) {
-                // Custom Modular Reward from cards.js (e.g., Maya)
                 const enc = NPC_ENCOUNTERS[opponentId];
-                if (enc.reward) {
-                    creditsEarned = enc.reward.credits || 50;
-                    biomassEarned = enc.reward.biomass || 5;
-                    expEarned = enc.reward.exp || 15;
-                } else {
-                    // Default custom reward
-                    creditsEarned = 50;
-                    biomassEarned = 5;
-                    expEarned = 25;
-                }
-
-                // Mark battle as completed for custom NPCs
+                creditsEarned = enc.reward?.credits || 50;
+                biomassEarned = enc.reward?.biomass || 5;
+                expEarned = enc.reward?.exp || 25;
+                
                 if (gameState.storyFlags) {
                     gameState.storyFlags[`battleDone_${opponentId}`] = true;
-                    if (isFailure) {
-                        gameState.storyFlags[`battleLost_${opponentId}`] = true;
-                    } else {
-                        gameState.storyFlags[`battleWon_${opponentId}`] = true;
-                    }
+                    if (isFailure) gameState.storyFlags[`battleLost_${opponentId}`] = true;
+                    else gameState.storyFlags[`battleWon_${opponentId}`] = true;
                 }
-            } else if (opponentId.startsWith('jenzi') || opponentId.startsWith('npc')) {
-                // Human NPC: 120 LC, 9 Biomass
-                creditsEarned = Math.round(120 * rgScaling);
-                biomassEarned = Math.round(9 * rgScaling);
-                expEarned = Math.round(50 * rgScaling);
             } else {
-                // Fallback
                 creditsEarned = Math.round(50 * rgScaling);
                 biomassEarned = Math.round(5 * rgScaling);
                 expEarned = Math.round(25 * rgScaling);
             }
         }
 
-        const expBefore = gameState.exp || 0;
-        const expFloor = getExpReqForLevel(currentRg);
-        const expCap = getExpReqForLevel(currentRg + 1);
-        const initialExpRelative = Math.max(0, expBefore - expFloor);
-        const expNeededForLevel = expCap - expFloor;
-        const initialPercent = Math.max(0, Math.min((initialExpRelative / expNeededForLevel) * 100, 100));
+        // Display Reward text
+        let rewardSummary = "";
+        if (creditsEarned > 0) rewardSummary += `${creditsEarned} Credits`;
+        if (biomassEarned > 0) rewardSummary += (rewardSummary ? ", " : "") + `${biomassEarned} Biomass`;
+        if (expEarned > 0) rewardSummary += (rewardSummary ? ", " : "") + `${expEarned} EXP`;
+        if (rewardsList) rewardsList.textContent = rewardSummary || "DATA LOGGED";
 
-        if (window.changeResource) {
-            if (creditsEarned > 0) window.changeResource('lc', creditsEarned, false);
-            if (biomassEarned > 0) window.changeResource('bm', biomassEarned, false);
-        } else {
-            gameState.credits += creditsEarned;
-            gameState.biomass += biomassEarned;
-        }
-        gameState.exp += expEarned;
-
-        // Log the rewards
-        if (expEarned > 0 || creditsEarned > 0) {
-            console.log(`Battle Rewards: ${creditsEarned} LC, ${biomassEarned} Biomass, ${expEarned} EXP`);
-        }
-
-        // Auto-save rewards (Optional/Debug Toggle)
-        if (gameState.settings?.autoSave) saveGameState();
-
-        if (expContainer) expContainer.classList.remove('hidden');
-
-        // Check Level Up!
-        let targetLevel = currentRg;
-        let levelUpText = "";
-
-        while (targetLevel < 20 && gameState.exp >= getExpReqForLevel(targetLevel + 1)) {
-            targetLevel++;
-            levelUpText += `<br><span class="neon-text">RG LEVEL UP! [RG-${targetLevel}]</span> - New C-Chips Synced!`;
-        }
-
-        if (targetLevel > currentRg) {
-            gameState.profiles.player.level = targetLevel;
-            gameState.playerLevel = targetLevel;
-            syncChipsToLevel('player', targetLevel);
-        }
-
-        // Set Result Messaging
-        if (!isFailure) {
-            msg.innerHTML = `All target entities have been purged. Objective secured.<br><br>
-            <span style="color: #00ff66;">+${expEarned} EXP</span><br>
-            <span style="color: #ffd700;">+${creditsEarned} LC</span> | <span style="color: #00ff66;">+${biomassEarned} Biomass</span>
-            ${levelUpText}`;
-        } else if (isTutorialLoss) {
-            msg.innerHTML = `"Oof. That was rough, Intern. But hey, it's just a test. You definitely have... potential."<br><br>
-            <span style="color: #00ff66;">+${expEarned} EXP</span><br>
-            <span style="color: #ffd700;">+${creditsEarned} LC</span> | <span style="color: #00ff66;">+${biomassEarned} Biomass</span>`;
-        } else {
-            // Already has msg.innerText set via quirkyMessages, but we can append EXP
-            msg.innerHTML += `<br><br><span style="color: #888;">+${expEarned} EXP</span>`;
-        }
-
-        // Initialize & Animate EXP Bar
-        if (expFill && expText) {
-            expFill.style.transition = 'none';
-            expFill.style.width = `${initialPercent}%`;
-            expText.innerText = `${initialExpRelative} / ${expNeededForLevel}`;
-
-            void expFill.offsetWidth; // Force Reflow
-            expFill.style.transition = 'width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
-
-            setTimeout(() => {
-                if (targetLevel > currentRg) {
-                    expFill.style.width = `100%`;
-                    expText.innerHTML = `${expCap - expFloor} / ${expNeededForLevel} <span style="color: #00ff66;">[LEVEL UP!]</span>`;
-
-                    setTimeout(() => {
-                        const nFloor = getExpReqForLevel(targetLevel);
-                        const nCap = getExpReqForLevel(targetLevel + 1);
-                        const nNeeded = nCap - nFloor;
-                        const remainder = gameState.exp - nFloor;
-
-                        expFill.style.transition = 'none';
-                        expFill.style.width = `0%`;
-                        void expFill.offsetWidth;
-                        expFill.style.transition = 'width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
-                        expFill.style.width = `${(remainder / nNeeded) * 100}%`;
-                        expText.innerText = `${remainder} / ${nNeeded}`;
-                    }, 1600);
-                } else {
-                    const currExpRel = gameState.exp - expFloor;
-                    expFill.style.width = `${(currExpRel / expNeededForLevel) * 100}%`;
-                    expText.innerText = `${currExpRel} / ${expNeededForLevel}`;
-                }
-            }, 500);
-        }
-        updateResourceHUD();
-        updateOverworldEXPBar();
         overlay.classList.remove('hidden');
 
-        if (hint) {
-            if (btnContinue && !btnContinue.classList.contains('hidden')) {
-                hint.innerText = "[F] CONTINUE";
-            } else if (btnRestart && !btnRestart.classList.contains('hidden')) {
-                hint.innerText = "[F] REINITIALIZE";
+        // EXP Animation Sequence
+        window.runExpAnimationSequence({
+            expSection: document.getElementById('battle-result-exp-section'),
+            expFill: document.getElementById('battle-exp-fill'),
+            expVal: document.getElementById('battle-exp-value'),
+            rgLabel: document.getElementById('battle-rg-label'),
+            initialExp: gameState.exp,
+            initialLevel: gameState.profiles.player.level,
+            expGained: expEarned,
+            btnAction: btnProceed
+        });
+
+        const finalizeGameOver = () => {
+            window.grantExperience(expEarned, true);
+            window.changeResource('lc', creditsEarned);
+            window.changeResource('bm', biomassEarned);
+            
+            window.hideWithFade(overlay);
+            showScreen('screen-overworld');
+
+            // --- UNIVERSAL RESUME: Engine must be running for both Outcomes ---
+            if (typeof Overworld !== 'undefined') {
+                Overworld.resetStates(); // Clear stuck flags (isTransitioning, isDialogueActive, etc.)
+                Overworld.startLoop();
+                requestAnimationFrame(() => Overworld.updatePlayerPosition());
             }
+
+            if (isFailure) {
+                // Return to lobby
+                const lobbyZone = (typeof Overworld !== 'undefined' && Overworld.startingZone) || 'lobby';
+                if (typeof Overworld !== 'undefined') {
+                    // Temporarily LOCK movement during the teleport and sequence cushion
+                    Overworld.isPaused = true; 
+                    Overworld.renderMap(lobbyZone, true);
+                    
+                    // Standard Lobby Recovery Position (In front of incubator)
+                    gameState.playerPos = { x: 2, y: 4 };
+                    if (Overworld.player) {
+                        Overworld.player.x = 2;
+                        Overworld.player.y = 4;
+                        Overworld.player.targetX = 2;
+                        Overworld.player.targetY = 4;
+                        Overworld.player.direction = 'up';
+                        Overworld.updatePlayerPosition();
+                    }
+                }
+                
+                // Start the actual sequence after a short fade cushion
+                setTimeout(() => {
+                    if (window.startHealSequence) window.startHealSequence('defeat');
+                    else {
+                        applyBonuses(gameState.profiles.player.party, gameState.profiles.player.level, true);
+                        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
+                    }
+                }, 400);
+            }
+            if (typeof updateResourceHUD === 'function') updateResourceHUD();
+        };
+
+        if (btnProceed) {
+            btnProceed.onclick = () => finalizeGameOver();
         }
+
+        // Accessibility Hook
+        const outcomeKeyHandler = (e) => {
+            if (e.key === 'f' || e.key === 'F' || e.key === 'Enter') {
+                if (btnProceed && !btnProceed.classList.contains('disabled')) {
+                    window.removeEventListener('keydown', outcomeKeyHandler);
+                    finalizeGameOver();
+                }
+            }
+        };
+        window.addEventListener('keydown', outcomeKeyHandler);
     }
 }
 
@@ -7010,8 +7176,8 @@ window.updateResourceHUD = function () {
 
     const rgVal = document.getElementById('overworld-rg-val');
     const logCount = document.getElementById('log-count');
-    if (rgVal) rgVal.innerText = gameState.rapidGather || 0;
-    if (logCount) logCount.innerText = (gameState.collectedLogs ? gameState.collectedLogs.length : 0);
+    if (rgVal) rgVal.innerText = gameState.profiles?.player?.level ?? 0;
+    if (logCount) logCount.innerText = (gameState.logs ? gameState.logs.length : 0);
 };
 
 // Universal Resource API

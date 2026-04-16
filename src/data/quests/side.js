@@ -42,7 +42,13 @@ export const SIDE_QUEST_DATA = {
         type: 'collect',
         target: 'Quest01',
         amount: 1,
-        reward: { type: 'resource', id: 'credits', amount: 500 },
+        reward: {
+            type: 'resource_multi',
+            rewards: [
+                { type: 'resource', id: 'credits', amount: 500 },
+                { type: 'exp', amount: 500 }
+            ]
+        },
         consume: true,
         dialogue: {
             offer: ["I lost my old Key Card somewhere in the Botanic Sector.", "If you find it, I'll pay you well."],
@@ -176,7 +182,13 @@ export const SIDE_QUEST_DATA = {
         amount: 15,
         timeLimit: 30,
         onCompleteFlag: 'lanaCleanedUp',
-        reward: { type: 'resource', id: 'credits', amount: 200 },
+        reward: {
+            type: 'resource_multi',
+            rewards: [
+                { type: 'resource', id: 'credits', amount: 200 },
+                { type: 'exp', amount: 200 }
+            ]
+        },
         dialogue: {
             offer: [
                 "*[Mumbling...]* Hmph. No one sees how much effort goes into this work... // *[Sighs]* They just wanna see the results and walk away... // *[Mumbling...]* Tired... so tired, might need a day off...",

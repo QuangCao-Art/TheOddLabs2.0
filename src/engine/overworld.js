@@ -174,6 +174,7 @@ export const Overworld = {
     mapData: null,
     controlsInitialized: false,
     isDialogueActive: false,
+    isDialogueTransitioning: false,
     isTyping: false,
     currentFullText: "",
     currentDialoguePartner: null,
@@ -360,6 +361,12 @@ export const Overworld = {
                     window.changeResource(reward.id === 'credits' ? 'lc' : 'bm', reward.amount || 0, false, true);
                 }
                 msg = `Acquired ${reward.amount} ${reward.id.toUpperCase()}.`;
+            } else if (reward.type === 'exp') {
+                if (window.grantExperience) {
+                    // Skip banner here because showQuestCompleteModal handles the animation and notification trigger now
+                    window.grantExperience(reward.amount || 0, false, true);
+                }
+                msg = `Acquired ${reward.amount} EXP.`;
             } else if (reward.type === 'relocate') {
                 this.relocateNPC(reward.npcId, reward.x, reward.y, reward.zoneId, reward.direction, reward.useFade !== false);
                 msg = `Relocated NPC: ${reward.npcId}.`;
@@ -862,7 +869,7 @@ export const Overworld = {
                 // If dialogue is active, always allow F to advance/speed up (unless transitioning)
                 if (this.isDialogueActive && !this.isTransitioning) {
                     this.interact();
-                } else if (!this.isPaused && !this.isTransitioning && !e.repeat && !this.isStartingQuest) {
+                } else if (!this.isPaused && !this.isTransitioning && !this.isDialogueTransitioning && !e.repeat && !this.isStartingQuest) {
                     // Block interaction during transitions or if paused
                     if (this.activeTimedQuestId) return;
 
@@ -2450,7 +2457,9 @@ export const Overworld = {
         if (typeof this.onDialogueComplete === 'function') {
             const cb = this.onDialogueComplete;
             this.onDialogueComplete = null;
+            this.isDialogueTransitioning = true;
             setTimeout(() => {
+                this.isDialogueTransitioning = false;
                 cb();
             }, 400);
         }

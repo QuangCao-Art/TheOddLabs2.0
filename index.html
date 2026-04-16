@@ -1307,35 +1307,40 @@
         </div>
 
         <!-- Game Over Overlay -->
-        <div id="game-over-overlay" class="overlay hidden">
-            <div class="modal glass-panel">
-                <h2 id="game-over-title">SYSTEM <span class="neon-text">FAILURE</span></h2>
-                <p id="game-over-message">NITROPHIL has been neutralized.</p>
-
-                <div id="battle-result-exp-container" class="hidden" style="margin: 20px 0; text-align: left;">
-                    <div
-                        style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px; color: var(--color-bio);">
-                        <span style="font-family: 'Orbitron', sans-serif;">EXPERIENCE</span>
-                        <span id="battle-result-exp-text"
-                            style="font-family: 'Rajdhani', sans-serif; font-weight: bold;">0/30</span>
-                    </div>
-                    <div class="exp-bar-bg" style="height: 12px;">
-                        <div id="battle-result-exp-fill" class="exp-bar-fill"
-                            style="width: 0%; transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);"></div>
-                    </div>
+    <!-- Battle Outcome Modal (Unified Win/Lose) -->
+    <div id="game-over-overlay" class="overlay hidden">
+        <div class="quest-complete-panel glass-panel battle-outcome-panel">
+            <div class="quest-complete-banner">
+                <img id="battle-outcome-banner" src="./assets/images/Battle_Win.png" alt="Battle Result">
+            </div>
+            <div class="quest-info-wrap">
+                <div class="quest-label" id="battle-outcome-label">ENGAGEMENT PROTOCOL COMPLETE</div>
+                <h3 class="quest-title" id="game-over-title">EXPERIMENT SUCCEED!</h3>
+                
+                <div class="quest-reward-container">
+                    <span class="reward-sparkle">✨</span>
+                    <span id="battle-result-rewards">REWARDS LOADED...</span>
+                    <span class="reward-sparkle">✨</span>
                 </div>
 
-                <div class="modal-buttons" id="game-over-buttons">
-                    <button id="btn-restart" class="btn-neon">REINITIALIZE</button>
-                    <button id="btn-return-menu" class="btn-neon">MAIN MENU</button>
-                    <button id="btn-continue-overworld" class="btn-neon hidden">CONTINUE TO GAME</button>
-                </div>
-                <div class="modal-hint" id="game-over-hint"
-                    style="text-align: center; color: rgba(255, 255, 255, 0.3); font-size: 0.8rem; margin-top: 15px;">
-                    [F] CONTINUE
+                <!-- Shared EXP Bar Template -->
+                <div id="battle-result-exp-section" class="modal-exp-section hidden">
+                    <div class="quest-exp-labels">
+                        <span id="battle-rg-label" class="exp-label">RESEARCH GRADE 0</span>
+                        <span id="battle-exp-value" class="exp-value">0 / 0</span>
+                    </div>
+                    <div class="exp-bar-bg quest-modal-bar">
+                        <div id="battle-exp-fill" class="exp-bar-fill"></div>
+                    </div>
                 </div>
             </div>
+            
+            <div class="modal-buttons" id="game-over-buttons">
+                <button id="btn-battle-outcome-proceed" class="btn-neon quest-continue-btn">PROCEED</button>
+            </div>
+            <div class="pickup-hint">[ F ] or click to dismiss</div>
         </div>
+    </div>
 
         <!-- Incubator Interaction Menu [STANDARD V2] -->
         <div id="screen-incubator-menu" class="overlay hidden">
@@ -1537,12 +1542,23 @@
                 <img src="./assets/images/Quest_Complete.png" alt="Quest Complete">
             </div>
             <div class="quest-info-wrap">
-                <div class="quest-label">MISSION ACCOMPLISHED</div>
+                <div class="quest-label">TASK APPROVED</div>
                 <h3 class="quest-title" id="quest-complete-title">QUEST TITLE</h3>
                 <div class="quest-reward-container">
                     <span class="reward-sparkle">✨</span>
                     <span id="quest-complete-rewards">REWARDS LOADED...</span>
                     <span class="reward-sparkle">✨</span>
+                </div>
+
+                <!-- EXP Bar Hub Template Integration -->
+                <div id="quest-complete-exp-section" class="modal-exp-section hidden">
+                    <div class="quest-exp-labels">
+                        <span id="quest-rg-label" class="exp-label">RESEARCH GRADE 0</span>
+                        <span id="quest-exp-value" class="exp-value">0 / 0</span>
+                    </div>
+                    <div class="exp-bar-bg quest-modal-bar">
+                        <div id="quest-exp-fill" class="exp-bar-fill"></div>
+                    </div>
                 </div>
             </div>
             <button id="btn-quest-complete-continue" class="btn-neon quest-continue-btn">CLAIM REWARDS</button>
