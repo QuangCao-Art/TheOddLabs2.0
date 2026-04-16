@@ -1,2 +1,23 @@
-# Auto detect text files and perform LF normalization
+# Default behavior: handle all files as text and normalize line endings to LF on commit
 * text=auto
+
+# Explicitly declare text files to use LF (professional standard)
+*.js text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+
+# Explicitly declare binary files (Git will not try to modify these)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.mp3 binary
+*.wav binary
+*.ogg binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
