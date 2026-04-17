@@ -8,6 +8,7 @@ import { AudioManager } from './audio.js';
 import { QUESTS } from '../data/quests.js';
 import { furnitureMetadata } from '../data/furniture.js';
 import { NPC_SCRIPTS } from '../data/npc_dialogues.js';
+import { StoryManager } from './story.js';
 
 // Modular Map Data Imports
 import { lobby } from '../data/maps/lobby.js';
@@ -341,6 +342,7 @@ export const Overworld = {
         });
 
         if (changed) {
+            window.dispatchEvent(new CustomEvent('quest-updated'));
             if (gameState.settings?.autoSave) {
                 saveGameState();
             }
@@ -381,6 +383,11 @@ export const Overworld = {
             } else {
                 processReward(reward);
             }
+            // --- NEW: Story Stage Advancement ---
+            if (questData.advancesStoryStage) {
+                StoryManager.advanceStage();
+            }
+
             // Ensure state is persisted after granting rewards if auto-save is enabled
             if (gameState.settings?.autoSave && typeof saveGameState === 'function') saveGameState();
         };
@@ -399,23 +406,6 @@ export const Overworld = {
      * but BEFORE it is rendered. This ensures persistence across loads.
      */
     applyMapPatches(zoneId, zone) {
-        // --- PATCH: Log #001 (Tutorial Datapad) ---
-        if (zoneId === 'lobby') {
-            const hasLog = window.gameState.logs.includes('Log001') || window.gameState.items.includes('Log001');
-            if (window.gameState.storyFlags.jenziFirstBattleDone && !hasLog) {
-                const redTank = zone.objects.find(o => o.id === 'f23_lob_br');
-                if (redTank && !redTank.hiddenLogId) {
-                    redTank.hiddenLogId = 'Log001';
-                    console.log("[Patch] Applied Log001 to Red Tank in Lobby.");
-                }
-            }
-
-            // DEFENSIVE: Ensure the old floor-log object is removed if it persisted in data
-            if (hasLog) {
-                zone.objects = zone.objects.filter(obj => obj.id !== 'log_001');
-            }
-        }
-
         // --- PATCH: Persistence-Based NPC Relocations ---
         if (window.gameState && window.gameState.npcRelocations) {
             Object.entries(window.gameState.npcRelocations).forEach(([npcId, data]) => {
@@ -1853,7 +1843,9 @@ export const Overworld = {
         }
     },
 
-    startNPCInteraction(npcOrId, bossWon = false, isPostBattle = false) {
+    startNPCInteraction(npcOrId, isFailure = false, isPostBattle = false) {
+        const bossWon = isPostBattle ? !isFailure : false;
+        
         let npc = npcOrId;
         if (typeof npcOrId === 'string') {
             const zone = this.zones[this.currentZone];
@@ -1925,10 +1917,17 @@ export const Overworld = {
                     const qProgress = window.gameState.quests[qId];
                     
                     if (qData.requiredFlag && !window.gameState.storyFlags[qData.requiredFlag]) continue;
-                    if (qData.requiredItem && !window.gameState.items.includes(qData.requiredItem)) continue;
+                    if (qData.requiredItem) {
+                        const hasReq = (window.gameState.items || []).some(i => String(i).toLowerCase() === String(qData.requiredItem).toLowerCase()) ||
+                                       (window.gameState.logs || []).some(l => String(l).toLowerCase() === String(qData.requiredItem).toLowerCase());
+                        if (!hasReq) continue;
+                    }
                     if (qData.requiredRG && (window.gameState.profiles.player.level || 0) < qData.requiredRG) continue;
                     if (qData.requiredLogs && (this.logsCollected.length || 0) < qData.requiredLogs) continue;
-                    if (qProgress && qProgress.status === 'finished') continue;
+                    if (qProgress && qProgress.status === 'finished') {
+                        if (qData.dialogue.finished) lines = qData.dialogue.finished;
+                        continue;
+                    }
 
                     activeQuestId = qId;
                     activeQuestData = qData;
@@ -1943,11 +1942,53 @@ export const Overworld = {
                 const qData = activeQuestData;
                 const qProgress = activeQuestProgress;
 
+                // Systematic Post-Battle Win/Loss Handling for Defeat Quests
+                if (isPostBattle && qData.type === 'defeat' && qData.target === npc.id) {
+                    if (bossWon) {
+                        if (qProgress && qProgress.status === 'started') {
+                            qProgress.status = 'completed';
+                            window.dispatchEvent(new CustomEvent('quest-updated'));
+                            console.log(`[Quest] Defeat objective met for ${qId}. Status updated to 'completed'.`);
+                        }
+                    } else {
+                        // Player Lost: Show failure lines and EXIT to prevent Case D from re-triggering the battle
+                        const fLines = qData.dialogue.failed || ["Diagnostic failed. Return when your sync is optimized!"];
+                        this.showDialogue(npc.name, fLines, npc.id);
+                        return;
+                    }
+                }
+
                 // Case A: New Offer
                 if (!qProgress) {
-                    window.gameState.quests[qId] = { status: 'started', progress: 0, offerSeen: true };
+                    const targetId = String(qData.target).toLowerCase();
+                    const hasTarget = (window.gameState.items || []).some(i => String(i).toLowerCase() === targetId) ||
+                                       (window.gameState.logs || []).some(l => String(l).toLowerCase() === targetId);
+
+                    window.gameState.quests[qId] = { 
+                        status: 'started', 
+                        progress: hasTarget ? 1 : 0, 
+                        offerSeen: true 
+                    };
+                    
                     if (gameState.settings?.autoSave) saveGameState();
-                    this.showDialogue(npc.name, qData.dialogue.offer, npc.id);
+
+                    let offerLines = qData.dialogue.offer;
+                    // Support Requirement-Aware Offers
+                    if (qData.dialogue.offer_completed) {
+                        if (qData.type === 'collect' && hasTarget) {
+                            offerLines = qData.dialogue.offer_completed;
+                        } else if (qData.type === 'defeat' && qData.requiredLogs && logs >= qData.requiredLogs) {
+                            offerLines = qData.dialogue.offer_completed;
+                        }
+                    }
+
+                    this.showDialogue(npc.name, offerLines, npc.id);
+
+                    // If offering a defeat quest and requirements are already met, trigger battle immediately
+                    if (offerLines === qData.dialogue.offer_completed && qData.type === 'defeat' && qData.target === npc.id) {
+                        this.pendingBattleEncounter = qData.target;
+                    }
+
                     if (qData.timeLimit) {
                         this.onDialogueComplete = () => this.startTimedQuest(qId, npc);
                         this.isStartingQuest = true;
@@ -1966,14 +2007,17 @@ export const Overworld = {
 
                 // Case C: Turn-In
                 if (qProgress.status === 'completed') {
+                    // ATOMIC LOCK: Set finished and flags immediately to prevent reward exploits
+                    qProgress.status = 'finished';
+                    window.dispatchEvent(new CustomEvent('quest-updated'));
+                    if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
+                    
                     if (qData.consume && qData.type === 'collect') {
                         const idx = window.gameState.items.indexOf(qData.target);
                         if (idx > -1) window.gameState.items.splice(idx, 1);
                     }
                     this.onDialogueComplete = () => {
                         this.giveQuestReward(qId);
-                        qProgress.status = 'finished';
-                        if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
                         if (gameState.settings?.autoSave) saveGameState();
                         this.renderMap();
                     };
@@ -1987,18 +2031,25 @@ export const Overworld = {
                     if (qData.type === 'show_monster') {
                         readyNow = gameState.profiles.player.party.some(m => m && m.id === qData.target && (m.extractEfficiency || 0) >= (qData.minEfficiency || 0));
                     } else if (qData.type === 'collect') {
-                        readyNow = window.gameState.items.includes(qData.target);
+                        const targetId = String(qData.target).toLowerCase();
+                        readyNow = (window.gameState.items || []).some(i => String(i).toLowerCase() === targetId) ||
+                                   (window.gameState.logs || []).some(l => String(l).toLowerCase() === targetId);
                     }
 
                     if (readyNow) {
                         if (qData.consume && qData.type === 'collect') {
-                            const idx = window.gameState.items.indexOf(qData.target);
-                            if (idx > -1) window.gameState.items.splice(idx, 1);
+                            const iIdx = window.gameState.items.indexOf(qData.target);
+                            if (iIdx > -1) window.gameState.items.splice(iIdx, 1);
+                            const lIdx = window.gameState.logs.indexOf(qData.target);
+                            if (lIdx > -1) window.gameState.logs.splice(lIdx, 1);
                         }
+                        // ATOMIC LOCK: Set finished and flags immediately to prevent reward exploits
+                        qProgress.status = 'finished';
+                        window.dispatchEvent(new CustomEvent('quest-updated'));
+                        if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
+
                         this.onDialogueComplete = () => {
                             this.giveQuestReward(qId);
-                            qProgress.status = 'finished';
-                            if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
                             if (gameState.settings?.autoSave) saveGameState();
                             this.renderMap();
                         };
@@ -2010,13 +2061,25 @@ export const Overworld = {
                     if (Array.isArray(pLines)) {
                         pLines = pLines.map(l => l.replace('{progress}', qProgress.progress).replace('{amount}', qData.amount));
                     }
-                    this.showDialogue(npc.name, pLines, npc.id);
-
-                    if (qData.type === 'defeat' && qData.target === (npc.battleEncounterId || npc.id)) {
-                        // Falls through
-                    } else {
-                        return;
+                    
+                    // Systematic Battle Trigger for Defeat Quests
+                    // Only trigger if NOT already in a post-battle interaction
+                    if (!isPostBattle && qData.type === 'defeat' && qData.target === npc.id) {
+                        if (!qData.requiredLogs || logs >= qData.requiredLogs) {
+                            this.pendingBattleEncounter = qData.target;
+                            
+                            // If requirement is met, prioritize offer_completed lines over progress lines
+                            if (qData.dialogue.offer_completed) {
+                                pLines = qData.dialogue.offer_completed;
+                            }
+                            
+                            this.showDialogue(npc.name, pLines, npc.id);
+                            return;
+                        }
                     }
+
+                    this.showDialogue(npc.name, pLines, npc.id);
+                    return;
                 }
 
                 // Case E: Finished
@@ -2049,10 +2112,43 @@ export const Overworld = {
         }
 
         // --- PHASE 4: NARRATIVE ENGINE LOOKUP ---
-        // We now pull all script logic from the NPC_SCRIPTS registry
         const scriptData = NPC_SCRIPTS[npc.id];
         
         if (scriptData && (lines.length === 1 && lines[0] === "...")) {
+            // 4.1 Priority: Declarative Stage-Based Dialogue
+            if (scriptData.stages && scriptData.stages[window.gameState.storyStage]) {
+                const stageData = scriptData.stages[window.gameState.storyStage];
+                
+                // --- Post-Battle Narrative Overrides ---
+                if (isPostBattle && stageData.postBattle) {
+                    const pb = stageData.postBattle;
+                    if (pb.lines) lines = pb.lines;
+                    if (pb.triggers) {
+                        pb.triggers.forEach(flag => {
+                            window.gameState.storyFlags[flag] = true;
+                        });
+                        StoryManager.syncStageFromFlags();
+                    }
+                    this.showDialogue(npc.name, lines, npc.id);
+                    return;
+                }
+
+                if (stageData.lines) lines = stageData.lines;
+                if (stageData.triggers) {
+                    stageData.triggers.forEach(flag => {
+                        window.gameState.storyFlags[flag] = true;
+                    });
+                    // Re-sync stage if flags changed
+                    StoryManager.syncStageFromFlags();
+                }
+                if (stageData.pendingBattleEncounter) {
+                    this.pendingBattleEncounter = stageData.pendingBattleEncounter;
+                }
+                this.showDialogue(npc.name, lines, npc.id);
+                return;
+            }
+
+            // 4.2 Fallback: Legacy Imperative getScript Logic
             const params = {
                 isPostBattle,
                 bossWon,

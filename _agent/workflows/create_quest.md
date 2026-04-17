@@ -22,11 +22,14 @@ This workflow guides you through the process of adding a new Quest to the game u
 [Amount]: (Number required)
 [Required Flag]: (Optional - e.g., jenziFirstBattleDone)
 [Completion Flag]: (Optional - Set when finished, e.g., atriumUnlocked)
+[Advances Story Stage]: (Boolean - REQUIRED for main quests to move the Narrative Engine)
+[Required Logs]: (Optional - For defeat quests that require a certain log count)
 [Reward]: { type: 'item', id: 'ITEM_ID' } OR { type: 'resource', amount: 500 } OR { type: 'relocate', npcId: 'npc_id', x: 10, y: 15, zoneId: 'zone_id', direction: 'down', useFade: true }
 [Time Limit]: (Optional - In seconds. Triggers Timed Quest Logic)
 
 ##### 1. Dialogue (Arrays of Strings)
 - **Offer**: ["Line 1", "Line 2"]
+- **Offer Completed**: ["Line 1 if player already meets requirements"]
 - **Progress**: ["Line 1 with {progress}"]
 - **Complete**: ["Line 1", "Line 2"]
 - **Failed**: ["Line 1", "Line 2"] (Auto-triggered on failure/timeout)
@@ -64,15 +67,18 @@ Add the quest definition to the appropriate registry in `src/data/quests/`:
     timeLimit: 60,     // Optional: Triggers Timed Quest Logic
     requiredFlag: 'prerequisite_flag', // Must be true in gameState.storyFlags
     onCompleteFlag: 'result_flag',     // Set to true automatically on completion
+    advancesStoryStage: true,          // Central logic for Main Quest progression
+    requiredLogs: 5,                   // For defeat quests (Systematic check)
     reward: { type: 'resource', amount: 500 },
     // OR relocation reward:
     // reward: { type: 'relocate', npcId: 'jenzi', x: 10, y: 14, zoneId: 'atrium', direction: 'down', useFade: true },
     dialogue: {
         offer: ["..."],
-        progress: ["..."],
+        offer_completed: ["..."], // Shown if requirements are already met at offer time
+        progress: ["..."],       // Shown if quest is started but requirements not met
         complete: ["..."],
-        failed: ["..."],  // Auto-triggered on failure/timeout
-        retry: ["..."],   // Shown when talking again after failure
+        failed: ["..."],
+        retry: ["..."],
         finished: ["..."]
     }
 }
@@ -108,19 +114,22 @@ For NPCs with complex roles (Jenzi, Lana, etc.), their core interaction logic is
 | System | Activity State | Source of Dialogue |
 | :--- | :--- | :--- |
 | **Quest Engine** | Quest is Active, Completed, or Failed | Registry files in `src/data/quests/` |
-| **Narrative Engine** | No Quest / Between Quests / Post-Quest | Script Registry in `src/data/npc_dialogues.js` |
+| **Narrative Engine** | No Quest / Between Quests / Post-Quest | **Stage-Based objects** in `src/data/npc_dialogues.js` |
 
 **The Bridge (Systematic Handover):**
-1. **Completion**: Use the `onCompleteFlag` in your quest definition.
-2. **Recognition**: In `npc_dialogues.js`, add an `else if` check for that flag **immediately**.
-3. **Outcome**: The NPC will seamlessly transition from "Task-focused" dialogue to acknowledging your accomplishment in their general flavors.
+1. **Completion**: Set `advancesStoryStage: true` in your quest definition.
+2. **Recognition**: In `src/data/npc_dialogues.js`, add a new entry to the NPC's `stages` object matching the next `STORY_STAGE`.
+3. **Outcome**: The `StoryManager` will automatically increment the stage when the quest reward is given, causing the NPC to immediately switch to their next personality stage.
 
 ---
 
 ### 🤺 NPC Duel (Defeat Quest) Special Logic
 When the `Quest Type` is `defeat` and the `Target ID` is the NPC themselves (a Duel):
-1. **Focus on Offer & Complete**: For the Quest Registry, the most critical dialogues are `offer` (to accept the challenge) and `complete` (the turn-in for the reward after winning).
-2. **Engagement Handover**: Once the quest is started, the NPC will typically use their Narrative Script lines (`beforeBattle`) to trigger the fight, rather than the quest `progress` lines.
+1. **Engine Automation**: The `Overworld` engine systematically triggers the battle if a `defeat` quest is in progress and `requiredLogs` are met. You **do not** need to manually define battle triggers in NPC scripts for these quests.
+2. **Dialogue Handling**: 
+    - Use `offer_completed` for the invitation to fight if requirements are met immediately.
+    - Use `complete` for the post-victory dialogue and reward acquisition.
+    - Narrative stages in `npc_dialogues.js` can provide flavor text `beforeBattle` if no quest is active.
 
 ### ⚠️ Quest Integrity Checklist
 - [ ] **Priority Check**: Is the highest priority quest listed FIRST in the NPC's `quests` array?

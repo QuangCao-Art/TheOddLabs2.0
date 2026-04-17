@@ -6,13 +6,20 @@ export const MAIN_QUEST_DATA = {
     'quest_main_datapad': {
         id: 'quest_main_datapad',
         title: 'Archive Initialization',
-        description: "Retrieve Log #001 from the Specimen Storage sector to restore the core database.",
+        description: "Retrieve Log #001 from the Lab Lobby.",
         type: 'collect',
-        target: 'Log001', 
+        target: 'Log001',
         amount: 1,
-        reward: { type: 'resource', id: 'credits', amount: 500 },
+        reward: {
+            type: 'resource_multi',
+            rewards: [
+                { type: 'resource', id: 'credits', amount: 200 },
+                { type: 'exp', amount: 50 }
+            ]
+        },
         requiredFlag: 'jenziFirstBattleDone',
-        onCompleteFlag: 'jenziAtriumUnlocked', 
+        onCompleteFlag: 'jenziAtriumUnlocked',
+        advancesStoryStage: true,
         consume: false,
         dialogue: {
             offer: [
@@ -22,9 +29,16 @@ export const MAIN_QUEST_DATA = {
                 "Go check if someone dropped something in there.",
                 "I swear, these scientists have the attention span of a goldfish once they leave their desks."
             ],
+            offer_completed: [
+                "Ayo, not bad for a first-timer! You've got that 'pioneer spirit' everyone talks about.",
+                "Win or lose, you've been brave enough to test that Cell today. Respect.",
+                "Wait, what do we have here? Did you just pick up that Datapad",
+                "I swear I saw someone left it near the red tank a minute before.",
+                "These scientists have the attention span of a goldfish once they leave their desks."
+            ],
             progress: ["Still looking for that flash? It was definitely over near the tanks."],
             complete: [
-                "Aha! A lost Datapad. People here would forget their own heads if they weren't attached.",
+                "Aha! Indeed, you found the Datapad. People here would forget their own heads if they weren't attached.",
                 "Collect 'em and bring 'em to me, okay? I'll 'officially' return them to the owners.",
                 "Door to the Atrium is open now. Go explore, but don't get lost in the sauce."
             ],
@@ -36,25 +50,33 @@ export const MAIN_QUEST_DATA = {
         title: 'The Atrium Proof',
         description: "Collect 5 DataLogs total and defeat Jenzi to prove you can handle the Botanic Sector.",
         type: 'defeat',
-        target: 'jenzi_atrium',
+        target: 'jenzi',
         amount: 1,
         requiredLogs: 5,
         requiredFlag: 'jenziAtriumUnlocked',
         onCompleteFlag: 'botanicSectorUnlocked',
-        reward: { type: 'resource', id: 'credits', amount: 1000 },
+        advancesStoryStage: true,
+        reward: { type: 'resource', id: 'credits', amount: 500 },
         dialogue: {
             offer: [
-                "You've been busy! 5 Datapads already? Lowkey impressive.",
+                "Looking for more logs?",
                 "Then you must smell something fishy about the Incident.",
                 "But before I tell you about the 'smell', let's see if you're actually worth it.",
-                "My Stemmy is ready to rumble. Pelli-it up!"
+                "Collect 5 logs and defeat me to prove you can handle the Botanic Sector."
             ],
-            progress: ["Pelli-it up, Intern! Let's see what you've got."],
+            offer_completed: [
+                "Got 5 logs already?",
+                "Then you must smell something fishy about the Incident.",
+                "But before I tell you about the 'smell', let's see if you're actually worth it.",
+                "Defeat me to prove you can handle the Botanic Sector."
+            ],
+            progress: ["Aha! Still collecting logs? Come back when you've got at least 5."],
             complete: [
                 "Okay, okay, you got me! You're actually decent.",
-                "Since you won, here's the tea about 'The Incident'. Director Capsain says it was an 'Ionization Leak'.",
-                "Something about that story just isn't right... Well beat me, what do I know.",
-                "If you want the real story, go ask Lana in the Botanic wing. She's the main character of that floor anyway.",
+                "Since you won, here's the tea about 'The Incident'.",
+                "Director Capsain says it was an 'Ionization Leak'.",
+                "Something about that story just isn't right...",
+                "If you want the real story, go ask Lana in the Botanic wing.",
                 "I've unlocked the door for you. Keep collecting those logs!"
             ],
             finished: ["Lana is a bit of a mood, but she knows the truth about the reactor logs."]
@@ -70,6 +92,7 @@ export const MAIN_QUEST_DATA = {
         requiredLogs: 10,
         requiredFlag: 'botanicSectorUnlocked',
         onCompleteFlag: 'lanaBattleDone',
+        advancesStoryStage: true,
         reward: { type: 'item', id: 'Quest01' },
         dialogue: {
             offer: [
@@ -80,11 +103,11 @@ export const MAIN_QUEST_DATA = {
             ],
             progress: ["Hmph. Just as I suspected. // Your tactical calibration is completely non-existent! // Go back to the entrance and... and don't come back until you've read at least three field guides! Honestly!"],
             complete: [
-                "Fine! You win! *[Mutters]* Just like the Director during the Leak... always so stubborn.",
+                "Fine! You win! *[Mutters]* Just like the Director... always so stubborn.",
                 "Here, take this Old Lab Room Key. It's for some old storage room.",
                 "Just... don't believe everything you read in the logs."
             ],
-            finished: ["Your tactical signature is... informative. Don't waste my time with more questions."]
+            finished: ["Go bother Dyzes in Human Research. He's chill, but he definitely knows things he's not saying."]
         }
     },
     'quest_main_dyzes_data': {
@@ -97,6 +120,7 @@ export const MAIN_QUEST_DATA = {
         requiredLogs: 15,
         requiredFlag: 'lanaBattleDone',
         onCompleteFlag: 'dyzesBattleDone',
+        advancesStoryStage: true,
         reward: { type: 'item', id: 'Quest03' },
         dialogue: {
             offer: [
@@ -128,6 +152,7 @@ export const MAIN_QUEST_DATA = {
         requiredLogs: 20,
         requiredFlag: 'dyzesBattleDone',
         onCompleteFlag: 'capsainBattleDone',
+        advancesStoryStage: true,
         reward: { type: 'item', id: 'Quest02' },
         dialogue: {
             offer: [
@@ -156,11 +181,13 @@ export const MAIN_QUEST_DATA = {
         amount: 1,
         requiredFlag: 'capsainBattleDone',
         onCompleteFlag: 'gameEndTriggered',
+        advancesStoryStage: true,
         reward: { type: 'resource', id: 'credits', amount: 5000 },
         dialogue: {
             offer: [
-                "You have all the clues now. Find that Old Lab Room. That's where the final secret is hidden.",
-                "Find the Old Lab Room -> Read Final Datalog -> Take Origin Nitrophil to Director -> Game End."
+                "You have the Sauce. You have the Key. You have the Map.",
+                "Find the Old Lab Room hidden in the Specimen Storage or Storage Bay.",
+                "The Origin is waiting. End this farce."
             ],
             progress: ["Still searching for the hidden room? It's not on the main maps."],
             complete: [
@@ -178,42 +205,43 @@ export const MAIN_QUEST_DATA = {
  * These provide flavor and context for the player's current story stage.
  */
 export const MAIN_QUEST_LOGS = {
-    'initialization': {
+    0: { // LOBBY_START
         title: '[MAIN] PROTOCOL: INITIALIZATION',
         objective: 'Select your first Companion Cell.',
         narrative: 'Day 1 at Odd Labs. Honestly? This place is terrifyingly beautiful. I\'m supposed to \'pair\' with a sentient cell today. They\'re way bigger than the textbooks said, and they almost seem to be watching me back. Time to see which one wants to be my partner in this maze.'
     },
-    'first_duel': {
+    1: { // CELL_CHOSEN
         title: '[MAIN] THE GATEKEEPER\'S VIBE',
         objective: 'Survive Jenzi\'s introductory diagnostic.',
         narrative: 'Jenzi’s got this refreshing, honest energy that actually makes me believe her when she says I’ve got potential. She isn’t just being nice—she’s testing me because she thinks I can handle it. If I can win this duel, I’ll know for sure that I’m not just another hire, but someone who actually belongs in this Lab.'
     },
-    'atrium_threshold': {
+    2: { // TUTORIAL_DONE
         title: '[MAIN] THE ATRIUM THRESHOLD',
         objective: 'Retrieve Log #001 from Specimen Storage.',
         narrative: 'Phew, what a test. The Atrium doors are still locked, and Jenzi is playing coy. She hinted that someone dropped a datapad near the specimen tanks in this wing. I need to find it.'
     },
-    'atrium_archive': {
+    // Stage 3 (ATRIUM_UNLOCKED) is transitional
+    4: { // ATRIUM_QUEST
         title: '[MAIN] ATRIUM ARCHIVE',
         objective: 'Archive 5 DataLogs and battle Jenzi again.',
         narrative: 'I\'ve been scrounging through the Atrium desks. Mention of \'Point Zero\' and \'Noodle Tuesday\' is everywhere. Jenzi is ready to spill the \'tea\' about the Incident, but only if I win this next duel. She says the Director\'s story is fishy... well, more like spicy.'
     },
-    'botanic_secrets': {
+    5: { // BOTANIC_UNLOCKED
         title: '[MAIN] PETALS AND SECRETS',
         objective: 'Defeat Lana to secure the Old Lab Key.',
         narrative: 'Scientist Lana is... intense. She treats her Cambihils like royalty and me like a budget virus. She’s definitely hiding something about the Director\'s \'private research.\' If I want that key to the restricted wing, I\'m going to have to out-sync her in a fight.'
     },
-    'osmotic_revelations': {
+    6: { // LANA_DONE
         title: '[MAIN] OSMOTIC REVELATIONS',
         objective: 'Defeat Dyzes to retrieve the Old Data Stick.',
         narrative: 'Dyzes is the \'chillest\' guy here, but even he looks nervous when I mention the Old Lab. He says the truth is \'fluid.\' He’s got an old data stick that supposedly maps out a hidden sector. If I can stay in sync during his Lydrosome test, I might finally have a map to the truth.'
     },
-    'executive_truth': {
+    7: { // DYZES_DONE
         title: '[MAIN] THE EXECUTIVE TRUTH',
         objective: 'Confront Director Capsain in his suite.',
-        narrative: 'I have the key. I have the map. Now I just have the Director. Capsain looks like he hasn\'t slept since 2027. He’s a frantic mess of high-level anxiety and corporate paranoia, acting more like a man guarding a haunted house than a scientific research facility. Something tells me he’s much closer to the edge than he lets on. Is the head of Odd Labs really hiding a portal to a chili-based disaster?'
+        narrative: 'I have the key. I have the map. Now I just have the Director. Capsain looks like he hasn\'t slept since 2027. He’s a frantic mess of high-level anxiety and corporate paranoia, acting more like a man guarding a haunted house than a scientific research facility. Something tells me he’s much closer to the edge than he lets on.'
     },
-    'spicy_origin': {
+    8: { // CAPSAIN_DONE
         title: '[MAIN] THE SPICY ORIGIN',
         objective: 'Locate the Origin Nitrophil in the Old Lab.',
         narrative: 'Capsain is down. He gave me a bottle of \'Inferno Sauce\' and looked like his world was ending. The secret is in the basement—the Old Lab. I\'m going to find the \'Origin.\' If the legend is true, this whole facility was built on a beautiful, spicy accident.'

@@ -16,10 +16,6 @@ export const lobby = {
     objects: [
         { id: 'jenzi', x: 4, y: 4, type: 'npc', name: 'Jenzi', quests: ['quest_main_datapad', 'quest_main_atrium_proof', 'quest_main_origin_secret'] },
         { id: 'pax', x: 7, y: 5, type: 'npc', name: 'Receptionist Pax' },
-        { id: 'f15_lob_n1', x: 7, y: 2, type: 'prop', templateName: 'TANK_BLUE' },
-        { id: 'f16_lob_n1', x: 7, y: 3, type: 'prop', templateName: 'TANK_BLUE' },
-        { id: 'f22_lob_n2', x: 8, y: 2, type: 'prop', templateName: 'TANK_RED' },
-        { id: 'f23_lob_br', x: 8, y: 3, type: 'prop', templateName: 'TANK_RED' },
         { id: 'f14_mny4vpl6jp1dw', templateName: 'TANK_GREEN', x: 9, y: 3, type: 'prop', mirrored: false, hiddenReward: 'REWARD_CREDITS_10' },
         { id: 'f13_mny4vpl6jp1dw', templateName: 'TANK_GREEN', x: 9, y: 2, type: 'prop', mirrored: false, hiddenReward: 'REWARD_CREDITS_10' },
         { id: 'f57_mny4vteuebrx4', templateName: 'TABLE_LEADER_B', x: 8, y: 6, type: 'prop', mirrored: false, hiddenReward: 'REWARD_CREDITS_10' },
@@ -37,7 +33,11 @@ export const lobby = {
         { id: 'f59_mny50j3039odu', templateName: 'POT_PLANT_SMALL', x: 9, y: 6, type: 'prop', mirrored: false },
         { id: 'f59_mny50nx5dvli4', templateName: 'POT_PLANT_SMALL', x: 4, y: 3, type: 'prop', mirrored: false },
         { id: 'f59_mny50ofn3j24z', templateName: 'POT_PLANT_SMALL', x: 1, y: 3, type: 'prop', mirrored: false },
-        { id: 'f59_mny50oypyrumb', templateName: 'POT_PLANT_SMALL', x: 1, y: 6, type: 'prop', mirrored: false }
+        { id: 'f59_mny50oypyrumb', templateName: 'POT_PLANT_SMALL', x: 1, y: 6, type: 'prop', mirrored: false },
+        { id: 'f16_mo2bjf14xgcmi', templateName: 'TANK_BLUE', x: 7, y: 3, type: 'prop', mirrored: false, hiddenReward: 'REWARD_CREDITS_10' },
+        { id: 'f15_mo2bjf14xgcmi', templateName: 'TANK_BLUE', x: 7, y: 2, type: 'prop', mirrored: false, hiddenReward: 'REWARD_CREDITS_10' },
+        { id: 'f23_mo2bjgiszvm8w', templateName: 'TANK_RED', x: 8, y: 3, type: 'prop', mirrored: false, hiddenLogId: 'Log001' },
+        { id: 'f22_mo2bjgiszvm8w', templateName: 'TANK_RED', x: 8, y: 2, type: 'prop', mirrored: false }
     ],
     doors: [
         { x: 5, y: 2, targetZone: 'atrium', targetX: 9, targetY: 13, requiredFlag: 'jenziAtriumUnlocked' }

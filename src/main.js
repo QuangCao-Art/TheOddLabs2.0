@@ -10,6 +10,7 @@ import { QUESTS, MAIN_QUEST_LOGS } from './data/quests.js';
 import { BioExtract } from './ui/bio_extract.js';
 import { BuilderMode } from './engine/builder.js';
 import { FURNITURE_TEMPLATES } from './data/furniture.js';
+import { StoryManager } from './engine/story.js';
 import { AudioManager } from './engine/audio.js';
 
 // Initialize UI Modules
@@ -507,9 +508,9 @@ window.showItemPickupModal = (itemId, onClose) => {
 
 // --- SHARED UI ANIMATION HELPERS ---
 window.runExpAnimationSequence = (config) => {
-    const { 
-        expSection, expFill, expVal, rgLabel, 
-        initialExp, initialLevel, expGained, 
+    const {
+        expSection, expFill, expVal, rgLabel,
+        initialExp, initialLevel, expGained,
         onComplete, btnAction
     } = config;
 
@@ -524,7 +525,7 @@ window.runExpAnimationSequence = (config) => {
     const expFloor = getExpReqForLevel(initialLevel);
     const expCap = getExpReqForLevel(initialLevel + 1);
     const startPercent = Math.max(0, Math.min(100, ((initialExp - expFloor) / (expCap - expFloor)) * 100));
-    
+
     expFill.style.transition = 'none';
     expFill.style.width = startPercent + '%';
     expVal.textContent = `${initialExp - expFloor} / ${expCap - expFloor}`;
@@ -547,7 +548,7 @@ window.runExpAnimationSequence = (config) => {
 
             setTimeout(() => {
                 expSection.classList.remove('exp-section-flash');
-                void expSection.offsetWidth; 
+                void expSection.offsetWidth;
                 expSection.classList.add('exp-section-flash');
 
                 if (typeof showLevelUpNotification === 'function') {
@@ -567,7 +568,7 @@ window.runExpAnimationSequence = (config) => {
                     const nextFloor = getExpReqForLevel(currLevel + 1);
                     const nextCap = getExpReqForLevel(currLevel + 2);
                     expVal.textContent = `0 / ${nextCap - nextFloor}`;
-                    
+
                     // Reset to 0ms delay for the recursive call to keep the flow moving
                     requestAnimationFrame(() => animateStep(cap, currLevel + 1, remaining - distToCap));
                 }, 550); // Reduced from 1000ms to allow smoother transitions after the 0.4s flash
@@ -576,11 +577,11 @@ window.runExpAnimationSequence = (config) => {
             // Final Fill case
             const finalExp = currExp + remaining;
             const endPercent = Math.max(0, Math.min(100, ((finalExp - floor) / (cap - floor)) * 100));
-            
+
             expFill.style.transition = remaining > 0 ? 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' : 'none';
             expFill.style.width = endPercent + '%';
             expVal.textContent = `${finalExp - floor} / ${cap - floor}`;
-            
+
             setTimeout(() => {
                 if (btnAction) {
                     btnAction.classList.remove('disabled');
@@ -615,7 +616,7 @@ window.showQuestCompleteModal = (questId, onClose) => {
 
     // Set Quest Title
     document.getElementById('quest-complete-title').textContent = (questData.title || "Unknown Mission").toUpperCase();
-    
+
     // Dynamic Reward Summary & EXP Logic
     let rewardsText = "";
     let questExpGained = 0;
@@ -627,20 +628,20 @@ window.showQuestCompleteModal = (questId, onClose) => {
         if (r.type === 'resource_multi' && Array.isArray(r.rewards)) {
             return r.rewards.map(subR => parseRewards(subR)).filter(t => t).join(", ");
         }
-        
-        let type = (r.id === 'credits' || r.id === 'lc') ? 'Credits' : 
-                   (r.id === 'biomass' || r.id === 'bm') ? 'Biomass' : 
-                   (r.type === 'exp') ? 'EXP' : r.id?.toUpperCase() || "";
-        
+
+        let type = (r.id === 'credits' || r.id === 'lc') ? 'Credits' :
+            (r.id === 'biomass' || r.id === 'bm') ? 'Biomass' :
+                (r.type === 'exp') ? 'EXP' : r.id?.toUpperCase() || "";
+
         if (r.type === 'exp') questExpGained += (r.amount || 0);
         if (r.id === 'credits' || r.id === 'lc') creditsGained += (r.amount || 0);
         if (r.id === 'biomass' || r.id === 'bm') biomassGained += (r.amount || 0);
-        
+
         return `${r.amount} ${type}`;
     };
 
     rewardsText = parseRewards(questData.reward);
-    
+
     // Detect potential Level Up chips to display as additional rewards
     let potentialLevel = gameState.profiles.player.level;
     let potentialExp = gameState.exp + questExpGained;
@@ -688,7 +689,7 @@ window.showQuestCompleteModal = (questId, onClose) => {
 
         window.hideWithFade(modal);
         window.removeEventListener('keydown', keyHandler);
-        
+
         // --- UNIVERSAL RESUME: Engine must be running and all interaction flags cleared ---
         if (typeof Overworld !== 'undefined') {
             Overworld.isPaused = false;
@@ -703,7 +704,7 @@ window.showQuestCompleteModal = (questId, onClose) => {
     function keyHandler(e) {
         if (!inputReady) return;
         if (e.key === 'f' || e.key === 'F' || e.key === 'Enter') {
-            e.preventDefault(); e.stopPropagation(); 
+            e.preventDefault(); e.stopPropagation();
             close();
         }
     }
@@ -1037,6 +1038,10 @@ function initStarterSelectionEvents() {
         gameState.playerTeam = [selectedStarterId];
         gameState.cellDex = [selectedStarterId];
         gameState.profiles.player.chipBox = [`card_${selectedStarterId}`, 'atk_1', 'def_1'];
+
+        // Synchronize story stage now that a cell is chosen
+        if (typeof StoryManager !== 'undefined') StoryManager.syncStageFromFlags();
+
         resetGame();
 
         // Close both dialogs and resume overworld
@@ -2285,7 +2290,7 @@ function setupEventListeners() {
 
             // Prevent opening inventory if another interactive overlay/modal is open
             const hasOverlay = document.querySelector('.overlay:not(.hidden), .modal-overlay:not(.hidden), .modal-overlay.active, #screen-confirm:not(.hidden), #screen-pause:not(.hidden)');
-            
+
             if (isOverworld && inventoryOverlay && !hasOverlay) {
                 if (!isInvOpen) {
                     inventoryInputReady = false;
@@ -3893,9 +3898,18 @@ function renderQuestMenu() {
             const item = document.createElement('div');
             item.className = `quest-item ${qProgress.status}`;
 
-            const progressText = qData.type === 'collect'
+            let progressText = qData.type === 'collect'
                 ? (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'DONE' : 'LOOKING...')
                 : `${qProgress.progress}/${qData.amount}`;
+
+            // --- NEW: Multi-Requirement Progress Display ---
+            // If the quest has a Log requirement, display it alongside the primary objective
+            if (qData.requiredLogs && qProgress.status === 'started') {
+                const currentLogs = (Overworld.logsCollected && Overworld.logsCollected.length) || 0;
+                const logsDone = currentLogs >= qData.requiredLogs;
+                const logLabel = logsDone ? "LOGS: READY" : `LOGS: ${currentLogs}/${qData.requiredLogs}`;
+                progressText = `${logLabel} | ${progressText}`;
+            }
 
             item.innerHTML = `
                 <div class="quest-main">
@@ -4810,7 +4824,7 @@ window.grantExperience = (amount, silent = false, skipBanner = false) => {
     if (didLevelUp) {
         gameState.profiles.player.level = targetLevel;
         gameState.playerLevel = targetLevel;
-        
+
         // Sync new chips and move slots
         if (typeof syncChipsToLevel === 'function') {
             syncChipsToLevel('player', targetLevel);
@@ -4967,9 +4981,9 @@ function showGameOver(isFailure, forceOverlay = false) {
 
     if (overlay && title) {
         if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
-        
+
         // Reset appearance based on outcome
-        if (panel) panel.dataset.outcome = isFailure && !isTutorialLoss ? "failed" : "success";
+        if (panel) panel.dataset.outcome = isFailure ? "failed" : "success";
 
         // Reset button state
         if (btnProceed) {
@@ -4978,7 +4992,7 @@ function showGameOver(isFailure, forceOverlay = false) {
             btnProceed.textContent = isFailure ? "RECOVER" : "PROCEED";
         }
 
-        if (isFailure && !isTutorialLoss) {
+        if (isFailure) {
             if (AudioManager) AudioManager.play('modal_battle_lose', 0.6);
             if (bannerImg) bannerImg.src = "./assets/images/Battle_Lose.png";
             title.innerHTML = `EXPERIMENT <span class="neon-text" style="color: #ff3333; text-shadow: 0 0 10px #ff3333;">FAILED!</span>`;
@@ -4986,11 +5000,12 @@ function showGameOver(isFailure, forceOverlay = false) {
             if (AudioManager) AudioManager.play('modal_battle_win', 0.6);
             if (bannerImg) bannerImg.src = "./assets/images/Battle_Win.png";
             title.innerHTML = `EXPERIMENT <span class="neon-text">SUCCEED!</span>`;
-            
-            if (isTutorialLoss || (opponentId === 'jenzi_tutorial' && !isFailure)) {
-                gameState.storyFlags.jenziFirstBattleDone = true;
-                applyBonuses(gameState.profiles.player.party, gameState.profiles.player.level, true);
-            }
+        }
+
+        // Specific tutorial handling (Always advance progress if battle was with Jenzi)
+        if (opponentId === 'jenzi_tutorial') {
+            gameState.storyFlags.jenziFirstBattleDone = true;
+            applyBonuses(gameState.profiles.player.party, gameState.profiles.player.level, true);
         }
 
         // --- GRINDING & PROGRESSION REWARD LOGIC (Now Universal) ---
@@ -5018,9 +5033,9 @@ function showGameOver(isFailure, forceOverlay = false) {
         // Only calculate typical rewards if not a generic failure
         if (!isFailure || isTutorialLoss) {
             if (opponentId === 'jenzi_tutorial') {
-                expEarned = isFailure ? 12 : 25;
-                creditsEarned = isFailure ? 20 : 50;
-                biomassEarned = isFailure ? 2 : 5;
+                expEarned = isFailure ? 15 : 25;
+                creditsEarned = isFailure ? 0 : 50;
+                biomassEarned = isFailure ? 0 : 5;
             } else if (opponentId && opponentId.endsWith('_wild')) {
                 creditsEarned = Math.round((10 + Math.floor(Math.random() * 16)) * rgScaling);
                 biomassEarned = Math.round((1 + Math.floor(Math.random() * 5)) * rgScaling);
@@ -5030,7 +5045,7 @@ function showGameOver(isFailure, forceOverlay = false) {
                 creditsEarned = enc.reward?.credits || 50;
                 biomassEarned = enc.reward?.biomass || 5;
                 expEarned = enc.reward?.exp || 25;
-                
+
                 if (gameState.storyFlags) {
                     gameState.storyFlags[`battleDone_${opponentId}`] = true;
                     if (isFailure) gameState.storyFlags[`battleLost_${opponentId}`] = true;
@@ -5068,7 +5083,7 @@ function showGameOver(isFailure, forceOverlay = false) {
             window.grantExperience(expEarned, true);
             window.changeResource('lc', creditsEarned);
             window.changeResource('bm', biomassEarned);
-            
+
             window.hideWithFade(overlay);
             showScreen('screen-overworld');
             if (gameState.settings?.autoSave && typeof saveGameState === 'function') saveGameState();
@@ -5085,9 +5100,9 @@ function showGameOver(isFailure, forceOverlay = false) {
                 const lobbyZone = (typeof Overworld !== 'undefined' && Overworld.startingZone) || 'lobby';
                 if (typeof Overworld !== 'undefined') {
                     // Temporarily LOCK movement during the teleport and sequence cushion
-                    Overworld.isPaused = true; 
+                    Overworld.isPaused = true;
                     Overworld.renderMap(lobbyZone, true);
-                    
+
                     // Standard Lobby Recovery Position (In front of incubator)
                     gameState.playerPos = { x: 2, y: 4 };
                     if (Overworld.player) {
@@ -5099,7 +5114,7 @@ function showGameOver(isFailure, forceOverlay = false) {
                         Overworld.updatePlayerPosition();
                     }
                 }
-                
+
                 // Start the actual sequence after a short fade cushion
                 setTimeout(() => {
                     if (window.startHealSequence) window.startHealSequence('defeat');
@@ -7955,3 +7970,10 @@ updateResourceHUD();
 
 // Initial boat-up logic for save system
 checkExistingSave();
+
+// --- NEW: Global UI Synchronization ---
+window.addEventListener('quest-updated', () => {
+    console.log("[UI] Quest update detected. Refreshing menus...");
+    if (typeof renderQuestMenu === 'function') renderQuestMenu();
+    if (typeof updateResourceHUD === 'function') updateResourceHUD();
+});
