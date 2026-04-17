@@ -60,7 +60,7 @@ export const executive = {
         { "id": "f22_mnmwfyaefd8nz", "x": 19, "y": 3, "type": "prop", "templateName": "TANK_RED" },
         { "id": "f105_mnmwi535i7l76", "x": 16, "y": 4, "type": "prop", "templateName": "WARNING_SIGN_FRONT" },
         { "id": "f36_mnsf4ra3f8nvj", "x": 3, "y": 3, "type": "prop", "hiddenReward": "REWARD_CREDITS_50", "templateName": "NOODLE_TABLE" },
-        { "id": "f103_mnsf51tfq5a2h", "x": 6, "y": 3, "type": "prop", "hiddenReward": "REWARD_BIOMASS_50", "templateName": "HUGE_PETRI_DISH_SINGLE" },
+        { "id": "f103_mnsf51tfq5a2h", "x": 6, "y": 3, "type": "prop", "hiddenLogId": "Log020", "hiddenReward": "REWARD_BIOMASS_50", "templateName": "HUGE_PETRI_DISH_SINGLE" },
         { "id": "f36_mnsf5er08gk9k", "x": 11, "y": 3, "type": "prop", "hiddenReward": "REWARD_CREDITS_10", "templateName": "NOODLE_TABLE" },
         { "id": "f36_mnsf5g7601s8i", "x": 13, "y": 7, "type": "prop", "hiddenReward": "REWARD_CREDITS_10", "templateName": "NOODLE_TABLE" },
         { "id": "f36_mnsf5l5o21vtc", "x": 1, "y": 7, "type": "prop", "hiddenReward": "REWARD_CREDITS_50", "templateName": "NOODLE_TABLE" },

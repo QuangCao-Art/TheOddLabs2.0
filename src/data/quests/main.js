@@ -96,12 +96,17 @@ export const MAIN_QUEST_DATA = {
         reward: { type: 'item', id: 'Quest01' },
         dialogue: {
             offer: [
+                "Oh, here we meet again, Intern. // I see you want to learn more about my plants, huh?",
                 "Wait. You've been poking around the botanical archives, haven't you?",
-                "Look, I love these cells, but the Director says we have to keep the research classified.",
-                "If you want that Old Lab Key, you'll have to prove you can handle the truth in a duel!",
-                "Prepare for a lesson in botanical efficiency!"
+                "You may have seen something, but you'll have to prove you can handle the truth in a duel!",
+                "But honestly? I'm not sure if you're ready for it."
             ],
-            progress: ["Hmph. Just as I suspected. // Your tactical calibration is completely non-existent! // Go back to the entrance and... and don't come back until you've read at least three field guides! Honestly!"],
+            progress: ["Why are you still here? Jenzi didn't give you any tasks?"],
+            offer_completed: [
+                "It's you again, Intern. // I see you've been busy studying our archives...",
+                "You may have seen something, but you'll have to prove you can handle the truth in a duel!",
+                "Let's see if you're actually ready for it!"
+            ],
             complete: [
                 "Fine! You win! *[Mutters]* Just like the Director... always so stubborn.",
                 "Here, take this Old Lab Room Key. It's for some old storage room.",
@@ -124,13 +129,17 @@ export const MAIN_QUEST_DATA = {
         reward: { type: 'item', id: 'Quest03' },
         dialogue: {
             offer: [
-                "I've seen your log activity. You're piecing together 'The Incident', aren't you?",
-                "Capsain is a good man, just... proud.",
-                "I can't let you expose him without a proper test of your tactical skill.",
-                "Prepare yourself!",
-                "Let's see if your tactical vibe is strong enough."
+                "Man, I've seen your log activity. // You're piecing together 'The Incident', aren't you?",
+                "But collecting logs isn't enough for me to get out of my lazy chair just yet.",
+                "Chill out for now, man~"
             ],
             progress: ["Woah, man. You're a bit out of sync. Take a breather, hydrate, and maybe try focusing on the flow next time. No rush."],
+            offer_completed: [
+                "Man, I see you've gathered quite a bit of information.",
+                "I can't let you expose the Director without a proper test of your tactical skill.",
+                "It's time for me to step out of this chair!",
+                "Let's see if your tactical vibe is strong enough!"
+            ],
             complete: [
                 "Woah, okay. Your tactical flow is elite. I can't really hide the truth if you're this good.",
                 "The Old Lab exists, man. It's not on the main maps.",
@@ -156,13 +165,17 @@ export const MAIN_QUEST_DATA = {
         reward: { type: 'item', id: 'Quest02' },
         dialogue: {
             offer: [
-                "So. You found the Noodle Review. You found the '27 security gap.",
+                "...",
+                "Don't you have work to do, Specialist?"
+            ],
+            progress: ["Dismissed. If you can't even handle a basic engagement, you have no business poking around the archives. // Go back to filing paperwork, Intern."],
+            offer_completed: [
+                "So. You found the Noodle Review. // You found the '27 security gap.",
                 "You think a little chili sauce is enough to topple this Director?",
-                "Fine. If you want the 'Origin', you'll have to go through me and my strongest Nitrophil first!",
+                "Fine! If you want the 'Origin', you'll have to go through me and my strongest Nitrophil first!",
                 "I won't have my legacy tarnished by some spicy gossip!",
                 "Prepare to be archived!"
             ],
-            progress: ["Dismissed. If you can't even handle a basic engagement, you have no business poking around the archives. // Go back to filing paperwork, Intern."],
             complete: [
                 "I... I failed? To an intern? *[Sighs deeply]*",
                 "You've seen the logs. You have the sauce. You've basically already found out.",
@@ -190,6 +203,9 @@ export const MAIN_QUEST_DATA = {
                 "The Origin is waiting. End this farce."
             ],
             progress: ["Still searching for the hidden room? It's not on the main maps."],
+            offer_completed: [
+                "It's all over, isn't it? // You found the Origin Nitrophil... the truth is finally out in the light."
+            ],
             complete: [
                 "You found it. The Origin Nitrophil. It's... it's orange.",
                 "The spicy miracle that started it all.",

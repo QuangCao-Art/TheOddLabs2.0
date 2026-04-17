@@ -47,7 +47,7 @@ export const medicalExperienceRoom = {
         { "id": "f83_mnpw6l5i24qs4", "x": 6, "y": 5, "type": "prop", "hiddenReward": "REWARD_BIOMASS_50" },
         { "id": "f80_mnpw6l5i24qs4", "x": 5, "y": 4, "type": "prop", "hiddenReward": "REWARD_BIOMASS_50" },
         { "id": "f81_mnpw6l5i24qs4", "x": 6, "y": 4, "type": "prop", "hiddenReward": "REWARD_BIOMASS_50" },
-        { "id": "f82_mnpw6msy2drog", "x": 8, "y": 5, "type": "prop" },
+        { "id": "f82_mnpw6msy2drog", "x": 8, "y": 5, "type": "prop", "hiddenLogId": "Log011" },
         { "id": "f83_mnpw6msy2drog", "x": 9, "y": 5, "type": "prop" },
         { "id": "f80_mnpw6msy2drog", "x": 8, "y": 4, "type": "prop" },
         { "id": "f81_mnpw6msy2drog", "x": 9, "y": 4, "type": "prop" },

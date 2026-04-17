@@ -3898,12 +3898,16 @@ function renderQuestMenu() {
             const item = document.createElement('div');
             item.className = `quest-item ${qProgress.status}`;
 
-            let progressText = qData.type === 'collect'
-                ? (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'DONE' : 'LOOKING...')
-                : `${qProgress.progress}/${qData.amount}`;
+            let progressText = "";
+            if (qData.type === 'collect') {
+                progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'DONE' : 'LOOKING...');
+            } else if (qData.type === 'defeat') {
+                progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'VICTORY' : 'BATTLE: 0/1');
+            } else {
+                progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'DONE' : `${qProgress.progress}/${qData.amount}`);
+            }
 
-            // --- NEW: Multi-Requirement Progress Display ---
-            // If the quest has a Log requirement, display it alongside the primary objective
+            // --- Multi-Requirement Progress Display ---
             if (qData.requiredLogs && qProgress.status === 'started') {
                 const currentLogs = (Overworld.logsCollected && Overworld.logsCollected.length) || 0;
                 const logsDone = currentLogs >= qData.requiredLogs;

@@ -15,6 +15,9 @@ export const SIDE_QUEST_DATA = {
         dialogue: {
             offer: ["I'm doing research on Stemmy behavior.", "Could you defeat 5 Wild Stemmies for me?"],
             progress: ["How's the hunt going?", "You've defeated {progress} out of 5."],
+            offer_completed: [
+                "I saw your tactical data—the Stemmies have been calibrated! // Ready to finalize the report?"
+            ],
             complete: ["Wow, you did it!", "Here is a datalog for your trouble."],
             finished: ["Thanks again for the help!"]
         }
@@ -31,6 +34,9 @@ export const SIDE_QUEST_DATA = {
         dialogue: {
             offer: ["I need a Nitrophil cell for an experiment.", "Could you synthesize one for me?"],
             progress: ["Still waiting on that Nitrophil...", "Remember, you need Biomass and a Blueprint."],
+            offer_completed: [
+                "Is that a fresh Nitrophil I see? // Splendid! The calibration data is exactly what I needed."
+            ],
             complete: ["Perfect specimen!", "Please take this C-Chip as payment."],
             finished: ["Nitrophil is a fascinating unit, isn't it?"]
         }
@@ -53,6 +59,9 @@ export const SIDE_QUEST_DATA = {
         dialogue: {
             offer: ["I lost my old Key Card somewhere in the Botanic Sector.", "If you find it, I'll pay you well."],
             progress: ["Any luck finding that Key Card?", "It should be near some plants."],
+            offer_completed: [
+                "You found it! // Thank goodness, that key grants access to the high-priority archives."
+            ],
             complete: ["My Key Card! Thank you so much.", "Here are the credits I promised."],
             finished: ["I should really be more careful with my belongings."]
         }
@@ -73,6 +82,9 @@ export const SIDE_QUEST_DATA = {
                 "It's a great way to start your collection. What do you say?"
             ],
             progress: ["How's the hunt going? You've defeated {progress} out of 2 Wild Stemmies so far. Keep at it!"],
+            offer_completed: [
+                "Hey, I saw you out there! You really handled those Stemmies! // Ready for your first reward card?"
+            ],
             complete: [
                 "Congratulations! Stemmy is actually so cool! People say it's lame, but I find it super handy—that little guy has a lot of potential.",
                 "As promised, here is your Stemmy Collectible Card! It's super common, but hey, every legendary collection has to start somewhere.",
@@ -104,6 +116,9 @@ export const SIDE_QUEST_DATA = {
                 "Bring me a Lydrosome with Efficiency Level 1, and I shall share with you the truth of our genesis."
             ],
             progress: ["The history of this lab is a circle, Child. // I'm waiting for a Lydrosome with high-level efficiency."],
+            offer_completed: [
+                "The shimmer in your hands... it is the Lydrosome I sought. // Speak with me, and we shall share the secret of the genesis."
+            ],
             complete: [
                 "Remarkable. The Lydrosome's harmony is perfect... almost like it remembers the source itself.",
                 "Lily gave us life to save her people, but she accidentally gave us a heart that beats for its own reasons.",

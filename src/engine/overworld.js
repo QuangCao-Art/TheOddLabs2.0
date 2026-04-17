@@ -1843,6 +1843,20 @@ export const Overworld = {
         }
     },
 
+    isQuestTargetMatch(targetId, npc) {
+        if (!targetId || !npc || !npc.id) return false;
+        const normalizedTarget = String(targetId).toLowerCase();
+        const normalizedNpcId = String(npc.id).toLowerCase();
+        
+        // Match if: 
+        // 1. Exact match
+        // 2. NPC starts with target (e.g., lana_moved starts with lana)
+        // 3. Target starts with NPC (e.g., dyzes_boss starts with dyzes)
+        return (normalizedNpcId === normalizedTarget) || 
+               (normalizedNpcId.startsWith(normalizedTarget)) ||
+               (normalizedTarget.startsWith(normalizedNpcId));
+    },
+
     startNPCInteraction(npcOrId, isFailure = false, isPostBattle = false) {
         const bossWon = isPostBattle ? !isFailure : false;
         
@@ -1923,7 +1937,6 @@ export const Overworld = {
                         if (!hasReq) continue;
                     }
                     if (qData.requiredRG && (window.gameState.profiles.player.level || 0) < qData.requiredRG) continue;
-                    if (qData.requiredLogs && (this.logsCollected.length || 0) < qData.requiredLogs) continue;
                     if (qProgress && qProgress.status === 'finished') {
                         if (qData.dialogue.finished) lines = qData.dialogue.finished;
                         continue;
@@ -1943,7 +1956,7 @@ export const Overworld = {
                 const qProgress = activeQuestProgress;
 
                 // Systematic Post-Battle Win/Loss Handling for Defeat Quests
-                if (isPostBattle && qData.type === 'defeat' && qData.target === npc.id) {
+                if (isPostBattle && qData.type === 'defeat' && this.isQuestTargetMatch(qData.target, npc)) {
                     if (bossWon) {
                         if (qProgress && qProgress.status === 'started') {
                             qProgress.status = 'completed';
@@ -2064,7 +2077,7 @@ export const Overworld = {
                     
                     // Systematic Battle Trigger for Defeat Quests
                     // Only trigger if NOT already in a post-battle interaction
-                    if (!isPostBattle && qData.type === 'defeat' && qData.target === npc.id) {
+                    if (!isPostBattle && qData.type === 'defeat' && this.isQuestTargetMatch(qData.target, npc)) {
                         if (!qData.requiredLogs || logs >= qData.requiredLogs) {
                             this.pendingBattleEncounter = qData.target;
                             

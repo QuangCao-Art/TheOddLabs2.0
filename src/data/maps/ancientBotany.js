@@ -328,6 +328,7 @@ export const ancientBotany = {
                         "x": 3,
                         "y": 5,
                         "type": "prop",
+                        "hiddenLogId": "Log009",
                         "templateName": "HEALTHY_NEPTHEES_PLANT"
                 },
                 {
