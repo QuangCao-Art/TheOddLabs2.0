@@ -381,6 +381,8 @@ export const Overworld = {
             } else {
                 processReward(reward);
             }
+            // Ensure state is persisted after granting rewards if auto-save is enabled
+            if (gameState.settings?.autoSave && typeof saveGameState === 'function') saveGameState();
         };
 
         // --- Visual confirmation modal ---

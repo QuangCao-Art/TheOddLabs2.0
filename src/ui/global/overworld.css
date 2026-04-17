@@ -1821,8 +1821,15 @@
 }
 
 @keyframes modalSectionFade {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .reward-chip-line {
@@ -1864,12 +1871,15 @@
     background: rgba(0, 243, 255, 0.05) !important;
     border: 1px solid rgba(0, 243, 255, 0.2) !important;
     border-radius: 4px !important;
-    overflow: hidden;
+    /* Removed overflow: hidden to allow the level-up glow to burst outward */
+    overflow: visible !important;
 }
 
 .quest-modal-bar .exp-bar-fill {
     border: none !important;
     box-shadow: 0 0 10px rgba(0, 243, 255, 0.3) !important;
+    /* GPU promotion for smoother flash animations */
+    will-change: filter, transform, box-shadow;
 }
 
 /* FLOATING EXP ANIMATION (Refined Battle Style) */
@@ -1906,7 +1916,7 @@
     }
 }
 
-/* LEVEL UP PULSE EFFECT */
+/* LEVEL UP PULSE EFFECT (Container) */
 .exp-bar-pulse {
     animation: exp-pulse-glow 0.5s ease-out 1;
 }
@@ -1914,13 +1924,14 @@
 @keyframes exp-pulse-glow {
     0% {
         box-shadow: 0 0 0px var(--neon-cyan);
-        filter: brightness(0.5);
+        filter: brightness(1.0);
+        /* Changed from 0.5 to 1.0 to prevent dark flicker */
     }
 
     50% {
         box-shadow: 0 0 30px var(--neon-cyan), 0 0 60px var(--neon-cyan);
         transform: scale(1.01);
-        filter: brightness(1.2);
+        filter: brightness(1.3);
     }
 
     100% {
@@ -1928,6 +1939,36 @@
         filter: brightness(1);
     }
 }
+
+
+
+/* UNIFIED CONTAINER-LEVEL FLASH */
+.exp-section-flash {
+    animation: exp-section-flash-neon 0.5s ease-out 1 !important;
+}
+
+@keyframes exp-section-flash-neon {
+    0% {
+        box-shadow: 0 0 0px var(--neon-cyan);
+        filter: brightness(1) contrast(1);
+        transform: scale(1);
+    }
+
+    25% {
+        /* Massive Unified Neon Glow */
+        box-shadow: 0 0 30px #ffffff, 0 0 60px var(--neon-cyan), 0 0 90px var(--neon-cyan) !important;
+        filter: brightness(1.3) contrast(1.1);
+        transform: scale(1.01);
+    }
+
+    100% {
+        box-shadow: 0 0 0px var(--neon-cyan);
+        filter: brightness(1);
+        transform: scale(1);
+    }
+}
+
+
 
 .quest-complete-panel .pickup-hint {
     margin-bottom: 20px;

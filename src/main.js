@@ -531,6 +531,10 @@ window.runExpAnimationSequence = (config) => {
     rgLabel.textContent = `RESEARCH GRADE ${initialLevel}`;
 
     const animateStep = (currExp, currLevel, remaining) => {
+        // Reset label styles to base state at the start of each step
+        rgLabel.style.color = '';
+        rgLabel.style.textShadow = '';
+
         const floor = getExpReqForLevel(currLevel);
         const cap = getExpReqForLevel(currLevel + 1);
         const distToCap = cap - currExp;
@@ -542,7 +546,10 @@ window.runExpAnimationSequence = (config) => {
             expVal.textContent = `${cap - floor} / ${cap - floor}`;
 
             setTimeout(() => {
-                expSection.classList.add('exp-bar-pulse');
+                expSection.classList.remove('exp-section-flash');
+                void expSection.offsetWidth; 
+                expSection.classList.add('exp-section-flash');
+
                 if (typeof showLevelUpNotification === 'function') {
                     showLevelUpNotification(currLevel + 1);
                 }
@@ -554,13 +561,16 @@ window.runExpAnimationSequence = (config) => {
 
                 setTimeout(() => {
                     expSection.classList.remove('exp-bar-pulse');
+                    expFill.classList.remove('exp-bar-flash');
                     expFill.style.transition = 'none';
                     expFill.style.width = '0%';
                     const nextFloor = getExpReqForLevel(currLevel + 1);
                     const nextCap = getExpReqForLevel(currLevel + 2);
                     expVal.textContent = `0 / ${nextCap - nextFloor}`;
-                    animateStep(cap, currLevel + 1, remaining - distToCap);
-                }, 1000);
+                    
+                    // Reset to 0ms delay for the recursive call to keep the flow moving
+                    requestAnimationFrame(() => animateStep(cap, currLevel + 1, remaining - distToCap));
+                }, 550); // Reduced from 1000ms to allow smoother transitions after the 0.4s flash
             }, 850);
         } else {
             // Final Fill case
@@ -676,14 +686,17 @@ window.showQuestCompleteModal = (questId, onClose) => {
     function close() {
         if (!inputReady) return;
 
-        // Grant Rewards officially
-        window.grantExperience(questExpGained, true);
-        window.changeResource('lc', creditsGained);
-        window.changeResource('bm', biomassGained);
-
         window.hideWithFade(modal);
         window.removeEventListener('keydown', keyHandler);
-        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
+        
+        // --- UNIVERSAL RESUME: Engine must be running and all interaction flags cleared ---
+        if (typeof Overworld !== 'undefined') {
+            Overworld.isPaused = false;
+            Overworld.resetStates(); // Clear stuck flags (isDialogueActive, isTransitioning, etc.)
+            Overworld.startLoop();
+            requestAnimationFrame(() => Overworld.updatePlayerPosition());
+        }
+
         if (onClose) onClose();
     }
 
@@ -5058,6 +5071,7 @@ function showGameOver(isFailure, forceOverlay = false) {
             
             window.hideWithFade(overlay);
             showScreen('screen-overworld');
+            if (gameState.settings?.autoSave && typeof saveGameState === 'function') saveGameState();
 
             // --- UNIVERSAL RESUME: Engine must be running for both Outcomes ---
             if (typeof Overworld !== 'undefined') {
