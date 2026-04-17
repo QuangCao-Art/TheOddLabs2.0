@@ -3799,38 +3799,9 @@ function renderInventory() {
     }
 
     // 4. Update and Populate Quests
-    syncMainQuest();
     renderQuestMenu();
 }
 
-function syncMainQuest() {
-    const flags = gameState.storyFlags;
-    const logCount = gameState.logs ? gameState.logs.length : 0;
-    let stage = 'initialization';
-
-    if (flags.capsainBattleDone) {
-        stage = 'spicy_origin';
-    } else if (flags.dyzesBattleDone) {
-        stage = 'executive_truth';
-    } else if (flags.lanaBattleDone) {
-        stage = 'osmotic_revelations';
-    } else if (flags.jenziAtriumBattleDone) {
-        stage = 'botanic_secrets';
-    } else if (flags.jenziAtriumUnlocked) {
-        stage = 'atrium_archive';
-    } else if (flags.jenziFirstBattleDone) {
-        stage = 'atrium_threshold';
-    } else if (flags.starterChosen) {
-        stage = 'first_duel';
-    }
-
-    // Always keep the main story sync'd
-    gameState.quests['main_story'] = {
-        id: 'main_story',
-        stage: stage,
-        status: 'active'
-    };
-}
 
 function renderQuestMenu() {
     const questList = document.getElementById('inventory-quest-list');
@@ -3839,15 +3810,14 @@ function renderQuestMenu() {
     let visualIndex = 0;
 
     const quests = gameState.quests;
-    const mainQuest = quests['main_story'];
 
-    // Filter out main_story from side quests
-    const activeQuests = Object.keys(quests).filter(id => id !== 'main_story' && quests[id].status !== 'finished');
-    const completedQuests = Object.keys(quests).filter(id => id !== 'main_story' && quests[id].status === 'finished');
+    // Filter out side quests
+    const activeQuests = Object.keys(quests).filter(id => quests[id].status !== 'finished');
+    const completedQuests = Object.keys(quests).filter(id => quests[id].status === 'finished');
 
-    // 1. Render Main Narrative Diary
-    if (mainQuest && MAIN_QUEST_LOGS[mainQuest.stage]) {
-        const mData = MAIN_QUEST_LOGS[mainQuest.stage];
+    // 1. Render Main Narrative Diary (Driven by StoryManager)
+    const mData = StoryManager.getCurrentObjective();
+    if (mData) {
         const header = document.createElement('div');
         header.className = 'quest-category-header main-narrative';
         header.innerText = 'RESEARCH DIARY';
@@ -3964,7 +3934,7 @@ function renderQuestMenu() {
     renderCategory('ACTIVE MISSIONS', activeQuests);
     renderCategory('COMPLETED ARCHIVE', completedQuests);
 
-    if (!mainQuest && activeQuests.length === 0 && completedQuests.length === 0) {
+    if (!mData && activeQuests.length === 0 && completedQuests.length === 0) {
         questList.innerHTML = '<div class="empty-state">No missions initialized. Consult with laboratory staff for assignments.</div>';
     }
 }

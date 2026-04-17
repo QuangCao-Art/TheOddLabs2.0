@@ -325,7 +325,7 @@ export const Overworld = {
             const progressObj = gameState.quests[questId];
             const questData = QUESTS[questId];
 
-            if (progressObj.status === 'started' && questData.type === type && (questData.target === id || questData.target === templateName || questData.target === 'any')) {
+            if (progressObj.status === 'started' && questData.type === type && (this.isQuestTargetMatch(questData.target, { id: id }) || questData.target === templateName || questData.target === 'any')) {
                 // If the quest specifies a targetType (e.g., 'npc'), verify the kicked object matches
                 if (questData.targetType && objectType && questData.targetType !== objectType) {
                     return; // Skip if types don't match
@@ -384,8 +384,8 @@ export const Overworld = {
                 processReward(reward);
             }
             // --- NEW: Story Stage Advancement ---
-            if (questData.advancesStoryStage) {
-                StoryManager.advanceStage();
+            if (questData.advancesStoryStage || questData.targetStoryStage !== undefined) {
+                StoryManager.advanceStage(questData.targetStoryStage);
             }
 
             // Ensure state is persisted after granting rewards if auto-save is enabled
@@ -441,13 +441,13 @@ export const Overworld = {
      */
     async relocateNPC(npcId, x, y, zoneId = null, direction = null, useFade = true) {
         const targetZone = zoneId || this.currentZone;
-        
+
         const performMove = () => {
             if (!window.gameState.npcRelocations) window.gameState.npcRelocations = {};
             window.gameState.npcRelocations[npcId] = { x, y, zoneId: targetZone, direction };
-            
+
             if (window.gameState.settings?.autoSave) saveGameState();
-            
+
             // Re-render the map to apply the change visually if in the same zone
             if (this.currentZone === targetZone) {
                 this.renderMap(this.currentZone);
@@ -500,7 +500,7 @@ export const Overworld = {
      */
     renderMap(zoneId, forceSpawn = false, targetX = null, targetY = null) {
         let id = zoneId || this.currentZone || 'lobby';
-        
+
         // Migration support for renamed zones
         if (id === 'theTree') id = 'witheredTree';
 
@@ -517,7 +517,7 @@ export const Overworld = {
             console.error(`Zone ID "${id}" not found in Overworld.zones. Falling back to lobby.`);
             return this.renderMap('lobby', true);
         }
-        
+
         // --- NEW: Apply dynamic map patches based on gameState ---
         this.applyMapPatches(id, zone);
 
@@ -658,7 +658,7 @@ export const Overworld = {
             const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
             // Inclusion: Kickables, Wild Monsters, AND Breakables
             const isInteractable = (obj.temp === true || (obj.id && obj.id.includes('_wild_')) || (meta && (meta.kickable === true || meta.breakable === true)));
-            
+
             if (isInteractable && !obj.isKicking) {
                 const dirMap = {
                     'up': { dx: 0, dy: -1 },
@@ -764,7 +764,7 @@ export const Overworld = {
             }
             template = bestTemplate;
             foundTile = bestCandidate;
-            
+
             // AUTO-SYNC: If we found a template via search, lock it to the object 
             // to ensure its partners share the same origin next frame.
             if (template && !obj.templateName) {
@@ -1847,19 +1847,19 @@ export const Overworld = {
         if (!targetId || !npc || !npc.id) return false;
         const normalizedTarget = String(targetId).toLowerCase();
         const normalizedNpcId = String(npc.id).toLowerCase();
-        
+
         // Match if: 
         // 1. Exact match
         // 2. NPC starts with target (e.g., lana_moved starts with lana)
         // 3. Target starts with NPC (e.g., dyzes_boss starts with dyzes)
-        return (normalizedNpcId === normalizedTarget) || 
-               (normalizedNpcId.startsWith(normalizedTarget)) ||
-               (normalizedTarget.startsWith(normalizedNpcId));
+        return (normalizedNpcId === normalizedTarget) ||
+            (normalizedNpcId.startsWith(normalizedTarget)) ||
+            (normalizedTarget.startsWith(normalizedNpcId));
     },
 
     startNPCInteraction(npcOrId, isFailure = false, isPostBattle = false) {
         const bossWon = isPostBattle ? !isFailure : false;
-        
+
         let npc = npcOrId;
         if (typeof npcOrId === 'string') {
             const zone = this.zones[this.currentZone];
@@ -1902,7 +1902,7 @@ export const Overworld = {
 
         const logs = this.logsCollected.length;
         let lines = ["..."];
-        this.pendingBattleEncounter = null; 
+        this.pendingBattleEncounter = null;
 
         // --- PHASE 1: SYSTEMATIC QUEST RESOLVER ---
         if (window.gameState && window.gameState.quests) {
@@ -1929,11 +1929,11 @@ export const Overworld = {
                     const qData = QUESTS[qId];
                     if (!qData) continue;
                     const qProgress = window.gameState.quests[qId];
-                    
+
                     if (qData.requiredFlag && !window.gameState.storyFlags[qData.requiredFlag]) continue;
                     if (qData.requiredItem) {
                         const hasReq = (window.gameState.items || []).some(i => String(i).toLowerCase() === String(qData.requiredItem).toLowerCase()) ||
-                                       (window.gameState.logs || []).some(l => String(l).toLowerCase() === String(qData.requiredItem).toLowerCase());
+                            (window.gameState.logs || []).some(l => String(l).toLowerCase() === String(qData.requiredItem).toLowerCase());
                         if (!hasReq) continue;
                     }
                     if (qData.requiredRG && (window.gameState.profiles.player.level || 0) < qData.requiredRG) continue;
@@ -1975,14 +1975,14 @@ export const Overworld = {
                 if (!qProgress) {
                     const targetId = String(qData.target).toLowerCase();
                     const hasTarget = (window.gameState.items || []).some(i => String(i).toLowerCase() === targetId) ||
-                                       (window.gameState.logs || []).some(l => String(l).toLowerCase() === targetId);
+                        (window.gameState.logs || []).some(l => String(l).toLowerCase() === targetId);
 
-                    window.gameState.quests[qId] = { 
-                        status: 'started', 
-                        progress: hasTarget ? 1 : 0, 
-                        offerSeen: true 
+                    window.gameState.quests[qId] = {
+                        status: 'started',
+                        progress: hasTarget ? 1 : 0,
+                        offerSeen: true
                     };
-                    
+
                     if (gameState.settings?.autoSave) saveGameState();
 
                     let offerLines = qData.dialogue.offer;
@@ -1998,7 +1998,7 @@ export const Overworld = {
                     this.showDialogue(npc.name, offerLines, npc.id);
 
                     // If offering a defeat quest and requirements are already met, trigger battle immediately
-                    if (offerLines === qData.dialogue.offer_completed && qData.type === 'defeat' && qData.target === npc.id) {
+                    if (offerLines === qData.dialogue.offer_completed && qData.type === 'defeat' && this.isQuestTargetMatch(qData.target, npc)) {
                         this.pendingBattleEncounter = qData.target;
                     }
 
@@ -2024,7 +2024,7 @@ export const Overworld = {
                     qProgress.status = 'finished';
                     window.dispatchEvent(new CustomEvent('quest-updated'));
                     if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
-                    
+
                     if (qData.consume && qData.type === 'collect') {
                         const idx = window.gameState.items.indexOf(qData.target);
                         if (idx > -1) window.gameState.items.splice(idx, 1);
@@ -2046,7 +2046,7 @@ export const Overworld = {
                     } else if (qData.type === 'collect') {
                         const targetId = String(qData.target).toLowerCase();
                         readyNow = (window.gameState.items || []).some(i => String(i).toLowerCase() === targetId) ||
-                                   (window.gameState.logs || []).some(l => String(l).toLowerCase() === targetId);
+                            (window.gameState.logs || []).some(l => String(l).toLowerCase() === targetId);
                     }
 
                     if (readyNow) {
@@ -2074,18 +2074,18 @@ export const Overworld = {
                     if (Array.isArray(pLines)) {
                         pLines = pLines.map(l => l.replace('{progress}', qProgress.progress).replace('{amount}', qData.amount));
                     }
-                    
+
                     // Systematic Battle Trigger for Defeat Quests
                     // Only trigger if NOT already in a post-battle interaction
                     if (!isPostBattle && qData.type === 'defeat' && this.isQuestTargetMatch(qData.target, npc)) {
                         if (!qData.requiredLogs || logs >= qData.requiredLogs) {
                             this.pendingBattleEncounter = qData.target;
-                            
+
                             // If requirement is met, prioritize offer_completed lines over progress lines
                             if (qData.dialogue.offer_completed) {
                                 pLines = qData.dialogue.offer_completed;
                             }
-                            
+
                             this.showDialogue(npc.name, pLines, npc.id);
                             return;
                         }
@@ -2126,12 +2126,12 @@ export const Overworld = {
 
         // --- PHASE 4: NARRATIVE ENGINE LOOKUP ---
         const scriptData = NPC_SCRIPTS[npc.id];
-        
+
         if (scriptData && (lines.length === 1 && lines[0] === "...")) {
             // 4.1 Priority: Declarative Stage-Based Dialogue
             if (scriptData.stages && scriptData.stages[window.gameState.storyStage]) {
                 const stageData = scriptData.stages[window.gameState.storyStage];
-                
+
                 // --- Post-Battle Narrative Overrides ---
                 if (isPostBattle && stageData.postBattle) {
                     const pb = stageData.postBattle;
@@ -2168,19 +2168,19 @@ export const Overworld = {
                 isBattleDone,
                 logs
             };
-            
+
             const result = scriptData.getScript(window.gameState, this, params);
-            
+
             if (result) {
                 if (result.lines) lines = result.lines;
                 if (result.pendingBattleEncounter) this.pendingBattleEncounter = result.pendingBattleEncounter;
-                
+
                 // Handle Script Triggers (Story Flags)
                 if (result.triggers && Array.isArray(result.triggers)) {
                     result.triggers.forEach(flag => {
                         window.gameState.storyFlags[flag] = true;
                     });
-                    
+
                     // Special case: If a script trigger unlocks a sector, we re-render the map
                     const mapUpdateFlags = ['botanicSectorUnlocked', 'humanWardUnlocked', 'executiveSuiteUnlocked', 'jenziFirstBattleDone'];
                     if (result.triggers.some(f => mapUpdateFlags.includes(f))) {
@@ -2753,7 +2753,7 @@ export const Overworld = {
                 // Allow a small buffer for randomness among top-tier spots
                 bestTiles = candidates.filter(c => c.score >= maxScore - 1);
             }
-            
+
             const floorTiles = bestTiles; // Compatibility with legacy variable name below
 
             if (floorTiles.length === 0) {
@@ -2910,7 +2910,7 @@ export const Overworld = {
         if (template && obj.type === 'prop') {
             const transformedTiles = template.tiles;
             const part = transformedTiles.find(t => t.id === prefix);
-            
+
             if (part) {
                 const rootX = obj.x - (part.relX || 0);
                 const rootY = obj.y - (part.relY || 0);
@@ -3076,7 +3076,7 @@ export const Overworld = {
             const suffixMatch = obj.id.match(/_([a-zA-Z0-9]+)$/);
             const suffix = suffixMatch ? suffixMatch[1] : null;
             const partners = suffix ? zone.objects.filter(o => o.id.endsWith(`_${suffix}`)) : [obj];
-            
+
             const tKey = obj.templateName || Object.keys(window.FURNITURE_TEMPLATES).find(k => window.FURNITURE_TEMPLATES[k] === template);
 
             partners.forEach(p => {
@@ -3085,7 +3085,7 @@ export const Overworld = {
                     // Lock the templateName to partners so they share the exact same pivot origin
                     if (!p.templateName && tKey) {
                         p.templateName = tKey;
-                        
+
                         // Update Origin logic (replacing redundant renderObject call that caused ghosts)
                         const pMeta = this.getFurnitureMeta(p.id, p.customSprite);
                         const pTemplate = window.FURNITURE_TEMPLATES[p.templateName || (pMeta && pMeta.template)];
@@ -3104,11 +3104,11 @@ export const Overworld = {
                             }
                         }
                     }
-                    
+
                     pEl.classList.remove('anim-monster-kick');
                     void pEl.offsetWidth; // Trigger reflow
                     pEl.classList.add('anim-monster-kick');
-                    
+
                     // Clear animation after it finishes to allow subsequent kicks
                     setTimeout(() => { if (pEl) pEl.classList.remove('anim-monster-kick'); }, 300);
                 }
@@ -3220,7 +3220,7 @@ export const Overworld = {
         for (const p of oldParts) {
             const prefix = p.id.split('_')[0];
             const tKeySearch = p.templateName || sourceTemplateName;
-            
+
             // Search specifically for the parts of this template (or its predecessor)
             for (const tKey in window.FURNITURE_TEMPLATES) {
                 if (tKeySearch && tKey !== tKeySearch) continue; // Optimization: Skip irrelevant templates
@@ -3294,7 +3294,7 @@ export const Overworld = {
                 if (debrisMeta && (debrisMeta.kickable !== false || debrisMeta.breakable === true)) {
                     // Small delay to allow the debris to actually render before launching it
                     setTimeout(() => {
-                        const dirMap = { 'up': { dx: 0, dy: -1 }, 'down': { dx: 0, dy: 1 }, 'left': { dx: -1, dy: 0 }, 'right': { dx: 1, dy: 0 }};
+                        const dirMap = { 'up': { dx: 0, dy: -1 }, 'down': { dx: 0, dy: 1 }, 'left': { dx: -1, dy: 0 }, 'right': { dx: 1, dy: 0 } };
                         const push = dirMap[this.player.direction] || { dx: 0, dy: 1 };
                         this.kickObject(newObj, push.dx, push.dy, true);
                     }, 50);

@@ -1,3 +1,5 @@
+import { STORY_STAGES } from '../../engine/state.js';
+
 /**
  * MAIN_QUESTS: Story-critical progression tasks.
  * These drive the narrative forward and often unlock new sectors.
@@ -19,7 +21,7 @@ export const MAIN_QUEST_DATA = {
         },
         requiredFlag: 'jenziFirstBattleDone',
         onCompleteFlag: 'jenziAtriumUnlocked',
-        advancesStoryStage: true,
+        targetStoryStage: STORY_STAGES.TUTORIAL_DONE,
         consume: false,
         dialogue: {
             offer: [
@@ -55,7 +57,7 @@ export const MAIN_QUEST_DATA = {
         requiredLogs: 5,
         requiredFlag: 'jenziAtriumUnlocked',
         onCompleteFlag: 'botanicSectorUnlocked',
-        advancesStoryStage: true,
+        targetStoryStage: STORY_STAGES.BOTANIC_UNLOCKED,
         reward: { type: 'resource', id: 'credits', amount: 500 },
         dialogue: {
             offer: [
@@ -92,7 +94,7 @@ export const MAIN_QUEST_DATA = {
         requiredLogs: 10,
         requiredFlag: 'botanicSectorUnlocked',
         onCompleteFlag: 'lanaBattleDone',
-        advancesStoryStage: true,
+        targetStoryStage: STORY_STAGES.LANA_DONE,
         reward: { type: 'item', id: 'Quest01' },
         dialogue: {
             offer: [
@@ -125,7 +127,7 @@ export const MAIN_QUEST_DATA = {
         requiredLogs: 15,
         requiredFlag: 'lanaBattleDone',
         onCompleteFlag: 'dyzesBattleDone',
-        advancesStoryStage: true,
+        targetStoryStage: STORY_STAGES.DYZES_DONE,
         reward: { type: 'item', id: 'Quest03' },
         dialogue: {
             offer: [
@@ -161,7 +163,7 @@ export const MAIN_QUEST_DATA = {
         requiredLogs: 20,
         requiredFlag: 'dyzesBattleDone',
         onCompleteFlag: 'capsainBattleDone',
-        advancesStoryStage: true,
+        targetStoryStage: STORY_STAGES.CAPSAIN_DONE,
         reward: { type: 'item', id: 'Quest02' },
         dialogue: {
             offer: [
@@ -194,7 +196,7 @@ export const MAIN_QUEST_DATA = {
         amount: 1,
         requiredFlag: 'capsainBattleDone',
         onCompleteFlag: 'gameEndTriggered',
-        advancesStoryStage: true,
+        targetStoryStage: STORY_STAGES.CLEARED,
         reward: { type: 'resource', id: 'credits', amount: 5000 },
         dialogue: {
             offer: [
@@ -236,6 +238,11 @@ export const MAIN_QUEST_LOGS = {
         objective: 'Retrieve Log #001 from Specimen Storage.',
         narrative: 'Phew, what a test. The Atrium doors are still locked, and Jenzi is playing coy. She hinted that someone dropped a datapad near the specimen tanks in this wing. I need to find it.'
     },
+    3: { // ATRIUM_UNLOCKED
+        title: '[MAIN] THE ATRIUM ACCESS',
+        objective: 'Speak with Jenzi in the Lobby.',
+        narrative: 'The security lock on the Atrium door has been reset. Jenzi has the key, but she\'s not just going to hand it over. I need to speak with her and see what her next \'test\' is.'
+    },
     // Stage 3 (ATRIUM_UNLOCKED) is transitional
     4: { // ATRIUM_QUEST
         title: '[MAIN] ATRIUM ARCHIVE',
@@ -261,5 +268,10 @@ export const MAIN_QUEST_LOGS = {
         title: '[MAIN] THE SPICY ORIGIN',
         objective: 'Locate the Origin Nitrophil in the Old Lab.',
         narrative: 'Capsain is down. He gave me a bottle of \'Inferno Sauce\' and looked like his world was ending. The secret is in the basement—the Old Lab. I\'m going to find the \'Origin.\' If the legend is true, this whole facility was built on a beautiful, spicy accident.'
+    },
+    9: { // CLEARED
+        title: '[MAIN] THE SPICY LEGACY',
+        objective: 'The Origin has been found.',
+        narrative: 'The truth about Odd Labs is finally out. From the spicy accidental synthesis to the \'Noodle Review\' security gaps... it was never a corporate conspiracy, just a very, very motivated Director and his love for chili sauce. The Lab is safe, and the Nitrophils are finally at peace.'
     }
 };

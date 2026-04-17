@@ -22,8 +22,8 @@ This workflow guides you through the process of adding a new Quest to the game u
 [Amount]: (Number required)
 [Required Flag]: (Optional - e.g., jenziFirstBattleDone)
 [Completion Flag]: (Optional - Set when finished, e.g., atriumUnlocked)
-[Advances Story Stage]: (Boolean - REQUIRED for main quests to move the Narrative Engine)
-[Required Logs]: (Optional - For defeat quests that require a certain log count)
+[Advances Story Stage]: (Boolean - REQUIRED for main quests. Automatically increments Story Stage and triggers Research Diary sync)
+[Required Logs]: (Optional - For quests that require a certain log count. Automatically renders as 'LOGS: X/Y' in the Quest Menu HUD)
 [Reward]: { type: 'item', id: 'ITEM_ID' } OR { type: 'resource', amount: 500 } OR { type: 'relocate', npcId: 'npc_id', x: 10, y: 15, zoneId: 'zone_id', direction: 'down', useFade: true }
 [Time Limit]: (Optional - In seconds. Triggers Timed Quest Logic)
 
@@ -67,8 +67,8 @@ Add the quest definition to the appropriate registry in `src/data/quests/`:
     timeLimit: 60,     // Optional: Triggers Timed Quest Logic
     requiredFlag: 'prerequisite_flag', // Must be true in gameState.storyFlags
     onCompleteFlag: 'result_flag',     // Set to true automatically on completion
-    advancesStoryStage: true,          // Central logic for Main Quest progression
-    requiredLogs: 5,                   // For defeat quests (Systematic check)
+    advancesStoryStage: true,          // Increments Story Stage and updates Research Diary
+    requiredLogs: 5,                   // Displays 'LOGS: X/5' in Quest UI
     reward: { type: 'resource', amount: 500 },
     // OR relocation reward:
     // reward: { type: 'relocate', npcId: 'jenzi', x: 10, y: 14, zoneId: 'atrium', direction: 'down', useFade: true },
@@ -106,6 +106,24 @@ If a `timeLimit` is provided:
 2. **Input Locks**: 'R' (Menu) and 'F' (Interact) are locked.
 3. **Failure**: On timeout, the `failed` dialogue triggers automatically. The player then teleports back to the NPC and can retry via the `retry` dialogue.
 
+### 📔 Research Diary Synchronization
+For Main Quests that use `advancesStoryStage: true`, you **MUST** ensure the Research Diary is updated to match the new story stage.
+
+1. **Location**: [main.js - MAIN_QUEST_LOGS](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/quests/main.js)
+2. **Key**: Use the **Numeric Story Stage** (0, 1, 2...) as the key.
+3. **Logic**: The Quest Menu doesn't look for the Quest ID; it looks for the entry matching the *current* `gameState.storyStage`.
+4. **Tone**: Write entries in the first-person "Intern's Diary" style to reflect the character's perspective.
+
+```javascript
+export const MAIN_QUEST_LOGS = {
+    4: { // ATRIUM_QUEST Stage
+        title: '[MAIN] THE ATRIUM PROOF',
+        objective: 'Collect 5 DataLogs and challenge Jenzi.',
+        narrative: 'Jenzi says I need to prove I can handle the higher-security zones...'
+    }
+}
+```
+
 ---
 
 ### 🎭 Narrative Engine Handover
@@ -126,10 +144,11 @@ For NPCs with complex roles (Jenzi, Lana, etc.), their core interaction logic is
 ### 🤺 NPC Duel (Defeat Quest) Special Logic
 When the `Quest Type` is `defeat` and the `Target ID` is the NPC themselves (a Duel):
 1. **Engine Automation**: The `Overworld` engine systematically triggers the battle if a `defeat` quest is in progress and `requiredLogs` are met. You **do not** need to manually define battle triggers in NPC scripts for these quests.
-2. **Dialogue Handling**: 
-    - Use `offer_completed` for the invitation to fight if requirements are met immediately.
-    - Use `complete` for the post-victory dialogue and reward acquisition.
-    - Narrative stages in `npc_dialogues.js` can provide flavor text `beforeBattle` if no quest is active.
+2. **Dialogue Handling (Offer Completed)**: 
+    - **MANDATORY**: Always include `offer_completed` for Duel quests.
+    - **The Hype**: This dialogue triggers the moment the player meets the requirements (e.g., has 5/5 Logs). It acts as the "Pre-Battle Hype" or "Challenge Accepted" line.
+    - **Failure**: If `offer_completed` is missing, the NPC will default to their `progress` line (often sounding disappointed) right before starting the epic duel.
+3. **Completion**: Use `complete` for the post-victory dialogue and reward acquisition.
 
 ### ⚠️ Quest Integrity Checklist
 - [ ] **Priority Check**: Is the highest priority quest listed FIRST in the NPC's `quests` array?
