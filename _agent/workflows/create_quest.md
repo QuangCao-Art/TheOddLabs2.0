@@ -2,7 +2,7 @@
 description: Create a New Quest (Main or Side)
 ---
 
-This workflow guides you through the process of adding a new Quest to the game using the **Unified, Data-Driven Quest Engine**. This system handles both main story progression and optional side quests through a centralized registry.
+This workflow guides you through the process of adding a new Quest to the game using the **Modular Quest Engine**. This system handles all game progression, narrative beats, and world unlocks through a centralized, task-based registry.
 
 > [!NOTE]
 > **Related Workflows**:
@@ -21,8 +21,7 @@ This workflow guides you through the process of adding a new Quest to the game u
 [Target ID]: (monster_id, item_id, npc_id, or FURNITURE_TEMPLATE)
 [Amount]: (Number required)
 [Required Flag]: (Optional - e.g., jenziFirstBattleDone)
-[Completion Flag]: (Optional - Set when finished, e.g., atriumUnlocked)
-[Advances Story Stage]: (Boolean - REQUIRED for main quests. Automatically increments Story Stage and triggers Research Diary sync)
+ [Completion Flag]: (Optional - Sets a storyFlag automatically, e.g., 'lanaBattleDone')
 [Required Logs]: (Optional - For quests that require a certain log count. Automatically renders as 'LOGS: X/Y' in the Quest Menu HUD)
 [Reward]: { type: 'item', id: 'ITEM_ID' } OR { type: 'resource', amount: 500 } OR { type: 'relocate', npcId: 'npc_id', x: 10, y: 15, zoneId: 'zone_id', direction: 'down', useFade: true }
 [Time Limit]: (Optional - In seconds. Triggers Timed Quest Logic)
@@ -50,9 +49,8 @@ This workflow guides you through the process of adding a new Quest to the game u
 > | **5** | **Minimum Viable Edit** | Stick as close to original wording as possible. Only alter for clarity and grammar. |
 
 ### 1. Register Quest in Data Files
-Add the quest definition to the appropriate registry in `src/data/quests/`:
-- **Main Quests**: [main.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/quests/main.js) (Exported as `MAIN_QUEST_DATA`)
-- **Side Quests**: [side.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/quests/side.js) (Exported as `SIDE_QUEST_DATA`)
+Add the quest definition to the **Central Quest Registry**:
+- **Location**: [quest_data.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/quests/quest_data.js) (Exported as `QUEST_DATA`)
 
 **Example Structure**:
 ```javascript
@@ -67,9 +65,8 @@ Add the quest definition to the appropriate registry in `src/data/quests/`:
     timeLimit: 60,     // Optional: Triggers Timed Quest Logic
     requiredFlag: 'prerequisite_flag', // Must be true in gameState.storyFlags
     onCompleteFlag: 'result_flag',     // Set to true automatically on completion
-    advancesStoryStage: true,          // Increments Story Stage and updates Research Diary
     requiredLogs: 5,                   // Displays 'LOGS: X/5' in Quest UI
-    reward: { type: 'resource', amount: 500 },
+    reward: { type: 'flag', id: 'doorUnlocked' }, // NEW: Directly change world state
     // OR relocation reward:
     // reward: { type: 'relocate', npcId: 'jenzi', x: 10, y: 14, zoneId: 'atrium', direction: 'down', useFade: true },
     dialogue: {
@@ -106,38 +103,18 @@ If a `timeLimit` is provided:
 2. **Input Locks**: 'R' (Menu) and 'F' (Interact) are locked.
 3. **Failure**: On timeout, the `failed` dialogue triggers automatically. The player then teleports back to the NPC and can retry via the `retry` dialogue.
 
-### 📔 Research Diary Synchronization
-For Main Quests that use `advancesStoryStage: true`, you **MUST** ensure the Research Diary is updated to match the new story stage.
-
-1. **Location**: [main.js - MAIN_QUEST_LOGS](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/quests/main.js)
-2. **Key**: Use the **Numeric Story Stage** (0, 1, 2...) as the key.
-3. **Logic**: The Quest Menu doesn't look for the Quest ID; it looks for the entry matching the *current* `gameState.storyStage`.
-4. **Tone**: Write entries in the first-person "Intern's Diary" style to reflect the character's perspective.
-
-```javascript
-export const MAIN_QUEST_LOGS = {
-    4: { // ATRIUM_QUEST Stage
-        title: '[MAIN] THE ATRIUM PROOF',
-        objective: 'Collect 5 DataLogs and challenge Jenzi.',
-        narrative: 'Jenzi says I need to prove I can handle the higher-security zones...'
-    }
-}
-```
-
----
-
 ### 🎭 Narrative Engine Handover
-For NPCs with complex roles (Jenzi, Lana, etc.), their core interaction logic is split between the Quest Engine (tasks) and the Narrative Engine (character personality).
+Character dialogue is split between the **Quest Engine** (structured tasks) and the **Narrative Script** (personality flavor).
 
-| System | Activity State | Source of Dialogue |
-| :--- | :--- | :--- |
-| **Quest Engine** | Quest is Active, Completed, or Failed | Registry files in `src/data/quests/` |
-| **Narrative Engine** | No Quest / Between Quests / Post-Quest | **Stage-Based objects** in `src/data/npc_dialogues.js` |
+| System | Priority | Active State | Source of Dialogue |
+| :--- | :--- | :--- | :--- |
+| **Quest Engine** | **HIGH** | Quest is Active, Completed, or Failed | `src/data/quests/quest_data.js` |
+| **Narrative Script** | **LOW** | No Quest / Post-Quest / Fallback | `src/data/npc_dialogues.js` -> `getScript()` |
 
-**The Bridge (Systematic Handover):**
-1. **Completion**: Set `advancesStoryStage: true` in your quest definition.
-2. **Recognition**: In `src/data/npc_dialogues.js`, add a new entry to the NPC's `stages` object matching the next `STORY_STAGE`.
-3. **Outcome**: The `StoryManager` will automatically increment the stage when the quest reward is given, causing the NPC to immediately switch to their next personality stage.
+**The Modular Flow:**
+1. **Quest Priority**: Use the NPC's `quests` array in their map file to define which tasks they offer and in what order.
+2. **Unlock progression**: Use `reward: { type: 'flag', id: 'X' }` in a quest to unlock doors or satisfy the `requiredFlag` of the *next* quest in the chain.
+3. **Fallback**: If no quest is active, the engine calls the NPC's `getScript()` function for random flavor text or climax-specific monologue.
 
 ---
 
@@ -155,5 +132,5 @@ When the `Quest Type` is `defeat` and the `Target ID` is the NPC themselves (a D
 - [ ] **Flag Safety**: Does the `requiredFlag` exist in `gameState.storyFlags` (or is it planned)?
 - [ ] **Dialogue Type**: Are all dialogue fields **Arrays of Strings**?
 - [ ] **Duel Specifics**: For NPC Duels, are the `offer` and `complete` dialogues the primary focus?
-- [ ] **Diary Entry**: Is the `description` written in the first-person "Intern's Log" style?
+- [ ] **Diary Entry**: Is the `description` clear and concise for the player HUD?
 - [ ] **Post-Quest Text**: Is there a meaningful `finished` dialogue for after the quest is done?
