@@ -7,25 +7,12 @@ const SETTINGS_KEY = 'oddlabs_settings';
 export let FULL_CELL_DEBUG = false;
 export let SKIP_TUTORIAL = false;
 
-// --- STORY STAGES ---
-export const STORY_STAGES = {
-    LOBBY_START: 0,      // Start -> Choose Cell
-    CELL_CHOSEN: 1,      // Cell Chosen -> Tutorial Battle
-    TUTORIAL_DONE: 2,    // Battle Done -> Find Log 001
-    ATRIUM_UNLOCKED: 3,  // Log 001 found -> Talk to Jenzi
-    ATRIUM_QUEST: 4,     // Atrium Door Open -> Collect 5 Logs
-    BOTANIC_UNLOCKED: 5, // Jenzi Boss Defeated -> Heading to Lana
-    LANA_DONE: 6,        // Lana Defeated -> Talk to Jenzi
-    DYZES_DONE: 7,       // Dyzes Defeated -> Talk to Jenzi
-    CAPSAIN_DONE: 8,     // Director Defeated -> Find Old Lab
-    CLEARED: 9           // Game Completed
-};
+// --- STORY STAGES REMOVED (Progression is now Quest-Driven) ---
 
 export const gameState = {
     exp: 0,
     credits: 0,
     biomass: 0,
-    storyStage: STORY_STAGES.LOBBY_START,
     // Team Management
     playerTeam: FULL_CELL_DEBUG ? ['nitrophil', 'lydrosome', 'cambihil'] : [],
     enemyTeam: FULL_CELL_DEBUG ? ['nitrophil', 'cambihil', 'lydrosome'] : [],
@@ -187,7 +174,6 @@ export function saveGameState() {
             currentPresetId: mon.currentPresetId
         } : null),
         storyFlags: gameState.storyFlags,
-        storyStage: gameState.storyStage,
         items: gameState.items,
         logs: gameState.logs,
         unseenLogs: gameState.unseenLogs,
@@ -252,7 +238,6 @@ export function loadGameState() {
             gameState.storyFlags = { ...gameState.storyFlags, ...saved.storyFlags };
         }
         
-        if (saved.storyStage !== undefined) gameState.storyStage = saved.storyStage;
         if (saved.items) gameState.items = [...saved.items];
         if (saved.logs) gameState.logs = [...saved.logs];
         if (saved.unseenLogs) gameState.unseenLogs = [...saved.unseenLogs];
@@ -301,7 +286,6 @@ export function fullResetGameState() {
     gameState.exp = 0;
     gameState.credits = 0;
     gameState.biomass = 0;
-    gameState.storyStage = STORY_STAGES.LOBBY_START;
     
     // Reset teams and Dex
     gameState.playerTeam = [];

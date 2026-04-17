@@ -6,11 +6,10 @@ import { Overworld } from './engine/overworld.js';
 import { CHIPS, LEVEL_REWARDS, NPC_PRESETS, NPC_ENCOUNTERS } from './data/chips.js';
 import { SHOP_ITEMS, shopState } from './data/shop.js';
 import { SYNTHESIS_RECIPES } from './data/synthesis.js';
-import { QUESTS, MAIN_QUEST_LOGS } from './data/quests.js';
+import { QUESTS } from './data/quests.js';
 import { BioExtract } from './ui/bio_extract.js';
 import { BuilderMode } from './engine/builder.js';
 import { FURNITURE_TEMPLATES } from './data/furniture.js';
-import { StoryManager } from './engine/story.js';
 import { AudioManager } from './engine/audio.js';
 
 // Initialize UI Modules
@@ -1040,7 +1039,6 @@ function initStarterSelectionEvents() {
         gameState.profiles.player.chipBox = [`card_${selectedStarterId}`, 'atk_1', 'def_1'];
 
         // Synchronize story stage now that a cell is chosen
-        if (typeof StoryManager !== 'undefined') StoryManager.syncStageFromFlags();
 
         resetGame();
 
@@ -3811,45 +3809,9 @@ function renderQuestMenu() {
 
     const quests = gameState.quests;
 
-    // Filter out side quests
+    // Filter quests
     const activeQuests = Object.keys(quests).filter(id => quests[id].status !== 'finished');
     const completedQuests = Object.keys(quests).filter(id => quests[id].status === 'finished');
-
-    // 1. Render Main Narrative Diary (Driven by StoryManager)
-    const mData = StoryManager.getCurrentObjective();
-    if (mData) {
-        const header = document.createElement('div');
-        header.className = 'quest-category-header main-narrative';
-        header.innerText = 'RESEARCH DIARY';
-        questList.appendChild(header);
-
-        const item = document.createElement('div');
-        item.className = `quest-item main-story active-narrative`;
-        item.innerHTML = `
-            <div class="quest-main">
-                <span class="quest-title">${mData.title}</span>
-                <span class="quest-progress">ACTIVE</span>
-            </div>
-            <div class="quest-desc">${mData.objective}</div>
-        `;
-
-        item.onclick = () => {
-            invNav.itemIndex = 0;
-            updateInvNav(false);
-            const qTitle = mData.title.toUpperCase();
-            const qDesc = `<i style="color: #88ccff; opacity: 0.8;">"${mData.narrative}"</i><br><br><b>CURRENT OBJECTIVE:</b><br>${mData.objective}`;
-            updateDetail(qTitle, qDesc, 'assets/images/Card_Placeholder.png');
-        };
-        item.onmouseenter = () => {
-            invNav.itemIndex = 0;
-            updateInvNav(false);
-            const qTitle = mData.title.toUpperCase();
-            const qDesc = `<i style="color: #88ccff; opacity: 0.8;">"${mData.narrative}"</i><br><br><b>CURRENT OBJECTIVE:</b><br>${mData.objective}`;
-            updateDetail(qTitle, qDesc, 'assets/images/Card_Placeholder.png');
-        };
-        questList.appendChild(item);
-        visualIndex++;
-    }
 
     const renderCategory = (title, ids) => {
         if (ids.length === 0) return;

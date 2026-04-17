@@ -8,7 +8,6 @@ import { AudioManager } from './audio.js';
 import { QUESTS } from '../data/quests.js';
 import { furnitureMetadata } from '../data/furniture.js';
 import { NPC_SCRIPTS } from '../data/npc_dialogues.js';
-import { StoryManager } from './story.js';
 
 // Modular Map Data Imports
 import { lobby } from '../data/maps/lobby.js';
@@ -372,6 +371,11 @@ export const Overworld = {
             } else if (reward.type === 'relocate') {
                 this.relocateNPC(reward.npcId, reward.x, reward.y, reward.zoneId, reward.direction, reward.useFade !== false);
                 msg = `Relocated NPC: ${reward.npcId}.`;
+            } else if (reward.type === 'flag') {
+                if (window.gameState && window.gameState.storyFlags) {
+                    window.gameState.storyFlags[reward.id] = true;
+                    msg = `Set storyFlag: ${reward.id}.`;
+                }
             }
             console.log(`Quest Reward given: ${msg}`);
         };
@@ -382,10 +386,6 @@ export const Overworld = {
                 reward.rewards.forEach(r => processReward(r));
             } else {
                 processReward(reward);
-            }
-            // --- NEW: Story Stage Advancement ---
-            if (questData.advancesStoryStage || questData.targetStoryStage !== undefined) {
-                StoryManager.advanceStage(questData.targetStoryStage);
             }
 
             // Ensure state is persisted after granting rewards if auto-save is enabled
@@ -2124,44 +2124,11 @@ export const Overworld = {
             }
         }
 
-        // --- PHASE 4: NARRATIVE ENGINE LOOKUP ---
+        // --- PHASE 4: NARRATIVE ENGINE LOOKUP (Fallback) ---
         const scriptData = NPC_SCRIPTS[npc.id];
 
         if (scriptData && (lines.length === 1 && lines[0] === "...")) {
-            // 4.1 Priority: Declarative Stage-Based Dialogue
-            if (scriptData.stages && scriptData.stages[window.gameState.storyStage]) {
-                const stageData = scriptData.stages[window.gameState.storyStage];
-
-                // --- Post-Battle Narrative Overrides ---
-                if (isPostBattle && stageData.postBattle) {
-                    const pb = stageData.postBattle;
-                    if (pb.lines) lines = pb.lines;
-                    if (pb.triggers) {
-                        pb.triggers.forEach(flag => {
-                            window.gameState.storyFlags[flag] = true;
-                        });
-                        StoryManager.syncStageFromFlags();
-                    }
-                    this.showDialogue(npc.name, lines, npc.id);
-                    return;
-                }
-
-                if (stageData.lines) lines = stageData.lines;
-                if (stageData.triggers) {
-                    stageData.triggers.forEach(flag => {
-                        window.gameState.storyFlags[flag] = true;
-                    });
-                    // Re-sync stage if flags changed
-                    StoryManager.syncStageFromFlags();
-                }
-                if (stageData.pendingBattleEncounter) {
-                    this.pendingBattleEncounter = stageData.pendingBattleEncounter;
-                }
-                this.showDialogue(npc.name, lines, npc.id);
-                return;
-            }
-
-            // 4.2 Fallback: Legacy Imperative getScript Logic
+            // 4.1 Fallback: Legacy Imperative getScript Logic
             const params = {
                 isPostBattle,
                 bossWon,
