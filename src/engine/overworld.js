@@ -390,6 +390,9 @@ export const Overworld = {
 
             // Ensure state is persisted after granting rewards if auto-save is enabled
             if (gameState.settings?.autoSave && typeof saveGameState === 'function') saveGameState();
+
+            // RE-RENDER: Update visual states (like doors unlocking) immediately after reward is claimed
+            this.renderMap();
         };
 
         // --- Visual confirmation modal ---

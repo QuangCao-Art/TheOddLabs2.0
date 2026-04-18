@@ -14,6 +14,20 @@ export const NPC_SCRIPTS = {
         // Initial onboarding logic for the tutorial selection
         getScript: (gameState, overworld, params) => {
             const { storyFlags } = gameState;
+
+            // 1. Check for Battle Completion (Tutorial ends on any outcome)
+            if (params.isPostBattle && !storyFlags.jenziFirstBattleDone) {
+                const lines = params.bossWon 
+                    ? ["Whew! That was a good warm up! // You've got the basics down, Intern. Let's get to work."] 
+                    : ["Oof, that looked like it hurt... // But hey, a lesson learned is a lesson earned, right? // You've seen enough to get the gist of it."];
+                
+                return {
+                    lines: lines,
+                    triggers: ['jenziFirstBattleDone']
+                };
+            }
+
+            // 2. Initial Onboarding
             if (!storyFlags.starterChosen) {
                 return {
                     lines: [
@@ -24,6 +38,8 @@ export const NPC_SCRIPTS = {
                     pendingBattleEncounter: 'starter_selection'
                 };
             }
+
+            // 3. Challenge to Tutorial Battle
             if (storyFlags.starterChosen && !storyFlags.jenziFirstBattleDone) {
                 return {
                     lines: [
@@ -32,12 +48,7 @@ export const NPC_SCRIPTS = {
                     pendingBattleEncounter: 'jenzi_tutorial'
                 };
             }
-            if (params.isPostBattle && params.bossWon && !storyFlags.jenziFirstBattleDone) {
-                return {
-                    lines: ["Whew! That was a good warm up!"],
-                    triggers: ['jenziFirstBattleDone']
-                };
-            }
+
             return { lines: ["..."] };
         }
     },
@@ -94,7 +105,7 @@ export const NPC_SCRIPTS = {
         getScript: (gameState, overworld, params) => {
             const { storyFlags } = gameState;
             if (params.isPostBattle && !params.bossWon && params.isBattleDone) {
-                 return {
+                return {
                     lines: [
                         "Dismissed. If you can't even handle a basic engagement, you have no business poking around the archives.",
                         "Go back to filing paperwork, Intern."

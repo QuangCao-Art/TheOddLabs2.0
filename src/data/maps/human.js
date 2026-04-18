@@ -23,7 +23,7 @@ export const human = {
         [2,9,9,9,9,9,9,20,9,9,9,9,9,9,3]
     ],
     objects: [
-        { "id": "dyzes", "x": 7, "y": 3, "type": "npc", "name": "Dyzes", "quests": ["quest_main_dyzes_data", "quest_wild_stemmy"] },
+        { "id": "dyzes", "x": 7, "y": 3, "type": "npc", "name": "Dyzes", "quests": ["quest_dyzes_battle", "quest_wild_stemmy"] },
         { "id": "miere", "x": 7, "y": 8, "type": "npc", "name": "Researcher Miere" },
         { "id": "premy", "x": 10, "y": 10, "type": "npc", "name": "Researcher Premy", "battleEncounterId": "premy" },
         { "id": "ecto", "x": 2, "y": 11, "type": "npc", "name": "Researcher Ecto", "battleEncounterId": "ecto" },

@@ -16,14 +16,14 @@ export const QUEST_DATA = {
         reward: { type: 'flag', id: 'jenziAtriumUnlocked' },
         dialogue: {
             offer: [
+                "Hey Intern! You're actually decent! That's a good start.",
                 "Wait, did you see that? Something just flashed over by the specimen tanks.",
                 "Go check if someone dropped something in there.",
                 "Scientists here have the attention span of a goldfish."
             ],
             offer_completed: [
                 "Wait, what do we have here? Did you just pick up that Datapad?",
-                "I swear I saw someone leave it near the red tank a minute ago.",
-                "You're fast, Intern! I like that."
+                "I swear I saw someone leave it near the red tank a minute ago."
             ],
             progress: ["Still looking? It was definitely over near the red tanks."],
             complete: [

@@ -16,7 +16,7 @@ export const executive = {
         [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3, 2, 9, 9, 20, 9, 9, 3]
     ],
     objects: [
-        { "id": "capsain", "x": 7, "y": 4, "type": "npc", "name": "Director Capsain", "quests": ["quest_main_capsain_final"] },
+        { "id": "capsain", "x": 7, "y": 4, "type": "npc", "name": "Director Capsain", "quests": ["quest_capsain_battle", "quest_capsain_truth"] },
         { "id": "anreal", "x": 3, "y": 5, "type": "npc", "name": "Assistant Anreal", "battleEncounterId": "anreal" },
         { "id": "godou", "x": 9, "y": 7, "type": "npc", "name": "Assistant Godou", "battleEncounterId": "godou" },
         { "id": "yunidi", "x": 12, "y": 4, "type": "npc", "name": "Assistant Yunidi", "battleEncounterId": "yunidi" },

@@ -3896,7 +3896,7 @@ function renderQuestMenu() {
     renderCategory('ACTIVE MISSIONS', activeQuests);
     renderCategory('COMPLETED ARCHIVE', completedQuests);
 
-    if (!mData && activeQuests.length === 0 && completedQuests.length === 0) {
+    if (activeQuests.length === 0 && completedQuests.length === 0) {
         questList.innerHTML = '<div class="empty-state">No missions initialized. Consult with laboratory staff for assignments.</div>';
     }
 }
