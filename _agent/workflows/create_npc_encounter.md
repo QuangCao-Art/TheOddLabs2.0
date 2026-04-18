@@ -72,7 +72,12 @@ Ensure the character art/quote is mapped for the pre-battle VS sequence.
 ### 5. Systematic Narrative Logic (NEW)
 Any NPC that requires specific dialogue logic (before battle, after winning, after losing) must be registered in the **Narrative Engine**.
 - **File**: [npc_dialogues.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/npc_dialogues.js)
-- **What to add**: A new `getScript` entry for the NPC ID. This script should handle the `isPostBattle` and `bossWon` parameters.
+- **What to add**: A new `getScript` entry for the NPC ID. 
+
+> [!NOTE]
+> **Parameter Mapping**:
+> - `isPostBattle`: `true` if the interaction happens immediately after a battle.
+> - `bossWon`: `true` means the **BOSS/NPC won** (Player lost). `false` means the **BOSS/NPC lost** (Player won).
 
 ---
 

@@ -1905,7 +1905,7 @@ export const Overworld = {
     },
 
     startNPCInteraction(npcOrId, isFailure = false, isPostBattle = false) {
-        const bossWon = isPostBattle ? !isFailure : false;
+        const bossWon = isPostBattle ? isFailure : false;
 
         let npc = npcOrId;
         if (typeof npcOrId === 'string') {
@@ -2004,7 +2004,7 @@ export const Overworld = {
 
                 // Systematic Post-Battle Win/Loss Handling for Defeat Quests
                 if (isPostBattle && qData.type === 'defeat' && this.isQuestTargetMatch(qData.target, npc)) {
-                    if (bossWon) {
+                    if (!bossWon) {
                         if (qProgress && qProgress.status === 'started') {
                             qProgress.status = 'completed';
                             window.dispatchEvent(new CustomEvent('quest-updated'));

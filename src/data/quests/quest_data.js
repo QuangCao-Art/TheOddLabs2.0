@@ -52,7 +52,8 @@ export const QUEST_DATA = {
         dialogue: {
             offer: [
                 "Looking for more logs? Ohh I know I can count on you.",
-                "Collect 5 logs and defeat me, then I will tell you some fishy stuff.",
+                "You seem more reliable than the other bookheads.",
+                "Collect 5 logs and have a battle with me, then I will tell you some fishy stuff.",
                 "Ooh this is gonna be fun!"
             ],
             offer_completed: [
@@ -533,25 +534,25 @@ export const QUEST_DATA = {
         }
     },
 
-    'quest_pax_maintenance': {
-        id: 'quest_pax_maintenance',
-        title: 'Lobby Maintenance Fund',
-        description: "Contribute 50 Lab Credits to help fixing the lobby's flickering neon lights.",
+    'quest_panter_maintenance': {
+        id: 'quest_panter_maintenance',
+        title: 'Storage Maintenance Fund',
+        description: "Contribute 100 Lab Credits to help fixing the storage bay's flickering neon lights.",
         type: 'handover',
         target: 'credits',
-        amount: 50,
-        reward: { type: 'resource', id: 'biomass', amount: 5 },
+        amount: 100,
+        reward: { type: 'resource', id: 'biomass', amount: 50 },
         dialogue: {
             offer: [
                 "Welcome to the Lab, Intern. // These flickering lights are giving me a headache, but the maintenance department is 'out of budget'.",
-                "If you can spare 50 Lab Credits, I'll make sure you're compensated with some high-grade Biomass."
+                "If you can spare 100 Lab Credits, I'll make sure you're compensated with some high-grade Biomass."
             ],
             offer_completed: [
                 "Welcome to the Lab, Intern. // These flickering lights are giving me a headache, but the maintenance department is 'out of budget'.",
-                "If you can spare 50 Lab Credits, I'll make sure you're compensated with some high-grade Biomass.",
-                "Intern! I see your wallet is looking quite healthy today."
+                "If you can spare 100 Lab Credits, I'll make sure you're compensated with some high-grade Biomass.",
+                "Hey hey hey! I see your wallet is looking quite healthy today."
             ],
-            progress: ["Still waiting on those maintenance funds. 50 Credits isn't much for a specialist like you, right?"],
+            progress: ["Still waiting on those maintenance funds. // Want a tip? I saw someone drop some credits in the lobby, hehe."],
             complete: [
                 "Brilliant! I'll call the technician immediately. // Ready to hand them over to the fund?"
             ],

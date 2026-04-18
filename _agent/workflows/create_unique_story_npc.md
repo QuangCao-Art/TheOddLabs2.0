@@ -55,6 +55,13 @@ Add the character to the `objects` array in the relevant **Modular Map** file wi
 ### 2. Map Visual Assets (Centralized)
 Register the NPC visuals in [main.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/main.js):
 - **Overworld Sprite**: Map the ID to a base sprite in `window.OVERWORLD_NPC_SPRITES` (e.g., `mimi: 'npc_f_01'`).
+
+> [!CAUTION]
+> **The Sprite Fallback Rule**:
+> 1. **Check First**: If the NPC has a unique sprite defined by their **ID** in `overworld.css` (e.g., `.npc.jenzi`), they **DO NOT** need an entry in `main.js`. 
+> 2. **Generic Mapping**: Only use the mapping table for NPCs sharing generic assets like `npc_male` or `npc_female`.
+> 3. **Edit Integrity**: When adding a new mapping, use `multi_replace_file_content` or be extremely careful not to delete existing character mappings in the object. Never assume a specialized sprite class (like `npc_f_01`) exists unless you have verified it in the CSS.
+
 - **Battle Visuals**: If the type is **Boss/Battleable**, add the ID with its `art` and `dialogue` to `PRE_BATTLE_DATA`.
 
 ### 3. Implement Interaction Logic (Systematic)
@@ -71,7 +78,8 @@ Unique narrative responses and branching states are now defined in the **Narrati
 ### ⚠️ NPC Integrity Checklist
 - [ ] **Type Check**: Is the NPC **Peaceful**? (If yes, ensure no `battleEncounterId` exists)
 - [ ] **Lore ID Consistency**: Does the ID in the map file match `main.js` and `npc_dialogues.js`?
-- [ ] **Metadata Mapping**: Is the NPC registered in `OVERWORLD_NPC_SPRITES`?
+- [ ] **Metadata Mapping**: Is the NPC registered in `OVERWORLD_NPC_SPRITES`? (Only if using generic sprites; skipped if unique ID matches CSS)
+- [ ] **Sprite Collision**: Did you ensure no existing mappings were accidentally deleted in `main.js`?
 - [ ] **Dialogue Type**: Is the logic registered in **`src/data/npc_dialogues.js`**?
 - [ ] **Zone Dialogue Accuracy**: Does the dialogue match the official lines in `story_lore_progression.md`?
 - [ ] **Grammar & Polish**: Have the lines been checked and polished for high-quality writing?

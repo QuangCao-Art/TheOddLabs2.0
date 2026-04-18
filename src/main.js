@@ -634,15 +634,35 @@ window.showQuestCompleteModal = (questId, onClose) => {
             return r.rewards.map(subR => parseRewards(subR)).filter(t => t).join(", ");
         }
 
-        let type = (r.id === 'credits' || r.id === 'lc') ? 'Credits' :
-            (r.id === 'biomass' || r.id === 'bm') ? 'Biomass' :
-                (r.type === 'exp') ? 'EXP' : r.id?.toUpperCase() || "";
+        // 1. Determine Label (Friendly Name)
+        let label = "";
+        const id = r.id || "";
+        const idLower = id.toLowerCase();
 
+        if (idLower === 'credits' || idLower === 'lc') label = 'Credits';
+        else if (idLower === 'biomass' || idLower === 'bm') label = 'Biomass';
+        else if (r.type === 'exp') label = 'EXP';
+        else if (id === 'jenziAtriumUnlocked') label = '[ ATRIUM ACCESS ]';
+        else if (id === 'botanicSectorUnlocked') label = '[ BOTANIC SECTOR ACCESS ]';
+        else if (id === 'humanWardUnlocked') label = '[ HUMAN RESEARCH WARD ACCESS ]';
+        else if (id === 'executiveSuiteUnlocked') label = '[ EXECUTIVE SUITE ACCESS ]';
+        else if (id === 'oldLabUnlocked') label = '[ OLD LAB ACCESS ]';
+        else if (id.startsWith('Log')) label = '[ ENCRYPTED DATA LOG ]';
+        else if (id.startsWith('CARD')) label = '[ COLLECTIBLE CARD ]';
+        else if (id.startsWith('Quest')) label = '[ SPECIAL ITEM ]';
+        else label = id.toUpperCase();
+
+        // 2. Update Globals
         if (r.type === 'exp') questExpGained += (r.amount || 0);
-        if (r.id === 'credits' || r.id === 'lc') creditsGained += (r.amount || 0);
-        if (r.id === 'biomass' || r.id === 'bm') biomassGained += (r.amount || 0);
+        if (idLower === 'credits' || idLower === 'lc') creditsGained += (r.amount || 0);
+        if (idLower === 'biomass' || idLower === 'bm') biomassGained += (r.amount || 0);
 
-        return `${r.amount} ${type}`;
+        // 3. Format String (Don't show "undefined" or "0" for flags/items)
+        if (r.type === 'flag' || r.type === 'item' || r.type === 'log') {
+            return label;
+        }
+
+        return `${r.amount || 0} ${label}`;
     };
 
     rewardsText = parseRewards(questData.reward);
@@ -1528,6 +1548,7 @@ function setupEventListeners() {
     // Unified IDs mapping to their overworld sprite CSS class (npc_male, npc_female)
     // If an ID is NOT in this table, the overworld engine defaults to derived class from ID.
     window.OVERWORLD_NPC_SPRITES = {
+        'panter': 'npc_male',
         // Atrium
         'zibrya': 'npc_female',
         'mamozet': 'npc_male',

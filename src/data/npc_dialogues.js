@@ -17,10 +17,10 @@ export const NPC_SCRIPTS = {
 
             // 1. Check for Battle Completion (Tutorial ends on any outcome)
             if (params.isPostBattle && !storyFlags.jenziFirstBattleDone) {
-                const lines = params.bossWon 
-                    ? ["Whew! That was a good warm up! // You've got the basics down, Intern. Let's get to work."] 
-                    : ["Oof, that looked like it hurt... // But hey, a lesson learned is a lesson earned, right? // You've seen enough to get the gist of it."];
-                
+                const lines = params.bossWon
+                    ? ["Oof, that looked like it hurt... // But hey, a lesson learned is a lesson earned, right? // You've seen enough to get the gist of it."]
+                    : ["Whew! That was a good warm up! // You've got the basics down, Intern. Let's get to work."];
+
                 return {
                     lines: lines,
                     triggers: ['jenziFirstBattleDone']
@@ -104,7 +104,7 @@ export const NPC_SCRIPTS = {
         // Initial fallback logic for his final climax revelation
         getScript: (gameState, overworld, params) => {
             const { storyFlags } = gameState;
-            if (params.isPostBattle && !params.bossWon && params.isBattleDone) {
+            if (params.isPostBattle && params.bossWon && params.isBattleDone) {
                 return {
                     lines: [
                         "Dismissed. If you can't even handle a basic engagement, you have no business poking around the archives.",
@@ -125,6 +125,20 @@ export const NPC_SCRIPTS = {
                 "Who keeps kicking the stuff all over the place?// It's becoming a logistical nightmare to keep track of everything!",
                 "I'm so tired of having to put things back where they belong...// One of these days, I WILL glue all the furniture to the floor!",
                 "I saw Lana looking for something here recently.// She seemed... unusually tense."
+            ];
+            return { lines: [flavors[Math.floor(Math.random() * flavors.length)]] };
+        }
+    },
+    'panter': {
+        name: "Janitor Panter",
+        quests: ['quest_panter_maintenance'],
+        getScript: (gameState, overworld, params) => {
+            const flavors = [
+                "Need something moved? I'm your man.",
+                "Storage is a mess, but at least it's quiet. Perfect for thinking about... boxes.",
+                "If you find any loose credits, let me know. The maintenance fund is always looking for 'donations'.",
+                "Storage Bay duty isn't so bad. It's better than having to clean up after some of those Botanic experiments.",
+                "The flickering lights here are really getting to me. I hope someone contributes some credits to fix them soon."
             ];
             return { lines: [flavors[Math.floor(Math.random() * flavors.length)]] };
         }
@@ -231,13 +245,13 @@ export const NPC_SCRIPTS = {
             if (isPostBattle) {
                 if (bossWon) {
                     lines = [
-                        "Better luck next time! // Since I'm nice, here's a tip: There's a Console Station in the Atrium near the north wall...",
-                        "...it's humming a bit strangely. Check the ports, maybe someone left a datapad plugged in!"
+                        "Better luck next time! // Since I'm nice, here's a tip: I see Blunder wandering around near the large cabinets...",
+                        "That maybe where he dropped his datapad!"
                     ];
                 } else {
                     lines = [
-                        "Fine, you're better than you look! // Check the Atrium. There's a pile of boxes near the south exit...",
-                        "something shiny is tucked inside one of them. Happy hunting!"
+                        "Fine, you're better than you look! // Here's a tip: I hear a faint buzzing sound coming from the computer station...",
+                        "...it's humming a bit strangely. Check the ports, maybe someone left a datapad plugged in!"
                     ];
                 }
             } else if (!isBattleDone) {
