@@ -5549,7 +5549,7 @@ body {
 #confirm-panel {
     max-width: 450px;
     width: 90%;
-    padding: 40px;
+    padding: 30px 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -5569,20 +5569,21 @@ body {
 }
 
 .confirm-body-text {
-    margin: 25px 0;
+    margin: 15px 0 10px 0;
     font-size: var(--fs-body-lg);
     line-height: 1.6;
     color: #e0e0e0;
     font-family: var(--font-main);
+    text-align: center;
 }
 
 .confirm-buttons {
     display: flex;
     flex-direction: column;
     /* Match Pause Menu vertical stack for high fidelity */
-    gap: 15px;
+    gap: 12px;
     width: 100%;
-    margin: 30px 0;
+    margin: 15px 0 20px 0;
 }
 
 .confirm-buttons .btn-neon {
@@ -5597,7 +5598,7 @@ body {
 }
 
 .confirm-hint {
-    margin-top: 30px;
+    margin-top: 15px;
     font-size: var(--fs-label);
     color: rgba(255, 255, 255, 0.4);
     letter-spacing: 1px;

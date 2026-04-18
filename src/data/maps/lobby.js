@@ -15,7 +15,7 @@ export const lobby = {
     ],
     objects: [
         { id: 'jenzi', x: 4, y: 4, type: 'npc', name: 'Jenzi', quests: ['quest_atrium_init', 'quest_atrium_proof', 'quest_origin_secret'] },
-        { id: 'pax', x: 7, y: 5, type: 'npc', name: 'Receptionist Pax' },
+        { id: 'pax', x: 7, y: 5, type: 'npc', name: 'Receptionist Pax', quests: ['quest_pax_maintenance'] },
         { id: 'f14_mny4vpl6jp1dw', templateName: 'TANK_GREEN', x: 9, y: 3, type: 'prop', mirrored: false, hiddenReward: 'REWARD_CREDITS_10' },
         { id: 'f13_mny4vpl6jp1dw', templateName: 'TANK_GREEN', x: 9, y: 2, type: 'prop', mirrored: false, hiddenReward: 'REWARD_CREDITS_10' },
         { id: 'f57_mny4vteuebrx4', templateName: 'TABLE_LEADER_B', x: 8, y: 6, type: 'prop', mirrored: false, hiddenReward: 'REWARD_CREDITS_10' },

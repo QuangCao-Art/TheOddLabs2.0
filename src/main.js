@@ -481,12 +481,18 @@ window.showItemPickupModal = (itemId, onClose) => {
     }
 
     modal.classList.remove('hidden');
-    if (AudioManager) AudioManager.play('modal_pickup', 0.6);
+    // Sound Trigger with Fallback
+    if (typeof AudioManager !== 'undefined') {
+        AudioManager.play('modal_pickup', 0.6).then(played => {
+            if (!played) AudioManager.play('modal_open', 0.5);
+        });
+    }
 
     let inputReady = false;
     setTimeout(() => { inputReady = true; }, 600); // Increased buffer to prevent accidental skipping
 
     function close() {
+        if (typeof AudioManager !== 'undefined') AudioManager.play('modal_close', 0.5);
         window.hideWithFade(modal);
         window.removeEventListener('keydown', keyHandler);
         if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
@@ -803,23 +809,34 @@ window.showConfirmModal = (title, message, onConfirm, manualCleanup = false, hid
 
     // Initialize state
     let confirmNavIndex = hideCancel ? 0 : 1;
-    titleEl.innerText = (title || "WARNING").toUpperCase();
+    const headerLine = screen.querySelector('.header-line');
+
+    // Support "Clean Modal" (Zero Title)
+    if (title === "") {
+        titleEl.style.display = 'none';
+        if (subEl) subEl.style.display = 'none';
+        if (headerLine) headerLine.style.display = 'none';
+    } else {
+        titleEl.style.display = '';
+        if (subEl) subEl.style.display = '';
+        if (headerLine) headerLine.style.display = '';
+
+        titleEl.innerText = (title || "WARNING").toUpperCase();
+
+        // Dynamic subtitle flavor
+        if (subEl) {
+            if (title?.toLowerCase().includes('abort')) subEl.innerText = "EXTRACTION PROTOCOL ACTIVE";
+            else if (title?.toLowerCase().includes('secure')) subEl.innerText = "INITIALIZING MANUAL DATA BACKUP";
+            else if (title?.toLowerCase().includes('critical')) subEl.innerText = "DANGER SYSTEM OVERWRITE";
+            else if (title?.toLowerCase().includes('save')) subEl.innerText = "COMMITTING DATA TO THE VOID";
+            else subEl.innerText = "SYSTEM ALERT AUTHENTICATING";
+        }
+    }
+
     msgEl.innerText = message || "Proceed with operation?";
-
-    if (hideCancel) {
-        btnNo.style.display = 'none';
-    }
-
-    // Dynamic subtitle flavor
-    if (subEl) {
-        if (title?.toLowerCase().includes('abort')) subEl.innerText = "EXTRACTION PROTOCOL ACTIVE";
-        else if (title?.toLowerCase().includes('secure')) subEl.innerText = "INITIALIZING MANUAL DATA BACKUP";
-        else if (title?.toLowerCase().includes('critical')) subEl.innerText = "DANGER SYSTEM OVERWRITE";
-        else if (title?.toLowerCase().includes('save')) subEl.innerText = "COMMITTING DATA TO THE VOID";
-        else subEl.innerText = "SYSTEM ALERT AUTHENTICATING";
-    }
     screen.classList.remove('hidden');
     if (AudioManager) AudioManager.play('modal_open', 0.5);
+    if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
 
     const updateConfirmSelection = () => {
         btnYes.classList.toggle('nav-selected', confirmNavIndex === 0);
@@ -877,6 +894,7 @@ window.showConfirmModal = (title, message, onConfirm, manualCleanup = false, hid
 
     const cleanup = (hideUI = true) => {
         if (hideUI) window.hideWithFade(screen);
+        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
         window.removeEventListener('keydown', handleKeydown, true);
         btnYes.removeEventListener('mouseenter', handleMouseEnterYes);
         btnNo.removeEventListener('mouseenter', handleMouseEnterNo);
@@ -1312,7 +1330,7 @@ function setupEventListeners() {
     document.getElementById('btn-save-game')?.addEventListener('click', () => {
         window.showConfirmModal(
             "SECURE PROGRESS",
-            "Initializing manual data backup. This will overwrite your existing experiment log.\n\nNote: The game automatically saves after major discoveries and quest updates.",
+            "Initializing manual data backup. This will overwrite your existing save data.\nNote: The game automatically saves after major discoveries and quest updates.",
             () => {
                 saveGameState();
                 const btn = document.getElementById('btn-save-game');
@@ -1401,22 +1419,6 @@ function setupEventListeners() {
         }
 
         if (npcId === 'jenzi_tutorial') {
-            const typeAdvantages = {
-                'cambihil': 'lydrosome',
-                'nitrophil': 'cambihil',
-                'lydrosome': 'nitrophil'
-            };
-            // Use window.gameState to be safe, though gameState is exported above
-            const playerStarter = gameState.playerTeam[0] || 'nitrophil';
-            const weakerType = typeAdvantages[playerStarter] || 'cambihil';
-
-            gameState.profiles['jenzi_tutorial'] = {
-                name: 'JENZI',
-                level: 0,
-                chipBox: [],
-                team: [weakerType, null, null],
-                party: [createMonsterInstance(weakerType)]
-            };
             profileId = 'jenzi_tutorial';
         } else if (npcId === 'jenzi_atrium') {
             gameState.profiles['jenzi_atrium'] = {
@@ -1597,6 +1599,27 @@ function setupEventListeners() {
         // Auto-Equip Boss Tactics if available
         if (NPC_PRESETS[opponentProfileId]) {
             applyPreset(opponentProfileId, opponentProfileId, true);
+        } else if (opponentProfileId === 'jenzi_tutorial') {
+            // DYNAMIC BALANCING: Tutorial Jenzi picks a type weak to the player's starter
+            const typeAdvantages = {
+                'cambihil': 'lydrosome',  // Player (Botanic) beats Jenzi (Osmotic)
+                'nitrophil': 'cambihil',  // Player (Thermo) beats Jenzi (Botanic)
+                'lydrosome': 'nitrophil'  // Player (Osmotic) beats Jenzi (Thermo)
+            };
+            const playerParty = gameState.profiles.player.party;
+            const playerStarter = (playerParty && playerParty[0]) ? playerParty[0].id : 'nitrophil';
+            const weakerType = typeAdvantages[playerStarter] || 'cambihil';
+
+            gameState.profiles['jenzi_tutorial'] = {
+                id: 'jenzi_tutorial',
+                name: 'JENZI',
+                level: 0,
+                chipBox: [],
+                team: [weakerType, null, null],
+                party: [createMonsterInstance(weakerType)]
+            };
+            // Ensure state persists and is scaled properly
+            applyBonuses(gameState.profiles['jenzi_tutorial'].party, 0, true);
         } else if (NPC_ENCOUNTERS[opponentProfileId]) {
             // If it's in ENCOUNTERS but not PRESETS, we still need to initialize the opponent profile
             // based on the encounter data (RG, team, etc.)
@@ -3834,7 +3857,14 @@ function renderQuestMenu() {
             if (qData.type === 'collect') {
                 progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'DONE' : 'LOOKING...');
             } else if (qData.type === 'defeat') {
-                progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'VICTORY' : 'BATTLE: 0/1');
+                if (qProgress.status === 'completed' || qProgress.status === 'finished') {
+                    progressText = 'VICTORY';
+                } else {
+                    const label = (qData.amount > 1) ? 'HUNT' : 'BATTLE';
+                    progressText = `${label}: ${qProgress.progress}/${qData.amount}`;
+                }
+            } else if (qData.type === 'handover') {
+                progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'READY' : 'HANDOVER');
             } else {
                 progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'DONE' : `${qProgress.progress}/${qData.amount}`);
             }
@@ -4734,7 +4764,16 @@ const EXP_THRESHOLDS = {
  * --- CENTRALIZED RESEARCH GRADE (EXP) MANAGER ---
  * Handles experience points, multi-level calculations, and UI notifications.
  */
+let lastExpGrant = { time: 0, amount: 0 };
 window.grantExperience = (amount, silent = false, skipBanner = false) => {
+    // Systematic Idempotency Safeguard: Prevent double-grants from ghost listeners
+    const now = Date.now();
+    if (amount === lastExpGrant.amount && (now - lastExpGrant.time) < 100) {
+        console.warn(`[Progression] Rejected potential double-grant of ${amount} EXP.`);
+        return { didLevelUp: false, newLevel: gameState?.profiles?.player?.level || 0, amount: 0 };
+    }
+    lastExpGrant = { time: now, amount };
+
     const currentMaxLevel = 20;
     const currentLevel = gameState?.profiles?.player?.level || 0;
     const fallback = { didLevelUp: false, newLevel: currentLevel, amount: 0 };
@@ -4795,28 +4834,76 @@ window.grantExperience = (amount, silent = false, skipBanner = false) => {
 /**
  * Modern notification banner for Overworld Level Ups
  */
-function showLevelUpNotification(level) {
-    const container = document.getElementById('game-container');
-    if (!container) return;
+/**
+ * CENTRALIZED NOTIFICATION ENGINE
+ * Handles sequential queueing for overworld alerts
+ */
+window.notiQueue = [];
+window.isNotiActive = false;
 
+window.showNotification = function (options) {
+    let container = document.getElementById('noti-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'noti-container';
+        document.body.appendChild(container);
+    }
+
+    // Management: Max 2 (Push out oldest if needed)
+    const currentNotis = container.querySelectorAll('.universal-noti');
+    if (currentNotis.length >= 2) {
+        const oldest = currentNotis[currentNotis.length - 1]; // Bottom-most is oldest
+        if (!oldest.classList.contains('fading')) {
+            oldest.classList.add('fading');
+            setTimeout(() => oldest.remove(), 800);
+        }
+    }
+
+    // Create new element
     const banner = document.createElement('div');
-    banner.className = 'level-up-notification';
+    banner.className = `universal-noti noti-${options.type || 'cyan'}`;
     banner.innerHTML = `
-        <div class="level-up-content">
-            <div class="level-up-text">
-                <div class="level-up-label">RESEARCH GRADE INCREASE</div>
-                <div class="level-up-value">RG-${level}</div>
+        <div class="universal-noti-content">
+            <div class="universal-noti-text">
+                <div class="universal-noti-label">${options.label.toUpperCase()}</div>
+                <div class="universal-noti-value">${options.value}</div>
             </div>
         </div>
     `;
 
-    document.body.appendChild(banner);
+    // Audio Trigger: Base on Type
+    if (typeof AudioManager !== 'undefined') {
+        const soundMap = {
+            'cyan': 'noti_level_up',
+            'gold': 'noti_task_start',
+            'green': 'noti_task_end',
+            'red': 'noti_security_alert'
+        };
+        const soundId = soundMap[options.type] || 'noti_level_up';
+        AudioManager.play(soundId, 0.45);
+    }
 
-    // Auto-cleanup
+    // Prepend so newest is at the top
+    container.prepend(banner);
+
+    // Auto-cleanup for this specific one
     setTimeout(() => {
-        banner.classList.add('fading');
-        setTimeout(() => banner.remove(), 1000);
-    }, 4000);
+        if (banner.parentNode) {
+            banner.classList.add('fading');
+            setTimeout(() => banner.remove(), 1000);
+        }
+    }, options.duration || 3000);
+};
+
+/**
+ * Modern notification banner for Overworld Level Ups
+ */
+function showLevelUpNotification(level) {
+    window.showNotification({
+        label: 'RESEARCH GRADE INCREASE',
+        value: `RG-${level}`,
+        type: 'cyan'
+    });
 }
 
 const getExpReqForLevel = (level) => {
@@ -4913,7 +5000,8 @@ function showGameOver(isFailure, forceOverlay = false) {
     const rewardsList = document.getElementById('battle-result-rewards');
     const btnProceed = document.getElementById('btn-battle-outcome-proceed');
 
-    const isTutorialLoss = isFailure && opponentId === 'jenzi_tutorial';
+    const enc = (typeof NPC_ENCOUNTERS !== 'undefined') ? NPC_ENCOUNTERS[opponentId] : null;
+    const bypassPenalty = enc && enc.proceedOnLoss;
 
     if (overlay && title) {
         if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
@@ -4925,7 +5013,7 @@ function showGameOver(isFailure, forceOverlay = false) {
         if (btnProceed) {
             btnProceed.classList.add('disabled');
             btnProceed.style.opacity = "0.5";
-            btnProceed.textContent = isFailure ? "RECOVER" : "PROCEED";
+            btnProceed.textContent = (isFailure && !bypassPenalty) ? "RECOVER" : "PROCEED";
         }
 
         if (isFailure) {
@@ -4938,9 +5026,13 @@ function showGameOver(isFailure, forceOverlay = false) {
             title.innerHTML = `EXPERIMENT <span class="neon-text">SUCCEED!</span>`;
         }
 
-        // Specific tutorial handling (Always advance progress if battle was with Jenzi)
+        // Specific encounter handling (Systematic flags)
         if (opponentId === 'jenzi_tutorial') {
             gameState.storyFlags.jenziFirstBattleDone = true;
+        }
+
+        // Auto-heal logic for proceedOnLoss encounters
+        if (bypassPenalty) {
             applyBonuses(gameState.profiles.player.party, gameState.profiles.player.level, true);
         }
 
@@ -4967,11 +5059,11 @@ function showGameOver(isFailure, forceOverlay = false) {
         }
 
         // Only calculate typical rewards if not a generic failure
-        if (!isFailure || isTutorialLoss) {
-            if (opponentId === 'jenzi_tutorial') {
-                expEarned = isFailure ? 15 : 25;
-                creditsEarned = isFailure ? 0 : 50;
-                biomassEarned = isFailure ? 0 : 5;
+        if (!isFailure || bypassPenalty) {
+            if (enc && enc.reward) {
+                expEarned = enc.reward.exp || 0;
+                creditsEarned = enc.reward.credits || 0;
+                biomassEarned = enc.reward.biomass || 0;
             } else if (opponentId && opponentId.endsWith('_wild')) {
                 creditsEarned = Math.round((10 + Math.floor(Math.random() * 16)) * rgScaling);
                 biomassEarned = Math.round((1 + Math.floor(Math.random() * 5)) * rgScaling);
@@ -5015,10 +5107,17 @@ function showGameOver(isFailure, forceOverlay = false) {
             btnAction: btnProceed
         });
 
+        let isResolved = false;
         const finalizeGameOver = () => {
+            if (isResolved) return;
+            isResolved = true;
+
+            // Cleanup Key Listener immediately
+            window.removeEventListener('keydown', outcomeKeyHandler);
             window.grantExperience(expEarned, true);
-            window.changeResource('lc', creditsEarned);
-            window.changeResource('bm', biomassEarned);
+            // Battle rewards are 'Other cases' (Modals), use Discovery SFX
+            window.changeResource('lc', creditsEarned, false, true);
+            window.changeResource('bm', biomassEarned, false, true);
 
             window.hideWithFade(overlay);
             showScreen('screen-overworld');
@@ -5031,7 +5130,7 @@ function showGameOver(isFailure, forceOverlay = false) {
                 requestAnimationFrame(() => Overworld.updatePlayerPosition());
             }
 
-            if (isFailure) {
+            if (isFailure && !bypassPenalty) {
                 // Return to lobby
                 const lobbyZone = (typeof Overworld !== 'undefined' && Overworld.startingZone) || 'lobby';
                 if (typeof Overworld !== 'undefined') {
@@ -5064,7 +5163,10 @@ function showGameOver(isFailure, forceOverlay = false) {
         };
 
         if (btnProceed) {
-            btnProceed.onclick = () => finalizeGameOver();
+            btnProceed.onclick = (e) => {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
+                finalizeGameOver();
+            };
         }
 
         // Accessibility Hook
@@ -7146,7 +7248,8 @@ window.updateResourceHUD = function () {
 };
 
 // Universal Resource API
-window.changeResource = function (type, amount, isLoot = true, isDiscovery = false) {
+// Universal Resource API - Defaults to non-loot (Discovery/Spend)
+window.changeResource = function (type, amount, isLoot = false, isDiscovery = false) {
     if (!type || amount === 0) return;
 
     const isLC = type.toLowerCase() === 'lc';
@@ -7195,7 +7298,7 @@ window.spawnResourcePopup = function (type, amount) {
     setTimeout(() => popup.remove(), 1200);
 };
 
-window.animateResourceHUD = function (type, amount, isLoot = true) {
+window.animateResourceHUD = function (type, amount, isLoot = false) {
     const id = type === 'lc' ? 'hud-lc-val' : 'hud-bm-val';
     const el = document.getElementById(id);
     if (!el) return;

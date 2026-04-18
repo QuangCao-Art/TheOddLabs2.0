@@ -17,7 +17,7 @@ This workflow guides you through the process of adding a new Quest to the game u
 [Quest Category]: (Main | Side)
 [Quest Title]: (Short descriptive title)
 [Quest Description]: (Diary/Log summary for the UI - MANDATORY)
-[Quest Type]: (defeat | synthesis | collect | duel | show_monster | kick | break)
+[Quest Type]: (defeat | synthesis | collect | duel | show_monster | kick | break | handover)
 [Target ID]: (monster_id, item_id, npc_id, or FURNITURE_TEMPLATE)
 [Amount]: (Number required)
 [Required Flag]: (Optional - e.g., jenziFirstBattleDone)
@@ -31,6 +31,7 @@ This workflow guides you through the process of adding a new Quest to the game u
 - **Offer Completed**: ["Line 1 if player already meets requirements"]
 - **Progress**: ["Line 1 with {progress}"]
 - **Complete**: ["Line 1", "Line 2"]
+- **Bypassed Complete**: ["Line 1 for Case F (Seamless completion)"]
 - **Failed**: ["Line 1", "Line 2"] (Auto-triggered on failure/timeout)
 - **Retry**: ["Line 1", "Line 2"] (Shown when talking again after failure)
 - **Finished**: ["Flavor text after completion"]
@@ -58,7 +59,7 @@ Add the quest definition to the **Central Quest Registry**:
     id: 'quest_id',
     title: 'Title',
     description: 'Diary entry...',
-    type: 'collect', // defeat | synthesis | collect | duel | show_monster | kick | break
+    type: 'collect', // defeat | synthesis | collect | duel | show_monster | kick | break | handover
     target: 'item_id', // Can be Monster ID, Item ID, or FURNITURE_TEMPLATE name
     targetType: 'prop', // Optional: 'npc' | 'prop' (Required for kick/break quests)
     amount: 1,
@@ -73,13 +74,25 @@ Add the quest definition to the **Central Quest Registry**:
         offer: ["..."],
         offer_completed: ["..."], // Shown if requirements are already met at offer time
         progress: ["..."],       // Shown if quest is started but requirements not met
-        complete: ["..."],
-        failed: ["..."],
-        retry: ["..."],
-        finished: ["..."]
+        complete: ["Dialogue for standard turn-in."],
+        bypassed_complete: ["Dialogue for seamless/instant completion (Case F). FALLBACK: complete"],
+        finished: ["Dialogue after quest is totally done."]
     }
 }
 ```
+
+### Case F: Seamless Completion
+If the player already has the required items when first talking to the NPC, the engine will:
+1. Merge `offer_completed` + `bypassed_complete` (or `complete`).
+2. Award the reward immediately after the dialogue ends.
+3. Skip the "talk twice" requirement.
+
+### 💰 Handover Quests (Resource Safety)
+When using `type: 'handover'`, the engine adds a **Confirmation Safety-Net**:
+1. NPC says their turn-in dialogue.
+2. A **Laboratory OS Modal** appears: *"Protocol: Hand over [X] [Resource]?"*
+3. Player chooses **YEP** (Proceed) or **NOPE** (Cancel and keep resources).
+4. The quest remains in 'Started' status until **YEP** is chosen.
 
 ### 2. Update Map Data (NPC Assignment)
 Assign the quest to the NPC in their respective map file (e.g., `atrium.js`, `botanic.js`). Use the modern `quests` array standard.

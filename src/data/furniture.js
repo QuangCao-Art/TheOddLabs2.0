@@ -61,7 +61,7 @@ export const furnitureMetadata = {
     'f53': { name: 'Large Cabinet', hasCollision: false, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
     'f54': { name: 'Large Cabinet', hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
     'f55': { name: 'Large Cabinet', hasCollision: true, info: "Organized chaos. Opening it risks a landslide of clipboards and broken test tubes." },
-    'f56': { name: 'Senior Table', hasCollision: false, info: '"Why do all the tables have to be this messy?" asked the janitor.' },
+    'f56': { name: 'Senior Table', hasCollision: true, info: '"Why do all the tables have to be this messy?" asked the janitor.' },
     'f57': { name: 'Senior Table', hasCollision: true, info: '"Why do all the tables have to be this messy?" asked the janitor.' },
     'f58': { name: 'Supply Cabinet', hasCollision: true, info: "I can see the little cockroaches crawling out!" },
     'f59': { name: 'Young Plant', hasCollision: true, kickable: true, material: 'plastic', info: "Looks like a normal plant... or is it?" },

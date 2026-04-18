@@ -140,6 +140,14 @@ export const NPC_PRESETS = {
 };
 
 export const NPC_ENCOUNTERS = {
+    'jenzi_tutorial': {
+        name: "Jenzi (Tutorial)",
+        rg: 0,
+        team: ['stemmy'],
+        style: 'balanced',
+        proceedOnLoss: true,
+        reward: { exp: 25, biomass: 5, credits: 50 }
+    },
     'jenzi': { 
         name: "Jenzi (Atrium Quest)", 
         rg: 5, 

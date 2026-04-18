@@ -247,7 +247,12 @@ export const AudioManager = {
      * Should be called during splash screen.
      */
     initPreload() {
-        const essentials = ['music_main_menu', 'click', 'hover', 'footstep_tile'];
+        const essentials = [
+            'music_main_menu', 'click', 'hover', 'footstep_tile',
+            'noti_level_up', 'noti_task_start', 'noti_task_end', 'noti_security_alert',
+            'modal_open', 'modal_close', 'modal_pickup', 'modal_quest_clear',
+            'dialogue_open', 'ui_page_turn', 'dialogue_close'
+        ];
         essentials.forEach(id => this.load(id));
     },
 

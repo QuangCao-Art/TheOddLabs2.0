@@ -37,6 +37,13 @@ Place your `.mp3` files in `assets/audio/` using the following exact names:
 | **Quest Clear** | `modal_quest_clear.mp3` | **(UI)** Mission Success summary sound. |
 | **Major Win** | `modal_battle_win.mp3` | **(UI)** "EXPERIMENT SUCCESSFUL" battle result. |
 | **Major Loss** | `modal_battle_lose.mp3` | **(UI)** "EXPERIMENT FAILED" battle result. |
+| **Noti Level Up** | `noti_level_up.mp3` | **(UI)** Research Grade Increase (Cyan). |
+| **Noti Task Start** | `noti_task_start.mp3` | **(UI)** New Mission Objective (Gold). |
+| **Noti Task End** | `noti_task_end.mp3` | **(UI)** Mission Approved (Green). |
+| **Noti Security** | `noti_security_alert.mp3` | **(UI)** Access Denied / Error (Red). |
+| **Dialogue Open** | `dialogue_open.mp3` | **(UI)** Interaction Start / Box Appear. |
+| **Dialogue Next** | `ui_page_turn.mp3` | **(UI)** RPG-style page advancement. |
+| **Dialogue Close** | `dialogue_close.mp3` | **(UI)** Conversation Exit. |
 
 ### 2. Music (BGM) Convention
 Background music loops automatically and cross-fades during screen transitions.

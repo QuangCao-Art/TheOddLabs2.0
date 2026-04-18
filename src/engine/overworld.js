@@ -348,6 +348,23 @@ export const Overworld = {
         }
     },
 
+    finalizeQuestCompletion(questId) {
+        const qData = QUESTS[questId];
+        if (window.gameState.quests[questId]) {
+            window.gameState.quests[questId].status = 'finished';
+        }
+        if (qData && qData.onCompleteFlag) {
+            window.gameState.storyFlags[qData.onCompleteFlag] = true;
+        }
+        window.dispatchEvent(new CustomEvent('quest-updated'));
+
+        this.giveQuestReward(questId);
+        if (typeof gameState !== 'undefined' && gameState.settings?.autoSave) {
+            if (typeof saveGameState === 'function') saveGameState();
+        }
+        this.renderMap();
+    },
+
     giveQuestReward(questId) {
         const questData = QUESTS[questId];
         if (!questData || !questData.reward) return;
@@ -386,6 +403,15 @@ export const Overworld = {
                 reward.rewards.forEach(r => processReward(r));
             } else {
                 processReward(reward);
+            }
+
+            // Universal Noti after reward handled
+            if (window.showNotification) {
+                window.showNotification({
+                    label: 'TASK APPROVED',
+                    value: questData.title || "Mission Complete",
+                    type: 'green'
+                });
             }
 
             // Ensure state is persisted after granting rewards if auto-save is enabled
@@ -1248,6 +1274,15 @@ export const Overworld = {
             const isLockedByItem = missingItems.length > 0 && !window.gameState.debugUnlockDoors && !window.gameState.debugAllItems;
 
             if (isLockedByFlag || isLockedByItem) {
+                // UNIVERSAL NOTIFICATION: Emergency Red
+                if (window.showNotification) {
+                    window.showNotification({
+                        label: 'SECURITY PROTOCOLS',
+                        value: 'ACCESS DENIED',
+                        type: 'red'
+                    });
+                }
+
                 let msg = "This door is locked. You need specific clearance.";
                 if (isLockedByItem) {
                     const names = missingItems.map(id => {
@@ -1790,6 +1825,15 @@ export const Overworld = {
                 const isLockedByItem = missingItems.length > 0 && !window.gameState.debugUnlockDoors && !window.gameState.debugAllItems;
 
                 if (isLockedByFlag || isLockedByItem) {
+                    // UNIVERSAL NOTIFICATION: Emergency Red
+                    if (window.showNotification) {
+                        window.showNotification({
+                            label: 'SECURITY PROTOCOLS',
+                            value: 'ACCESS DENIED',
+                            type: 'red'
+                        });
+                    }
+
                     let msg = "This door is locked. You need specific clearance.";
                     if (isLockedByItem) {
                         const names = missingItems.map(id => {
@@ -1980,6 +2024,68 @@ export const Overworld = {
                     const hasTarget = (window.gameState.items || []).some(i => String(i).toLowerCase() === targetId) ||
                         (window.gameState.logs || []).some(l => String(l).toLowerCase() === targetId);
 
+                    // Case F Check: Is objective already met?
+                    let isObjectiveMet = false;
+                    if (qData.type === 'collect') isObjectiveMet = hasTarget;
+                    else if (qData.type === 'show_monster') {
+                        isObjectiveMet = gameState.profiles.player.party.some(m => m && m.id === qData.target && (m.extractEfficiency || 0) >= (qData.minEfficiency || 0));
+                    } else if (qData.type === 'defeat' && this.isQuestTargetMatch(qData.target, npc)) {
+                        isObjectiveMet = window.gameState.storyFlags[`battleDone_${qData.target}`];
+                    } else if (qData.type === 'handover') {
+                        const balance = qData.target === 'credits' ? (gameState.credits || 0) : (gameState.biomass || 0);
+                        isObjectiveMet = balance >= qData.amount;
+                    }
+
+                    // --- CASE F: SEAMLESS COMPLETION ---
+                    // If objective is met AND it's not a defeat quest that needs a fresh challenge
+                    if (isObjectiveMet && qData.type !== 'defeat') {
+                        let seamlessLines = qData.dialogue.offer_completed || ["..."];
+                        const compLines = qData.dialogue.bypassed_complete || qData.dialogue.complete || ["Objective achieved!"];
+                        seamlessLines = [...seamlessLines, ...compLines];
+
+                        // Set atomic state immediately
+                        // Set atomic state
+                        const initialStatus = qData.type === 'handover' ? 'started' : 'finished';
+                        window.gameState.quests[qId] = {
+                            status: initialStatus,
+                            progress: 1,
+                            offerSeen: true
+                        };
+                        if (initialStatus === 'finished') {
+                            if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
+                        }
+
+                        // Consumption Logic
+                        if (qData.consume && qData.type === 'collect') {
+                            const iIdx = window.gameState.items.indexOf(qData.target);
+                            if (iIdx > -1) window.gameState.items.splice(iIdx, 1);
+                            const lIdx = window.gameState.logs.indexOf(qData.target);
+                            if (lIdx > -1) window.gameState.logs.splice(lIdx, 1);
+                        }
+
+                        this.onDialogueComplete = () => {
+                            const qData = QUESTS[qId];
+                            if (qData.type === 'handover') {
+                                const resLabel = qData.target === 'credits' ? 'Lab Credits' : 'Biomass';
+                                window.showConfirmModal(
+                                    "",
+                                    `Ready to hand over ${qData.amount} ${resLabel}?`,
+                                    () => {
+                                        const rType = qData.target === 'credits' ? 'lc' : 'bm';
+                                        if (window.changeResource) window.changeResource(rType, -qData.amount, false);
+                                        this.finalizeQuestCompletion(qId);
+                                    }
+                                );
+                            } else {
+                                this.finalizeQuestCompletion(qId);
+                            }
+                        };
+
+                        this.showDialogue(npc.name, seamlessLines, npc.id);
+                        return;
+                    }
+
+                    // --- Standard Case A: New Offer ---
                     window.gameState.quests[qId] = {
                         status: 'started',
                         progress: hasTarget ? 1 : 0,
@@ -1987,6 +2093,17 @@ export const Overworld = {
                     };
 
                     if (gameState.settings?.autoSave) saveGameState();
+
+                    // Delay Notification until after dialogue
+                    const startNoti = () => {
+                        if (window.showNotification) {
+                            window.showNotification({
+                                label: 'TASK IN PROGRESS',
+                                value: qData.title || "New Objective",
+                                type: 'gold'
+                            });
+                        }
+                    };
 
                     let offerLines = qData.dialogue.offer;
                     // Support Requirement-Aware Offers
@@ -2006,8 +2123,14 @@ export const Overworld = {
                     }
 
                     if (qData.timeLimit) {
-                        this.onDialogueComplete = () => this.startTimedQuest(qId, npc);
+                        this.onDialogueComplete = () => {
+                            startNoti();
+                            this.startTimedQuest(qId, npc);
+                        };
                         this.isStartingQuest = true;
+                    } else {
+                        // Standard non-timed quest, just show notification
+                        this.onDialogueComplete = startNoti;
                     }
                     return;
                 }
@@ -2023,19 +2146,32 @@ export const Overworld = {
 
                 // Case C: Turn-In
                 if (qProgress.status === 'completed') {
-                    // ATOMIC LOCK: Set finished and flags immediately to prevent reward exploits
-                    qProgress.status = 'finished';
-                    window.dispatchEvent(new CustomEvent('quest-updated'));
-                    if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
+                    // ATOMIC LOCK: Set finished and flags immediately (unless handover, which requires confirmation)
+                    if (qData.type !== 'handover') {
+                        qProgress.status = 'finished';
+                        window.dispatchEvent(new CustomEvent('quest-updated'));
+                        if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
+                    }
 
                     if (qData.consume && qData.type === 'collect') {
                         const idx = window.gameState.items.indexOf(qData.target);
                         if (idx > -1) window.gameState.items.splice(idx, 1);
                     }
                     this.onDialogueComplete = () => {
-                        this.giveQuestReward(qId);
-                        if (gameState.settings?.autoSave) saveGameState();
-                        this.renderMap();
+                        if (qData.type === 'handover') {
+                            const resLabel = qData.target === 'credits' ? 'Lab Credits' : 'Biomass';
+                            window.showConfirmModal(
+                                "",
+                                `Ready to hand over ${qData.amount} ${resLabel}?`,
+                                () => {
+                                    const rType = qData.target === 'credits' ? 'lc' : 'bm';
+                                    window.changeResource(rType, -qData.amount, false);
+                                    this.finalizeQuestCompletion(qId);
+                                }
+                            );
+                        } else {
+                            this.finalizeQuestCompletion(qId);
+                        }
                     };
                     this.showDialogue(npc.name, qData.dialogue.complete, npc.id);
                     return;
@@ -2050,6 +2186,9 @@ export const Overworld = {
                         const targetId = String(qData.target).toLowerCase();
                         readyNow = (window.gameState.items || []).some(i => String(i).toLowerCase() === targetId) ||
                             (window.gameState.logs || []).some(l => String(l).toLowerCase() === targetId);
+                    } else if (qData.type === 'handover') {
+                        const balance = qData.target === 'credits' ? (gameState.credits || 0) : (gameState.biomass || 0);
+                        readyNow = balance >= qData.amount;
                     }
 
                     if (readyNow) {
@@ -2059,15 +2198,28 @@ export const Overworld = {
                             const lIdx = window.gameState.logs.indexOf(qData.target);
                             if (lIdx > -1) window.gameState.logs.splice(lIdx, 1);
                         }
-                        // ATOMIC LOCK: Set finished and flags immediately to prevent reward exploits
-                        qProgress.status = 'finished';
-                        window.dispatchEvent(new CustomEvent('quest-updated'));
-                        if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
+                        // ATOMIC LOCK: Set finished and flags immediately (unless handover, which requires confirmation)
+                        if (qData.type !== 'handover') {
+                            qProgress.status = 'finished';
+                            window.dispatchEvent(new CustomEvent('quest-updated'));
+                            if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
+                        }
 
                         this.onDialogueComplete = () => {
-                            this.giveQuestReward(qId);
-                            if (gameState.settings?.autoSave) saveGameState();
-                            this.renderMap();
+                            if (qData.type === 'handover') {
+                                const resLabel = qData.target === 'credits' ? 'Lab Credits' : 'Biomass';
+                                window.showConfirmModal(
+                                    "",
+                                    `Ready to hand over ${qData.amount} ${resLabel}?`,
+                                    () => {
+                                        const rType = qData.target === 'credits' ? 'lc' : 'bm';
+                                        if (window.changeResource) window.changeResource(rType, -qData.amount, false);
+                                        this.finalizeQuestCompletion(qId);
+                                    }
+                                );
+                            } else {
+                                this.finalizeQuestCompletion(qId);
+                            }
                         };
                         this.showDialogue(npc.name, qData.dialogue.complete, npc.id);
                         return;
@@ -2278,6 +2430,7 @@ export const Overworld = {
     showDialogue(name, lines, npcId = null) {
         if (this.isDialogueActive && lines === this.dialogueQueue) return; // Prevent redundant triggers
 
+        AudioManager.play('dialogue_open', 0.4);
         this.isDialogueActive = true;
         this.isTransitioning = false;
         this.currentDialoguePartner = npcId;
@@ -2361,6 +2514,7 @@ export const Overworld = {
             return;
         }
 
+        AudioManager.play('ui_page_turn', 0.35);
         const text = this.dialogueQueue.shift();
         this.typeText(text);
     },
@@ -2394,6 +2548,7 @@ export const Overworld = {
     },
 
     closeDialogue() {
+        AudioManager.play('dialogue_close', 0.4);
         this.isDialogueActive = false;
         document.getElementById('dialogue-box')?.classList.add('hidden');
         document.getElementById('npc-portrait-overlay')?.classList.add('hidden');

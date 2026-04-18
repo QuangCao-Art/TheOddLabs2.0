@@ -23,9 +23,13 @@ export const QUEST_DATA = {
             ],
             offer_completed: [
                 "Wait, what do we have here? Did you just pick up that Datapad?",
-                "I swear I saw someone leave it near the red tank a minute ago."
+                "I swear I saw someone leave it near those tanks a minute ago."
             ],
-            progress: ["Still looking? It was definitely over near the red tanks."],
+            bypassed_complete: [
+                "Efficiency! I like that. You're already proving yourself.",
+                "Since you already have the log, let's get you moving."
+            ],
+            progress: ["Still looking? It was definitely over near those tanks."],
             complete: [
                 "Indeed, you found it! You're officially a data retrieval specialist.",
                 "I've unlocked the door to the Atrium. Go explore!"
@@ -47,9 +51,17 @@ export const QUEST_DATA = {
         reward: { type: 'flag', id: 'botanicSectorUnlocked' },
         dialogue: {
             offer: [
-                "Looking for more logs? You must smell something fishy about the Incident.",
-                "But before I spill the tea, let's see if you're actually worth it.",
-                "Collect 5 logs and defeat me to prove you can handle the Botanic Sector!"
+                "Looking for more logs? Ohh I know I can count on you.",
+                "Collect 5 logs and defeat me, then I will tell you some fishy stuff.",
+                "Ooh this is gonna be fun!"
+            ],
+            offer_completed: [
+                "Whoa, that's a lot of data! You've been busy scrounging, haven't you?",
+                "Alright Intern, you've got the intel. Now let's see if you can walk the walk!"
+            ],
+            bypassed_complete: [
+                "Wait... you've got the data AND you've already proven you're stronger than me?",
+                "I'm impressed. I'm a girl of my word, so since you're clearly ready, let's get to the good stuff."
             ],
             progress: [
                 "Aha! Still scrounging through the Atrium desks?",
@@ -57,7 +69,8 @@ export const QUEST_DATA = {
             ],
             complete: [
                 "Okay, okay, you got me! You're actually decent.",
-                "The Director says it was an 'Ionization Leak', but that story is fishy...",
+                "I bealived you have read all the logs, there is something fishy going on.",
+                "The Director says it was an 'Ionization Leak', but that story is just smell better than a fish...",
                 "If you want the real story, go ask Lana in the Botanic wing.",
                 "I've unlocked the door for you. Keep moving!"
             ],
@@ -517,6 +530,35 @@ export const QUEST_DATA = {
             failed: ["Hehe, did you see how their roots flared when they were running? // Ehem... I mean, you weren't quick enough. // Maybe you should scout where they’re hiding and plan a path first?"],
             retry: ["Ready to try again? Or have you reached your limit. Intern?"],
             finished: ["Oh, you cleaned all of them? What a show that was! // The seedlings were a bit slow today, weren't they?"]
+        }
+    },
+
+    'quest_pax_maintenance': {
+        id: 'quest_pax_maintenance',
+        title: 'Lobby Maintenance Fund',
+        description: "Contribute 50 Lab Credits to help fixing the lobby's flickering neon lights.",
+        type: 'handover',
+        target: 'credits',
+        amount: 50,
+        reward: { type: 'resource', id: 'biomass', amount: 5 },
+        dialogue: {
+            offer: [
+                "Welcome to the Lab, Intern. // These flickering lights are giving me a headache, but the maintenance department is 'out of budget'.",
+                "If you can spare 50 Lab Credits, I'll make sure you're compensated with some high-grade Biomass."
+            ],
+            offer_completed: [
+                "Welcome to the Lab, Intern. // These flickering lights are giving me a headache, but the maintenance department is 'out of budget'.",
+                "If you can spare 50 Lab Credits, I'll make sure you're compensated with some high-grade Biomass.",
+                "Intern! I see your wallet is looking quite healthy today."
+            ],
+            progress: ["Still waiting on those maintenance funds. 50 Credits isn't much for a specialist like you, right?"],
+            complete: [
+                "Brilliant! I'll call the technician immediately. // Ready to hand them over to the fund?"
+            ],
+            bypassed_complete: [
+                "Whoa, efficiency! You've already got the credits. // Ready to hand them over to the fund?"
+            ],
+            finished: ["The lights look much better now, don't they? Good for the eyes, good for the soul."]
         }
     }
 };
