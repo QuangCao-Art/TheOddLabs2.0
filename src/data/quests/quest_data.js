@@ -53,12 +53,17 @@ export const QUEST_DATA = {
             offer: [
                 "Looking for more logs? Ohh I know I can count on you.",
                 "You seem more reliable than the other bookheads.",
+                "With this, I will officially give you the main quest... I mean, task for you. Collecting Datapads task!",
+                "Woo, excited!!!",
                 "Collect 5 logs and have a battle with me, then I will tell you some fishy stuff.",
                 "Ooh this is gonna be fun!"
             ],
             offer_completed: [
                 "Whoa, that's a lot of data! You've been busy scrounging, haven't you?",
-                "Alright Intern, you've got the intel. Now let's see if you can walk the walk!"
+                "You seem more reliable than the other bookheads.",
+                "With this, I will officially give you the main quest... I mean, task for you. Collecting Datapads task!",
+                "Wee, excited!!!",
+                "Alright Intern, you've got the intel. Now let's see if you can walk the path!"
             ],
             bypassed_complete: [
                 "Wait... you've got the data AND you've already proven you're stronger than me?",
