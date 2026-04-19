@@ -763,7 +763,9 @@ export const Overworld = {
 
         if (obj.type === 'npc' && obj.id.includes('_wild_')) {
             el.classList.add('wild-cell');
-            // 'anim-monster-breathing' is now added AFTER the pop animation in spawner.spawnCurrent
+            // --- NEW: Systemic Restore Breathing ---
+            // Ensures established wild cells keep their animation after map re-renders.
+            if (!obj._isPopping) el.classList.add('anim-monster-breathing');
         }
         if (obj.type === 'npc') el.classList.add(`face-${obj.direction || 'down'}`);
 
@@ -2950,7 +2952,8 @@ export const Overworld = {
                 name: mId.charAt(0).toUpperCase() + mId.slice(1),
                 direction: 'down',
                 customSprite: `c${monsterIds.indexOf(mId)}`,
-                temp: true
+                temp: true,
+                _isPopping: true // Internal flag to prevent double-animation during initial render
             };
 
             if (!zone.objects) zone.objects = [];
@@ -2968,6 +2971,7 @@ export const Overworld = {
                         if (el && el.parentNode) {
                             el.classList.remove('anim-monster-pop');
                             el.classList.add('anim-monster-breathing');
+                            delete newMonster._isPopping; // Monster is now established
                         }
                     }, 400);
                 }
