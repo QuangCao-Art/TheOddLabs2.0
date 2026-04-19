@@ -5013,6 +5013,7 @@ function showGameOver(isFailure, forceOverlay = false) {
         showScreen('screen-overworld');
         resetPositions();
         if (typeof Overworld !== 'undefined') {
+            Overworld.isTransitioning = true; // LOCK interaction during the 600ms gap
             Overworld.startLoop();
 
             // Short delay to let the map render

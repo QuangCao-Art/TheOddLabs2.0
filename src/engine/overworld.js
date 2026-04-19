@@ -229,6 +229,7 @@ export const Overworld = {
         this.isDialogueActive = false;
         this.isTyping = false;
         this.isTransitioning = false;
+        this.isDialogueTransitioning = false;
         this.isPaused = false;
         this.player.isMoving = false;
         this.keysPressed.clear();
@@ -1648,7 +1649,7 @@ export const Overworld = {
 
         // Allow interaction if dialogue is active (to advance it), even if paused/transitioning
         if (!this.isDialogueActive) {
-            if (this.isPaused || this.isTransitioning || gameOverVisible) return;
+            if (this.isPaused || this.isTransitioning || this.isDialogueTransitioning || gameOverVisible) return;
         }
 
         // --- SYSTEMATIC LOCKOUT ---
