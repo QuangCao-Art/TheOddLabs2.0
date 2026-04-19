@@ -333,26 +333,6 @@ export const QUEST_DATA = {
 
     // --- SIDE QUESTS (Preserved) ---
 
-    'quest_wild_stemmy': {
-        id: 'quest_wild_stemmy',
-        title: 'Wild Stemmy Hunt',
-        description: "Defeat 5 Wild Stemmies to support the lab's behavioral research.",
-        type: 'defeat',
-        target: 'stemmy_wild',
-        amount: 5,
-        reward: { type: 'log', id: 'Log010' },
-        consume: false,
-        dialogue: {
-            offer: ["I'm doing research on Stemmy behavior.", "Could you defeat 5 Wild Stemmies for me?"],
-            progress: ["How's the hunt going?", "You've defeated {progress} out of 5."],
-            offer_completed: [
-                "I saw your tactical data—the Stemmies have been calibrated! // Ready to finalize the report?"
-            ],
-            complete: ["Wow, you did it!", "Here is a datalog for your trouble."],
-            finished: ["Thanks again for the help!"]
-        }
-    },
-
     'quest_nitrophil_synth': {
         id: 'quest_nitrophil_synth',
         title: 'Synthesis Practice',
