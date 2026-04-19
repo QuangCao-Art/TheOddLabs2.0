@@ -3118,6 +3118,7 @@ body {
 .overlay.modal-closing .glass-panel,
 .overlay.modal-closing .modal-content,
 .overlay.modal-closing .starter-modal,
+.overlay.modal-closing .scd-wrapper,
 .modal-overlay.modal-closing .glass-panel,
 .modal-overlay.modal-closing .modal-content {
     transform: scale(0.85);
@@ -4662,6 +4663,7 @@ body {
     max-width: min(420px, 90vw);
     max-height: 92vh;
     width: 100%;
+    transition: transform 0.3s ease-out;
     display: flex;
     flex-direction: column;
 }

@@ -1028,7 +1028,7 @@ window.openStarterSelection = () => {
     selectedStarterId = document.querySelectorAll('.starter-card')[0]?.dataset.monster || null;
     // Block input until modal animation completes
     starterInputReady = false;
-    setTimeout(() => { starterInputReady = true; }, 250);
+    setTimeout(() => { starterInputReady = true; }, 350);
 };
 
 let starterNavIndex = 0;
@@ -1075,14 +1075,14 @@ function initStarterSelectionEvents() {
         dialog.classList.remove('hidden');
         // Block input until dialog animation completes
         starterInputReady = false;
-        setTimeout(() => { starterInputReady = true; }, 250);
+        setTimeout(() => { starterInputReady = true; }, 350);
     }
 
     function closeConfirmDialog() {
-        dialog.classList.add('hidden');
+        window.hideWithFade(dialog);
         // Block input briefly so a spam-press doesn't fire on the card screen
         starterInputReady = false;
-        setTimeout(() => { starterInputReady = true; }, 250);
+        setTimeout(() => { starterInputReady = true; }, 350);
     }
 
     function commitStarter() {
