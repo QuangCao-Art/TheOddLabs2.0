@@ -2786,8 +2786,30 @@ export const Overworld = {
 
         start() {
             if (!this.allowedZones.includes(Overworld.currentZone)) return;
-            if (this.spawnTimer) return;
+
+            // --- NEW: Synchronize Tracking for Existing Wild Monsters ---
+            // If interaction or a modal stopped the spawner, tracking was cleared.
+            // We scan the map to re-adopt any lingering wild cells and give them fresh despawn timers.
             const zone = Overworld.zones[Overworld.currentZone];
+            if (zone && zone.objects) {
+                zone.objects.forEach(obj => {
+                    if (obj.id && (obj.id.includes('_wild_') || obj.temp === true)) {
+                        const isTracked = this.activeMonsters.some(m => m.id === obj.id);
+                        if (!isTracked) {
+                            const monsterRecord = { id: obj.id, despawnTimer: null };
+                            this.activeMonsters.push(monsterRecord);
+
+                            if (!zone.disableWildDespawn) {
+                                const lMin = zone.despawnTimeMin ?? 15000;
+                                const lRange = zone.despawnTimeMax ?? 10000;
+                                monsterRecord.despawnTimer = setTimeout(() => this.despawnMonster(obj.id), lMin + Math.random() * lRange);
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (this.spawnTimer) return;
             const maxSpawns = (zone && zone.maxWildSpawns) || 1;
             // Immediate spawn for playgrounds/high-capacity rooms, or use custom initial delay
             const initialDelay = zone.initialSpawnDelay !== undefined ? zone.initialSpawnDelay : (maxSpawns > 1 ? 200 : null);

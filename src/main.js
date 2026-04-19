@@ -544,6 +544,13 @@ window.runExpAnimationSequence = (config) => {
         btnAction.style.opacity = "0.5";
     }
     expSection.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        expSection.classList.add('animate-in');
+    });
+    // Sanitize: Clear any "sticky" classes from previous level-ups
+    expSection.classList.remove('exp-section-flash', 'exp-bar-pulse');
+    expFill.classList.remove('exp-bar-flash');
+
 
     const expFloor = getExpReqForLevel(initialLevel);
     const expCap = getExpReqForLevel(initialLevel + 1);
@@ -585,6 +592,7 @@ window.runExpAnimationSequence = (config) => {
 
                 setTimeout(() => {
                     expSection.classList.remove('exp-bar-pulse');
+                    expSection.classList.remove('exp-section-flash'); // Remove sticky flash class
                     expFill.classList.remove('exp-bar-flash');
                     expFill.style.transition = 'none';
                     expFill.style.width = '0%';
@@ -611,6 +619,8 @@ window.runExpAnimationSequence = (config) => {
                     btnAction.style.opacity = "1";
                 }
                 if (onComplete) onComplete();
+                // Final Cleanup: remove flash class again just in case
+                expSection.classList.remove('exp-section-flash');
             }, remaining > 0 ? 1200 : 100);
         }
     };

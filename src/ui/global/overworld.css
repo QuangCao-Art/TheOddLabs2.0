@@ -1814,23 +1814,17 @@
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 10px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
-.modal-exp-section:not(.hidden) {
-    animation: modalSectionFade 0.6s ease-out forwards;
+.modal-exp-section.animate-in {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-@keyframes modalSectionFade {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
 .reward-chip-line {
     color: var(--neon-cyan);
