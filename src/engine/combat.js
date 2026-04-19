@@ -44,7 +44,7 @@ export function calculateDamage(attacker, defender, move, dist) {
     let statRatio = attacker.atk / defender.def;
 
     // LEADER PERK #5: Ignore Defense
-    const hasLeader5 = attacker.equippedChips && attacker.equippedChips.some(s => s.chipId === 'leader_5');
+    const hasLeader5 = attacker.equippedChips && attacker.equippedChips.some(s => s.chipId === 'leader_dam_ignoredef');
     if (hasLeader5) {
         console.log(`[PERK] Molecular Dissolver: Defense ignored! 🧪⚔️`);
         statRatio = attacker.atk / 1; // Effectively 1 Def
@@ -53,7 +53,7 @@ export function calculateDamage(attacker, defender, move, dist) {
     let baseDamage = ((statRatio * rawPower * 0.5) + 3) * typeEffect * critMult * gpm * randomRoll;
 
     // LEADER PERK #3: x2 First Hit Damage
-    const hasLeader3 = attacker.equippedChips && attacker.equippedChips.some(s => s.chipId === 'leader_3');
+    const hasLeader3 = attacker.equippedChips && attacker.equippedChips.some(s => s.chipId === 'leader_start_damdouble');
     if (hasLeader3 && attacker.turnCount === 0) {
         console.log(`[PERK] Oxidative Energy Burst: First Hit double damage applied! ⚡⚡`);
         baseDamage *= 2;
@@ -302,7 +302,9 @@ export function getModifiedStats(monster, playerLevel = 1) {
         stats.breakdown.def.eff = defBonus;
     }
 
-    stats.slots = Math.min(10, stats.slots);
+    // SLOT MANAGEMENT: Standard 10-slot cap (Prepared for future Leader expansion)
+    const slotLimit = 10; 
+    stats.slots = Math.min(slotLimit, stats.slots);
 
     return stats;
 }

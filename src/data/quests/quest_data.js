@@ -562,7 +562,7 @@ export const NPC_PRESETS = {
         level: 10,
         team: ['cambihil', 'cambihil', 'cambihil'],
         squadSlots: [
-            { 0: 'hp_30_s1', 1: 'def_20_s2', 2: 'leader_2' },
+            { 0: 'hp_30_s1', 1: 'def_20_s2', 2: 'leader_brain_third' },
             { 0: 'hp_20', 1: 'atk_10', 2: 'pp_2_s1' },
             { 0: 'def_10', 1: 'hp_10', 2: 'spd_10_s1' }
         ]
@@ -583,7 +583,7 @@ export const NPC_PRESETS = {
         level: 20,
         team: ['nitrophil', 'nitrophil', 'nitrophil'],
         squadSlots: [
-            { 0: 'leader_5', 1: 'atk_40', 2: 'spd_20' },
+            { 0: 'leader_dam_ignoredef', 1: 'atk_40', 2: 'spd_20' },
             { 0: 'atk_20_s2', 1: 'crit_5', 2: 'pp_5' },
             { 0: 'atk_20_s2', 1: 'crit_5', 2: 'pp_5' }
         ]
@@ -594,7 +594,7 @@ export const NPC_PRESETS = {
         level: 5,
         team: ['cambihil', 'lydrosome', 'nitrophil'],
         squadSlots: [
-            { 0: 'leader_1', 1: 'hp_10', 2: 'atk_5' },
+            { 0: 'leader_brain_second', 1: 'hp_10', 2: 'atk_5' },
             { 0: 'spd_5', 1: 'atk_5', 2: 'pp_1' },
             { 0: 'atk_5', 1: 'crit_1', 2: 'spd_5' }
         ]
@@ -602,7 +602,7 @@ export const NPC_PRESETS = {
     'survival_preset': {
         name: 'Survival Tactical Suite',
         squadSlots: [
-            { 0: 'leader_3', 1: 'def_10', 2: 'hp_10' },
+            { 0: 'leader_start_damdouble', 1: 'def_10', 2: 'hp_10' },
             { 0: 'def_5', 1: 'def_5', 2: 'hp_5' },
             { 0: 'def_5', 1: 'def_5', 2: 'hp_5' }
         ]
@@ -610,7 +610,7 @@ export const NPC_PRESETS = {
     'utility_preset': {
         name: 'Utility Tactical Suite',
         squadSlots: [
-            { 0: 'leader_2', 1: 'spd_10', 2: 'pp_5' },
+            { 0: 'leader_brain_third', 1: 'spd_10', 2: 'pp_5' },
             { 0: 'spd_5', 1: 'pp_2', 2: 'crit_2' },
             { 0: 'spd_5', 1: 'pp_2', 2: 'crit_2' }
         ]

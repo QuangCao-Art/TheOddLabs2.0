@@ -28,7 +28,7 @@ export const gameState = {
     // Unified Profile System (Management Hub Presets)
     profiles: {
         player: {
-            level: FULL_CELL_DEBUG ? 20 : 0,
+            level: FULL_CELL_DEBUG ? 30 : 0,
             chipBox: [],
             team: FULL_CELL_DEBUG ? ['nitrophil', 'lydrosome', 'cambihil', 'nitrophil', 'nitrophil', 'lydrosome', 'lydrosome', 'cambihil', 'cambihil', 'stemmy', 'stemmy', 'stemmy'] : [],
             party: [],
@@ -141,7 +141,7 @@ export function applyFullCellDebug(isFull) {
     gameState.cellDex = isFull ? [...fullTeam] : [];
     
     Object.keys(gameState.profiles).forEach(key => {
-        gameState.profiles[key].level = isFull ? 20 : 0;
+        gameState.profiles[key].level = isFull ? 30 : 0;
         // In full debug, give everyone the full roster
         gameState.profiles[key].team = isFull ? [...fullRoster] : [];
         gameState.profiles[key].party = []; // Reset party so resetGame rebuilds it

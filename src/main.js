@@ -690,7 +690,7 @@ window.showQuestCompleteModal = (questId, onClose) => {
     let potentialExp = gameState.exp + questExpGained;
     let gainedChips = [];
 
-    while (potentialLevel < 20 && potentialExp >= getExpReqForLevel(potentialLevel + 1)) {
+    while (potentialLevel < 30 && potentialExp >= getExpReqForLevel(potentialLevel + 1)) {
         potentialLevel++;
         const rewards = LEVEL_REWARDS[potentialLevel];
         if (rewards && Array.isArray(rewards)) {
@@ -1974,7 +1974,7 @@ function setupEventListeners() {
         const val = parseInt(e.target.value);
         if (!isNaN(val)) {
             const profileId = catalystState.activeProfile;
-            gameState.profiles[profileId].level = Math.max(0, Math.min(20, val));
+            gameState.profiles[profileId].level = Math.max(0, Math.min(30, val));
             syncChipsToLevel(profileId, gameState.profiles[profileId].level);
             applyBonuses(gameState.profiles[profileId].party, gameState.profiles[profileId].level);
             renderManagementHub();
@@ -3195,8 +3195,8 @@ function updateUI() {
 
         if (isPellicle) {
             const playerChipBox = gameState.profiles.player.chipBox || [];
-            if (idx === 1 && !playerChipBox.includes('leader_1')) unlocked = false;
-            if (idx === 2 && !playerChipBox.includes('leader_2')) unlocked = false;
+            if (idx === 1 && !playerChipBox.includes('leader_brain_second')) unlocked = false;
+            if (idx === 2 && !playerChipBox.includes('leader_brain_third')) unlocked = false;
         }
 
         btn.classList.toggle('locked', !unlocked);
@@ -3361,8 +3361,8 @@ function updateUI() {
     }
 
     // 2. Move buttons (Selection, Validation, and Dynamic Rendering)
-    const hasLeader1 = hasLeaderChip('player', 'leader_1');
-    const hasLeader2 = hasLeaderChip('player', 'leader_2');
+    const hasLeader1 = hasLeaderChip('player', 'leader_brain_second');
+    const hasLeader2 = hasLeaderChip('player', 'leader_brain_third');
 
     moveButtons.forEach((btn, idx) => {
         const move = moveset[idx];
@@ -3988,8 +3988,8 @@ async function resolvePhase() {
     const opponentProfileId = catalystState.battleOpponentId || 'opponent';
 
     const unlocked = [true];
-    unlocked[1] = hasLeaderChip(opponentProfileId, 'leader_1');
-    unlocked[2] = hasLeaderChip(opponentProfileId, 'leader_2');
+    unlocked[1] = hasLeaderChip(opponentProfileId, 'leader_brain_second');
+    unlocked[2] = hasLeaderChip(opponentProfileId, 'leader_brain_third');
 
     const selectedMove = AI.selectMove(gameState.enemy, isEnemyAttacking, gameState.player, unlocked);
     gameState.enemy.selectedMove = selectedMove.id;
@@ -4799,7 +4799,17 @@ const EXP_THRESHOLDS = {
     17: 13450,
     18: 15200,
     19: 17100,
-    20: 19100
+    20: 19100,
+    21: 21600,
+    22: 24200,
+    23: 27000,
+    24: 30000,
+    25: 33500,
+    26: 37500,
+    27: 42000,
+    28: 47000,
+    29: 53000,
+    30: 60000
 };
 
 /**
@@ -4816,7 +4826,7 @@ window.grantExperience = (amount, silent = false, skipBanner = false) => {
     }
     lastExpGrant = { time: now, amount };
 
-    const currentMaxLevel = 20;
+    const currentMaxLevel = 30;
     const currentLevel = gameState?.profiles?.player?.level || 0;
     const fallback = { didLevelUp: false, newLevel: currentLevel, amount: 0 };
 
@@ -4833,7 +4843,7 @@ window.grantExperience = (amount, silent = false, skipBanner = false) => {
     let targetLevel = currentLevel;
     let didLevelUp = false;
 
-    while (targetLevel < 20 && gameState.exp >= getExpReqForLevel(targetLevel + 1)) {
+    while (targetLevel < 30 && gameState.exp >= getExpReqForLevel(targetLevel + 1)) {
         targetLevel++;
         didLevelUp = true;
     }
@@ -4950,7 +4960,7 @@ function showLevelUpNotification(level) {
 
 const getExpReqForLevel = (level) => {
     if (EXP_THRESHOLDS[level] !== undefined) return EXP_THRESHOLDS[level];
-    return EXP_THRESHOLDS[20] + (level - 20) * 3000;
+    return EXP_THRESHOLDS[30] + (level - 30) * 8000;
 };
 
 function updateOverworldEXPBar() {
@@ -4969,7 +4979,7 @@ function updateOverworldEXPBar() {
     // Cap visual at 100% just in case
     expInLevel = Math.max(0, Math.min(expInLevel, expNeededForLevel));
     let widthPct = (expInLevel / expNeededForLevel) * 100;
-    if (currentRg >= 20) {
+    if (currentRg >= 30) {
         widthPct = 100; // Max Level
         expInLevel = "MAX";
         expNeededForLevel = "MAX";

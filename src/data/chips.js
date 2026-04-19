@@ -47,34 +47,44 @@ export const CHIPS = {
     pp_3_s2: { id: 'pp_3_s2', name: 'ATP Enrichment (3) [S+2]', tier: 3, stats: { pp: 3 }, slots: 2, rarity: 'rare', desc: 'Ultimate mitochondrial fuel loops with maximum slot capacity.' },
 
     // LEADER CARDS
-    leader_1: { id: 'leader_1', name: 'The Second Brain', tier: 'L', stats: {}, slots: 0, rarity: 'epic', isLeader: true, type: 'passive', desc: 'Unlocks the 1st Pellicle (2nd Move) skill slot.' },
-    leader_2: { id: 'leader_2', name: 'The Third Brain', tier: 'L', stats: {}, slots: 0, rarity: 'epic', isLeader: true, type: 'passive', desc: 'Unlocks the 2nd Pellicle (3rd Move) skill slot.' },
-    leader_3: { id: 'leader_3', name: 'Oxidative Energy Burst', tier: 'L', stats: {}, slots: 0, rarity: 'epic', isLeader: true, type: 'equip', desc: 'First hit of battle deals double damage.' },
-    leader_4: { id: 'leader_4', name: 'Neural Initiative', tier: 'L', stats: {}, slots: 0, rarity: 'epic', isLeader: true, type: 'equip', desc: 'Active monster always acts first.' },
-    leader_5: { id: 'leader_5', name: 'Molecular Dissolver', tier: 'L', stats: {}, slots: 0, rarity: 'epic', isLeader: true, type: 'equip', desc: 'Attacks ignore opponent Defense.' }
+    leader_brain_second: { id: 'leader_brain_second', name: 'The Second Brain', tier: 'L', stats: {}, slots: 0, rarity: 'epic', isLeader: true, type: 'passive', desc: 'Unlocks the 1st Pellicle (2nd Move) skill slot.' },
+    leader_brain_third: { id: 'leader_brain_third', name: 'The Third Brain', tier: 'L', stats: {}, slots: 0, rarity: 'epic', isLeader: true, type: 'passive', desc: 'Unlocks the 2nd Pellicle (3rd Move) skill slot.' },
+    leader_start_damdouble: { id: 'leader_start_damdouble', name: 'Oxidative Energy Burst', tier: 'L', stats: {}, slots: 0, rarity: 'epic', isLeader: true, type: 'equip', desc: 'First hit of battle deals double damage.' },
+    leader_start_first: { id: 'leader_start_first', name: 'Neural Initiative', tier: 'L', stats: {}, slots: 0, rarity: 'epic', isLeader: true, type: 'equip', desc: 'Active monster always acts first.' },
+    leader_dam_ignoredef: { id: 'leader_dam_ignoredef', name: 'Molecular Dissolver', tier: 'L', stats: {}, slots: 0, rarity: 'epic', isLeader: true, type: 'equip', desc: 'Attacks ignore opponent Defense.' }
 };
 
 export const LEVEL_REWARDS = {
     1: ['atk_5', 'atk_5'],
     2: ['def_5', 'def_5'],
-    3: ['spd_5', 'hp_10'],
-    4: ['crit_2_s1', 'pp_1'],
-    5: ['pp_2_s1', 'leader_1'],
-    6: ['atk_10', 'atk_10', 'crit_1'],
-    7: ['spd_10_s1', 'hp_20'],
-    8: ['hp_30_s1', 'spd_15'],
-    9: ['atk_20_s2', 'crit_3_s2'],
-    10: ['def_20_s2', 'leader_2'],
-    11: ['atk_40', 'def_40', 'hp_60'],
-    12: ['pp_3_s2'],
-    13: ['hp_30_s2', 'spd_15_s2'],
-    14: ['crit_3_s2'],
-    15: ['pp_3_s2', 'leader_3'],
-    16: ['crit_5', 'pp_5'],
-    17: ['atk_20_s2', 'def_20_s2'],
-    18: ['hp_30_s1', 'spd_20'],
-    19: ['atk_40', 'def_40'],
-    20: ['leader_5']
+    3: ['hp_10', 'hp_10'],
+    4: ['spd_5', 'crit_1'],
+    5: ['leader_brain_second'],
+    6: ['atk_10', 'atk_10'],
+    7: ['def_10', 'def_10'],
+    8: ['hp_20', 'hp_20'],
+    9: ['spd_5_s1', 'pp_1'],
+    10: ['leader_brain_third'],
+    11: ['atk_20'],
+    12: ['def_20'],
+    13: ['hp_30_s1'],
+    14: ['crit_2_s1', 'pp_1'],
+    15: ['spd_10_s1'],
+    16: ['atk_20'], 
+    17: ['def_20'], 
+    18: ['hp_30_s1'],
+    19: ['crit_3_s2', 'pp_2_s1'],
+    20: ['leader_start_first'],
+    21: ['atk_20_s2', 'atk_20_s2'],
+    22: ['def_20_s2', 'def_20_s2'],
+    23: ['hp_30_s2', 'hp_30_s2'],
+    24: ['spd_15_s2', 'crit_5'],
+    25: ['leader_start_damdouble'],
+    26: ['atk_40'],
+    27: ['def_40'],
+    28: ['hp_60'],
+    29: ['pp_3_s2', 'spd_20'],
+    30: ['leader_dam_ignoredef']
 };
 
 
