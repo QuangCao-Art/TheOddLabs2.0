@@ -549,3 +549,218 @@ export const QUEST_DATA = {
         }
     }
 };
+
+export const NPC_PRESETS = {
+    'lana': {
+        name: 'Lana\'s Fortress',
+        owner: 'lana',
+        level: 10,
+        team: ['cambihil', 'cambihil', 'cambihil'],
+        squadSlots: [
+            { 0: 'hp_30_s1', 1: 'def_20_s2', 2: 'leader_2' },
+            { 0: 'hp_20', 1: 'atk_10', 2: 'pp_2_s1' },
+            { 0: 'def_10', 1: 'hp_10', 2: 'spd_10_s1' }
+        ]
+    },
+    'dyzes': {
+        name: 'Dyzes\' Protocol',
+        owner: 'dyzes',
+        level: 15,
+        team: ['lydrosome', 'lydrosome', null],
+        squadSlots: [
+            { 0: 'spd_15_s2', 1: 'atk_40', 2: 'crit_3_s2' },
+            { 0: 'spd_10_s1', 1: 'atk_20_s2', 2: 'pp_3_s2' }
+        ]
+    },
+    'capsain': {
+        name: 'Director\'s Order',
+        owner: 'capsain',
+        level: 20,
+        team: ['nitrophil', 'nitrophil', 'nitrophil'],
+        squadSlots: [
+            { 0: 'leader_5', 1: 'atk_40', 2: 'spd_20' },
+            { 0: 'atk_20_s2', 1: 'crit_5', 2: 'pp_5' },
+            { 0: 'atk_20_s2', 1: 'crit_5', 2: 'pp_5' }
+        ]
+    },
+    'jenzi_mid': {
+        name: 'Jenzi\'s Test',
+        owner: 'jenzi',
+        level: 5,
+        team: ['cambihil', 'lydrosome', 'nitrophil'],
+        squadSlots: [
+            { 0: 'leader_1', 1: 'hp_10', 2: 'atk_5' },
+            { 0: 'spd_5', 1: 'atk_5', 2: 'pp_1' },
+            { 0: 'atk_5', 1: 'crit_1', 2: 'spd_5' }
+        ]
+    },
+    'survival_preset': {
+        name: 'Survival Tactical Suite',
+        squadSlots: [
+            { 0: 'leader_3', 1: 'def_10', 2: 'hp_10' },
+            { 0: 'def_5', 1: 'def_5', 2: 'hp_5' },
+            { 0: 'def_5', 1: 'def_5', 2: 'hp_5' }
+        ]
+    },
+    'utility_preset': {
+        name: 'Utility Tactical Suite',
+        squadSlots: [
+            { 0: 'leader_2', 1: 'spd_10', 2: 'pp_5' },
+            { 0: 'spd_5', 1: 'pp_2', 2: 'crit_2' },
+            { 0: 'spd_5', 1: 'pp_2', 2: 'crit_2' }
+        ]
+    }
+};
+
+export const NPC_ENCOUNTERS = {
+    'jenzi_tutorial': {
+        name: "Jenzi (Tutorial)",
+        rg: 0,
+        team: ['stemmy'],
+        style: 'balanced',
+        proceedOnLoss: true,
+        reward: { exp: 25, biomass: 5, credits: 50 }
+    },
+    'jenzi': {
+        name: "Jenzi (Atrium Quest)",
+        rg: 5,
+        team: ['stemmy'],
+        style: 'balanced',
+        reward: { exp: 400, biomass: 15, credits: 300 }
+    },
+    'lana': {
+        name: "Lana (Botanic Quest)",
+        rg: 10,
+        team: ['cambihil'],
+        style: 'survival',
+        reward: { exp: 800, biomass: 50, credits: 1000 }
+    },
+    'dyzes': {
+        name: "Dyzes (Human Quest)",
+        rg: 15,
+        team: ['lydrosome', 'lydrosome'],
+        style: 'utility',
+        reward: { exp: 1200, biomass: 100, credits: 2000 }
+    },
+    'capsain': {
+        name: "Capsain (Director Quest)",
+        rg: 20,
+        team: ['nitrophil', 'nitrophil', 'nitrophil'],
+        style: 'aggressive',
+        reward: { exp: 2500, biomass: 200, credits: 5000 }
+    },
+    'npc01': { name: "NPC Male", rg: 5, team: ['stemmy'], style: 'balanced' },
+    'npc02': { name: "NPC Female", rg: 5, team: ['stemmy'], style: 'balanced' },
+    'maya': {
+        name: "Scientist Maya",
+        rg: 1,
+        team: ['stemmy'],
+        style: 'balanced',
+        reward: { exp: 100, biomass: 5, credits: 60 }
+    },
+    'sapstan': {
+        name: "Biologist Sapstan",
+        rg: 2,
+        team: ['cambihil'],
+        style: 'balanced',
+        reward: { exp: 120, biomass: 6, credits: 80 }
+    },
+    'blundur': {
+        name: "Researcher Blundur",
+        rg: 2,
+        team: ['lydrosome'],
+        style: 'balanced',
+        reward: { exp: 120, biomass: 6, credits: 80 }
+    },
+    'saito': {
+        name: "Assistant Saito",
+        rg: 3,
+        team: ['nitrophil'],
+        style: 'balanced',
+        reward: { exp: 150, biomass: 10, credits: 150 }
+    },
+    'shopia': {
+        name: "Scientist Shopia",
+        rg: 5,
+        team: ['cambihil'],
+        style: 'balanced',
+        reward: { exp: 400, biomass: 20, credits: 300 }
+    },
+    'clips': {
+        name: "Tech Clips",
+        rg: 6,
+        team: ['stemmy'],
+        style: 'utility',
+        reward: { exp: 500, biomass: 25, credits: 400 }
+    },
+    'lustra': {
+        name: "Researcher Lustra",
+        rg: 7,
+        team: ['nitrophil'],
+        style: 'aggressive',
+        reward: { exp: 500, biomass: 30, credits: 500 }
+    },
+    'rattou': {
+        name: "Chef Rattou",
+        rg: 7,
+        team: ['stemmy', 'nitrophil'],
+        style: 'aggressive',
+        reward: { exp: 700, biomass: 30, credits: 600 }
+    },
+    'ecto': {
+        name: "Researcher Ecto",
+        rg: 11,
+        team: ['stemmy', 'stemmy'],
+        style: 'aggressive',
+        reward: { exp: 800, biomass: 40, credits: 600 }
+    },
+    'premy': {
+        name: "Researcher Premy",
+        rg: 12,
+        team: ['stemmy', 'nitrophil'],
+        style: 'utility',
+        reward: { exp: 900, biomass: 45, credits: 700 }
+    },
+    'yifec': {
+        name: "Researcher Yifec",
+        rg: 13,
+        team: ['lydrosome', 'stemmy'],
+        style: 'utility',
+        reward: { exp: 1000, biomass: 50, credits: 800 }
+    },
+    'white': {
+        name: "Researcher White",
+        rg: 13,
+        team: ['lydrosome', 'nitrophil'],
+        style: 'aggressive',
+        reward: { exp: 1000, biomass: 50, credits: 800 }
+    },
+    'cherry': {
+        name: "Researcher Cherry",
+        rg: 13,
+        team: ['cambihil', 'lydrosome'],
+        style: 'utility',
+        reward: { exp: 1000, biomass: 50, credits: 800 }
+    },
+    'anreal': {
+        name: "Assistant Anreal",
+        rg: 17,
+        team: ['lydrosome', 'cambihil'],
+        style: 'balanced',
+        reward: { exp: 1500, biomass: 80, credits: 1500 }
+    },
+    'godou': {
+        name: "Assistant Godou",
+        rg: 17,
+        team: ['cambihil', 'nitrophil'],
+        style: 'balanced',
+        reward: { exp: 1500, biomass: 80, credits: 1500 }
+    },
+    'yunidi': {
+        name: "Assistant Yunidi",
+        rg: 18,
+        team: ['stemmy', 'stemmy', 'nitrophil'],
+        style: 'balanced',
+        reward: { exp: 1800, biomass: 100, credits: 2000 }
+    }
+};

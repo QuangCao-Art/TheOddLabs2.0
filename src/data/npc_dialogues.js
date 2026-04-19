@@ -152,7 +152,7 @@ export const NPC_SCRIPTS = {
 
             if (isPostBattle) {
                 if (bossWon) {
-                    lines = ["Don't be discouraged! Sometimes a bit of luck helps with the final sync, but skill is the foundation! Just keep practicing your placement."];
+                    lines = ["Don't be discouraged! Sometimes a bit of luck helps with the final sync, but skill is the foundation! // Just keep practicing your placement."];
                 } else {
                     lines = [
                         "Incredible! Your placement was precise. // That's the secret to the MAP system—it's not just about power, it's about the proximity of your attack nodes.",

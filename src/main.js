@@ -3,7 +3,8 @@ import { resolveTurn, getDistance, checkOverload, getModifiedStats } from './eng
 import { AI } from './engine/ai.js';
 import { MONSTERS } from './data/monsters.js';
 import { Overworld } from './engine/overworld.js';
-import { CHIPS, LEVEL_REWARDS, NPC_PRESETS, NPC_ENCOUNTERS } from './data/chips.js';
+import { CHIPS, LEVEL_REWARDS } from './data/chips.js';
+import { NPC_PRESETS, NPC_ENCOUNTERS } from './data/quests/quest_data.js';
 import { SHOP_ITEMS, shopState } from './data/shop.js';
 import { SYNTHESIS_RECIPES } from './data/synthesis.js';
 import { QUESTS } from './data/quests.js';
