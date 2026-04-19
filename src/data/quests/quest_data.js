@@ -521,7 +521,13 @@ export const QUEST_DATA = {
         type: 'handover',
         target: 'credits',
         amount: 100,
-        reward: { type: 'resource', id: 'biomass', amount: 50 },
+        reward: {
+            type: 'resource_multi',
+            rewards: [
+                { type: 'resource', id: 'biomass', amount: 50 },
+                { type: 'exp', amount: 30 }
+            ]
+        },
         dialogue: {
             offer: [
                 "Welcome to the Lab, Intern. // These flickering lights are giving me a headache, but the maintenance department is 'out of budget'.",

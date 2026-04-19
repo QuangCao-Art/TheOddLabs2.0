@@ -382,7 +382,7 @@ export const Overworld = {
             } else if (reward.type === 'exp') {
                 if (window.grantExperience) {
                     // Skip banner here because showQuestCompleteModal handles the animation and notification trigger now
-                    window.grantExperience(reward.amount || 0, false, true);
+                    window.grantExperience(reward.amount || 0, true, true);
                 }
                 msg = `Acquired ${reward.amount} EXP.`;
             } else if (reward.type === 'relocate') {

@@ -1641,7 +1641,7 @@ function setupEventListeners() {
             };
             // Ensure state persists and is scaled properly
             applyBonuses(gameState.profiles['jenzi_tutorial'].party, 0, true);
-        } else if (NPC_ENCOUNTERS[opponentProfileId]) {
+        } else if (NPC_ENCOUNTERS[opponentProfileId] && !opponentProfileId.endsWith('_wild')) {
             // If it's in ENCOUNTERS but not PRESETS, we still need to initialize the opponent profile
             // based on the encounter data (RG, team, etc.)
             const enc = NPC_ENCOUNTERS[opponentProfileId];
@@ -5135,7 +5135,7 @@ function showGameOver(isFailure, forceOverlay = false) {
 
             // Cleanup Key Listener immediately
             window.removeEventListener('keydown', outcomeKeyHandler);
-            window.grantExperience(expEarned, true);
+            window.grantExperience(expEarned, true, true);
             // Battle rewards are 'Other cases' (Modals), use Discovery SFX
             window.changeResource('lc', creditsEarned, false, true);
             window.changeResource('bm', biomassEarned, false, true);

@@ -5388,8 +5388,8 @@ body {
 /* --- TIMED QUEST UI --- */
 #quest-countdown-overlay {
     position: fixed;
-    top: 160px;
-    /* Shifted up 20px */
+    top: 210px;
+    /* Centered vertically at 210px */
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10000;

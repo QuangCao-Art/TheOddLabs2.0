@@ -289,6 +289,5 @@ export const NPC_ENCOUNTERS = {
         team: ['stemmy', 'stemmy', 'nitrophil'],
         style: 'balanced',
         reward: { exp: 1800, biomass: 100, credits: 2000 }
-    },
-    'stemmy_wild': { name: "Wild Stemmy", rg: 'auto', team: ['stemmy'], style: 'balanced' }
+    }
 };
