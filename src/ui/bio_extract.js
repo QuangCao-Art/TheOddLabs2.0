@@ -41,7 +41,8 @@ export const BioExtract = {
     close() {
         window.hideWithFade('screen-bio-extract');
         if (window.Overworld) {
-            window.Overworld.isPaused = false;
+            window.Overworld.resetStates();
+            window.Overworld.startLoop();
             // Force re-render to show updated grid cells immediately on exit
             if (window.Overworld.currentZone === 'bioExtraction') {
                 window.Overworld.renderMap();

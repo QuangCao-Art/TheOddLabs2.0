@@ -513,7 +513,10 @@ window.showItemPickupModal = (itemId, onClose) => {
         if (typeof AudioManager !== 'undefined') AudioManager.play('modal_close', 0.5);
         window.hideWithFade(modal);
         window.removeEventListener('keydown', keyHandler);
-        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
+        if (typeof Overworld !== 'undefined') {
+            Overworld.resetStates();
+            Overworld.startLoop();
+        }
         if (onClose) onClose();
     }
 
@@ -6975,7 +6978,10 @@ window.closeIncubatorMenu = function () {
     if (incubatorIsHealing) return; // Prevent closing during active sync
     window.hideWithFade('screen-incubator-menu');
     document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
-    if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
+    if (typeof Overworld !== 'undefined') {
+        Overworld.resetStates();
+        Overworld.startLoop();
+    }
 }
 
 window.startHealSequence = async function (context = 'manual') {
@@ -7608,7 +7614,8 @@ document.getElementById('btn-synthesis-cancel')?.addEventListener('click', () =>
 document.getElementById('btn-synthesis-close')?.addEventListener('click', () => {
     window.hideWithFade('screen-synthesis');
     if (typeof Overworld !== 'undefined') {
-        Overworld.isPaused = false;
+        Overworld.resetStates();
+        Overworld.startLoop();
         document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
     }
 });
@@ -7747,7 +7754,8 @@ async function startSynthesisAnimation(monsterId, destination) {
     }
 
     if (typeof Overworld !== 'undefined') {
-        Overworld.isPaused = false;
+        Overworld.resetStates();
+        Overworld.startLoop();
         document.getElementById('overworld-viewport')?.classList.remove('blur-overlay');
     }
 }
@@ -8016,7 +8024,10 @@ function handleShopAction() {
 function initShopEventListeners() {
     document.getElementById('btn-shop-close')?.addEventListener('click', () => {
         window.hideWithFade('screen-shop');
-        Overworld.isPaused = false;
+        if (typeof Overworld !== 'undefined') {
+            Overworld.resetStates();
+            Overworld.startLoop();
+        }
     });
 
     document.querySelectorAll('.shop-tab-btn').forEach(btn => {

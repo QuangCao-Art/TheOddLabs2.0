@@ -2570,7 +2570,10 @@ export const Overworld = {
         document.getElementById('npc-portrait-overlay')?.classList.add('hidden');
 
         // Prevent immediate re-interaction if we're moving to a battle or modal
-        if (this.pendingBattleEncounter || this.pendingWildEncounter) {
+        if (this.pendingBattleEncounter || this.pendingWildEncounter || 
+            this.pendingIncubatorMenu || this.pendingShopMenu || 
+            this.pendingSynthesisMenu || this.pendingBioExtractMenu ||
+            this.pendingItemPickup) {
             this.isTransitioning = true;
         }
 

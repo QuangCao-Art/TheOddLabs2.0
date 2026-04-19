@@ -55,10 +55,20 @@ Use this workflow to create a new UI modal (Pause, Confirmation, or Dialogue) en
     - **`e.stopImmediatePropagation()`**: This is MUST. Use it on all keydown handlers (ESC, F, Enter) to prevent the menu click from interacting with overworld NPCs or objects behind the screen.
 2.  **Global Blocking**: Add the new menu ID to the `activeOverlays` or `isAnyOtherMenuOpen` check in the global `keydown` listener to prevent W/W/A/D movement while the menu is open.
 3.  **Input Sync**: Add `mouseenter` listeners to all buttons that update the `currentNavIndex` and call `updateSelection()`. This prevents the "Double Highlight" bug where both a keyboard selection and mouse hover are visible.
-4.  **Audio Triggers**:
-    *   **Open**: Call `AudioManager.play('modal_open')` when the menu opens.
+5.  **Heartbeat Protocol (CRITICAL)**:
+    *   **Open Sequence**: Set `Overworld.isPaused = true`. When closing a dialogue to open a menu, set `Overworld.isTransitioning = true` to lock player input during the transition gap.
+    *   **Reset Pattern**: Use `Overworld.resetStates()` to clear all flags (`isPaused`, `isDialogueActive`, `isTransitioning`) and the input buffer.
+    *   **Restart Pattern**: `resetStates()` stops the game loop. You MUST call `Overworld.startLoop()` immediately after to resume the heartbeat.
+    *   **Visual Sync**: Always call `requestAnimationFrame(() => Overworld.updatePlayerPosition())` after restarting the loop to ensure camera and sprite alignment.
+6.  **Input Ready Buffer**:
+    *   For modals with important text/rewards, implement an `inputReady = false` flag.
+    *   Use `setTimeout(() => { inputReady = true; }, 600);` to prevent players from accidentally "double-clicking" through the modal during its entry animation.
+7.  **Resource & State Sync**:
+    *   If the modal grants rewards, call `window.updateResourceHUD()` upon closing.
+    *   If closing the modal triggers a follow-up sequence (teleport, extraction), **RE-LOCK** the engine immediately after `resetStates()` by setting `Overworld.isPaused = true` and `Overworld.isTransitioning = true`.
+8.  **Audio Triggers**:
+    *   **Open**: Call `AudioManager.play('modal_open')` or specialized tags: `modal_quest_clear`, `modal_pickup`.
     *   **Close**: Use `window.hideWithFade(element)` to trigger the universal `modal_close` sound and 300ms fade-out.
-    *   **Special events**: For milestones, use `modal_quest_clear` or `modal_pickup`.
 
 ---
 
@@ -70,3 +80,7 @@ Use this workflow to create a new UI modal (Pause, Confirmation, or Dialogue) en
 - **Ad-hoc Sizing**: Avoid `min-width: 450px`. Stick to `max-width` for responsiveness.
 - **Wiggling Icons**: If buttons have icons, ensure they don't jump positions during the `scale(1.05)` hover transform.
 - **The "Shift-to-Corner" Bug**: Forgetting to include the `translate(-50%, -50%)` in the `modal-closing` keyframes for absolute-positioned modals.
+- **The Interaction Spam**: Forgetting to set `isTransitioning = true` during the 200ms gap between dialogue closure and menu opening.
+- **The Heartbeat Softlock**: Calling `resetStates()` to clear flags but forgetting to call `startLoop()` to restart the engine's timer.
+- **Accidental Clickthrough**: Forgetting the `inputReady` buffer, allowing a single 'F' press to skip Dialogue AND the subsequent Reward Modal.
+- **The Camera Jump**: Forgetting to call `updatePlayerPosition()` after a reset, causing the player or camera to "teleport" a few pixels on the first frame of resume.
