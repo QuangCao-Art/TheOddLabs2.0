@@ -94,8 +94,25 @@ let synthInputReady = true;
 let incubatorInputReady = true;
 let inventoryInputReady = true;
 let bioExtractInputReady = true;
+const globalInputTimes = {}; // Systematic hardware debounce (50ms)
 
 window.setBioExtractInputReady = (val) => { bioExtractInputReady = val; };
+
+// --- ROOT SOLUTION: GLOBAL HARDWARE DEBOUNCE FIREWALL ---
+// Using { capture: true } allows this listener to run BEFORE any other keyboard listener in the game.
+// If a key is pressed within 50ms of its previous registration, we kill the event entirely.
+window.addEventListener('keydown', (e) => {
+    const key = e.key.toLowerCase();
+    const now = Date.now();
+
+    if (globalInputTimes[key] && now - globalInputTimes[key] < 50) {
+        // console.log(`[DEBOUNCE] Systematically ignoring spam for key: ${key}`);
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        return;
+    }
+    globalInputTimes[key] = now;
+}, { capture: true });
 
 function resetSelectorCore(instant = false) {
     if (!selectionCore) return;
@@ -2057,6 +2074,9 @@ function setupEventListeners() {
 
     window.addEventListener('keydown', (e) => {
         const key = e.key.toLowerCase();
+        // The hardware debounce firewall is now handled at the top of the file via capture-phase propagation stopping.
+        // This listener only processes valid, non-spam events.
+
         if (key === 'f' && e.repeat) return; // Prevent spamming actions by holding F
         const inventoryOverlay = document.getElementById('screen-inventory');
         const isInvOpen = inventoryOverlay && !inventoryOverlay.classList.contains('hidden');

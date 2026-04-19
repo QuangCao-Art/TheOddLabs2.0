@@ -173,6 +173,12 @@ export const Overworld = {
     currentZone: null,
     mapData: null,
     controlsInitialized: false,
+    actionBuffer: {
+        interact: false,
+        menu: false,
+        inventory: false
+    },
+    lastInputTimes: {}, // Map of key -> timestamp for hardware debounce
     isDialogueActive: false,
     isDialogueTransitioning: false,
     isTyping: false,
@@ -189,7 +195,8 @@ export const Overworld = {
     isStartingQuest: false,
     questNPCAttached: null,
 
-    lastInteractTime: 0,
+    // --- PIXEL INPUT SYSTEM ---
+
     logsCollected: [], // Local cache, synced from gameState.logs in renderMap
     pendingIncubatorMenu: false, // flag for incubator healing flow
     pendingShopMenu: false, // New flag for shop terminal flow
@@ -200,6 +207,24 @@ export const Overworld = {
     pendingWildInstanceId: null, // TRACKS THE SPECIFIC BARCODE ID
     gameLoopActive: false,
 
+    handleMenuInput() {
+        // If any menu or modal is open, let that handle the escape key
+        const hasOverlay = document.querySelector('.overlay:not(.hidden), .modal-overlay:not(.hidden), .modal-overlay.active');
+        if (hasOverlay) return;
+
+        if (window.triggerSlowTransition) {
+            window.triggerSlowTransition(() => {
+                this.stopLoop();
+                document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+                document.getElementById('screen-main-menu').classList.remove('hidden');
+            });
+        } else {
+            this.stopLoop();
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('screen-main-menu').classList.remove('hidden');
+        }
+    },
+
     resetStates() {
         this.isDialogueActive = false;
         this.isTyping = false;
@@ -207,6 +232,8 @@ export const Overworld = {
         this.isPaused = false;
         this.player.isMoving = false;
         this.keysPressed.clear();
+        this.lastInputTimes = {}; // Clear debounce history on reset
+        Object.keys(this.actionBuffer).forEach(k => this.actionBuffer[k] = false);
         if (this.typingInterval) clearInterval(this.typingInterval);
         document.getElementById('dialogue-box')?.classList.add('hidden');
         // Kill the loop so startLoop() can restart it cleanly
@@ -886,46 +913,23 @@ export const Overworld = {
 
         window.addEventListener('keydown', (e) => {
             if (document.getElementById('screen-overworld').classList.contains('hidden')) return;
-            if (e.key.toLowerCase() === 'f') {
-                // If dialogue is active, always allow F to advance/speed up (unless transitioning)
-                if (this.isDialogueActive && !this.isTransitioning) {
-                    this.interact();
-                } else if (!this.isPaused && !this.isTransitioning && !this.isDialogueTransitioning && !e.repeat && !this.isStartingQuest) {
-                    // Block interaction during transitions or if paused
-                    if (this.activeTimedQuestId) return;
-
-                    // Safety check: Don't interact if any UI overlay/modal is visible
-                    // Added zone-transition-overlay to the check
-                    const hasOverlay = document.querySelector('.overlay:not(.hidden), .modal-overlay:not(.hidden), .modal-overlay.active, #zone-transition-overlay:not(.hidden), #game-over-overlay:not(.hidden)');
-                    if (!hasOverlay) {
-                        this.interact();
-                    }
-                }
-            }
-            if (e.key.toLowerCase() === 'escape') {
-                // If any menu or modal is open, let that handle the escape key
-                const hasOverlay = document.querySelector('.overlay:not(.hidden), .modal-overlay:not(.hidden), .modal-overlay.active');
-                if (hasOverlay) return;
-
-                if (window.triggerSlowTransition) {
-                    window.triggerSlowTransition(() => {
-                        this.stopLoop();
-                        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-                        document.getElementById('screen-main-menu').classList.remove('hidden');
-                    });
-                } else {
-                    this.stopLoop();
-                    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-                    document.getElementById('screen-main-menu').classList.remove('hidden');
-                }
-            }
-        });
-
-        window.addEventListener('keydown', (e) => {
-            if (document.getElementById('screen-overworld').classList.contains('hidden')) return;
             const key = e.key.toLowerCase();
+            
+            // Note: Hardware debounce is handled globally in main.js.
+            // This listener only proceeds if main.js firewall allows it.
+
             this.keysPressed.add(key);
-            // No longer calling handleMovementInput directly to avoid repeat delay
+
+            if (key === 'f') {
+                if (!e.repeat && (!this.isPaused || this.isDialogueActive)) {
+                    this.actionBuffer.interact = true;
+                }
+            }
+            if (key === 'escape') {
+                if (!this.isPaused) {
+                    this.actionBuffer.menu = true;
+                }
+            }
         });
 
         window.addEventListener('keyup', (e) => {
@@ -965,7 +969,17 @@ export const Overworld = {
 
         // Only run if overworld is visible
         const overworldVisible = !document.getElementById('screen-overworld').classList.contains('hidden');
-        if (overworldVisible && !this.isPaused && !this.isTransitioning) {
+        if (overworldVisible && (!this.isPaused || this.isDialogueActive) && !this.isTransitioning) {
+            // --- INPUT CONSUMPTION PHASE ---
+            if (this.actionBuffer.interact) {
+                this.actionBuffer.interact = false;
+                this.interact();
+            }
+            if (this.actionBuffer.menu) {
+                this.actionBuffer.menu = false;
+                this.handleMenuInput();
+            }
+
             // Update timed quest logic
             this.updateTimedQuest();
 
@@ -1637,8 +1651,9 @@ export const Overworld = {
             if (this.isPaused || this.isTransitioning || gameOverVisible) return;
         }
 
-        const now = Date.now();
-        if (now - this.lastInteractTime < 150) return;
+        // --- SYSTEMATIC LOCKOUT ---
+        // Replacing the old 150ms hardcoded check with the centralized debounce logic handled in setupControls/gameLoop.
+        // We still keep the core safety guards to prevent multiple interactions in the same frame.
 
         // Safety: Don't interact with something currently being kicked (e.g. during hitstop)
         const zone = this.zones[this.currentZone];
@@ -1655,8 +1670,6 @@ export const Overworld = {
             return interactX >= vx && interactX < vx + w && interactY >= o.y && interactY < o.y + h;
         });
         if (targetObstacle && targetObstacle.isKicking) return;
-
-        this.lastInteractTime = now;
 
         if (this.isDialogueActive) {
             if (this.isTyping) {
