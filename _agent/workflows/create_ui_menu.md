@@ -51,8 +51,9 @@ Use this workflow to create a new UI modal (Pause, Confirmation, or Dialogue) en
 
 ## Phase 3: Logic & Interaction (JS)
 
-1.  **Input Isolation**:
-    - **`e.stopImmediatePropagation()`**: This is MUST. Use it on all keydown handlers (ESC, F, Enter) to prevent the menu click from interacting with overworld NPCs or objects behind the screen.
+1.  **Input Isolation (CRITICAL)**:
+    - **`e.stopImmediatePropagation()`**: This is MANDATORY for all keys used to close or confirm modals ('F', 'Enter', 'ESC'). This prevents the "Input Bleeding" bug where the same key press interacts with overworld NPCs or machines behind the modal immediately after closure.
+    - **`e.preventDefault()`**: Always call this to prevent browser-default behaviors (like scrolling) from interfering with the game state.
 2.  **Global Blocking**: Add the new menu ID to the `activeOverlays` or `isAnyOtherMenuOpen` check in the global `keydown` listener to prevent W/W/A/D movement while the menu is open.
 3.  **Input Sync**: Add `mouseenter` listeners to all buttons that update the `currentNavIndex` and call `updateSelection()`. This prevents the "Double Highlight" bug where both a keyboard selection and mouse hover are visible.
 5.  **Heartbeat Protocol (CRITICAL)**:
@@ -80,6 +81,7 @@ Use this workflow to create a new UI modal (Pause, Confirmation, or Dialogue) en
 - **Ad-hoc Sizing**: Avoid `min-width: 450px`. Stick to `max-width` for responsiveness.
 - **Wiggling Icons**: If buttons have icons, ensure they don't jump positions during the `scale(1.05)` hover transform.
 - **The "Shift-to-Corner" Bug**: Forgetting to include the `translate(-50%, -50%)` in the `modal-closing` keyframes for absolute-positioned modals.
+- **The interaction Bleed-Through**: Forgetting `e.stopImmediatePropagation()` on 'F' or 'Enter', causing the player to immediately re-interact with the machine or NPC that just opened the modal.
 - **The Interaction Spam**: Forgetting to set `isTransitioning = true` during the 200ms gap between dialogue closure and menu opening.
 - **The Heartbeat Softlock**: Calling `resetStates()` to clear flags but forgetting to call `startLoop()` to restart the engine's timer.
 - **Accidental Clickthrough**: Forgetting the `inputReady` buffer, allowing a single 'F' press to skip Dialogue AND the subsequent Reward Modal.

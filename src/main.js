@@ -2112,6 +2112,7 @@ function setupEventListeners() {
             }
             if (key === 'f') {
                 e.preventDefault();
+                e.stopImmediatePropagation();
                 const selectedBtn = buttons[window.selectedIncubatorIndex];
                 if (selectedBtn && !selectedBtn.classList.contains('disabled')) {
                     selectedBtn.click();
@@ -2140,6 +2141,7 @@ function setupEventListeners() {
                 }
                 if (key === 'f' || key === 'enter') {
                     e.preventDefault();
+                    e.stopImmediatePropagation();
                     document.getElementById('btn-qmodal-confirm')?.click();
                     return;
                 }
@@ -2180,6 +2182,7 @@ function setupEventListeners() {
                 }
                 if (key === 'f' || key === 'enter') {
                     e.preventDefault();
+                    e.stopImmediatePropagation();
                     const selectedCard = items[currentIndex];
                     if (selectedCard) {
                         const buyBtn = selectedCard.querySelector('.shop-item-price-btn');
@@ -2199,6 +2202,7 @@ function setupEventListeners() {
             if (isConfirmOpen) {
                 if (key === 'f' || key === 'enter') {
                     e.preventDefault();
+                    e.stopImmediatePropagation();
                     document.getElementById('btn-synthesis-confirm')?.click();
                     return;
                 }
@@ -2232,6 +2236,7 @@ function setupEventListeners() {
                 }
                 if (key === 'f' || key === 'enter') {
                     e.preventDefault();
+                    e.stopImmediatePropagation();
                     document.getElementById('btn-synthesis-action')?.click();
                     return;
                 }
@@ -2244,6 +2249,7 @@ function setupEventListeners() {
         if (isBioOpen && bioExtractInputReady) {
             if (key === 'f' || key === 'enter') {
                 e.preventDefault();
+                e.stopImmediatePropagation();
                 if (window.BioExtract && window.BioExtract.collectCurrentSlot) {
                     window.BioExtract.collectCurrentSlot();
                 }
