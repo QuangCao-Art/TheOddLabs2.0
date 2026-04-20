@@ -4,7 +4,7 @@ import { AI } from './engine/ai.js';
 import { MONSTERS } from './data/monsters.js';
 import { Overworld } from './engine/overworld.js';
 import { CHIPS, LEVEL_REWARDS } from './data/chips.js';
-import { NPC_PRESETS, NPC_ENCOUNTERS } from './data/quests/quest_data.js';
+import { NPC_ENCOUNTERS } from './data/quests/quest_data.js';
 import { SHOP_ITEMS, shopState } from './data/shop.js';
 import { SYNTHESIS_RECIPES } from './data/synthesis.js';
 import { QUESTS } from './data/quests.js';
@@ -178,163 +178,7 @@ let catalystState = {
     battleOpponentId: 'opponent'
 };
 
-/* --- CUSTOM PRESET SYSTEM --- */
-let CUSTOM_PRESETS = {};
 
-function loadCustomPresets() {
-    try {
-        const stored = localStorage.getItem('oddlabs_custom_presets');
-        if (stored) {
-            CUSTOM_PRESETS = JSON.parse(stored);
-        }
-    } catch (e) {
-        console.error("Failed to load custom presets", e);
-        CUSTOM_PRESETS = {};
-    }
-}
-
-function saveCustomPresetsToDisk() {
-    try {
-        localStorage.setItem('oddlabs_custom_presets', JSON.stringify(CUSTOM_PRESETS));
-    } catch (e) {
-        console.warn('Unable to save custom presets to disk. They will be kept in-memory for this session.', e);
-    }
-}
-
-function handleSavePreset() {
-    const profile = gameState.profiles[catalystState.activeProfile];
-    if (!profile) return;
-
-    const modal = document.getElementById('preset-name-modal');
-    const input = document.getElementById('preset-name-input');
-    const btnConfirm = document.getElementById('btn-preset-confirm');
-    const btnCancel = document.getElementById('btn-preset-cancel');
-    const title = document.getElementById('preset-modal-title');
-    const promptText = document.getElementById('preset-modal-prompt');
-
-    if (!modal || !input || !btnConfirm || !btnCancel) return;
-
-    title.innerText = "SAVE PRESET";
-    promptText.innerText = "Enter a name for this Custom Preset:";
-    input.value = "My Custom Build";
-    modal.classList.remove('hidden');
-    input.focus();
-    input.select();
-
-    const cleanup = () => {
-        modal.classList.add('hidden');
-        btnConfirm.onclick = null;
-        btnCancel.onclick = null;
-        input.onkeydown = null;
-    };
-
-    const confirmSave = () => {
-        let presetName = input.value.trim().substring(0, 30);
-        if (presetName.length === 0) return;
-        cleanup();
-
-        // Serialize
-        const newPreset = {
-            name: presetName,
-            description: "Custom user-created loadout.",
-            owner: 'player',
-            team: [...profile.team],
-            level: profile.level,
-            squadSlots: {}
-        };
-
-        profile.party.forEach((mon, mIdx) => {
-            newPreset.squadSlots[mIdx] = {};
-            if (mon) {
-                mon.equippedChips.forEach(chip => {
-                    newPreset.squadSlots[mIdx][chip.slotIndex] = chip.chipId;
-                });
-            }
-        });
-
-        // FIXED: Create unique key based on timestamp to prevent overwriting renamed presets
-        const key = `custom_${Date.now()}`;
-        CUSTOM_PRESETS[key] = newPreset;
-        saveCustomPresetsToDisk();
-
-        // Refresh UI
-        const monster = profile.party[catalystState.activeMonsterIdx];
-        if (monster) monster.currentPresetId = key;
-        updateCatalystCore();
-    };
-
-    btnConfirm.onclick = confirmSave;
-    btnCancel.onclick = cleanup;
-    input.onkeydown = (e) => {
-        if (e.key === 'Enter') confirmSave();
-        if (e.key === 'Escape') cleanup();
-    };
-}
-
-function handleRenamePreset() {
-    const selector = document.getElementById('preset-selector');
-    const key = selector.value;
-    if (!key || !CUSTOM_PRESETS[key]) return;
-
-    const modal = document.getElementById('preset-name-modal');
-    const input = document.getElementById('preset-name-input');
-    const btnConfirm = document.getElementById('btn-preset-confirm');
-    const btnCancel = document.getElementById('btn-preset-cancel');
-    const title = document.getElementById('preset-modal-title');
-    const promptText = document.getElementById('preset-modal-prompt');
-
-    if (!modal || !input || !btnConfirm || !btnCancel) return;
-
-    title.innerText = "RENAME PRESET";
-    promptText.innerText = "Enter a new name:";
-    input.value = CUSTOM_PRESETS[key].name;
-    modal.classList.remove('hidden');
-    input.focus();
-    input.select();
-
-    const cleanup = () => {
-        modal.classList.add('hidden');
-        btnConfirm.onclick = null;
-        btnCancel.onclick = null;
-        input.onkeydown = null;
-    };
-
-    const confirmRename = () => {
-        let newName = input.value.trim().substring(0, 30);
-        if (newName.length === 0) return;
-        cleanup();
-
-        // We can just rename the display name, keep the same key for simplicity
-        CUSTOM_PRESETS[key].name = newName;
-        saveCustomPresetsToDisk();
-        updateCatalystCore();
-    };
-
-    btnConfirm.onclick = confirmRename;
-    btnCancel.onclick = cleanup;
-    input.onkeydown = (e) => {
-        if (e.key === 'Enter') confirmRename();
-        if (e.key === 'Escape') cleanup();
-    };
-}
-
-function handleDeletePreset() {
-    const selector = document.getElementById('preset-selector');
-    const key = selector.value;
-    if (!key || !CUSTOM_PRESETS[key]) return;
-
-    if (confirm(`Are you sure you want to delete the custom preset "${CUSTOM_PRESETS[key].name}"?`)) {
-        delete CUSTOM_PRESETS[key];
-        saveCustomPresetsToDisk();
-
-        // Reset the current active to nothing
-        const profile = gameState.profiles[catalystState.activeProfile];
-        if (profile && profile.party[catalystState.activeMonsterIdx]) {
-            profile.party[catalystState.activeMonsterIdx].currentPresetId = "";
-        }
-        updateCatalystCore();
-    }
-}
 
 const updateInvNav = (isKeyboardAction = false) => {
     const currentTabId = INVENTORY_TABS[invNav.tabIndex];
@@ -965,52 +809,7 @@ window.showConfirmModal = (title, message, onConfirm, manualCleanup = false, hid
     btnNo.onclick = (e) => { e.stopImmediatePropagation(); handleNo(); };
 };
 
-/**
- * Custom Input Modal (Generalized Prompt)
- * @param {string} title - Header text
- * @param {string} message - Prompt message
- * @param {string} defaultValue - Initial input value
- * @param {function} onConfirm - Callback receiving the input value
- */
-window.showPromptModal = (title, message, defaultValue, onConfirm) => {
-    const modal = document.getElementById('preset-name-modal');
-    const input = document.getElementById('preset-name-input');
-    const btnConfirm = document.getElementById('btn-preset-confirm');
-    const btnCancel = document.getElementById('btn-preset-cancel');
-    const titleEl = document.getElementById('preset-modal-title');
-    const promptText = document.getElementById('preset-modal-prompt');
 
-    if (!modal || !input || !btnConfirm || !btnCancel) return;
-
-    titleEl.innerText = (title || "INPUT REQUIRED").toUpperCase();
-    promptText.innerText = message || "Enter value:";
-    input.value = defaultValue || "";
-    modal.classList.remove('hidden');
-    input.focus();
-    input.select();
-
-    const cleanup = () => {
-        window.hideWithFade(modal);
-        btnConfirm.onclick = null;
-        btnCancel.onclick = null;
-        input.onkeydown = null;
-        if (typeof Overworld !== 'undefined') Overworld.isPaused = false;
-    };
-
-    const confirm = () => {
-        const val = input.value.trim();
-        cleanup();
-        if (onConfirm) onConfirm(val);
-    };
-
-    btnConfirm.onclick = confirm;
-    btnCancel.onclick = cleanup;
-    input.onkeydown = (e) => {
-        if (e.key === 'Enter') { e.preventDefault(); confirm(); }
-        if (e.key === 'Escape') { e.preventDefault(); cleanup(); }
-    };
-    if (typeof Overworld !== 'undefined') Overworld.isPaused = true;
-};
 
 /**
  * Custom Alert Modal (Single Button)
@@ -1196,7 +995,7 @@ function init() {
         // Setup mandatory engine components
         // 1. Initial State Loading
         loadSystemSettings(); // Load volume/debug settings before any UI is shown
-        loadCustomPresets();
+
         setupNodePositions();
 
         // 2. Event Listeners
@@ -1307,10 +1106,7 @@ function setupEventListeners() {
 
 
 
-    // PRESET MANAGEMENT
-    document.getElementById('btn-preset-save')?.addEventListener('click', handleSavePreset);
-    document.getElementById('btn-preset-rename')?.addEventListener('click', handleRenamePreset);
-    document.getElementById('btn-preset-delete')?.addEventListener('click', handleDeletePreset);
+
 
     // INCUBATOR SYSTEM
     document.getElementById('btn-incubator-close')?.addEventListener('click', () => closeIncubatorMenu());
@@ -1654,10 +1450,7 @@ function setupEventListeners() {
         setTimeout(() => { preBattleIsAdvancing = false; }, 300);
         catalystState.battleOpponentId = opponentProfileId;
 
-        // Auto-Equip Boss Tactics if available
-        if (NPC_PRESETS[opponentProfileId]) {
-            applyPreset(opponentProfileId, opponentProfileId, true);
-        } else if (opponentProfileId === 'jenzi_tutorial') {
+        if (opponentProfileId === 'jenzi_tutorial') {
             // DYNAMIC BALANCING: Tutorial Jenzi picks a type weak to the player's starter
             const typeAdvantages = {
                 'cambihil': 'lydrosome',  // Player (Botanic) beats Jenzi (Osmotic)
@@ -1678,33 +1471,30 @@ function setupEventListeners() {
             };
             // Ensure state persists and is scaled properly
             applyBonuses(gameState.profiles['jenzi_tutorial'].party, 0, true);
-        } else if (NPC_ENCOUNTERS[opponentProfileId] && !opponentProfileId.endsWith('_wild')) {
-            // If it's in ENCOUNTERS but not PRESETS, we still need to initialize the opponent profile
-            // based on the encounter data (RG, team, etc.)
-            const enc = NPC_ENCOUNTERS[opponentProfileId];
-            gameState.profiles[opponentProfileId] = {
-                id: opponentProfileId,
-                name: enc.name,
-                level: enc.rg === 'auto' ? (gameState.profiles.player.level ?? 1) : enc.rg,
-                party: enc.team.map(id => {
-                    if (!id || !MONSTERS[id]) return null;
-                    const mon = createMonsterInstance(id);
-                    mon.owner = opponentProfileId;
-                    return mon;
-                })
-            };
-            // Full heal and apply stat scaling
-            applyBonuses(gameState.profiles[opponentProfileId].party, gameState.profiles[opponentProfileId].level, true);
+        } else if (NPC_ENCOUNTERS[opponentProfileId]) {
+            // If it's a wild encounter, handle specialized profile naming in its listener, 
+            // but for all other ENCOUNTERS (Quest NPCs, Bosses), use this systematic path.
+            if (!opponentProfileId.endsWith('_wild')) {
+                const enc = NPC_ENCOUNTERS[opponentProfileId];
+                gameState.profiles[opponentProfileId] = {
+                    id: opponentProfileId,
+                    name: enc.name,
+                    level: enc.rg === 'auto' ? (gameState.profiles.player.level ?? 1) : enc.rg,
+                    party: enc.team.map(id => {
+                        if (!id || !MONSTERS[id]) return null;
+                        const mon = createMonsterInstance(id);
+                        mon.owner = opponentProfileId;
+                        return mon;
+                    })
+                };
+                // Full heal and apply stat scaling
+                applyBonuses(gameState.profiles[opponentProfileId].party, gameState.profiles[opponentProfileId].level, true);
 
-            // Use official Boss Encounter system: Sync cards to level then auto-equip based on style
-            syncChipsToLevel(opponentProfileId, gameState.profiles[opponentProfileId].level);
-            gameState.profiles[opponentProfileId].party.forEach((mon, idx) => {
-                if (mon) executeQuickEquip(enc.style || 'balanced', opponentProfileId, idx);
-            });
-        } else if (opponentProfileId === 'jenzi') {
-            const logs = gameState.logs ? gameState.logs.length : 0;
-            if (logs >= 5) {
-                applyPreset('jenzi', 'jenzi_mid', true);
+                // Use official Boss Encounter system: Sync cards to level then auto-equip based on style
+                syncChipsToLevel(opponentProfileId, gameState.profiles[opponentProfileId].level);
+                gameState.profiles[opponentProfileId].party.forEach((mon, idx) => {
+                    if (mon) executeQuickEquip(enc.style || 'balanced', opponentProfileId, idx);
+                });
             }
         }
 
@@ -5814,7 +5604,6 @@ function stripMonsterEquipment(profileId, partyIdx) {
     });
 
     monster.equippedChips = [];
-    monster.currentPresetId = "";
 }
 
 window.removeMonsterFromSquad = (slotIdx) => {
@@ -6128,8 +5917,6 @@ function updateCatalystCore() {
     const party = profile.party;
     const monster = party[catalystState.activeMonsterIdx];
     const nameEl = document.getElementById('catalyst-monster-name');
-    const presetCtrl = document.getElementById('preset-control');
-    const presetSelector = document.getElementById('preset-selector');
 
     const level = profile.level;
     setSafe('#catalyst-monster-rg', 'textContent', `RG-${level}`);
@@ -6143,7 +5930,6 @@ function updateCatalystCore() {
 
     if (!monster) {
         if (nameEl) nameEl.textContent = 'SQUAD EMPTY';
-        if (presetCtrl) presetCtrl.classList.add('hidden');
         document.getElementById('quick-equip-container')?.classList.add('hidden');
         document.getElementById('btn-quick-reset')?.classList.add('hidden');
 
@@ -6164,22 +5950,6 @@ function updateCatalystCore() {
     // Always show Quick Equip tools for all profiles
     document.getElementById('quick-equip-container').classList.remove('hidden');
     if (resetBtn) resetBtn.classList.remove('hidden');
-
-    presetCtrl.classList.remove('hidden');
-    populatePresets(catalystState.activeProfile, monster.currentPresetId);
-
-    // Toggle Custom Preset Actions
-    const renameBtn = document.getElementById('btn-preset-rename');
-    const deleteBtn = document.getElementById('btn-preset-delete');
-    if (renameBtn && deleteBtn) {
-        if (monster.currentPresetId && CUSTOM_PRESETS[monster.currentPresetId]) {
-            renameBtn.classList.remove('hidden');
-            deleteBtn.classList.remove('hidden');
-        } else {
-            renameBtn.classList.add('hidden');
-            deleteBtn.classList.add('hidden');
-        }
-    }
 
     nameEl.textContent = monster.name;
 
@@ -6286,144 +6056,6 @@ function updateCatalystCore() {
     });
 
     drawConnections(slotPositions, monster);
-    if (presetSelector) {
-        presetSelector.onchange = (e) => {
-            if (e.target.value) applyPreset(catalystState.activeProfile, e.target.value);
-        };
-    }
-}
-
-function populatePresets(profileId, currentPresetId = "") {
-    const selector = document.getElementById('preset-selector');
-    const profile = gameState.profiles[profileId];
-    if (!selector || !profile) return;
-    selector.innerHTML = '<option value="">-- CUSTOM --</option>';
-
-    // Always ensure it's visible for NPCs (including RG 0)
-    selector.parentElement.classList.remove('hidden');
-
-    // 1. Load Custom Presets
-    const optGroupCustom = document.createElement('optgroup');
-    optGroupCustom.label = "Custom Presets";
-
-    Object.keys(CUSTOM_PRESETS).forEach(key => {
-        const preset = CUSTOM_PRESETS[key];
-        // Custom presets currently don't use owner/level locking, they belong to the player
-        const opt = document.createElement('option');
-        opt.value = key;
-        opt.textContent = `[C] ${preset.name} (RG-${preset.level})`;
-        if (key === currentPresetId) opt.selected = true;
-        optGroupCustom.appendChild(opt);
-    });
-
-    if (optGroupCustom.children.length > 0) {
-        selector.appendChild(optGroupCustom);
-    }
-
-    // 2. Load Default / NPC Presets
-    const optGroupNPC = document.createElement('optgroup');
-    optGroupNPC.label = "Story Presets";
-
-    Object.keys(NPC_PRESETS).forEach(key => {
-        const preset = NPC_PRESETS[key];
-
-        // FILTER: Only show character-specific presets to their owner, or generic ones to everyone
-        if (preset.owner && !profileId.startsWith(preset.owner)) return;
-
-        const opt = document.createElement('option');
-        opt.value = key;
-        opt.textContent = `${preset.name} (RG-${preset.level})`;
-
-        // Disable if preset level is higher than current NPC RG (Player/Opponent restriction)
-        if (profileId === 'player' || profileId === 'opponent') {
-            if (preset.level > profile.level) {
-                opt.disabled = true;
-                opt.textContent += " [LOCKED]";
-            }
-        }
-
-        const autoSelected = currentPresetId || profileId;
-        if (key === autoSelected) opt.selected = true;
-        optGroupNPC.appendChild(opt);
-    });
-
-    if (optGroupNPC.children.length > 0) {
-        selector.appendChild(optGroupNPC);
-    }
-}
-
-function applyPreset(profileId, presetId, silent = false) {
-    const profile = gameState.profiles[profileId];
-    const preset = CUSTOM_PRESETS[presetId] || NPC_PRESETS[presetId];
-    if (!profile || !preset) return;
-
-    // 1. UPDATE PROFILE LEVEL
-    profile.level = preset.level;
-
-    // 2. SET ABSOLUTE FAIRNESS MODE (Allows duplicate equipment for NPCs)
-    profile.absoluteFairness = (profileId !== 'player');
-
-    // 3. SYNC INVENTORY
-    syncChipsToLevel(profileId, profile.level);
-
-    // 4. SYNC SQUAD COMPOSITION
-    const needsPartyInit = profile.party.length === 0 || JSON.stringify(profile.team) !== JSON.stringify(preset.team);
-    if (preset.team && needsPartyInit) {
-        profile.team = [...preset.team];
-        profile.party = profile.team.map(id => id ? createMonsterInstance(id) : null);
-        if (catalystState.activeMonsterIdx >= profile.party.length) {
-            catalystState.activeMonsterIdx = 0;
-        }
-    }
-
-    // 5. CLEAR & EQUIP
-    const oldActiveProfile = catalystState.activeProfile;
-    catalystState.activeProfile = profileId;
-    profile.party.forEach((mon, mIdx) => {
-        if (!mon) return;
-
-        // Clear Existing (force full wipe for NPCs, Player already wipes via syncChipsToLevel implicitly mapping free inventory)
-        mon.equippedChips = [];
-
-        // Slot New
-        const slotConfig = (preset.squadSlots && preset.squadSlots[mIdx]) ? preset.squadSlots[mIdx] : {};
-        Object.entries(slotConfig).forEach(([slotIdx, chipId]) => {
-            const idx = parseInt(slotIdx);
-
-            // Check if chip exists
-            if (CHIPS[chipId]) {
-                const prevIdx = catalystState.activeMonsterIdx;
-                catalystState.activeMonsterIdx = mIdx;
-
-                // For the PLAYER profile, removing from physical inventory is required!
-                if (profileId === 'player') {
-                    const boxIndex = profile.chipBox.indexOf(chipId);
-                    if (boxIndex > -1) {
-                        profile.chipBox.splice(boxIndex, 1);
-                        mon.equippedChips.push({ slotIndex: idx, chipId: chipId });
-                    } else {
-                        console.warn(`[PRESET LOAD] Missing chip ${chipId} in inventory, skipping equip.`);
-                    }
-                } else {
-                    // NPCs have infinite inventory for their specific static setups
-                    mon.equippedChips.push({ slotIndex: idx, chipId: chipId });
-                }
-
-                catalystState.activeMonsterIdx = prevIdx;
-            }
-        });
-        mon.currentPresetId = presetId;
-    });
-
-    catalystState.activeProfile = oldActiveProfile;
-    if (!silent) {
-        if (profileId === catalystState.activeProfile) {
-            const activeRGInput = document.getElementById('debug-active-rg');
-            if (activeRGInput) activeRGInput.value = profile.level;
-        }
-        addLog(`Protocol Loaded: Preset "${preset.name}" applied @RG-${preset.level}.`);
-        renderManagementHub();
-    }
 }
 
 function executeQuickEquip(style, profileId = null, targetMonsterIdx = null) {
@@ -6490,7 +6122,7 @@ function executeQuickEquip(style, profileId = null, targetMonsterIdx = null) {
 
         for (let i = 0; i < availableChips.length; i++) {
             const candidate = availableChips[i];
-            const success = equipChip(monsterIdx, slotIdx, candidate.id, true, true);
+            const success = equipChip(monsterIdx, slotIdx, candidate.id, true);
             if (success) {
                 const chipIdToRemove = candidate.id;
                 availableChips = availableChips.filter(c => c.id !== chipIdToRemove);
@@ -6538,7 +6170,6 @@ function calculateSlotLayout(monster) {
     ];
 
     // 2. Build the tree structure based on equipment and capacity
-    // We want to ensure that if a preset defines a slot, it exists even if empty
     let currentIndex = 0;
     while (currentIndex < slots.length && slots.length < 10) {
         const equipped = monster.equippedChips.find(ec => ec.slotIndex === currentIndex);
@@ -6670,7 +6301,7 @@ function drawConnections(positions, monster) {
     });
 }
 
-function equipChip(monsterIdx, slotIdx, chipId, silent = false, fromPreset = false) {
+function equipChip(monsterIdx, slotIdx, chipId, silent = false) {
     const profile = gameState.profiles[catalystState.activeProfile];
     const party = profile.party;
     const monster = party[monsterIdx];
@@ -6693,10 +6324,7 @@ function equipChip(monsterIdx, slotIdx, chipId, silent = false, fromPreset = fal
         return;
     }
 
-    // Manual change clears the preset
-    if (!fromPreset) {
-        monster.currentPresetId = "";
-    }
+
 
     // Capture source before we potentially clear it via unequip
     const srcSlot = catalystState.dragSourceSlot;
@@ -6734,7 +6362,7 @@ function unequipChip(monsterIdx, slotIdx, silent = false) {
     const index = monster.equippedChips.findIndex(ec => ec.slotIndex === slotIdx);
     if (index === -1) return;
 
-    monster.currentPresetId = "";
+
     const removed = monster.equippedChips.splice(index, 1)[0];
     profile.chipBox.push(removed.chipId);
 
@@ -6757,8 +6385,7 @@ function clearEquippedCards(silent = false, keepLeaders = false) {
         unequipChip(monsterIdx, ec.slotIndex, true);
     });
 
-    // 2. Full State Refresh: Clear preset ID and Resync Box to current level
-    monster.currentPresetId = "";
+    // 2. Full State Refresh: Resync Box to current level
     syncChipsToLevel(catalystState.activeProfile, profile.level);
 
     if (!silent) {
@@ -6790,10 +6417,6 @@ function processRecursiveRemoval(monster, parentSlotIdx) {
 function createMonsterInstance(id, existing = null) {
     const data = JSON.parse(JSON.stringify(MONSTERS[id]));
 
-    // NPCs should always default to their ID as the preset if it exists
-    const defaultPresetId = NPC_PRESETS[id] ? id : "";
-    const currentPresetId = existing ? existing.currentPresetId : defaultPresetId;
-
     const monster = {
         ...data,
         id: id,
@@ -6812,7 +6435,6 @@ function createMonsterInstance(id, existing = null) {
         pp: existing && existing.pp !== undefined ? existing.pp : 1,
         turnCount: 0,
         selectedMove: data.moves[0].id,
-        currentPresetId: currentPresetId,
         extractEfficiency: existing ? (existing.extractEfficiency || 0) : 0
     };
     return monster;
