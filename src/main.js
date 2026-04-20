@@ -1448,7 +1448,9 @@ function setupEventListeners() {
 
         // Populate Card Box and Auto-Equip based on RG level
         syncChipsToLevel(profileId, rg);
-        executeQuickEquip('balanced', profileId, 0);
+        gameState.profiles[profileId].party.forEach((mon, idx) => {
+            if (mon) executeQuickEquip('balanced', profileId, idx);
+        });
 
         catalystState.battleOpponentId = profileId;
         catalystState.overworldId = instanceId; // STORE BARCODE FOR CLEANUP
@@ -1482,7 +1484,9 @@ function setupEventListeners() {
 
             // Generate basic RG-5 cards for Jenzi
             syncChipsToLevel('jenzi_atrium', 5);
-            executeQuickEquip('balanced', 'jenzi_atrium', 0);
+            gameState.profiles['jenzi_atrium'].party.forEach((mon, idx) => {
+                if (mon) executeQuickEquip('balanced', 'jenzi_atrium', idx);
+            });
 
             profileId = 'jenzi_atrium';
         } else if (npcId === 'lana') {
@@ -1494,7 +1498,9 @@ function setupEventListeners() {
                 party: [createMonsterInstance('cambihil')]
             };
             syncChipsToLevel('lana_boss', 10);
-            executeQuickEquip('survival', 'lana_boss', 0);
+            gameState.profiles['lana_boss'].party.forEach((mon, idx) => {
+                if (mon) executeQuickEquip('survival', 'lana_boss', idx);
+            });
             profileId = 'lana_boss';
         } else if (npcId === 'dyzes') {
             gameState.profiles['dyzes_boss'] = {
@@ -1692,7 +1698,9 @@ function setupEventListeners() {
 
             // Use official Boss Encounter system: Sync cards to level then auto-equip based on style
             syncChipsToLevel(opponentProfileId, gameState.profiles[opponentProfileId].level);
-            executeQuickEquip(enc.style || 'balanced', opponentProfileId, 0);
+            gameState.profiles[opponentProfileId].party.forEach((mon, idx) => {
+                if (mon) executeQuickEquip(enc.style || 'balanced', opponentProfileId, idx);
+            });
         } else if (opponentProfileId === 'jenzi') {
             const logs = gameState.logs ? gameState.logs.length : 0;
             if (logs >= 5) {
@@ -6453,8 +6461,8 @@ function executeQuickEquip(style, profileId = null, targetMonsterIdx = null) {
 
     // Score function for a card
     const scoreChip = (chip) => {
+        if (!chip || !chip.stats) return 0;
         let score = 0;
-        if (!chip.stats) return 0;
         Object.entries(chip.stats).forEach(([stat, val]) => {
             score += (val * (styleWeight[stat] || 1));
         });
@@ -6464,7 +6472,7 @@ function executeQuickEquip(style, profileId = null, targetMonsterIdx = null) {
 
     // 3. SORT CHIP BOX
     let availableChips = [...profile.chipBox]
-        .filter(id => !CHIPS[id]?.isLeader)
+        .filter(id => CHIPS[id] && !CHIPS[id].isLeader)
         .map(id => ({ id, chip: CHIPS[id], score: scoreChip(CHIPS[id]) }));
 
     availableChips.sort((a, b) => {

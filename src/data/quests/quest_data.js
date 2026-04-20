@@ -647,8 +647,8 @@ export const NPC_PRESETS = {
         name: 'Survival Tactical Suite',
         squadSlots: [
             { 0: 'leader_start_damdouble', 1: 'def_10', 2: 'hp_10' },
-            { 0: 'def_5', 1: 'def_5', 2: 'hp_5' },
-            { 0: 'def_5', 1: 'def_5', 2: 'hp_5' }
+            { 0: 'def_5', 1: 'def_5', 2: 'hp_10' },
+            { 0: 'def_5', 1: 'def_5', 2: 'hp_10' }
         ]
     },
     'utility_preset': {
@@ -673,7 +673,7 @@ export const NPC_ENCOUNTERS = {
     'jenzi': {
         name: "Jenzi (Atrium Quest)",
         rg: 5,
-        team: ['stemmy'],
+        team: ['stemmy', 'stemmy'],
         style: 'balanced',
         reward: { exp: 400, biomass: 15, credits: 200 }
     },
