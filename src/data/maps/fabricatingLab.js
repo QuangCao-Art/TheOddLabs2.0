@@ -3,6 +3,7 @@ export const fabricatingLab = {
     width: 19,
     height: 15,
     spawn: { x: 11, y: 7 },
+    ambient: 'music_ambiant_machine',
     layout: [
         [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
         [10, 53, 14, 14, 53, 14, 14, 53, 48, 50, 51, 53, 14, 14, 58, 14, 14, 53, 11],

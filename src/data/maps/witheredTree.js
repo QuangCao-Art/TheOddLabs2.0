@@ -3,6 +3,7 @@ export const witheredTree = {
     width: 11,
     height: 25,
     spawn: { x: 5, y: 12 },
+    ambient: 'music_ambiant_wind',
     layout: [
         [12, 12, 12, 12, 12, 0, 8, 8, 8, 8, 1],
         [12, 12, 12, 12, 12, 10, 53, 48, 50, 51, 11],

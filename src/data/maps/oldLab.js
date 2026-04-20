@@ -3,6 +3,8 @@ export const oldLab = {
     width: 11,
     height: 8,
     spawn: { x: 1, y: 4 },
+    music: 'none',
+    ambient: 'music_ambiant_eerie',
     layout: [
         [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
         [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],

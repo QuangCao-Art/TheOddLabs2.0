@@ -4,6 +4,7 @@ export const human = {
     height: 16,
     spawn: { x: 7, y: 13 },
     spawnPool: { stemmy: 60, nitrophil: 10, cambihil: 10, lydrosome: 20 },
+    music: 'music_overworld_human',
     layout: [
         [0,8,8,8,8,8,8,8,8,8,8,8,8,8,1],
         [10,14,14,14,14,14,14,14,14,14,14,14,14,14,11],

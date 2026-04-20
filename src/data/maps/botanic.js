@@ -4,6 +4,7 @@ export const botanic = {
     height: 16,
     spawn: { x: 7, y: 13 },
     spawnPool: { stemmy: 60, nitrophil: 10, cambihil: 20, lydrosome: 10 },
+    music: 'music_overworld_botanic',
     layout: [
         [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
         [10, 53, 14, 14, 14, 14, 60, 60, 60, 55, 14, 14, 14, 53, 11],

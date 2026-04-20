@@ -521,6 +521,38 @@ export const Overworld = {
             performMove();
         }
     },
+    /**
+     * Centralized Audio Synchronization
+     * Ensures BGM and Ambience match the current zone's flags.
+     * @param {boolean} isForce - If true, re-triggers the music even if the ID matches (used for returning to overworld).
+     */
+    syncAudio(isForce = false) {
+        const zone = this.zones[this.currentZone];
+        if (!zone) return;
+
+        // 1. Music Logic: If 'none', stop music. Otherwise play requested or default.
+        if (zone.music === 'none') {
+            AudioManager.stopBGM(1.5);
+        } else {
+            const targetMusic = zone.music || 'music_overworld';
+            // Only switch if the track is different, unless forced (e.g. from battle)
+            if (isForce || AudioManager.activeMusicId !== targetMusic) {
+                AudioManager.playBGM(targetMusic, 0.35);
+            }
+        }
+
+        // 2. Ambient Logic: Play if flag exists, otherwise stop current ambient
+        if (zone.ambient) {
+            if (isForce || AudioManager.activeAmbientId !== zone.ambient) {
+                AudioManager.playAmbient(zone.ambient, 0.3, 3.0);
+            }
+        } else {
+            // Only stop if something is actually playing (and no flag is present)
+            if (AudioManager.activeAmbientId) {
+                AudioManager.stopAmbient(2.0);
+            }
+        }
+    },
 
     init() {
         console.log("Overworld Engine Starting...");
@@ -703,6 +735,11 @@ export const Overworld = {
         document.getElementById('location-name').textContent = zone.name;
         this.updatePlayerPosition();
         this.savePosition();
+
+        // --- AUDIO: Dynamic Room BGM & Ambience ---
+        if (isNewZone) {
+            this.syncAudio();
+        }
 
         // --- NEW: Spatial Conflict Audit (Auto-kick/break furniture overlaps on entry) ---
         const overlapped = zone.objects.filter(obj => {

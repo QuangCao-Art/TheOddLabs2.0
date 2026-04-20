@@ -3,6 +3,7 @@ export const nursery = {
     width: 15,
     height: 12,
     spawn: { x: 13, y: 7 },
+    music: 'music_overworld_botanic',
     layout: [
         [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
         [10, 14, 14, 14, 14, 14, 48, 50, 51, 14, 14, 14, 14, 14, 11],

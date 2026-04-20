@@ -4,6 +4,7 @@ export const executive = {
     height: 9,
     spawn: { x: 7, y: 7 },
     spawnPool: { stemmy: 60, nitrophil: 20, cambihil: 10, lydrosome: 10 },
+    music: 'music_overworld_executive',
     layout: [
         [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1, 0, 8, 8, 8, 8, 8, 1],
         [10, 14, 60, 62, 60, 14, 60, 14, 60, 14, 60, 14, 60, 57, 5, 4, 62, 48, 50, 51, 14, 11],

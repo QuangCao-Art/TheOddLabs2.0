@@ -3,6 +3,7 @@ export const medicalExperienceRoom = {
     width: 15,
     height: 12,
     spawn: { x: 1, y: 7 },
+    music: 'music_overworld_human',
     layout: [
         [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
         [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],

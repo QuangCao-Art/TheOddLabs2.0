@@ -5385,7 +5385,7 @@ function showScreen(screenId) {
     if (screenId === 'screen-main-menu') {
         AudioManager.playBGM('music_main_menu', 0.4);
     } else if (screenId === 'screen-overworld') {
-        AudioManager.playBGM('music_overworld', 0.35);
+        if (typeof Overworld !== 'undefined') Overworld.syncAudio(true);
     } else if (screenId === 'screen-pre-battle') {
         AudioManager.playBGM('music_pre_battle', 0.4);
     } else if (screenId === 'screen-battle') {

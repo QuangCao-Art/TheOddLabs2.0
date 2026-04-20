@@ -3,6 +3,7 @@ export const oldMachine = {
     width: 21,
     height: 26,
     spawn: { x: 11, y: 10 },
+    ambient: 'music_ambiant_machine',
     layout: [
         [0,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,1],
         [10,58,14,55,53,14,14,62,55,14,14,53,14,62,14,14,14,53,14,55,11],

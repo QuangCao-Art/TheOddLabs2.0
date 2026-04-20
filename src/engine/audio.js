@@ -16,6 +16,13 @@ export const AudioManager = {
     currentMusicVolume: 0, // Base level for current track
     bgmRequestId: 0,      // Track the latest music request to prevent async races
 
+    // --- AMBIENT LAYER ---
+    activeAmbientSource: null,
+    activeAmbientId: null,
+    ambientGain: null,
+    currentAmbientVolume: 0,
+    ambientRequestId: 1000, // Offset to keep IDs distinct
+
     /**
      * Initialize the Audio Context.
      * Must be called after a user gesture (e.g. Start Game).
@@ -152,15 +159,15 @@ export const AudioManager = {
 
         let buffer = this.cache.get(id);
 
-        // Fallback Mechanism: If requested track is missing, try music_main_menu as a placeholder
-        if (!buffer && id !== 'music_main_menu') {
-            console.log(`[Audio] Falling back to music_main_menu for: ${id}`);
-            await this.load('music_main_menu');
+        // Fallback Mechanism: If requested track is missing, try music_overworld as a placeholder
+        if (!buffer && id !== 'music_overworld') {
+            console.log(`[Audio] Falling back to music_overworld for: ${id}`);
+            await this.load('music_overworld');
             
             // Re-check abort after fallback load
             if (currentId !== this.bgmRequestId) return;
             
-            buffer = this.cache.get('music_main_menu');
+            buffer = this.cache.get('music_overworld');
         }
 
         if (!buffer) return;
@@ -202,6 +209,108 @@ export const AudioManager = {
     },
 
     /**
+     * Play looping Ambient sounds (Wind, Machinery, Eerie tones)
+     * Can play simultaneously with BGM.
+     */
+    async playAmbient(id, volume = 0.3, fadeDuration = 3.0) {
+        if (!this.ctx) this.init();
+
+        // 0. Null check: If id is explicitly null, stop ambient
+        if (!id) {
+            this.stopAmbient(fadeDuration);
+            return;
+        }
+
+        // 1. Increment request ID
+        this.ambientRequestId++;
+        const currentId = this.ambientRequestId;
+
+        if (this.ctx.state !== 'running') {
+            try { await this.ctx.resume(); } catch (e) {}
+        }
+
+        // Skip if already playing
+        if (this.activeAmbientId === id && this.ctx.state === 'running') return;
+
+        // 1. Fade out previous ambient
+        if (this.activeAmbientSource && this.ambientGain) {
+            const oldGain = this.ambientGain;
+            const oldSource = this.activeAmbientSource;
+            try {
+                oldGain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + fadeDuration);
+                setTimeout(() => {
+                    try {
+                        oldSource.stop();
+                        oldSource.disconnect();
+                        oldGain.disconnect();
+                    } catch (e) {}
+                }, fadeDuration * 1000);
+            } catch (e) {
+                oldSource.stop();
+            }
+        }
+
+        // 2. Load and start
+        await this.load(id);
+        if (currentId !== this.ambientRequestId) return;
+
+        const buffer = this.cache.get(id);
+        if (!buffer) return;
+
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+
+        const gain = this.ctx.createGain();
+        gain.gain.value = 0.01;
+
+        source.connect(gain);
+        gain.connect(this.ctx.destination);
+        source.start(0);
+
+        this.currentAmbientVolume = volume;
+        const muteFactor = this.isMuted ? 0 : 1;
+        // AMBIENT SYNC: Controlled by Music Volume as per USER instruction
+        const targetGain = volume * this.masterVolume * this.musicVolume * muteFactor;
+
+        try {
+            const rampTarget = Math.max(0.0001, targetGain);
+            gain.gain.exponentialRampToValueAtTime(rampTarget, this.ctx.currentTime + fadeDuration);
+        } catch (e) {
+            gain.gain.value = targetGain;
+        }
+
+        this.activeAmbientSource = source;
+        this.activeAmbientId = id;
+        this.ambientGain = gain;
+
+        console.log(`[Audio] Ambient Switching to: ${id}`);
+    },
+
+    /**
+     * Stop ambient sounds with a fade out
+     */
+    stopAmbient(fadeDuration = 2.0) {
+        this.ambientRequestId++;
+        if (this.activeAmbientSource && this.ambientGain) {
+            const ag = this.ambientGain;
+            const as = this.activeAmbientSource;
+            try {
+                ag.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + fadeDuration);
+                setTimeout(() => {
+                    try { as.stop(); } catch(e) {}
+                    this.activeAmbientId = null;
+                    this.activeAmbientSource = null;
+                }, fadeDuration * 1000);
+            } catch (e) {
+                as.stop();
+                this.activeAmbientId = null;
+                this.activeAmbientSource = null;
+            }
+        }
+    },
+
+    /**
      * Stop all background music with a fade out
      */
     stopBGM(fadeDuration = 0.5) {
@@ -228,16 +337,27 @@ export const AudioManager = {
      * Real-time volume update for active music
      */
     updateVolumes() {
+        const muteFactor = this.isMuted ? 0 : 1;
+
+        // 1. Sync Music BGM
         if (this.activeMusicSource && this.musicGain && this.ctx && this.ctx.state === 'running') {
-            const muteFactor = this.isMuted ? 0 : 1;
             const targetGain = this.currentMusicVolume * this.masterVolume * this.musicVolume * muteFactor;
             try {
-                // setTargetAtTime can target 0 safely and will smoothly approach silence
                 const finalTarget = targetGain < 0.001 ? 0 : targetGain;
                 this.musicGain.gain.setTargetAtTime(finalTarget, this.ctx.currentTime, 0.1);
             } catch (e) {
-                // Fallback for extreme cases
                 this.musicGain.gain.value = targetGain;
+            }
+        }
+
+        // 2. Sync Ambient (Controlled by Music Volume)
+        if (this.activeAmbientSource && this.ambientGain && this.ctx && this.ctx.state === 'running') {
+            const targetGain = this.currentAmbientVolume * this.masterVolume * this.musicVolume * muteFactor;
+            try {
+                const finalTarget = targetGain < 0.001 ? 0 : targetGain;
+                this.ambientGain.gain.setTargetAtTime(finalTarget, this.ctx.currentTime, 0.1);
+            } catch (e) {
+                this.ambientGain.gain.value = targetGain;
             }
         }
     },

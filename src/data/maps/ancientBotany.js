@@ -3,6 +3,8 @@ export const ancientBotany = {
         width: 33,
         height: 9,
         spawn: { x: 16, y: 6 },
+        music: 'music_overworld_botanic',
+        ambient: 'music_ambiant_wind',
         layout: [
                 [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
                 [10, 14, 14, 62, 14, 53, 14, 55, 14, 14, 14, 62, 55, 53, 14, 55, 14, 14, 14, 53, 14, 55, 14, 14, 14, 53, 14, 14, 55, 14, 14, 53, 11],

@@ -3,6 +3,8 @@ export const library = {
     width: 19,
     height: 17,
     spawn: { x: 9, y: 15 },
+    music: 'none',
+    ambient: 'music_ambiant_eerie',
     layout: [
         [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
         [10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 11],
