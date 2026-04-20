@@ -5013,7 +5013,7 @@ function updateOverworldEXPBar() {
     if (elMax) elMax.innerText = expNeededForLevel;
 }
 
-function showGameOver(isFailure, forceOverlay = false) {
+function showGameOver(isFailure, forceOverlay = false, onCloseCallback = null) {
     // Lock overworld interaction IMMEDIATELY on failure to prevent race conditions
     if (typeof Overworld !== 'undefined' && isFailure) Overworld.isPaused = true;
 
@@ -5050,13 +5050,17 @@ function showGameOver(isFailure, forceOverlay = false) {
                     // Pass true for isPostBattle (3rd arg) to prevent re-triggering the battle
                     Overworld.startNPCInteraction(npc || opponentId, isFailure, true);
 
-                    // Hook into completion to show the actual panel
+                    // --- CRITICAL FIX: CHAIN THE CALLBACK ---
+                    // Instead of overwriting, we wrap the existing callback so quest rewards aren't swallowed.
+                    // We pass it to showGameOver to be executed AFTER the outcome panel is closed.
+                    const existingOnComplete = Overworld.onDialogueComplete;
                     Overworld.onDialogueComplete = () => {
-                        showGameOver(isFailure, true); // forceOverlay = true
+                        console.log("[Quest] Dialogue finished. Queuing quest-completion callback after Battle Outcome.");
+                        showGameOver(isFailure, true, existingOnComplete); // Pass the quest callback here
                     };
                 } else {
                     // Fallback
-                    showGameOver(isFailure, true);
+                    showGameOver(isFailure, true, onCloseCallback);
                 }
             }, 600);
         }
@@ -5200,6 +5204,12 @@ function showGameOver(isFailure, forceOverlay = false) {
                 Overworld.resetStates(); // Clear stuck flags (isTransitioning, isDialogueActive, etc.)
                 Overworld.startLoop();
                 requestAnimationFrame(() => Overworld.updatePlayerPosition());
+            }
+
+            // --- EXECUTE CHAINED CALLBACK (Quest Reward, etc.) ---
+            if (typeof onCloseCallback === 'function') {
+                console.log("[Quest] Executing chained post-outcome callback.");
+                onCloseCallback();
             }
 
             if (isFailure && !bypassPenalty) {

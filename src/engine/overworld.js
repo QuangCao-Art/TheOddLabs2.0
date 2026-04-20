@@ -2199,9 +2199,11 @@ export const Overworld = {
 
                 // Case C: Turn-In
                 if (qProgress.status === 'completed') {
-                    // ATOMIC LOCK: Set finished and flags immediately (unless handover, which requires confirmation)
+                    // --- REFACTOR: DELAY 'FINISHED' STATUS ---
+                    // We set the onCompleteFlag immediately so triggers update, 
+                    // but we KEEP the status as 'completed' untilfinalizeQuestCompletion runs.
+                    // This creates a safety net: if the callback is swallowed, the quest stays 'completed'.
                     if (qData.type !== 'handover') {
-                        qProgress.status = 'finished';
                         window.dispatchEvent(new CustomEvent('quest-updated'));
                         if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
                     }
@@ -2251,9 +2253,8 @@ export const Overworld = {
                             const lIdx = window.gameState.logs.indexOf(qData.target);
                             if (lIdx > -1) window.gameState.logs.splice(lIdx, 1);
                         }
-                        // ATOMIC LOCK: Set finished and flags immediately (unless handover, which requires confirmation)
+                        // --- REFACTOR: DELAY 'FINISHED' STATUS ---
                         if (qData.type !== 'handover') {
-                            qProgress.status = 'finished';
                             window.dispatchEvent(new CustomEvent('quest-updated'));
                             if (qData.onCompleteFlag) window.gameState.storyFlags[qData.onCompleteFlag] = true;
                         }
