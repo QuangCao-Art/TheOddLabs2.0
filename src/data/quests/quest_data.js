@@ -53,16 +53,16 @@ export const QUEST_DATA = {
             offer: [
                 "Looking for more logs? Ohh I know I can count on you.",
                 "You seem more reliable than the other bookheads.",
-                "With this, I will officially give you the main quest... I mean, task for you. Collecting Datapads task!",
+                "With this, I will officially give you the first main quest... I mean, first main task for you. Collecting Datapads task!",
                 "Woo, excited!!!",
                 "Collect 5 logs and have a battle with me, then I will tell you some fishy stuff.",
                 "Ooh this is gonna be fun!"
             ],
             offer_completed: [
                 "Whoa, that's a lot of data! You've been busy scrounging, haven't you?",
-                "You seem more reliable than the other bookheads.",
-                "With this, I will officially give you the main quest... I mean, task for you. Collecting Datapads task!",
-                "Wee, excited!!!",
+                "Yeah this is 1..2..3..4..5! Ting Ting!",
+                "The official first main quest... I mean, first main task, is completed!",
+                "But that just the start of the real quest",
                 "Alright Intern, you've got the intel. Now let's see if you can walk the path!"
             ],
             bypassed_complete: [
@@ -505,7 +505,7 @@ export const QUEST_DATA = {
                 "*[Mumbling...]* Hmph. No one sees how much effort goes into this work... // *[Sighs]* They just wanna see the results and walk away... // *[Mumbling...]* Tired... so tired, might need a day off...",
                 "Wait! You! What are you doing in the Withered Tree wing? // I'm Lana, Lead Scientist in Botanic Sector. Don't mind what you heard, I was just... talking to myself. // You're the new intern, aren't you? First time seeing the great tree? // This is the 'Musstrep'— a giant ancient tree my team and I revived from a dead husk. // It used to be a lifeless, shriveled husk, withered, tired... anyway...",
                 "It’s remarkably healthy now. In fact, it’s spawning mischievous seedlings at an alarming rate. // They love hiding beside the furniture and snapping at ankles.",
-                "So, it's your first day and no one has assigned you a task yet? // Fine, I'll give you one. Consider this an honor: your first task ever, given by me. // Kick 15 of these younglings in under 30 seconds. // Don't worry about them getting hurt; those seedlings have a shell harder than stone. Ready?"
+                "So, it's your first day and no one has assigned you a task yet? // ... // What are you saying? Jenzy did gave you a MAIN task? // Fine, I'll give you one more. Consider this an honor: your first CHORE task ever, given by ME. // Kick 15 of these younglings in under 30 seconds. // Don't worry about them getting hurt; those seedlings have a shell harder than stone. Ready?"
             ],
             progress: ["Don't stop now!"],
             complete: [
