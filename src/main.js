@@ -175,7 +175,8 @@ let catalystState = {
     boxSortMode: 'tier', // 'tier', 'type', or 'rarity'
     draggedChipId: null,
     dragSourceSlot: null,
-    battleOpponentId: 'opponent'
+    battleOpponentId: 'opponent',
+    encounterId: null
 };
 
 
@@ -1256,20 +1257,40 @@ function setupEventListeners() {
 
     window.addEventListener('start-npc-encounter', (e) => {
         const npcId = e.detail.id;
-        let profileId = e.detail.battleEncounterId || npcId;
+        const logicalId = e.detail.battleEncounterId || npcId;
+        catalystState.encounterId = logicalId; // TRACK ORIGINAL ENCOUNTER ID FOR FLAGS
+        let profileId = logicalId;
 
-        if (profileId !== 'starter_selection') {
-            const pProfile = gameState.profiles.player;
-            const activeCount = pProfile.party.slice(0, 3).filter(m => m !== null).length;
-            if (activeCount === 0) {
-                console.warn("NPC ENCOUNTER ABORTED: Active squad is empty.");
-                return;
-            }
-        }
+        if (npcId === 'jenzi' && !gameState.storyFlags.jenziFirstBattleDone) {
+            gameState.profiles['jenzi_tutorial'] = {
+                name: 'JENZI',
+                level: 0,
+                chipBox: [],
+                team: ['stemmy'],
+                party: [createMonsterInstance('stemmy')]
+            };
 
-        if (npcId === 'jenzi_tutorial') {
+            // DYNAMIC BALANCING: Tutorial Jenzi picks a type weak to the player's starter
+            const playerParty = gameState.profiles.player.party;
+            const starterId = playerParty[0]?.monsterId || 'stemmy';
+            const typeAdvantages = {
+                'cambihil': 'lydrosome',
+                'nitrophil': 'cambihil',
+                'lydrosome': 'nitrophil'
+            };
+
+            const counterType = typeAdvantages[starterId] || 'stemmy';
+            const jMonster = createMonsterInstance(counterType);
+            gameState.profiles['jenzi_tutorial'].party = [jMonster];
+            gameState.profiles['jenzi_tutorial'].team = [counterType];
+
+            syncChipsToLevel('jenzi_tutorial', 0);
+            gameState.profiles['jenzi_tutorial'].party.forEach((mon, idx) => {
+                if (mon) executeQuickEquip('balanced', 'jenzi_tutorial', idx);
+            });
+
             profileId = 'jenzi_tutorial';
-        } else if (npcId === 'jenzi_atrium') {
+        } else if (npcId === 'jenzi' && gameState.storyFlags.jenziFirstBattleDone) {
             gameState.profiles['jenzi_atrium'] = {
                 name: 'JENZI',
                 level: 5,
@@ -4922,9 +4943,12 @@ function showGameOver(isFailure, forceOverlay = false, onCloseCallback = null) {
         const playerRG = gameState.profiles.player.level || 0;
         const rgScaling = 1 + (playerRG * 0.05);
 
+        // Determine logical encounter ID for flag tracking
+        const logicalId = catalystState.encounterId || opponentId;
+
         // --- QUEST PROGRESSION HOOK ---
-        if (!isFailure && typeof Overworld !== 'undefined' && opponentId) {
-            Overworld.updateQuestProgress('defeat', opponentId);
+        if (!isFailure && typeof Overworld !== 'undefined' && logicalId) {
+            Overworld.updateQuestProgress('defeat', logicalId);
         }
 
         // --- CLEANUP WILD SPAWNER (Unified) ---
@@ -4939,29 +4963,38 @@ function showGameOver(isFailure, forceOverlay = false, onCloseCallback = null) {
 
         // Only calculate typical rewards if not a generic failure
         if (!isFailure || bypassPenalty) {
+            // Priority 1: Explicit Encounter Reward
             if (enc && enc.reward) {
                 expEarned = enc.reward.exp || 0;
                 creditsEarned = enc.reward.credits || 0;
                 biomassEarned = enc.reward.biomass || 0;
-            } else if (opponentId && opponentId.endsWith('_wild')) {
+            } 
+            // Priority 2: Wild Encounter Scaling
+            else if (opponentId && opponentId.endsWith('_wild')) {
                 creditsEarned = Math.round((10 + Math.floor(Math.random() * 16)) * rgScaling);
                 biomassEarned = Math.round((1 + Math.floor(Math.random() * 5)) * rgScaling);
                 expEarned = Math.round(25 * rgScaling);
-            } else if (typeof NPC_ENCOUNTERS !== 'undefined' && NPC_ENCOUNTERS[opponentId]) {
-                const enc = NPC_ENCOUNTERS[opponentId];
-                creditsEarned = enc.reward?.credits || 50;
-                biomassEarned = enc.reward?.biomass || 5;
-                expEarned = enc.reward?.exp || 25;
-
-                if (gameState.storyFlags) {
-                    gameState.storyFlags[`battleDone_${opponentId}`] = true;
-                    if (isFailure) gameState.storyFlags[`battleLost_${opponentId}`] = true;
-                    else gameState.storyFlags[`battleWon_${opponentId}`] = true;
-                }
-            } else {
+            } 
+            // Priority 3: Fallback generic rewards
+            else {
                 creditsEarned = Math.round(50 * rgScaling);
                 biomassEarned = Math.round(5 * rgScaling);
                 expEarned = Math.round(25 * rgScaling);
+            }
+
+            // --- DEFEAT FLAG TRACKING (Unifed System) ---
+            if (!opponentId.endsWith('_wild') && gameState.storyFlags && logicalId) {
+                gameState.storyFlags[`battleDone_${logicalId}`] = true;
+                
+                // Specialized Boss Flags (Legacy Support)
+                if (logicalId === 'lana') gameState.storyFlags.lanaBattleDone = true;
+                if (logicalId === 'dyzes') gameState.storyFlags.dyzesBattleDone = true;
+                if (logicalId === 'capsain') gameState.storyFlags.capsainBattleDone = true;
+                if (logicalId === 'jenzi_atrium') gameState.storyFlags.jenziAtriumBattleDone = true;
+                if (logicalId === 'jenzi_tutorial') gameState.storyFlags.jenziFirstBattleDone = true;
+
+                if (isFailure) gameState.storyFlags[`battleLost_${logicalId}`] = true;
+                else gameState.storyFlags[`battleWon_${logicalId}`] = true;
             }
         }
 
