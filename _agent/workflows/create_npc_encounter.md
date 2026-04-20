@@ -41,7 +41,7 @@ This workflow guides you through the process of adding a new, one-time NPC battl
 
 ### 1. Define the Encounter Data
 Add the new encounter definition to the `NPC_ENCOUNTERS` object.
-- **File**: [cards.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/cards.js)
+- **File**: [quest_data.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/quests/quest_data.js)
 - **What to add**: 
   - `rg`: Research Grade level (e.g., 5, 10, or 'auto').
   - `team`: Array of monster IDs (e.g., `['stemmy', 'nitrophil']`).
@@ -54,7 +54,10 @@ Add the NPC object to the `objects` array in the relevant **Modular Map** file.
 - **What to add**:
   - `id`: Use the unified lore name (e.g., `'maya'`).
   - `battleEncounterId`: Must match the key used in `NPC_ENCOUNTERS`.
-  - `dialogue`: Initial lines (if any). **Note**: For complex battle-able NPCs (with state-aware Before/After dialogues), use the [Narrative Engine registry](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/npc_dialogues.js) instead of this field.
+- **The ID Rule (Standardization)**:
+  - `npc.id`: The logical ID used for **Story Flags** (e.g., `battleDone_maya`).
+  - `npc.battleEncounterId`: The key used to look up **Combat Stats** in `quest_data.js`.
+  - **Important**: If the NPC is a "Story Boss" with multiple versions (e.g., `lana_tutorial`, `lana_v3`), their `battleEncounterId` might change, but their `npc.id` should remain the same characters ID to ensure consistent progress tracking.
 
 ### 3. Map Sprite (OVERWORLD)
 Ensure the engine knows which sprite class (male/female) to use for the ID.
@@ -85,6 +88,7 @@ Any NPC that requires specific dialogue logic (before battle, after winning, aft
 - [ ] **Sprite Mapping**: Does the ID exist in `window.OVERWORLD_NPC_SPRITES` in `main.js`?
 - [ ] **Character Art**: Does the `battleEncounterId` exist in `PRE_BATTLE_DATA` in `main.js`?
 - [ ] **Grammar & Polish**: Have the battle lines been checked and polished for high-quality writing?
-- [ ] **ID Consistency**: Does the ID in `NPC_ENCOUNTERS` EXACTLY match the ID in the modular map?
+- [ ] **ID Consistency**: Does the key in `NPC_ENCOUNTERS` EXACTLY match the `battleEncounterId` in the modular map?
+- [ ] **Flag Synchronization**: Does the `npc.id` in the map file match the expected `battleDone_[ID]` flag used by the overworld?
 - [ ] **Zone Dialogue Accuracy**: If the NPC is a floor resident, does the Overworld dialogue match `story_lore_progression.md`?
 - [ ] **Dialogue Branching**: Ensure specialized narrative dialogues are added to **`src/data/npc_dialogues.js`**.

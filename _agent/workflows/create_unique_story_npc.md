@@ -38,14 +38,15 @@ This workflow guides you through the creation of a named character in the lab—
 
 ##### 2. Gameplay & Logic (ONLY IF NOT PEACEFUL)
 - **Initial Dialogue**: [MANDATORY for Peaceful: Use Zone Dialogue from story_lore_progression.md]
-- **Battle Encounter ID**: [Optional: If Battleable, link to NPC_ENCOUNTERS]
+- **Encounter ID**: [The logical character ID for flags, e.g., 'lana', 'maya']
+- **Battle Profile ID**: [The stats key in quest_data.js, e.g., 'lana_boss']
 - **Quest ID**: [Optional: If Quest Giver, link to QUESTS]
 ```
 
 ### 1. Register Overworld Entity
 Add the character to the `objects` array in the relevant **Modular Map** file within [src/data/maps/](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/data/maps/):
-- **ID Rule**: Use the **Lore ID** (e.g., `id: 'mimi'`). 
-- **Mapping Data**: Include the `name`, `x`, `y`, and any gameplay ID (`battleEncounterId` or `sideQuestId`).
+- **ID Rule**: Use the **Lore ID** (e.g., `id: 'mimi'`). This ID is used for **Story Flags** (e.g. `battleDone_mimi`).
+- **Mapping Data**: Include the `name`, `x`, `y`, and the `battleEncounterId` (for combat stats).
 
 **Example**:
 ```javascript
@@ -77,9 +78,9 @@ Unique narrative responses and branching states are now defined in the **Narrati
 
 ### ⚠️ NPC Integrity Checklist
 - [ ] **Type Check**: Is the NPC **Peaceful**? (If yes, ensure no `battleEncounterId` exists)
-- [ ] **Lore ID Consistency**: Does the ID in the map file match `main.js` and `npc_dialogues.js`?
+- [ ] **Lore ID Consistency**: Does the ID in the map file match the `battleDone_` flag logic in `main.js`?
+- [ ] **Flag Mapping**: If this is a Boss, did you ensure the `npc.id` results in the correct `battleDone_` story flag?
 - [ ] **Metadata Mapping**: Is the NPC registered in `OVERWORLD_NPC_SPRITES`? (Only if using generic sprites; skipped if unique ID matches CSS)
-- [ ] **Sprite Collision**: Did you ensure no existing mappings were accidentally deleted in `main.js`?
 - [ ] **Dialogue Type**: Is the logic registered in **`src/data/npc_dialogues.js`**?
 - [ ] **Zone Dialogue Accuracy**: Does the dialogue match the official lines in `story_lore_progression.md`?
 - [ ] **Grammar & Polish**: Have the lines been checked and polished for high-quality writing?
