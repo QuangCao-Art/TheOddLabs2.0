@@ -39,6 +39,14 @@ const TILE_MATERIAL_MAP = {
     38: 'metal'  // Floor-SideDeco / Machine Base
 };
 
+// --- SYSTEMATIC TILE REGISTRY ---
+// Consolidating hardcoded IDs to ensure consistency between collision, rendering, and spawning.
+export const WALL_TILE_IDS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 32, 33, 43, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63];
+export const CLOSED_DOOR_IDS = [20, 22, 24, 25, 28, 29, 30, 31, 39, 40, 41, 42];
+export const OPEN_DOOR_IDS = [21, 23, 26, 27, 34, 35, 36, 37];
+export const LOCKED_DOOR_IDS = [28, 29, 30, 31];
+
+
 
 export const Overworld = {
     randomPools: {
@@ -666,9 +674,9 @@ export const Overworld = {
                 const tile = document.createElement('div');
                 tile.classList.add('tile', `t-${tileID}`);
 
-                const isClosedDoor = [20, 22, 24, 25, 28, 29, 30, 31, 39, 40, 41, 42].includes(tileID);
-                const isOpenDoor = [21, 23, 26, 27, 34, 35, 36, 37].includes(tileID);
-                const isGenericWall = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 32, 33, 43, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63].includes(tileID);
+                const isClosedDoor = CLOSED_DOOR_IDS.includes(tileID);
+                const isOpenDoor = OPEN_DOOR_IDS.includes(tileID);
+                const isGenericWall = WALL_TILE_IDS.includes(tileID);
 
                 if (isGenericWall || isClosedDoor) tile.classList.add('wall');
                 else tile.classList.add('floor');
@@ -1201,7 +1209,7 @@ export const Overworld = {
 
                 const tileID = zone.layout[nextY][nextX];
                 const doorMap = { 20: 21, 22: 23, 24: 26, 25: 27, 39: 34, 40: 35, 41: 36, 42: 37 };
-                const isLocked = [28, 29, 30, 31].includes(tileID);
+                const isLocked = LOCKED_DOOR_IDS.includes(tileID);
 
                 if (doorMap[tileID]) {
                     // check if this tile has a transition with a flag
@@ -1914,7 +1922,7 @@ export const Overworld = {
             }
 
             const tileID = zone.layout[targetY][targetX];
-            const lockedTiles = [20, 22, 24, 25, 28, 29, 30, 31];
+            const lockedTiles = [20, 22, 24, 25, ...LOCKED_DOOR_IDS];
 
             if (lockedTiles.includes(tileID)) {
                 // Check visual state to see if it's already open (has floor class)
@@ -2923,9 +2931,9 @@ export const Overworld = {
             const targetDist = 3 * (currentWildCount + 1);
             let candidates = [];
 
-            const isClosedDoor = [20, 22, 24, 25, 28, 29, 30, 31, 39, 40, 41, 42];
-            const isOpenDoor = [21, 23, 26, 27, 34, 35, 36, 37];
-            const isGenericWall = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 32, 33, 43, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63];
+            const isClosedDoor = CLOSED_DOOR_IDS;
+            const isOpenDoor = OPEN_DOOR_IDS;
+            const isGenericWall = WALL_TILE_IDS;
 
             // 1. Map all floor tiles and calculate their isolation scores
             for (let y = 0; y < zone.height; y++) {
