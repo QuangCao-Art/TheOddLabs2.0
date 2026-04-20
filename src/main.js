@@ -3916,18 +3916,23 @@ function renderQuestMenu() {
 
             let progressText = "";
             if (qData.type === 'collect') {
-                progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'DONE' : 'LOOKING...');
+                progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'READY' : 'LOOKING...');
             } else if (qData.type === 'defeat') {
                 if (qProgress.status === 'completed' || qProgress.status === 'finished') {
-                    progressText = 'VICTORY';
+                    progressText = 'READY';
                 } else {
-                    const label = (qData.amount > 1) ? 'HUNT' : 'BATTLE';
+                    const label = (qData.amount > 1) ? 'DEFEATED' : 'BATTLED';
                     progressText = `${label}: ${qProgress.progress}/${qData.amount}`;
                 }
             } else if (qData.type === 'handover') {
-                progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'READY' : 'HANDOVER');
+                const balance = qData.target === 'credits' ? (gameState.credits || 0) : (gameState.biomass || 0);
+                const isReadyNow = balance >= (qData.amount || 0);
+                progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' || isReadyNow ? 'READY' : 'WORKING...');
+            } else if (qData.type === 'synthesis' || qData.type === 'show_monster') {
+                const isReadyNow = gameState.profiles.player.party.some(m => m && m.id === qData.target);
+                progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' || isReadyNow ? 'READY' : `STATUS: ${qProgress.progress}/${qData.amount}`);
             } else {
-                progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'DONE' : `${qProgress.progress}/${qData.amount}`);
+                progressText = (qProgress.status === 'completed' || qProgress.status === 'finished' ? 'READY' : `STATUS: ${qProgress.progress}/${qData.amount}`);
             }
 
             // --- Multi-Requirement Progress Display ---
@@ -3941,7 +3946,7 @@ function renderQuestMenu() {
             item.innerHTML = `
                 <div class="quest-main">
                     <span class="quest-title">${qData.title}</span>
-                    <span class="quest-progress">${progressText}</span>
+                    ${qProgress.status !== 'finished' ? `<span class="quest-progress">${progressText}</span>` : ''}
                 </div>
                 <div class="quest-desc">${qData.description}</div>
             `;
