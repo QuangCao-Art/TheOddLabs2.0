@@ -20,7 +20,7 @@ export const nursery = {
     ],
     objects: [
         { "id": "proxy", "x": 12, "y": 9, "type": "npc", "name": "Botanist Proxy" },
-        { "id": "creata", "x": 6, "y": 5, "type": "npc", "name": "Researcher Creata" },
+        { "id": "creata", "x": 7, "y": 5, "type": "npc", "name": "Researcher Creata", "quests": ["quest_nursery_creata_log"] },
         { "id": "f59_mnmzechnq49rx", "x": 13, "y": 10, "type": "prop", "templateName": "POT_PLANT_SMALL" },
         { "id": "f59_mnmzefzm773a4", "x": 13, "y": 5, "type": "prop", "templateName": "POT_PLANT_SMALL" },
         { "id": "f19_mnmzf1lj5sruu", "x": 11, "y": 5, "type": "prop", "templateName": "PLANT_A" },

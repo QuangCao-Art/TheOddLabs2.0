@@ -552,6 +552,50 @@ export const QUEST_DATA = {
             ],
             finished: ["The lights look much better now, don't they? Good for the eyes, good for the soul."]
         }
+    },
+
+    'quest_nursery_creata_log': {
+        id: 'quest_nursery_creata_log',
+        title: 'The Missing Datalog',
+        description: "Retrieve the lost datalog (Log007) for Researcher Creata in the Nursery Garden.",
+        type: 'collect',
+        target: 'Log007',
+        amount: 1,
+        reward: {
+            type: 'resource_multi',
+            rewards: [
+                { type: 'resource', id: 'biomass', amount: 10 },
+                { type: 'exp', amount: 50 },
+                { type: 'relocate', npcId: 'creata', x: 6, y: 5, zoneId: 'nursery', direction: 'down', useFade: true }
+            ]
+        },
+        dialogue: {
+            offer: [
+                "Ehem... excuse me, Intern. You haven't seen a small, glowing datapad lying around, have you?",
+                "I was so absorbed in recalibrating the salinity for these test tanks that I... well, I seem to have dropped it somewhere.",
+                "It contains weeks of observation on Cambihil photosynthetic efficiency. // If Lana finds out I lost it, she will yell at me for a decade!",
+                "Could you look around the Nursery? I drop a datalog some where, can you help me to find it? // I'm practically rooted here until it's found."
+            ],
+            offer_completed: [
+                "Oh! Is that what I think it is?",
+                "You already found my datapad? And here I was, moments away from a full-blown panic attack."
+            ],
+            progress: [
+                "Still looking? The datapad has to be somewhere here."
+            ],
+            complete: [
+                "Ah! Is it...",
+                "...",
+                "Nooooo... that's not mine, mine have a NOODLE STAIN on the corner.",
+                "OMG OMG Lana gonna kill me!!!",
+                "Now I'm having a true full-blown panic attack...",
+                "Thank... thank you for your help, Intern, but I have to look for my datapad in another room.",
+                "... after I finish my shift here."
+            ],
+            finished: [
+                "Lana gonna kill me!! // I can't focus on the experiment now!!"
+            ]
+        }
     }
 };
 
