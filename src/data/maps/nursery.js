@@ -131,6 +131,6 @@ export const nursery = {
     ],
     doors: [
         { "x": 14, "y": 7, "targetZone": "botanic", "targetX": 1, "targetY": 13 },
-        { "x": 7, "y": 2, "targetZone": "witheredTree", "targetX": 8, "targetY": 23 }
+        { "x": 7, "y": 2, "targetZone": "witheredTree", "targetX": 8, "targetY": 26 }
     ]
 };

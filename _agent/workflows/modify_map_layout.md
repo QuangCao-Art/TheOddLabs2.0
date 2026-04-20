@@ -39,6 +39,10 @@ This protocol MUST be strictly followed for all map modifications:
         - `breathingScale: "X.X"` (Optional, e.g., "1.1").
     - **Opt-in Rule**: Breathing properties should ONLY be added to the registry upon explicit USER request. Do NOT add them by default to new assets.
 - **13. TERRAIN_PROPERTY_REGISTRY**: Terrain properties (Collision, Spawn Blocking) are NOT defined in `MapBuilder.md`. They are centralized in the `SYSTEMATIC TILE REGISTRY` at the top of [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/overworld.js). Any new terrain tile type MUST be added to its respective constant (e.g., `WALL_TILE_IDS`) to ensure it behaves correctly.
+- **14. MAP_REGISTRATION_PROTOCOL**: Whenever a **NEW** map file is created in `src/data/maps/`, it MUST be registered in [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/overworld.js):
+    1.  **Import**: Add the `import { [map_id] } from '../data/maps/[file].js';` at the top.
+    2.  **Registry**: Add the map ID to the `Overworld.zones` object.
+    Failure to do this will result in the engine falling back to the `lobby` upon entry.
 
 
 ### 1. Identify the Target Zone File
@@ -60,6 +64,11 @@ If you changed the `width`, `height`, or shifted the floor of the target zone, y
 - **Action**: Search for the zone name in `src/data/maps/` (excluding the target file itself) to find connected zones.
 - **Update**: Adjust the `targetX` and `targetY` in the `doors` array of those connected zones.
 
+### 5. Engine Registration (New Maps Only)
+If you created a **NEW** map file, you MUST register it for the engine to recognize it.
+- **File**: [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/overworld.js)
+- **Action**: Add the import statement and add the map variable to the `Overworld.zones` object.
+
 ### 5. Validation (Crucial)
 After any modification, use the `map_sync.py` tool to verify the integrity of the map data.
 - **Command**: `python map_sync.py --validate` (or ask the user to run it if python is unavailable).
@@ -77,3 +86,4 @@ Ensure the Furniture ID is correctly mapped to the tileset.
 - [ ] **ID Truth**: Does the ID in the modular map file match the reference in [MapBuilder.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/MapBuilder.md)?
 - [ ] **Connected Zones**: Did you update the `targetX/targetY` for every door leading *into* this zone from other map files?
 - [ ] **Z-Index**: Do 'Top' parts (F13, F61, F88) have `hasCollision: false` in `src/data/furniture.js` metadata?
+- [ ] **Engine Registry**: (For NEW maps) Did you import and add the map to `Overworld.zones` in `overworld.js`?
