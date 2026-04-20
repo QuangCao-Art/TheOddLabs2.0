@@ -313,9 +313,13 @@ Used for wild cell encounters. Props follow the class convention `.world-object.
 
 
 ## 3. Implementation Logic (Collisions)
-- **Solid (Walls)**: 0-11, 14-20, 22, 24-25, 28-31, 43, 48-56.
-- **Walkable (Floor)**: 13, 21, 23, 26, 27, 44-47.
-- **Transitional (Doors)**: 20-27.
+> [!IMPORTANT]
+> The source of truth for terrain properties is the **SYSTEMATIC TILE REGISTRY** in [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/overworld.js). The lists below are for quick reference and must be kept in sync with the engine.
+
+- **Solid (Walls)**: 0-11, 12 (Empty Fill), 14-20, 22, 24-25, 28-33, 39-43, 48-63.
+- **Walkable (Floor)**: 13, 21, 23, 26, 27, 34-38, 44-47, 64-66.
+- **Transitional (Doors)**: 20-31, 34-37.
+
 
 ## 4. Building 2-Tile High Walls
 To build a wall that spans two tiles high, use the Top and Bottom segments in vertical pairs:

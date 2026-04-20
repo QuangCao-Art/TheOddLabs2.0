@@ -38,6 +38,8 @@ This protocol MUST be strictly followed for all map modifications:
         - `breathingSpeed: "Xs"` (Optional, e.g., "1.5s").
         - `breathingScale: "X.X"` (Optional, e.g., "1.1").
     - **Opt-in Rule**: Breathing properties should ONLY be added to the registry upon explicit USER request. Do NOT add them by default to new assets.
+- **13. TERRAIN_PROPERTY_REGISTRY**: Terrain properties (Collision, Spawn Blocking) are NOT defined in `MapBuilder.md`. They are centralized in the `SYSTEMATIC TILE REGISTRY` at the top of [overworld.js](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/src/engine/overworld.js). Any new terrain tile type MUST be added to its respective constant (e.g., `WALL_TILE_IDS`) to ensure it behaves correctly.
+
 
 ### 1. Identify the Target Zone File
 Map data is now modularized into individual files.
@@ -46,7 +48,8 @@ Map data is now modularized into individual files.
 
 ### 2. Update the Grid (Layout)
 If changing walls or floors, modify the `layout` array in the zone file.
-- **Reference**: Use [MapBuilder.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/MapBuilder.md) (Terrain Tiles 0-32).
+- **Reference**: Use [MapBuilder.md](file:///d:/AntiGravityWorkSpace/TheOddLabs2.0/MapBuilder.md) (Terrain Tiles 0-66).
+
 
 ### 3. Place/Move Objects
 Update the `objects` array in the zone file.
