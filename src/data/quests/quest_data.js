@@ -462,7 +462,7 @@ export const QUEST_DATA = {
         target: 'any',
         amount: 20,
         timeLimit: 30,
-        reward: { type: 'resource', id: 'credits', amount: 800 },
+        reward: { type: 'resource', id: 'credits', amount: 200 },
         dialogue: {
             offer: [
                 "Hey Intern! Did you know that Cells actually enjoy physical interaction?",
@@ -631,28 +631,28 @@ export const NPC_ENCOUNTERS = {
         rg: 5,
         team: ['stemmy'],
         style: 'balanced',
-        reward: { exp: 400, biomass: 15, credits: 300 }
+        reward: { exp: 400, biomass: 15, credits: 200 }
     },
     'lana': {
         name: "Lana (Botanic Quest)",
         rg: 10,
         team: ['cambihil'],
         style: 'survival',
-        reward: { exp: 800, biomass: 50, credits: 1000 }
+        reward: { exp: 800, biomass: 50, credits: 500 }
     },
     'dyzes': {
         name: "Dyzes (Human Quest)",
         rg: 15,
         team: ['lydrosome', 'lydrosome'],
         style: 'utility',
-        reward: { exp: 1200, biomass: 100, credits: 2000 }
+        reward: { exp: 1200, biomass: 100, credits: 800 }
     },
     'capsain': {
         name: "Capsain (Director Quest)",
         rg: 20,
         team: ['nitrophil', 'nitrophil', 'nitrophil'],
         style: 'aggressive',
-        reward: { exp: 2500, biomass: 200, credits: 5000 }
+        reward: { exp: 2500, biomass: 200, credits: 1100 }
     },
     'npc01': { name: "NPC Male", rg: 5, team: ['stemmy'], style: 'balanced' },
     'npc02': { name: "NPC Female", rg: 5, team: ['stemmy'], style: 'balanced' },
@@ -668,104 +668,104 @@ export const NPC_ENCOUNTERS = {
         rg: 2,
         team: ['cambihil'],
         style: 'balanced',
-        reward: { exp: 120, biomass: 6, credits: 80 }
+        reward: { exp: 120, biomass: 5, credits: 80 }
     },
     'blundur': {
         name: "Researcher Blundur",
         rg: 2,
         team: ['lydrosome'],
         style: 'balanced',
-        reward: { exp: 120, biomass: 6, credits: 80 }
+        reward: { exp: 120, biomass: 5, credits: 80 }
     },
     'saito': {
         name: "Assistant Saito",
         rg: 3,
         team: ['nitrophil'],
         style: 'balanced',
-        reward: { exp: 150, biomass: 10, credits: 150 }
+        reward: { exp: 150, biomass: 5, credits: 150 }
     },
     'shopia': {
         name: "Scientist Shopia",
         rg: 5,
         team: ['cambihil'],
         style: 'balanced',
-        reward: { exp: 400, biomass: 20, credits: 300 }
+        reward: { exp: 400, biomass: 5, credits: 200 }
     },
     'clips': {
         name: "Tech Clips",
         rg: 6,
         team: ['stemmy'],
         style: 'utility',
-        reward: { exp: 500, biomass: 25, credits: 400 }
+        reward: { exp: 500, biomass: 10, credits: 250 }
     },
     'lustra': {
         name: "Researcher Lustra",
         rg: 7,
         team: ['nitrophil'],
         style: 'aggressive',
-        reward: { exp: 500, biomass: 30, credits: 500 }
+        reward: { exp: 500, biomass: 10, credits: 400 }
     },
     'rattou': {
         name: "Chef Rattou",
         rg: 7,
         team: ['stemmy', 'nitrophil'],
         style: 'aggressive',
-        reward: { exp: 700, biomass: 30, credits: 600 }
+        reward: { exp: 700, biomass: 10, credits: 450 }
     },
     'ecto': {
         name: "Researcher Ecto",
         rg: 11,
         team: ['stemmy', 'stemmy'],
         style: 'aggressive',
-        reward: { exp: 800, biomass: 40, credits: 600 }
+        reward: { exp: 800, biomass: 10, credits: 600 }
     },
     'premy': {
         name: "Researcher Premy",
         rg: 12,
         team: ['stemmy', 'nitrophil'],
         style: 'utility',
-        reward: { exp: 900, biomass: 45, credits: 700 }
+        reward: { exp: 900, biomass: 15, credits: 700 }
     },
     'yifec': {
         name: "Researcher Yifec",
         rg: 13,
         team: ['lydrosome', 'stemmy'],
         style: 'utility',
-        reward: { exp: 1000, biomass: 50, credits: 800 }
+        reward: { exp: 1000, biomass: 15, credits: 800 }
     },
     'white': {
         name: "Researcher White",
         rg: 13,
         team: ['lydrosome', 'nitrophil'],
         style: 'aggressive',
-        reward: { exp: 1000, biomass: 50, credits: 800 }
+        reward: { exp: 1000, biomass: 15, credits: 800 }
     },
     'cherry': {
         name: "Researcher Cherry",
         rg: 13,
         team: ['cambihil', 'lydrosome'],
         style: 'utility',
-        reward: { exp: 1000, biomass: 50, credits: 800 }
+        reward: { exp: 1000, biomass: 15, credits: 800 }
     },
     'anreal': {
         name: "Assistant Anreal",
         rg: 17,
         team: ['lydrosome', 'cambihil'],
         style: 'balanced',
-        reward: { exp: 1500, biomass: 80, credits: 1500 }
+        reward: { exp: 1500, biomass: 20, credits: 900 }
     },
     'godou': {
         name: "Assistant Godou",
         rg: 17,
         team: ['cambihil', 'nitrophil'],
         style: 'balanced',
-        reward: { exp: 1500, biomass: 80, credits: 1500 }
+        reward: { exp: 1500, biomass: 20, credits: 900 }
     },
     'yunidi': {
         name: "Assistant Yunidi",
         rg: 18,
         team: ['stemmy', 'stemmy', 'nitrophil'],
         style: 'balanced',
-        reward: { exp: 1800, biomass: 100, credits: 2000 }
+        reward: { exp: 1800, biomass: 20, credits: 950 }
     }
 };

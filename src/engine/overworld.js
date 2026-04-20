@@ -3009,11 +3009,12 @@ export const Overworld = {
                 if (el) {
                     el.classList.add('anim-monster-pop');
                     setTimeout(() => {
-                        if (el && el.parentNode) {
-                            el.classList.remove('anim-monster-pop');
-                            el.classList.add('anim-monster-breathing');
-                            delete newMonster._isPopping; // Monster is now established
+                        const currentEl = document.getElementById(`npc-${monsterId}`);
+                        if (currentEl && currentEl.parentNode) {
+                            currentEl.classList.remove('anim-monster-pop');
+                            currentEl.classList.add('anim-monster-breathing');
                         }
+                        delete newMonster._isPopping; // Guarantee flag cleanup even if element was destroyed
                     }, 400);
                 }
             }
