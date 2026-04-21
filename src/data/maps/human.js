@@ -87,7 +87,7 @@ export const human = {
         {"id":"f48_r14b","x":8,"y":14,"type":"prop"},
         {"id":"f9_r14e","x":9,"y":14,"type":"prop"},
         {"id":"f8_r14b","x":10,"y":14,"type":"prop"},
-        {"id":"f9_r14f","x":11,"y":14,"type":"prop","hiddenLogId":"Log012"},
+        {"id":"f9_r14f","x":11,"y":14,"type":"prop"},
         {"id":"f7_mnmwvxvaegi25","x":8,"y":7,"type":"prop"},
         {"id":"f9_mnmwwwcvnpkau","x":4,"y":10,"type":"prop"},
         {"id":"f60_mnmwxvapacdqe","x":6,"y":7,"type":"prop"},

@@ -35,7 +35,7 @@ export const maintenanceRoom = {
         [2, 9, 9, 9, 9, 20, 9, 9, 9, 9, 3]
     ],
     objects: [
-        { "id": "f36_mo886qcujwclw", "templateName": "NOODLE_TABLE", "x": 1, "y": 25, "type": "prop", "mirrored": false },
+        { "id": "f36_mo886qcujwclw", "templateName": "NOODLE_TABLE", "x": 1, "y": 25, "type": "prop", "mirrored": false, "hiddenLogId": "Log012" },
         { "id": "f4_mo88701pxazuc", "templateName": "TABLE_B", "x": 1, "y": 24, "type": "prop", "mirrored": false, "hiddenReward": "REWARD_CREDITS_10" },
         { "id": "f5_mo88701pxazuc", "templateName": "TABLE_B", "x": 2, "y": 24, "type": "prop", "mirrored": false, "hiddenReward": "REWARD_CREDITS_10" },
         { "id": "f110_mo887i4creyov", "templateName": "HUGE_PETRY_DISH", "x": 6, "y": 22, "type": "prop", "mirrored": false },
@@ -169,7 +169,12 @@ export const maintenanceRoom = {
         { "id": "f123_mo8b6a0e36sd7", "templateName": "TANK_LID_BROKEN", "x": 7, "y": 25, "type": "prop", "mirrored": false },
         { "id": "f121_mo8b6jofzjb4m", "templateName": "TANK_LID_LOOSE", "x": 3, "y": 18, "type": "prop", "mirrored": false },
         { "id": "f185_mo8bc8ixcuh4g", "templateName": "LIQUID_RED", "x": 3, "y": 10, "type": "prop", "mirrored": false },
-        { "id": "f121_mo8bclnvx7czm", "templateName": "TANK_LID_LOOSE", "x": 9, "y": 11, "type": "prop", "mirrored": false }
+        { "id": "f37_mo8cmwqh78ob5", "templateName": "NOODLE_BOWL", "x": 4, "y": 6, "type": "prop", "mirrored": false },
+        { "id": "f60_mo8cn75xi16vm", "templateName": "SMALL_BOX", "x": 3, "y": 11, "type": "prop", "mirrored": false },
+        { "id": "f62_mo8cnihjwhxpv", "templateName": "BOX_PILE", "x": 9, "y": 8, "type": "prop", "mirrored": false },
+        { "id": "f61_mo8cnihjwhxpv", "templateName": "BOX_PILE", "x": 9, "y": 7, "type": "prop", "mirrored": false },
+        { "id": "f60_mo8cnue5iukif", "templateName": "SMALL_BOX", "x": 9, "y": 9, "type": "prop", "mirrored": false },
+        { "id": "f60_mo8cobwk80h86", "templateName": "SMALL_BOX", "x": 9, "y": 15, "type": "prop", "mirrored": false }
     ],
     doors: [
         { "x": 5, "y": 26, "targetZone": "specimenStorage", "targetX": 13, "targetY": 3 }
