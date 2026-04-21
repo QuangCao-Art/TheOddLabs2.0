@@ -555,7 +555,6 @@ export const ancientBotany = {
                         "x": 10,
                         "y": 5,
                         "type": "prop",
-                        "hiddenLogId": "Log006",
                         "templateName": "TABLE_LEADER_B"
                 },
                 {

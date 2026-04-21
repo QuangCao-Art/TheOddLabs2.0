@@ -44,9 +44,6 @@ export const witheredTree = {
         { "id": "f106_mnydwqb2vp6yu", "templateName": "WARNING_SIGN_SIDE", "x": 5, "y": 16, "type": "prop", "mirrored": false },
         { "id": "f14_mnydx68pgyq1z", "templateName": "TANK_GREEN", "x": 3, "y": 12, "type": "prop", "mirrored": false },
         { "id": "f13_mnydx68pgyq1z", "templateName": "TANK_GREEN", "x": 3, "y": 11, "type": "prop", "mirrored": false },
-        { "id": "f9_mnydyjytc7pup", "templateName": "TABLE_DEVICE", "x": 6, "y": 14, "type": "prop", "mirrored": false },
-        { "id": "f26_mnydypgvb5kqz", "templateName": "TABLE_D", "x": 6, "y": 15, "type": "prop", "mirrored": false, "hiddenReward": "REWARD_CREDITS_10" },
-        { "id": "f27_mnydypgvb5kqz", "templateName": "TABLE_D", "x": 7, "y": 15, "type": "prop", "mirrored": false, "hiddenReward": "REWARD_CREDITS_10" },
         { "id": "f7_mnydyzxw9ith6", "templateName": "TABLE_COMPUTER", "x": 9, "y": 15, "type": "prop", "mirrored": false },
         { "id": "f0_mnydza042ssr7", "templateName": "CHAIR_A_L", "x": 9, "y": 16, "type": "prop", "mirrored": false },
         { "id": "f60_mnydzse2maywd", "templateName": "SMALL_BOX", "x": 6, "y": 10, "type": "prop", "mirrored": false },
@@ -154,13 +151,16 @@ export const witheredTree = {
         { "id": "f105_mo71lp9ee3eec", "templateName": "WARNING_SIGN_FRONT", "x": 7, "y": 26, "type": "prop", "mirrored": false },
         { "id": "f8_mo71m8cszzes9", "templateName": "TABLE_CYLINDERS", "x": 9, "y": 24, "type": "prop", "mirrored": false },
         { "id": "f9_mo71m9rkrwpkk", "templateName": "TABLE_DEVICE", "x": 9, "y": 25, "type": "prop", "mirrored": false },
-        { 
-            "id": "lana_withered", 
-            "templateName": "LANA", 
-            "x": 7, "y": 14, 
+        { "id": "f28_mo82aftfhw0x9", "templateName": "TABLE_LEADER", "x": 6, "y": 15, "type": "prop", "mirrored": false },
+        { "id": "f29_mo82aftfhw0x9", "templateName": "TABLE_LEADER", "x": 7, "y": 15, "type": "prop", "mirrored": false, "hiddenLogId": "Log006" },
+        { "id": "f9_mo82bp86v36t5", "templateName": "TABLE_DEVICE", "x": 6, "y": 14, "type": "prop", "mirrored": false, "hiddenReward": "REWARD_CREDITS_10" },
+        {
+            "id": "lana_withered",
+            "templateName": "LANA",
+            "x": 7, "y": 14,
             "direction": "left",
-            "type": "npc", 
-            "name": "Scientist Lana", 
+            "type": "npc",
+            "name": "Scientist Lana",
             "quests": ["quest_lana_cleanup"],
             "forbiddenFlag": "lanaCleanedUp"
         }
@@ -168,7 +168,7 @@ export const witheredTree = {
     doors: [
         { "x": 8, "y": 2, "targetZone": "ancientBotany", "targetX": 21, "targetY": 7 },
         { "x": 8, "y": 27, "targetZone": "nursery", "targetX": 7, "targetY": 3 },
-        { "x": 3, "y": 18, "targetZone": "secretRootChamber", "targetX": 5, "targetY": 2 }
+        { "x": 3, "y": 18, "targetZone": "secretRootChamber", "targetX": 5, "targetY": 3 }
     ],
     maxWildSpawns: 3,
     disableWildDespawn: true,

@@ -511,7 +511,8 @@ export const QUEST_DATA = {
             complete: [
                 "Hmph. I suppose you have strong legs and keen eyes after all.",
                 "Don't get too comfortable though; they'll be back eventually. They always do.",
-                "I’m going back to my room now. // ...By the way, it was nice to meet you. Welcome to the Lab; you have much to learn here."
+                "I’m going back to my room now. // ...By the way, it was nice to meet you. Welcome to the Lab; you have much to learn here.",
+                "*[Mumbling...]* And where is one of my MANY datapads? I swear I left it just right here..."
             ],
             failed: ["Hehe, did you see how their roots flared when they were running? // Ehem... I mean, you weren't quick enough. // Maybe you should scout where they’re hiding and plan a path first?"],
             retry: ["Ready to try again? Or have you reached your limit. Intern?"],
