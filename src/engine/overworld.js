@@ -33,6 +33,7 @@ import { oldMachine } from '../data/maps/oldMachine.js';
 import { witheredTree } from '../data/maps/witheredTree.js';
 import { fabricatingLab } from '../data/maps/fabricatingLab.js';
 import { secretRootChamber } from '../data/maps/secretRootChamber.js';
+import { maintenanceRoom } from '../data/maps/maintenanceRoom.js';
 
 // Mapping of Tile IDs to specific material tags for audio/vfx
 const TILE_MATERIAL_MAP = {
@@ -291,7 +292,8 @@ export const Overworld = {
         oldMachine,
         witheredTree,
         fabricatingLab,
-        secretRootChamber
+        secretRootChamber,
+        maintenanceRoom
     },
     furnitureMetadata,
 

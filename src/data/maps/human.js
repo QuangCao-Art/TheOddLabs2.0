@@ -10,7 +10,7 @@ export const human = {
         [10,14,14,14,14,14,14,14,14,14,14,14,14,14,11],
         [10,15,15,15,15,15,32,32,32,15,15,15,15,15,11],
         [10,13,13,13,13,13,13,13,13,13,13,13,13,13,11],
-        [10,13,13,13,13,13,13,13,13,13,13,13,13,13,25],
+        [24,13,13,13,13,13,13,13,13,13,13,13,13,13,25],
         [10,13,13,13,13,13,13,13,13,13,13,13,13,13,11],
         [10,13,13,13,13,13,13,13,13,13,13,13,13,13,11],
         [10,13,13,13,13,13,13,13,13,13,13,13,13,13,11],
@@ -52,7 +52,7 @@ export const human = {
         {"id":"f84_r5f","x":12,"y":5,"type":"prop"},
         {"id":"f16_r6a","x":1,"y":6,"type":"prop"},
         {"id":"f16_r6b","x":3,"y":6,"type":"prop"},
-        {"id":"f85_r6b","x":4,"y":6,"type":"prop","hiddenLogId":"Log013"},
+        {"id":"f85_r6b","x":4,"y":6,"type":"prop"},
         {"id":"f16_r6c","x":5,"y":6,"type":"prop"},
         {"id":"f85_r6c","x":6,"y":6,"type":"prop"},
         {"id":"f85_r6d","x":8,"y":6,"type":"prop"},
@@ -141,7 +141,8 @@ export const human = {
         {"x":0,"y":13,"targetZone":"atrium","targetX":17,"targetY":4},
         {"x":7,"y":15,"targetZone":"specimenStorage","targetX":6,"targetY":3},
         {"x":14,"y":4,"targetZone":"preservationRoom","targetX":1,"targetY":5},
-        {"x":14,"y":13,"targetZone":"medicalExperienceRoom","targetX":1,"targetY":7}
+        {"x":14,"y":13,"targetZone":"medicalExperienceRoom","targetX":1,"targetY":7},
+        {"x":0,"y":4,"targetZone":"executive","targetX":20,"targetY":6}
     ]
 };
 

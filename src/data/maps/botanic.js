@@ -10,7 +10,7 @@ export const botanic = {
         [10, 53, 14, 14, 14, 14, 60, 60, 60, 55, 14, 14, 14, 53, 11],
         [10, 54, 15, 15, 32, 32, 61, 61, 61, 59, 32, 15, 15, 54, 11],
         [10, 13, 13, 13, 13, 13, 64, 64, 64, 13, 13, 13, 13, 13, 11],
-        [24, 45, 44, 13, 13, 13, 65, 13, 44, 13, 13, 13, 13, 13, 11],
+        [24, 45, 44, 13, 13, 13, 65, 13, 44, 13, 13, 13, 13, 13, 25],
         [10, 13, 38, 38, 38, 38, 38, 13, 38, 38, 38, 38, 38, 38, 11],
         [10, 13, 38, 38, 38, 38, 38, 13, 38, 38, 38, 38, 38, 38, 11],
         [10, 13, 38, 38, 38, 38, 38, 13, 38, 38, 38, 38, 38, 38, 11],
@@ -165,6 +165,7 @@ export const botanic = {
         { x: 14, y: 13, targetZone: 'atrium', targetX: 1, targetY: 4 },
         { x: 7, y: 15, targetZone: 'kitchen', targetX: 7, targetY: 3 },
         { x: 0, y: 4, targetZone: 'ancientBotany', targetX: 31, targetY: 5 },
-        { x: 0, y: 13, targetZone: 'nursery', targetX: 13, targetY: 7 }
+        { x: 0, y: 13, targetZone: 'nursery', targetX: 13, targetY: 7 },
+        { x: 14, y: 4, targetZone: 'oldMachine', targetX: 1, targetY: 23 }
     ]
 };

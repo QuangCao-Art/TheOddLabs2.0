@@ -12,9 +12,9 @@ export const executive = {
         [10, 13, 13, 13, 65, 13, 13, 13, 13, 13, 13, 13, 13, 13, 19, 17, 13, 13, 45, 13, 13, 11],
         [10, 13, 13, 13, 13, 65, 13, 13, 13, 44, 13, 13, 13, 65, 13, 13, 13, 13, 13, 13, 13, 11],
         [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 65, 13, 13, 65, 13, 13, 11],
-        [24, 13, 13, 13, 13, 13, 65, 13, 13, 13, 13, 13, 13, 13, 44, 13, 13, 13, 13, 13, 13, 11],
+        [24, 13, 13, 13, 13, 13, 65, 13, 13, 13, 13, 13, 13, 13, 44, 13, 13, 13, 13, 13, 13, 25],
         [10, 13, 13, 13, 13, 13, 13, 45, 44, 13, 13, 13, 13, 13, 7, 6, 13, 13, 45, 13, 13, 11],
-        [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3, 2, 9, 9, 20, 9, 9, 3]
+        [2, 9, 9, 9, 9, 9, 9, 20, 9, 9, 9, 9, 9, 9, 3, 2, 9, 9, 9, 9, 9, 3]
     ],
     objects: [
         { "id": "capsain", "x": 7, "y": 4, "type": "npc", "name": "Director Capsain", "quests": ["quest_capsain_battle", "quest_capsain_truth"] },
@@ -94,9 +94,9 @@ export const executive = {
     ],
     doors: [
         { "x": 7, "y": 8, "targetZone": "atrium", "targetX": 9, "targetY": 3 },
-        { "x": 18, "y": 8, "targetZone": "specimenStorage", "targetX": 13, "targetY": 3 },
         { "x": 18, "y": 2, "targetZone": "library", "targetX": 9, "targetY": 15 },
-        { "x": 0, "y": 6, "targetZone": "oldMachine", "targetX": 19, "targetY": 23 }
+        { "x": 0, "y": 6, "targetZone": "oldMachine", "targetX": 19, "targetY": 23 },
+        { "x": 21, "y": 6, "targetZone": "human", "targetX": 1, "targetY": 4 }
     ]
 };
 

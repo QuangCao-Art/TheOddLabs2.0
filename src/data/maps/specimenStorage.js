@@ -24,7 +24,7 @@ export const specimenStorage = {
         { "id": "f15_spec5", "x": 5, "y": 2, "type": "prop" },
         { "id": "f16_spec5", "x": 5, "y": 3, "type": "prop" },
         { "id": "f22_spec6", "x": 9, "y": 2, "type": "prop" },
-        { "id": "f23_spec6", "x": 9, "y": 3, "type": "prop" },
+        { "id": "f23_spec6", "x": 9, "y": 3, "type": "prop", "hiddenLogId": "Log013" },
         { "id": "f15_spec8", "x": 8, "y": 2, "type": "prop" },
         { "id": "f16_spec8", "x": 8, "y": 3, "type": "prop" },
         { "id": "f13_spec10", "x": 10, "y": 2, "type": "prop" },
@@ -87,7 +87,7 @@ export const specimenStorage = {
         { "x": 6, "y": 7, "targetZone": "storage", "targetX": 5, "targetY": 3, "requiredFlag": "humanWardUnlocked" },
         { "x": 6, "y": 2, "targetZone": "human", "targetX": 7, "targetY": 14 },
         { "x": 19, "y": 4, "targetZone": "old_lab", "targetX": 1, "targetY": 4, "requiredItems": ["Quest01", "Quest02", "Quest03"] },
-        { "x": 13, "y": 2, "targetZone": "executive", "targetX": 18, "targetY": 7, "requiredFlag": "executiveSuiteUnlocked" },
+        { "x": 13, "y": 2, "targetZone": "maintenanceRoom", "targetX": 5, "targetY": 25 },
         { "x": 13, "y": 7, "targetZone": "truth_room", "targetX": 5, "targetY": 3, "requiredItem": "Quest05" }
     ]
 
