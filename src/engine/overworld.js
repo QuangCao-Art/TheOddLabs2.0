@@ -755,6 +755,9 @@ export const Overworld = {
 
         // --- NEW: Spatial Conflict Audit (Auto-kick/break furniture overlaps on entry) ---
         const overlapped = zone.objects.filter(obj => {
+            const meta = this.getFurnitureMeta(obj.id, obj.customSprite);
+            if (meta && meta.hasCollision === false) return false;
+
             const w = obj.width || 1;
             const h = obj.height || 1;
             return this.player.x >= obj.x && this.player.x < obj.x + w && this.player.y >= obj.y && this.player.y < obj.y + h;
