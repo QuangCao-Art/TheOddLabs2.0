@@ -61,7 +61,7 @@ export const BuilderMode = {
             </div>
             <div class="builder-reward-group">
                 <label>HIDDEN REWARD ID</label>
-                <input type="text" id="builder-reward-id" placeholder="e.g. REWARD_CREDITS_50">
+                <input type="text" id="builder-reward-id" placeholder="e.g. REWARD_CREDITS_50 or Log001">
                 <div id="reward-suggestions" class="reward-suggestions"></div>
             </div>
         `;

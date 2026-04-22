@@ -15,13 +15,7 @@ export const entertainment = {
     ],
     objects: [
         { "id": "panto", "x": 2, "y": 5, "type": "npc", "name": "Researcher Panto", "direction": "down" },
-        {
-            "id": "saito", "x": 3, "y": 3, "type": "npc", "name": "Assistant Saito", "direction": "down",
-            "battleEncounterId": "saito",
-            "dialogue": ["Oh, you're looking for Sapstan and Blundur's lost datapads?", "I might have seen them... but I won't tell you for free!", "Let's have a quick Cell battle. If you win, I'll give you a hint!"],
-            "npcWinDialogue": ["Better luck next time!", "Since I'm nice, here's a tip: There's a Console Station in the Atrium near the north wall...", "It's humming a bit strangely. Check the ports, maybe someone left a datapad plugged in!"],
-            "npcLossDialogue": ["Fine, you're better than you look!", "Check the Atrium. There's a pile of boxes near the south exit...", "Something shiny is tucked inside one of them. Happy hunting!"]
-        },
+        { "id": "saito", "x": 3, "y": 3, "type": "npc", "name": "Assistant Saito", "direction": "down" },
         { "id": "f1_ent3", "x": 1, "y": 5, "type": "prop", "templateName": "CHAIR_A_R" },
         { "id": "f7_ent", "x": 8, "y": 4, "type": "prop", "hiddenLogId": "Log003", "templateName": "TABLE_COMPUTER" },
         { "id": "f0_mnx3e0252upcz", "templateName": "CHAIR_A_L", "x": 8, "y": 5, "type": "prop", "mirrored": false },

@@ -945,13 +945,13 @@ export const Overworld = {
                     (obj.hiddenItemId && window.gameState.items.includes(obj.hiddenItemId)) ||
                     (obj.hiddenReward && window.gameState.lootedSpots.includes(spotId));
 
+                const targetId = obj.hiddenReward || obj.hiddenItemId || obj.hiddenLogId;
+                const isActuallyLog = !!obj.hiddenLogId || (targetId && targetId.startsWith('Log'));
+                const colorClass = collected ? 'black' : (isActuallyLog ? 'red' : 'blue');
+                
                 const cross = document.createElement('div');
-                // Red for Logs, Blue for Items/Rewards, Black if Collected
-                const isItem = !!(obj.hiddenItemId || obj.hiddenReward);
-                const colorClass = collected ? 'black' : (isItem ? 'blue' : 'red');
                 cross.className = `debug-hidden-log ${colorClass}`;
 
-                const targetId = obj.hiddenReward || obj.hiddenItemId || obj.hiddenLogId;
                 // Simplify ID for label: strip prefixes and keep it concise
                 const label = targetId
                     .replace('REWARD_', '')
