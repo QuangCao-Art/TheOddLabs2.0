@@ -219,9 +219,9 @@ export const fabricatingLab = {
         { id: "f186_mo19vcsswlbsn", templateName: "LIQUID_YELLOW", x: 1, y: 5, type: "prop", mirrored: false, name: "Liquid Material (Yellow)" },
         { id: "f189_mo19vr7lgzgeo", templateName: "LIQUID_STACK", x: 2, y: 7, type: "prop", mirrored: false, name: "Liquid Material Stack" },
         { id: "f188_mo19vr7lgzgeo", templateName: "LIQUID_STACK", x: 2, y: 6, type: "prop", mirrored: false, name: "Liquid Material Stack" },
-        { id: "babo", x: 9, y: 5, type: "npc", name: "Researcher Babo", direction: "down" },
-        { id: "andar", x: 9, y: 9, type: "npc", name: "Researcher Andar", direction: "down" },
-        { id: "elegee", x: 9, y: 11, type: "npc", name: "Researcher Elegee", direction: "down" }
+        { id: "babo", x: 10, y: 4, type: "npc", name: "Researcher Babo", direction: "left" },
+        { id: "andar", x: 8, y: 10, type: "npc", name: "Researcher Andar", direction: "right" },
+        { id: "elegee", x: 10, y: 8, type: "npc", name: "Researcher Elegee", direction: "left" }
     ],
     doors: [
         { x: 9, y: 2, targetZone: "preservationRoom", targetX: 14, targetY: 7 },

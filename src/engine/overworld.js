@@ -615,6 +615,7 @@ export const Overworld = {
      * @param {number} targetY - Optional specific Y coordinate.
      */
     renderMap(zoneId, forceSpawn = false, targetX = null, targetY = null) {
+        this.renderedDebugLabels = new Set(); // Reset label tracking for this render pass
         let id = zoneId || this.currentZone || 'lobby';
 
         // Migration support for renamed zones
@@ -932,17 +933,34 @@ export const Overworld = {
                 `${this.currentZone}_${suffixMatch[1]}` :
                 `${this.currentZone}_${obj.x}_${obj.y}`;
 
-            const collected = (obj.hiddenLogId && this.logsCollected.includes(obj.hiddenLogId)) ||
-                (obj.hiddenItemId && window.gameState.items.includes(obj.hiddenItemId)) ||
-                (obj.hiddenReward && window.gameState.lootedSpots.includes(spotId));
+            // --- PREVENT DUPLICATE LABELS ON MULTI-TILE PROPS ---
+            if (!this.renderedDebugLabels) this.renderedDebugLabels = new Set();
+            if (!this.renderedDebugLabels.has(spotId)) {
+                this.renderedDebugLabels.add(spotId);
 
-            const cross = document.createElement('div');
-            // Red for Logs, Blue for Items/Rewards, Black if Collected
-            const isItem = !!(obj.hiddenItemId || obj.hiddenReward);
-            const colorClass = collected ? 'black' : (isItem ? 'blue' : 'red');
-            cross.className = `debug-hidden-log ${colorClass}`;
-            cross.innerText = 'X';
-            el.appendChild(cross);
+                // FORCE TOP: Bump z-index so the marker is always visible over other furniture
+                el.style.zIndex = 999999;
+
+                const collected = (obj.hiddenLogId && this.logsCollected.includes(obj.hiddenLogId)) ||
+                    (obj.hiddenItemId && window.gameState.items.includes(obj.hiddenItemId)) ||
+                    (obj.hiddenReward && window.gameState.lootedSpots.includes(spotId));
+
+                const cross = document.createElement('div');
+                // Red for Logs, Blue for Items/Rewards, Black if Collected
+                const isItem = !!(obj.hiddenItemId || obj.hiddenReward);
+                const colorClass = collected ? 'black' : (isItem ? 'blue' : 'red');
+                cross.className = `debug-hidden-log ${colorClass}`;
+
+                const targetId = obj.hiddenReward || obj.hiddenItemId || obj.hiddenLogId;
+                // Simplify ID for label: strip prefixes and keep it concise
+                const label = targetId
+                    .replace('REWARD_', '')
+                    .replace('BLUEPRINT_', 'BP_')
+                    .replace('CARD_', 'CD_');
+
+                cross.innerHTML = `<span>X</span><div class="debug-hidden-name">${label}</div>`;
+                el.appendChild(cross);
+            }
         }
 
         if (obj.proximityTrigger) {
