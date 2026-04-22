@@ -1456,7 +1456,18 @@ function setupEventListeners() {
         'pax': 'npc_male',
 
         // Storage
-        'deartis': 'npc_male'
+        'deartis': 'npc_male',
+
+        // Maintenance
+        'lee': 'npc_male',
+
+        // Fabricating
+        'babo': 'npc_male',
+        'andar': 'npc_male',
+        'elegee': 'npc_female',
+
+        // Preservation
+        'mercurie': 'npc_female'
     };
 
     let preBattleSequenceActive = false;

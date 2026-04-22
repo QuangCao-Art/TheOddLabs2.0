@@ -174,7 +174,8 @@ export const maintenanceRoom = {
         { "id": "f62_mo8cnihjwhxpv", "templateName": "BOX_PILE", "x": 9, "y": 8, "type": "prop", "mirrored": false },
         { "id": "f61_mo8cnihjwhxpv", "templateName": "BOX_PILE", "x": 9, "y": 7, "type": "prop", "mirrored": false },
         { "id": "f60_mo8cnue5iukif", "templateName": "SMALL_BOX", "x": 9, "y": 9, "type": "prop", "mirrored": false },
-        { "id": "f60_mo8cobwk80h86", "templateName": "SMALL_BOX", "x": 9, "y": 15, "type": "prop", "mirrored": false }
+        { "id": "f60_mo8cobwk80h86", "templateName": "SMALL_BOX", "x": 9, "y": 15, "type": "prop", "mirrored": false },
+        { "id": "lee", "x": 3, "y": 25, "type": "npc", "name": "Engineer Lee", "direction": "right" }
     ],
     doors: [
         { "x": 5, "y": 26, "targetZone": "specimenStorage", "targetX": 13, "targetY": 3 }

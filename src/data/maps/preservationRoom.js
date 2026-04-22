@@ -125,7 +125,8 @@ export const preservationRoom = {
         { id: 'f7_7_28', x: 28, y: 7, type: 'prop' },
         { id: 'f16_7_29', x: 29, y: 7, type: 'prop' },
         { id: 'f48_7_30', x: 30, y: 7, type: 'prop', name: 'Hand Box' },
-        { id: 'f16_7_31', x: 31, y: 7, type: 'prop' }
+        { id: 'f16_7_31', x: 31, y: 7, type: 'prop' },
+        { id: 'mercurie', x: 1, y: 4, type: 'npc', name: 'Researcher Mercurie', direction: 'down' }
     ],
     doors: [
         { x: 0, y: 5, targetZone: 'human', targetX: 13, targetY: 4 },

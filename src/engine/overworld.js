@@ -157,6 +157,21 @@ export const Overworld = {
             ["The Pellicle layer of these Cells is remarkably resilient. // They can withstand the force of a full explosion without losing structural integrity. // To them, a sprint-kick is probably nothing more than a playful tickle!"],
             ["We aren't entirely sure why the Cells gravitate toward this specific room in such high numbers. // Since they insisted on gathering here, we decided to officially designate it as their 'Playground'."],
             ["Did you know that Cells actually enjoy physical interaction? // They respond to affection just like a pet. // Curiously, their dense sensory nodes perceive a head pat and a firm kick as the exact same sensation!"]
+        ],
+        maintenanceRoom: [
+            ["The machines in here are ancient, but they still get the job done."]
+        ],
+        fabricatingLab: [
+            ["The 3D bio-printers are running at 110% capacity today.", "We're synthesizing enough membranes to house an entire new generation of specimens."],
+            ["Andar says the latest batch of Lydrosome shells is the most efficient yet.", "He claims they can withstand twice the osmotic shock of the standard models."],
+            ["Babo keeps complaining about the salinity levels in the nutrient tanks.", "He's a perfectionist, but his results speak for themselves."],
+            ["Elegee found a way to stabilize the Nitrophil's thermal core during the synthesis process.", "No more accidental explosions in the printing chamber!"]
+        ],
+        preservationRoom: [
+            ["It's so quiet in here... almost too quiet.", "The preservation tanks have a way of absorbing all the sound."],
+            ["I moved here because Lee was too noisy with his music.", "He refuses to wear headphones!", "Didn't he know his voice sounds like a dying robot?"],
+            ["The temperature in this sector is kept at a freezing 4 degrees Celsius.", "It's the only way to ensure the long-term stability of the ancient genetic samples."],
+            ["Sometimes I heard a scratching sound coming from the end of the hall...", "Like something is foraging for food."]
         ]
     },
     tileSize: 64,
@@ -969,7 +984,7 @@ export const Overworld = {
         window.addEventListener('keydown', (e) => {
             if (document.getElementById('screen-overworld').classList.contains('hidden')) return;
             const key = e.key.toLowerCase();
-            
+
             // Note: Hardware debounce is handled globally in main.js.
             // This listener only proceeds if main.js firewall allows it.
 
@@ -2623,8 +2638,8 @@ export const Overworld = {
         document.getElementById('npc-portrait-overlay')?.classList.add('hidden');
 
         // Prevent immediate re-interaction if we're moving to a battle or modal
-        if (this.pendingBattleEncounter || this.pendingWildEncounter || 
-            this.pendingIncubatorMenu || this.pendingShopMenu || 
+        if (this.pendingBattleEncounter || this.pendingWildEncounter ||
+            this.pendingIncubatorMenu || this.pendingShopMenu ||
             this.pendingSynthesisMenu || this.pendingBioExtractMenu ||
             this.pendingItemPickup) {
             this.isTransitioning = true;
