@@ -630,40 +630,5 @@ export const NPC_SCRIPTS = {
             const lines = pool[Math.floor(Math.random() * pool.length)];
             return { lines };
         }
-    },
-    'lee': {
-        getScript: (gameState, overworld) => {
-            const pool = overworld.randomPools[overworld.currentZone] || overworld.randomPools.atrium;
-            const lines = pool[Math.floor(Math.random() * pool.length)];
-            return { lines };
-        }
-    },
-    'babo': {
-        getScript: (gameState, overworld) => {
-            const pool = overworld.randomPools[overworld.currentZone] || overworld.randomPools.atrium;
-            const lines = pool[Math.floor(Math.random() * pool.length)];
-            return { lines };
-        }
-    },
-    'andar': {
-        getScript: (gameState, overworld) => {
-            const pool = overworld.randomPools[overworld.currentZone] || overworld.randomPools.atrium;
-            const lines = pool[Math.floor(Math.random() * pool.length)];
-            return { lines };
-        }
-    },
-    'elegee': {
-        getScript: (gameState, overworld) => {
-            const pool = overworld.randomPools[overworld.currentZone] || overworld.randomPools.atrium;
-            const lines = pool[Math.floor(Math.random() * pool.length)];
-            return { lines };
-        }
-    },
-    'mercurie': {
-        getScript: (gameState, overworld) => {
-            const pool = overworld.randomPools[overworld.currentZone] || overworld.randomPools.atrium;
-            const lines = pool[Math.floor(Math.random() * pool.length)];
-            return { lines };
-        }
     }
 };

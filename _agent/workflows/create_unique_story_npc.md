@@ -76,6 +76,21 @@ Unique narrative responses and branching states are now defined in the **Narrati
 
 ---
 
+### 🧪 Flavor NPC Pattern (Fallback Logic)
+> [!NOTE]
+> **Universal Fallback**: The engine has a built-in fallback system for "Flavor" NPCs (those without unique quests or battle logic).
+> 1. **Phase 5 Fallback**: If an NPC's ID is **not found** in `NPC_SCRIPTS`, the overworld engine (`overworld.js`) automatically treats them as `generic_staff`.
+> 2. **Pool-Based Dialogue**: `generic_staff` pulls lines from `randomPools[overworld.currentZone]`.
+> 3. **Template**: To create a flavor NPC (like Mamozet or Piza), you ONLY need the map file entry and `main.js` sprite mapping. **Do NOT add them to `npc_dialogues.js`.**
+
+### ⚠️ Lesson Learned (Architecture Preservation)
+> [!WARNING]
+> **Avoid Redundant Refactoring**: DO NOT refactor the `NPC_SCRIPTS` engine or the `generic_staff` logic to "optimize" for shared code unless explicitly requested.
+> - **Anti-Pattern**: Defining a `flavorStaffLogic` or `genericStaffScript` helper and pointing multiple IDs to it.
+> - **Standard Pattern**: Rely on the engine's built-in ID fallback (Phase 5). This keeps the code minimal and follows the established architecture.
+
+---
+
 ### ⚠️ NPC Integrity Checklist
 - [ ] **Type Check**: Is the NPC **Peaceful**? (If yes, ensure no `battleEncounterId` exists)
 - [ ] **Lore ID Consistency**: Does the ID in the map file match the `battleDone_` flag logic in `main.js`?
