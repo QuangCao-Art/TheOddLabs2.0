@@ -175,6 +175,6 @@ export const preservationRoom = {
     doors: [
         { x: 0, y: 5, targetZone: 'human', targetX: 13, targetY: 4 },
         { x: 14, y: 8, targetZone: 'fabricatingLab', targetX: 9, targetY: 3 },
-        { x: 32, y: 4, targetZone: 'secretGatherPoint', targetX: 1, targetY: 5 }
+        { x: 32, y: 4, targetZone: 'secretGatherPoint', targetX: 1, targetY: 6 }
     ]
 };

@@ -1,12 +1,13 @@
 export const secretGatherPoint = {
     name: 'SECRET GATHER POINT',
     width: 15,
-    height: 10,
+    height: 11,
     spawn: { x: 7, y: 5 },
     music: 'none',
     ambient: 'music_ambiant_eerie',
     layout: [
         [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1],
+        [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
         [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
         [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
         [10, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11],
@@ -19,6 +20,6 @@ export const secretGatherPoint = {
     ],
     objects: [],
     doors: [
-        { "x": 0, "y": 5, "targetZone": "preservationRoom", "targetX": 31, "targetY": 4 }
+        { "x": 0, "y": 6, "targetZone": "preservationRoom", "targetX": 31, "targetY": 4 }
     ]
 };
