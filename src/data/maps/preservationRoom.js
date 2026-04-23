@@ -9,7 +9,7 @@ export const preservationRoom = {
         [10,53,55,14,62,53,55,62,53,62,14,53,55,62,53,14,55,53,62,14,53,14,62,53,14,62,53,14,62,53,14,62,11],
         [10,54,15,15,15,54,15,56,54,63,15,54,56,15,54,15,15,54,56,63,54,15,63,54,15,63,54,15,63,54,15,15,11],
         [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,46,38,38,38,38,38,11],
-        [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,46,38,38,38,38,38,11],
+        [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,46,38,38,38,38,38,41],
         [24,45,13,13,13,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,13,13,13,13,13,13,46,38,38,38,38,38,11],
         [10,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,46,38,38,38,38,38,11],
         [10,13,13,13,13,13,13,13,13,13,13,13,13,13,45,13,13,13,13,13,13,13,13,13,13,13,46,38,38,38,38,38,11],
@@ -170,11 +170,11 @@ export const preservationRoom = {
         { id: "f60_moa74ch8komz2", templateName: "SMALL_BOX", x: 11, y: 4, type: "prop", mirrored: false },
         { id: "f62_moa74jzpwuu82", templateName: "BOX_PILE", x: 10, y: 4, type: "prop", mirrored: false },
         { id: "f61_moa74jzpwuu82", templateName: "BOX_PILE", x: 10, y: 3, type: "prop", mirrored: false },
-        { id: "f126_moa74xqlczgpf", templateName: "POSTER_SILENT_EMPLOYEE", x: 6, y: 2, type: "prop", mirrored: false },
         { id: 'mercurie', x: 1, y: 4, type: 'npc', name: 'Researcher Mercurie', direction: 'down' }
     ],
     doors: [
         { x: 0, y: 5, targetZone: 'human', targetX: 13, targetY: 4 },
-        { x: 14, y: 8, targetZone: 'fabricatingLab', targetX: 9, targetY: 3 }
+        { x: 14, y: 8, targetZone: 'fabricatingLab', targetX: 9, targetY: 3 },
+        { x: 32, y: 4, targetZone: 'secretGatherPoint', targetX: 1, targetY: 5 }
     ]
 };
