@@ -291,6 +291,8 @@ window.ITEM_PICKUP_DATA = {
     'CARD02': { name: 'Collectible Cards: Lydrosome', desc: 'A collectible card features Lydrosome, hand made by Jenzi.', spriteClass: 'f75', type: 'item', previewImg: 'Card_Lydrosome.png' },
     'CARD03': { name: 'Collectible Cards: Nitrophil', desc: 'A collectible card features Nitrophil, hand made by Jenzi.', spriteClass: 'f75', type: 'item', previewImg: 'Card_Nitrophil.png' },
     'Quest05': { name: 'Official Employee Card', desc: 'You are now a truly member of the pack!', spriteClass: 'f90', type: 'item', previewImg: 'Card_Placeholder.png' },
+    'Quest06': { name: 'Enhanced Shoes', desc: 'Specially engineered for the modern Scientist. It enhances leg muscle output and protects your feet from the impact of running away from failed experiments.', spriteClass: 'f192', type: 'item', previewImg: 'Card_Placeholder.png' },
+    'Quest07': { name: 'Super Shoes', desc: 'The "Super" version of the Lab’s signature footwear. Now with extra shock absorption and even more neon trim, because science is 40% performance and 60% looking cool.', spriteClass: 'f193', type: 'item', previewImg: 'Card_Placeholder.png' },
     'blueprint_stemmy': { name: 'Cell Blueprint', desc: 'A blueprint to create Stemmy.', spriteClass: 'f101', type: 'blueprint', previewImg: 'Card_Placeholder.png' },
     'blueprint_nitrophil': { name: 'Cell Blueprint', desc: 'A blueprint to create Nitrophil.', spriteClass: 'f101', type: 'blueprint', previewImg: 'Card_Placeholder.png' },
     'blueprint_cambihil': { name: 'Cell Blueprint', desc: 'A blueprint to create Cambihil.', spriteClass: 'f101', type: 'blueprint', previewImg: 'Card_Placeholder.png' },
@@ -311,6 +313,10 @@ window.ITEM_PICKUP_DATA = {
     'REWARD_CARD_CAMBIHIL': { name: 'Collectible Cards: Cambihil', desc: 'A collectible card features Cambihil.', spriteClass: 'f75', type: 'card' },
     'REWARD_CARD_LYDROSOME': { name: 'Collectible Cards: Lydrosome', desc: 'A collectible card features Lydrosome.', spriteClass: 'f75', type: 'card' },
     'REWARD_CARD_NITROPHIL': { name: 'Collectible Cards: Nitrophil', desc: 'A collectible card features Nitrophil.', spriteClass: 'f75', type: 'card' },
+    // --- Consumables (Tileset 05) ---
+    'ITEM_MILKTEA': { name: 'Milktea', desc: 'A specialty beverage enjoyed by both Humans and Cells. Jenzi and the other girls specifically requested \'Less Sweet\' to help keep their shape, but somehow, it still feels a little too sweet for a Lab-certified diet.', spriteClass: 'f194', type: 'item', previewImg: 'Card_Placeholder.png' },
+    'ITEM_NOODLE_CUP': { name: 'Noodle Cup', desc: 'The staple diet of any researcher. The label claims it\'s bad for your health, but surely a single small cup won\'t hurt... much.', spriteClass: 'f195', type: 'item', previewImg: 'Card_Placeholder.png' },
+    'ITEM_NOODLE_BOWL': { name: 'Noodle Bowl', desc: 'Eating too much is bad for your health, but this bowl is only slightly larger than a cup. Surely it\'s still within the \'safe\' limit, right?', spriteClass: 'f196', type: 'item', previewImg: 'Card_Placeholder.png' },
 };
 
 window.showItemPickupModal = (itemId, onClose) => {

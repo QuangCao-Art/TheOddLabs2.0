@@ -1104,6 +1104,107 @@
     background-size: 512px 512px !important;
 }
 
+/* --- Lab_TileSet_05 Furniture (f192+) --- */
+.world-object.prop.f192,
+.world-object.prop.f193,
+.world-object.prop.f194,
+.world-object.prop.f195,
+.world-object.prop.f196,
+.world-object.prop.f197,
+.world-object.prop.f198,
+.world-object.prop.f199,
+.world-object.prop.f200,
+.world-object.prop.f201,
+.world-object.prop.f202,
+.world-object.prop.f203,
+.world-object.prop.f204,
+.world-object.prop.f205,
+.world-object.prop.f206,
+.world-object.prop.f207,
+.world-object.prop.f208,
+.world-object.prop.f209,
+.world-object.prop.f210,
+.world-object.prop.f211,
+.world-object.prop.f212,
+.world-object.prop.f213,
+.world-object.prop.f214,
+.world-object.prop.f215,
+.world-object.prop.f216,
+.world-object.prop.f217,
+.world-object.prop.f218,
+.world-object.prop.f219,
+.world-object.prop.f220,
+.world-object.prop.f221,
+.world-object.prop.f222,
+.world-object.prop.f223,
+.world-object.prop.f224,
+.world-object.prop.f225,
+.world-object.prop.f226,
+.world-object.prop.f227,
+.world-object.prop.f228,
+.world-object.prop.f229,
+.world-object.prop.f230,
+.world-object.prop.f231 {
+    background-image: url('../../../assets/images/Lab_TileSet_05.png') !important;
+    background-size: 512px 512px !important;
+}
+
+.world-object.prop.f192 {
+    background-position: calc(-0px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f193 {
+    background-position: calc(-256px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f194 {
+    background-position: calc(-1024px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f195 {
+    background-position: calc(-768px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f196 {
+    background-position: calc(-512px / 4) calc(-1792px / 4);
+}
+
+.world-object.prop.f197 { background-position: calc(-0px / 4) calc(-0px / 4); }
+.world-object.prop.f198 { background-position: calc(-0px / 4) calc(-256px / 4); }
+.world-object.prop.f199 { background-position: calc(-256px / 4) calc(-0px / 4); }
+.world-object.prop.f200 { background-position: calc(-256px / 4) calc(-256px / 4); }
+.world-object.prop.f201 { background-position: calc(-512px / 4) calc(-0px / 4); }
+.world-object.prop.f202 { background-position: calc(-512px / 4) calc(-256px / 4); }
+.world-object.prop.f203 { background-position: calc(-768px / 4) calc(-0px / 4); }
+.world-object.prop.f204 { background-position: calc(-768px / 4) calc(-256px / 4); }
+.world-object.prop.f205 { background-position: calc(-1024px / 4) calc(-0px / 4); }
+.world-object.prop.f206 { background-position: calc(-1024px / 4) calc(-256px / 4); }
+.world-object.prop.f207 { background-position: calc(-1280px / 4) calc(-0px / 4); }
+.world-object.prop.f208 { background-position: calc(-1280px / 4) calc(-256px / 4); }
+.world-object.prop.f209 { background-position: calc(-1536px / 4) calc(-0px / 4); }
+.world-object.prop.f210 { background-position: calc(-1536px / 4) calc(-256px / 4); }
+.world-object.prop.f211 { background-position: calc(-1792px / 4) calc(-0px / 4); }
+.world-object.prop.f212 { background-position: calc(-1792px / 4) calc(-256px / 4); }
+.world-object.prop.f213 { background-position: calc(-0px / 4) calc(-512px / 4); }
+.world-object.prop.f214 { background-position: calc(-0px / 4) calc(-768px / 4); }
+.world-object.prop.f215 { background-position: calc(-256px / 4) calc(-512px / 4); }
+.world-object.prop.f216 { background-position: calc(-256px / 4) calc(-768px / 4); }
+.world-object.prop.f217 { background-position: calc(-512px / 4) calc(-512px / 4); }
+.world-object.prop.f218 { background-position: calc(-512px / 4) calc(-768px / 4); }
+.world-object.prop.f219 { background-position: calc(-768px / 4) calc(-512px / 4); }
+.world-object.prop.f220 { background-position: calc(-768px / 4) calc(-768px / 4); }
+.world-object.prop.f221 { background-position: calc(-1024px / 4) calc(-512px / 4); }
+.world-object.prop.f222 { background-position: calc(-1024px / 4) calc(-768px / 4); }
+.world-object.prop.f223 { background-position: calc(-0px / 4) calc(-1024px / 4); }
+.world-object.prop.f224 { background-position: calc(-256px / 4) calc(-1024px / 4); }
+.world-object.prop.f225 { background-position: calc(-512px / 4) calc(-1024px / 4); }
+.world-object.prop.f226 { background-position: calc(-0px / 4) calc(-1280px / 4); }
+.world-object.prop.f227 { background-position: calc(-256px / 4) calc(-1280px / 4); }
+.world-object.prop.f228 { background-position: calc(-512px / 4) calc(-1280px / 4); }
+.world-object.prop.f229 { background-position: calc(-768px / 4) calc(-1280px / 4); }
+.world-object.prop.f230 { background-position: calc(-1024px / 4) calc(-1024px / 4); }
+.world-object.prop.f231 { background-position: calc(-1024px / 4) calc(-1280px / 4); }
+
 .world-object.prop.keyItem-OldDataStick,
 .world-object.prop.f64 {
     background-position: calc(-0px / 4) calc(-0px / 4);

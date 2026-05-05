@@ -1618,6 +1618,36 @@ body {
     background-size: 512px 512px !important;
 }
 
+
+.key-item-sprite.f192,
+.key-item-sprite.f193,
+.key-item-sprite.f194,
+.key-item-sprite.f195,
+.key-item-sprite.f196 {
+    background-image: url('../../../assets/images/Lab_TileSet_05.png') !important;
+    background-size: 512px 512px !important;
+}
+
+.key-item-sprite.f192 {
+    background-position: calc(-0px / 4) calc(-1792px / 4);
+}
+
+.key-item-sprite.f193 {
+    background-position: calc(-256px / 4) calc(-1792px / 4);
+}
+
+.key-item-sprite.f194 {
+    background-position: calc(-1024px / 4) calc(-1792px / 4);
+}
+
+.key-item-sprite.f195 {
+    background-position: calc(-768px / 4) calc(-1792px / 4);
+}
+
+.key-item-sprite.f196 {
+    background-position: calc(-512px / 4) calc(-1792px / 4);
+}
+
 .key-item-sprite.nitrophil-sprite {
     background-image: url('../../../assets/images/Lab_TileSet_Cells.png');
     background-position: calc(-0px / 4) calc(-768px / 4);

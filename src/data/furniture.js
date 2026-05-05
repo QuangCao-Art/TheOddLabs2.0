@@ -214,6 +214,47 @@ export const furnitureMetadata = {
     'f189': { name: 'Stacked Liquid Material', hasCollision: true, kickable: false, material: 'metal', info: "A stack of raw liquified material used for the printer. // One container is easy to carry, but three are surprisingly heavy." },
     'f190': { name: 'Piled Liquid Material', hasCollision: true, kickable: false, material: 'metal', info: "A messy pile of raw liquified material used for the printer. // Someone really should have organized this area." },
     'f191': { name: 'Piled Liquid Material', hasCollision: true, kickable: false, material: 'metal', info: "A messy pile of raw liquified material used for the printer. // Someone really should have organized this area." },
+    // --- TILESET 05 (f192-f196) ---
+    'f192': { name: 'KeyItem-EnhancedShoes', hasCollision: false, info: "Specially engineered for the modern Scientist. It enhances leg muscle output and protects your feet from the impact of running away from failed experiments." },
+    'f193': { name: 'KeyItem-SuperShoes', hasCollision: false, info: "The 'Super' version of the Lab’s signature footwear. Now with extra shock absorption and even more neon trim, because science is 40% performance and 60% looking cool." },
+    'f194': { name: 'ConsumableItem-Milktea', hasCollision: false, info: "A specialty beverage enjoyed by both Humans and Cells. Jenzi and the other girls specifically requested 'Less Sweet' to help keep their shape, but somehow, it still feels a little too sweet for a Lab-certified diet." },
+    'f195': { name: 'ConsumableItem-NoodleCup', hasCollision: false, info: "The staple diet of any researcher. The label claims it's bad for your health, but surely a single small cup won't hurt... much." },
+    'f196': { name: 'ConsumableItem-NoodleBowl', hasCollision: false, info: "Eating too much is bad for your health, but this bowl is only slightly larger than a cup. Surely it's still within the 'safe' limit, right?" },
+    'f197': { name: 'SmallBookshelf-Top', hasCollision: false, info: "A small, meticulously organized bookshelf. // Its contents are arranged with scientific precision, leaving no room for clutter." },
+    'f198': { name: 'SmallBookshelf-Bottom', hasCollision: true, info: "A small, meticulously organized bookshelf. // Its contents are arranged with scientific precision, leaving no room for clutter." },
+    'f199': { name: 'Poster-CollectThemAll', hasCollision: true, info: "A vibrant poster celebrating the Lab's card collection. // \"There are some truly legendary secret cards out there. I challenge you to collect them all!\"" },
+    'f200': { name: 'Poster-Consumables', hasCollision: true, info: "A colorful PSA about dietary habits. // \"While junk food is suboptimal for physical health, occasional consumption is scientifically proven to rejuvenate the soul.\"" },
+    'f201': { name: 'HoloLines-01', hasCollision: false, info: "A flickering holographic projection. // Purely decorative, it adds a touch of high-tech ambiance to the sterile lab environment." },
+    'f202': { name: 'HoloLines-02', hasCollision: false, info: "A flickering holographic projection. // Purely decorative, it adds a touch of high-tech ambiance to the sterile lab environment." },
+    'f203': { name: 'InfoHoloStation-Top', hasCollision: false, info: "A terminal displaying high-level research data. // \"The sheer diversity of Cell strains documented here is staggering. Every mutation tells a story.\"" },
+    'f204': { name: 'InfoHoloStation-Bottom', hasCollision: true, info: "A terminal displaying high-level research data. // \"The sheer diversity of Cell strains documented here is staggering. Every mutation tells a story.\"" },
+    'f205': { name: 'ServiceStation-Top', hasCollision: false, info: "A polite but firm notice regarding workplace grievances. // \"Please direct all complaints to Jenzi. Do not attempt to file them here... seriously, please.\"" },
+    'f206': { name: 'ServiceStation-Bottom', hasCollision: true, info: "A polite but firm notice regarding workplace grievances. // \"Please direct all complaints to Jenzi. Do not attempt to file them here... seriously, please.\"" },
+    'f207': { name: 'InstructionStation-Top', hasCollision: false, info: "A complex navigation station displaying facility blueprints. // \"A wealth of directional data, yet I still can't find a single clear path to the restroom.\"" },
+    'f208': { name: 'InstructionStation-Bottom', hasCollision: true, info: "A complex navigation station displaying facility blueprints. // \"A wealth of directional data, yet I still can't find a single clear path to the restroom.\"" },
+    'f209': { name: 'CurveMeetingTable-Top', hasCollision: true, info: "A heavy, high-gloss meeting table. // Its surface is so polished you can practically see the Director's stern gaze reflected in the grain." },
+    'f210': { name: 'CurveMeetingTable-Bottom', hasCollision: true, info: "A heavy, high-gloss meeting table. // Its surface is so polished you can practically see the Director's stern gaze reflected in the grain." },
+    'f211': { name: 'StraightMeetingTable-Top', hasCollision: true, info: "A surprisingly comfortable-looking meeting table. // Its padded surface seems perfectly calibrated for an unauthorized nap by someone like Dyzes." },
+    'f212': { name: 'StraightMeetingTable-Bottom', hasCollision: true, info: "A surprisingly comfortable-looking meeting table. // Its padded surface seems perfectly calibrated for an unauthorized nap by someone like Dyzes." },
+    'f213': { name: 'Generator-TopLeft', hasCollision: true, info: "A high-output power unit capable of electrifying an entire district. // It utilizes raw liquified energy for maximum throughput." },
+    'f214': { name: 'Generator-BottomLeft', hasCollision: true, info: "A high-output power unit capable of electrifying an entire district. // It utilizes raw liquified energy for maximum throughput." },
+    'f215': { name: 'Generator-TopMid', hasCollision: true, info: "A high-output power unit capable of electrifying an entire district. // It utilizes raw liquified energy for maximum throughput." },
+    'f216': { name: 'Generator-BottomMid', hasCollision: true, info: "A high-output power unit capable of electrifying an entire district. // It utilizes raw liquified energy for maximum throughput." },
+    'f217': { name: 'Generator-TopRight', hasCollision: true, info: "A high-output power unit capable of electrifying an entire district. // It utilizes raw liquified energy for maximum throughput." },
+    'f218': { name: 'Generator-BottomRight', hasCollision: true, info: "A high-output power unit capable of electrifying an entire district. // It utilizes raw liquified energy for maximum throughput." },
+    'f219': { name: 'BatteryStation-Offline-Top', hasCollision: false, info: "An emergency battery housing unit. // It was designed to store excess generated power, but the reserves have been completely depleted." },
+    'f220': { name: 'BatteryStation-Offline-Bottom', hasCollision: true, info: "An emergency battery housing unit. // It was designed to store excess generated power, but the reserves have been completely depleted." },
+    'f221': { name: 'BatteryStation-Online-Top', hasCollision: false, info: "An emergency battery housing unit. // The internal capacitors are humming with stored power, indicating a fully charged emergency reserve." },
+    'f222': { name: 'BatteryStation-Online-Bottom', hasCollision: true, info: "An emergency battery housing unit. // The internal capacitors are humming with stored power, indicating a fully charged emergency reserve." },
+    'f223': { name: 'EnergyBattery-Full', hasCollision: true, kickable: true, material: 'metal', info: "A versatile, lightweight energy cell. // Its high-efficiency core is currently operating at maximum charge capacity." },
+    'f224': { name: 'EnergyBattery-Depleted', hasCollision: true, kickable: true, material: 'metal', info: "A versatile, lightweight energy cell. // The energy indicator is dark, signaling that this unit's charge has been entirely spent." },
+    'f225': { name: 'RawLiquifiedEnergy', hasCollision: true, kickable: true, material: 'liquid', info: "A container of raw liquified energy. // Its extreme volatility is matched only by its incredible efficiency as a fuel source." },
+    'f226': { name: 'LabChair-Back', hasCollision: true, info: "Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job." },
+    'f227': { name: 'HeavyRoadBlock-Front', hasCollision: true, info: "A heavy-duty road block. // \"End of the road. Access beyond this point is strictly restricted by Laboratory Protocol.\"" },
+    'f228': { name: 'HeavyRoadBlock-Side', hasCollision: true, info: "A heavy-duty road block positioned at an angle. // \"End of the road... sideways. Even at this angle, the message is clear: Turn back.\"" },
+    'f229': { name: 'HeavyShippingBox', hasCollision: true, kickable: true, material: 'metal', info: "A reinforced shipping container. // It is remarkably heavy and structurally reinforced to survive extreme handling conditions." },
+    'f230': { name: 'StackedHeavyBoxes-Top', hasCollision: false, info: "A towering stack of reinforced shipping containers. // These boxes are incredibly heavy. Did you forget your leg day?" },
+    'f231': { name: 'StackedHeavyBoxes-Bottom', hasCollision: true, kickable: true, material: 'metal', info: "A towering stack of reinforced shipping containers. // These boxes are incredibly heavy. Did you forget your leg day?" },
 };
 
 export const FURNITURE_TEMPLATES = {
@@ -623,6 +664,99 @@ export const FURNITURE_TEMPLATES = {
         tiles: [
             { id: 'f190', relX: 0, relY: 0, name: 'Left' },
             { id: 'f191', relX: 1, relY: 0, name: 'Right' }
+        ]
+    },
+
+    // --- NEW ITEMS (Tileset 05) ---
+    ITEM_ENHANCED_SHOES: { name: 'Enhanced Shoes', tiles: [{ id: 'f192', relX: 0, relY: 0 }] },
+    ITEM_SUPER_SHOES: { name: 'Super Shoes', tiles: [{ id: 'f193', relX: 0, relY: 0 }] },
+    ITEM_MILKTEA: { name: 'Milktea', tiles: [{ id: 'f194', relX: 0, relY: 0 }] },
+    ITEM_NOODLE_CUP: { name: 'Noodle Cup', tiles: [{ id: 'f195', relX: 0, relY: 0 }] },
+    ITEM_NOODLE_BOWL: { name: 'Noodle Bowl', tiles: [{ id: 'f196', relX: 0, relY: 0 }] },
+
+    BOOKSHELF_SMALL: {
+        name: 'Small Bookshelf',
+        tiles: [
+            { id: 'f198', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f197', relX: 0, relY: -1, name: 'Top' }
+        ]
+    },
+    POSTER_COLLECT: { name: 'Poster: Collect Them All', tiles: [{ id: 'f199', relX: 0, relY: 0 }] },
+    POSTER_CONSUMABLES: { name: 'Poster: Consumables', tiles: [{ id: 'f200', relX: 0, relY: 0 }] },
+    HOLOLINES_01: { name: 'HoloLines 01', tiles: [{ id: 'f201', relX: 0, relY: 0 }] },
+    HOLOLINES_02: { name: 'HoloLines 02', tiles: [{ id: 'f202', relX: 0, relY: 0 }] },
+    INFO_HOLO_STATION: {
+        name: 'Info Holo Station',
+        tiles: [
+            { id: 'f204', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f203', relX: 0, relY: -1, name: 'Top' }
+        ]
+    },
+    SERVICE_STATION: {
+        name: 'Service Station',
+        tiles: [
+            { id: 'f206', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f205', relX: 0, relY: -1, name: 'Top' }
+        ]
+    },
+    INSTRUCTION_STATION: {
+        name: 'Instruction Station',
+        tiles: [
+            { id: 'f208', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f207', relX: 0, relY: -1, name: 'Top' }
+        ]
+    },
+    MEETING_TABLE_CURVE: {
+        name: 'Curve Meeting Table',
+        tiles: [
+            { id: 'f210', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f209', relX: 0, relY: -1, name: 'Top' }
+        ]
+    },
+    MEETING_TABLE_STRAIGHT: {
+        name: 'Straight Meeting Table',
+        tiles: [
+            { id: 'f212', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f211', relX: 0, relY: -1, name: 'Top' }
+        ]
+    },
+    ENERGY_GENERATOR: {
+        name: 'Energy Generator',
+        tiles: [
+            { id: 'f214', relX: 0, relY: 0, name: 'BottomLeft' },
+            { id: 'f213', relX: 0, relY: -1, name: 'TopLeft' },
+            { id: 'f216', relX: 1, relY: 0, name: 'BottomMid' },
+            { id: 'f215', relX: 1, relY: -1, name: 'TopMid' },
+            { id: 'f218', relX: 2, relY: 0, name: 'BottomRight' },
+            { id: 'f217', relX: 2, relY: -1, name: 'TopRight' }
+        ]
+    },
+    BATTERY_STATION_OFFLINE: {
+        name: 'Battery Station (Offline)',
+        tiles: [
+            { id: 'f220', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f219', relX: 0, relY: -1, name: 'Top' }
+        ]
+    },
+    BATTERY_STATION_ONLINE: {
+        name: 'Battery Station (Online)',
+        tiles: [
+            { id: 'f222', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f221', relX: 0, relY: -1, name: 'Top' }
+        ]
+    },
+    BATTERY_FULL: { name: 'Energy Battery (Full)', tiles: [{ id: 'f223', relX: 0, relY: 0 }] },
+    BATTERY_DEPLETED: { name: 'Energy Battery (Depleted)', tiles: [{ id: 'f224', relX: 0, relY: 0 }] },
+    RAW_LIQUIFIED_ENERGY: { name: 'Raw Liquified Energy', tiles: [{ id: 'f225', relX: 0, relY: 0 }] },
+    CHAIR_BACK: { name: 'Lab Chair (Back)', tiles: [{ id: 'f226', relX: 0, relY: 0 }] },
+    ROAD_BLOCK_FRONT: { name: 'Heavy Road Block', tiles: [{ id: 'f227', relX: 0, relY: 0 }] },
+    ROAD_BLOCK_SIDE: { name: 'Heavy Road Block (Side)', tiles: [{ id: 'f228', relX: 0, relY: 0 }] },
+    HEAVY_BOX: { name: 'Heavy Shipping Box', tiles: [{ id: 'f229', relX: 0, relY: 0 }] },
+    HEAVY_BOX_STACKED: {
+        name: 'Stacked Heavy Boxes',
+        tiles: [
+            { id: 'f231', relX: 0, relY: 0, name: 'Bottom' },
+            { id: 'f230', relX: 0, relY: -1, name: 'Top' }
         ]
     }
 };

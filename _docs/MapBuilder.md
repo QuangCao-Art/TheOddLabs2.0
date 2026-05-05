@@ -299,6 +299,54 @@ Interactive machinery and experimental equipment. Texture asset: `Lab_TileSet_04
 
 ---
 
+## Lab_TileSet_05
+Used for special items and consumables.
+
+| furniture ID | Description | Dimension | X Position | Y Position | Have Collision | Info |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **f192** | KeyItem-EnhancedShoes | 1x1 | 0px | 1792px | No | Specially engineered for the modern Scientist. It enhances leg muscle output and protects your feet from the impact of running away from failed experiments. |
+| **f193** | KeyItem-SuperShoes | 1x1 | 256px | 1792px | No | The "Super" version of the Lab’s signature footwear. Now with extra shock absorption and even more neon trim, because science is 40% performance and 60% looking cool. |
+| **f194** | ConsumableItem-Milktea | 1x1 | 1024px | 1792px | No | A specialty beverage enjoyed by both Humans and Cells. Jenzi and the other girls specifically requested 'Less Sweet' to help keep their shape, but somehow, it still feels a little too sweet for a Lab-certified diet. |
+| **f195** | ConsumableItem-NoodleCup | 1x1 | 768px | 1792px | No | The staple diet of any researcher. The label claims it's bad for your health, but surely a single small cup won't hurt... much. |
+| **f196** | ConsumableItem-NoodleBowl | 1x1 | 512px | 1792px | No | Eating too much is bad for your health, but this bowl is only slightly larger than a cup. Surely it's still within the 'safe' limit, right? |
+| **f197** | SmallBookshelf-Top | 1x1 | 0px | 0px | No | A small, meticulously organized bookshelf. // Its contents are arranged with scientific precision, leaving no room for clutter. |
+| **f198** | SmallBookshelf-Bottom | 1x1 | 0px | 256px | Yes | A small, meticulously organized bookshelf. // Its contents are arranged with scientific precision, leaving no room for clutter. |
+| **f199** | Poster-CollectThemAll | 1x1 | 256px | 0px | Yes | A vibrant poster celebrating the Lab's card collection. // "There are some truly legendary secret cards out there. I challenge you to collect them all!" |
+| **f200** | Poster-Consumables | 1x1 | 256px | 256px | Yes | A colorful PSA about dietary habits. // "While junk food is suboptimal for physical health, occasional consumption is scientifically proven to rejuvenate the soul." |
+| **f201** | HoloLines-01 | 1x1 | 512px | 0px | No | A flickering holographic projection. // Purely decorative, it adds a touch of high-tech ambiance to the sterile lab environment. |
+| **f202** | HoloLines-02 | 1x1 | 512px | 256px | No | A flickering holographic projection. // Purely decorative, it adds a touch of high-tech ambiance to the sterile lab environment. |
+| **f203** | InfoHoloStation-Top | 1x1 | 768px | 0px | No | A terminal displaying high-level research data. // "The sheer diversity of Cell strains documented here is staggering. Every mutation tells a story." |
+| **f204** | InfoHoloStation-Bottom | 1x1 | 768px | 256px | Yes | A terminal displaying high-level research data. // "The sheer diversity of Cell strains documented here is staggering. Every mutation tells a story." |
+| **f205** | ServiceStation-Top | 1x1 | 1024px | 0px | No | A polite but firm notice regarding workplace grievances. // "Please direct all complaints to Jenzi. Do not attempt to file them here... seriously, please." |
+| **f206** | ServiceStation-Bottom | 1x1 | 1024px | 256px | Yes | A polite but firm notice regarding workplace grievances. // "Please direct all complaints to Jenzi. Do not attempt to file them here... seriously, please." |
+| **f207** | InstructionStation-Top | 1x1 | 1280px | 0px | No | A complex navigation station displaying facility blueprints. // "A wealth of directional data, yet I still can't find a single clear path to the restroom." |
+| **f208** | InstructionStation-Bottom | 1x1 | 1280px | 256px | Yes | A complex navigation station displaying facility blueprints. // "A wealth of directional data, yet I still can't find a single clear path to the restroom." |
+| **f209** | CurveMeetingTable-Top | 1x1 | 1536px | 0px | Yes | A heavy, high-gloss meeting table. // Its surface is so polished you can practically see the Director's stern gaze reflected in the grain. |
+| **f210** | CurveMeetingTable-Bottom | 1x1 | 1536px | 256px | Yes | A heavy, high-gloss meeting table. // Its surface is so polished you can practically see the Director's stern gaze reflected in the grain. |
+| **f211** | StraightMeetingTable-Top | 1x1 | 1792px | 0px | Yes | A surprisingly comfortable-looking meeting table. // Its padded surface seems perfectly calibrated for an unauthorized nap by someone like Dyzes. |
+| **f212** | StraightMeetingTable-Bottom | 1x1 | 1792px | 256px | Yes | A surprisingly comfortable-looking meeting table. // Its padded surface seems perfectly calibrated for an unauthorized nap by someone like Dyzes. |
+| **f213** | Generator-TopLeft | 1x1 | 0px | 512px | Yes | A high-output power unit capable of electrifying an entire district. // It utilizes raw liquified energy for maximum throughput. |
+| **f214** | Generator-BottomLeft | 1x1 | 0px | 768px | Yes | A high-output power unit capable of electrifying an entire district. // It utilizes raw liquified energy for maximum throughput. |
+| **f215** | Generator-TopMid | 1x1 | 256px | 512px | Yes | A high-output power unit capable of electrifying an entire district. // It utilizes raw liquified energy for maximum throughput. |
+| **f216** | Generator-BottomMid | 1x1 | 256px | 768px | Yes | A high-output power unit capable of electrifying an entire district. // It utilizes raw liquified energy for maximum throughput. |
+| **f217** | Generator-TopRight | 1x1 | 512px | 512px | Yes | A high-output power unit capable of electrifying an entire district. // It utilizes raw liquified energy for maximum throughput. |
+| **f218** | Generator-BottomRight | 1x1 | 512px | 768px | Yes | A high-output power unit capable of electrifying an entire district. // It utilizes raw liquified energy for maximum throughput. |
+| **f219** | BatteryStation-Offline-Top | 1x1 | 768px | 512px | No | An emergency battery housing unit. // It was designed to store excess generated power, but the reserves have been completely depleted. |
+| **f220** | BatteryStation-Offline-Bottom | 1x1 | 768px | 768px | Yes | An emergency battery housing unit. // It was designed to store excess generated power, but the reserves have been completely depleted. |
+| **f221** | BatteryStation-Online-Top | 1x1 | 1024px | 512px | No | An emergency battery housing unit. // The internal capacitors are humming with stored power, indicating a fully charged emergency reserve. |
+| **f222** | BatteryStation-Online-Bottom | 1x1 | 1024px | 768px | Yes | An emergency battery housing unit. // The internal capacitors are humming with stored power, indicating a fully charged emergency reserve. |
+| **f223** | EnergyBattery-Full | 1x1 | 0px | 1024px | Yes | A versatile, lightweight energy cell. // Its high-efficiency core is currently operating at maximum charge capacity. |
+| **f224** | EnergyBattery-Depleted | 1x1 | 256px | 1024px | Yes | A versatile, lightweight energy cell. // The energy indicator is dark, signaling that this unit's charge has been entirely spent. |
+| **f225** | RawLiquifiedEnergy | 1x1 | 512px | 1024px | Yes | A container of raw liquified energy. // Its extreme volatility is matched only by its incredible efficiency as a fuel source. |
+| **f226** | LabChair-Back | 1x1 | 0px | 1280px | Yes | Ergonomically designed to be 4% uncomfortable, ensuring researchers never fall asleep on the job. |
+| **f227** | HeavyRoadBlock-Front | 1x1 | 256px | 1280px | Yes | A heavy-duty road block. // "End of the road. Access beyond this point is strictly restricted by Laboratory Protocol." |
+| **f228** | HeavyRoadBlock-Side | 1x1 | 512px | 1280px | Yes | A heavy-duty road block positioned at an angle. // "End of the road... sideways. Even at this angle, the message is clear: Turn back." |
+| **f229** | HeavyShippingBox | 1x1 | 768px | 1280px | Yes | A reinforced shipping container. // It is remarkably heavy and structurally reinforced to survive extreme handling conditions. |
+| **f230** | StackedHeavyBoxes-Top | 1x1 | 1024px | 1024px | No | A towering stack of reinforced shipping containers. // These boxes are incredibly heavy. Did you forget your leg day? |
+| **f231** | StackedHeavyBoxes-Bottom | 1x1 | 1024px | 1280px | Yes | A towering stack of reinforced shipping containers. // These boxes are incredibly heavy. Did you forget your leg day? |
+
+---
+
 ## Encounter Cell Tileset (Lab_TileSet_Cells)
 Used for wild cell encounters. Props follow the class convention `.world-object.cell.[cellName]`.
 
