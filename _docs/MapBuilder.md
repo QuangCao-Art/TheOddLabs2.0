@@ -313,8 +313,8 @@ Used for special items and consumables.
 | **f198** | SmallBookshelf-Bottom | 1x1 | 0px | 256px | Yes | A small, meticulously organized bookshelf. // Its contents are arranged with scientific precision, leaving no room for clutter. |
 | **f199** | Poster-CollectThemAll | 1x1 | 256px | 0px | Yes | A vibrant poster celebrating the Lab's card collection. // "There are some truly legendary secret cards out there. I challenge you to collect them all!" |
 | **f200** | Poster-Consumables | 1x1 | 256px | 256px | Yes | A colorful PSA about dietary habits. // "While junk food is suboptimal for physical health, occasional consumption is scientifically proven to rejuvenate the soul." |
-| **f201** | HoloLines-01 | 1x1 | 512px | 0px | No | A flickering holographic projection. // Purely decorative, it adds a touch of high-tech ambiance to the sterile lab environment. |
-| **f202** | HoloLines-02 | 1x1 | 512px | 256px | No | A flickering holographic projection. // Purely decorative, it adds a touch of high-tech ambiance to the sterile lab environment. |
+| **f201** | HoloLines-01 | 1x1 | 512px | 0px | Yes | A flickering holographic projection. // Purely decorative, it adds a touch of high-tech ambiance to the sterile lab environment. |
+| **f202** | HoloLines-02 | 1x1 | 512px | 256px | Yes | A flickering holographic projection. // Purely decorative, it adds a touch of high-tech ambiance to the sterile lab environment. |
 | **f203** | InfoHoloStation-Top | 1x1 | 768px | 0px | No | A terminal displaying high-level research data. // "The sheer diversity of Cell strains documented here is staggering. Every mutation tells a story." |
 | **f204** | InfoHoloStation-Bottom | 1x1 | 768px | 256px | Yes | A terminal displaying high-level research data. // "The sheer diversity of Cell strains documented here is staggering. Every mutation tells a story." |
 | **f205** | ServiceStation-Top | 1x1 | 1024px | 0px | No | A polite but firm notice regarding workplace grievances. // "Please direct all complaints to Jenzi. Do not attempt to file them here... seriously, please." |

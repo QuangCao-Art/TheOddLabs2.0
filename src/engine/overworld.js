@@ -954,7 +954,7 @@ export const Overworld = {
                 const targetId = obj.hiddenReward || obj.hiddenItemId || obj.hiddenLogId;
                 const isActuallyLog = !!obj.hiddenLogId || (targetId && targetId.startsWith('Log'));
                 const colorClass = collected ? 'black' : (isActuallyLog ? 'red' : 'blue');
-                
+
                 const cross = document.createElement('div');
                 cross.className = `debug-hidden-log ${colorClass}`;
 
